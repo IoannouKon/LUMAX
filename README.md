@@ -15,7 +15,7 @@ You only need to copy specific folders and configuration files — **no need to 
 
 ---
 
-## 🪜 (A) Integrating LUMAX into Chipyard
+##  (A) Integrating LUMAX into Chipyard
 
 ### **Step 1 — Add the LUMAX Generator**
 
@@ -114,7 +114,7 @@ This file:
 
 ---
 
-## 🧠 (B) Testing LUMAX with Verilator (Bare-Metal)
+##  (B) Testing LUMAX with Verilator (Bare-Metal)
 
 After integration, you can test the accelerator using Verilator simulation.
 
@@ -207,7 +207,7 @@ Use GTKWave to observe signal activity and debug your accelerator integration.
 
 ---
 
-## 🧱 (C) Running LUMAX on ZCU106 with Linux
+##  (C) Running LUMAX on ZCU106 with Linux
 
 You can also deploy the LUMAX accelerator on **ZCU106 FPGA** under a Linux environment.
 
