@@ -145,8 +145,9 @@ Build without waveform debugging:
 #No waveform debug - Faster 
 make CONFIG=DataReuseRocketConfig
 
-#Enable Wavefroms Debug - Slower 
-make CONFIG=DataReuseRocketConfig run-binary-debug
+#Enable Wavefroms Debug - Slower (first build binary)
+make CONFIG=DataReuseRocketConfig run-binary-debug BINARY=Chipyard/generators/Mat_Mul_Reuse_Data/software/tests/src/Linear-sw.riscv
+
 ```
 
 > ⚙️ Note: The build process may take several minutes.
