@@ -189,8 +189,7 @@ Run the binary with the Verilator simulator:
 
 ```bash
 cd chipyard/sims/verilator
-./simulator-chipyard.harness-DataReuseRocketConfig \
-  /home/riscv/Documents/Chipyard/kostis_latest/generators/Mat_Mul_Reuse_Data/software/tests/src/Linear-sw.riscv
+./simulator-chipyard.harness-DataReuseRocketConfig  /Chipyard/generators/Mat_Mul_Reuse_Data/software/tests/src/Linear-sw.riscv
 ```
 
 ---
