@@ -1,0 +1,7 @@
+[0m[[0m[33mwarn[0m] [0m[0m/home/riscv/Documents/Chipyard/kostis_stable_v2/fpga/src/main/scala/zcu106/Configs.scala:56:29: method apply in class View is deprecated (since CDE 0.1): up(XYZ, site) is no longer necessary; remove the superfluous site argument[0m
+[0m[[0m[33mwarn[0m] [0m[0m  case BootROMLocated(x) => up(BootROMLocated(x), site).map { p =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m                            ^[0m
+[0m[[0m[33mwarn[0m] [0m[0m/home/riscv/Documents/Chipyard/kostis_stable_v2/fpga/src/main/scala/zcu106/Configs.scala:63:18: method apply in class View is deprecated (since CDE 0.1): up(XYZ, site) is no longer necessary; remove the superfluous site argument[0m
+[0m[[0m[33mwarn[0m] [0m[0m  case ExtMem => up(ExtMem, site).map(x => x.copy(master = x.master.copy(size = site(ZCU106DDRSize)))) // set extmem to DDR size[0m
+[0m[[0m[33mwarn[0m] [0m[0m                 ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
