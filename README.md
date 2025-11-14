@@ -207,6 +207,13 @@ Use GTKWave to observe signal activity and debug your accelerator integration.
 
 ---
 
+Or you can just use the script 
+
+```bash
+ cd Chipyard/generators/Mat_Mul_Data_Reuse/software/tests/src
+ ./run_param_test.sh <RIN_MAX> <CIN_MAX> <COUT_MAX> [debug]
+```
+
 ##  (C) Running LUMAX on ZCU106 with Linux
 
 You can also deploy the LUMAX accelerator on **ZCU106 FPGA** under a Linux environment.
