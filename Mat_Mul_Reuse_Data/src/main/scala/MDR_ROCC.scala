@@ -24,8 +24,7 @@ import chisel3.experimental._
 
 //my imports
 import Data_Reuse.ChunkUtils._   // import your function from the object
-import Data_Reuse.Data_Reuse_Config
-
+import Data_Reuse.Data_Reuse_Config 
 
 class DataReuseExample(opcodes: OpcodeSet, val params: DataReuseParams)
   (implicit p: Parameters) extends LazyRoCC(opcodes = opcodes) {
@@ -33,14 +32,6 @@ class DataReuseExample(opcodes: OpcodeSet, val params: DataReuseParams)
   override lazy val module = new DataReuseExampleModuleImpl(this)  
 
   val dma = LazyModule(new DmaModule(Data_Reuse_Config.Data_Reuse_Config))
-  //val buffer  = 
-
-  // tlNode  := TLBuffer(
-  // BufferParams.default,
-  // BufferParams.none,
-  // BufferParams.none,
-  // BufferParams.default,
-  // BufferParams.none) := dma.node  // Connect the memory module to the accelerator’s TileLink node
 
   tlNode   := dma.node  // Connect the memory module to the accelerator’s TileLink node
 
@@ -71,8 +62,6 @@ class DataReuseExampleModuleImpl(outer: DataReuseExample)(implicit p: Parameters
   val mode_9         = funct === 9.U  // Performance counters 
   val mode_10        = funct === 10.U // Start Calcukation  
 
-  val row_factor = params.Row_factor   
-  val width_factor = 1 //DONT CHANGE 
 
   //DMA Module inputs 
   dma.io.valid     := false.B
@@ -84,13 +73,10 @@ class DataReuseExampleModuleImpl(outer: DataReuseExample)(implicit p: Parameters
   dma.io.d_ready   := false.B //not used 
 
   //SyncMem compile parameters  
-  val RowsPerBlock      = (( 1 << (params.WBitWidth - 1) ) / 2) * row_factor * params.Mem_row_factor  // How many Rows have one SynMem 
-  val totalSyncMems     =  (params.x_slice * params.y_slice) / (row_factor )     //How  many SyncMem the design need to worst case 
-
+  val RowsPerBlock      = (( 1 << (params.WBitWidth - 1) ) / 2)  * params.Mem_row_factor  // How many Rows have one SynMem 
+  val totalSyncMems     =  (params.x_slice * params.y_slice)      //How  many SyncMem the design need to worst case 
   val maxParts         = params.XBitWidth / params.minInputBits   // at Worst case one X_reg / SynMem have splitted have maxPart differentt elemtns 
-  val product_bitwidth = (params.XBitWidth/params.minInputBits)*(params.WBitWidth + params.minInputBits) * width_factor
-
-  val Products = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(product_bitwidth.W)))) // Store read results
+  val product_bitwidth = (params.XBitWidth/params.minInputBits)*(params.WBitWidth + params.minInputBits) 
 
   val done          = RegInit(false.B)
   val Done          = RegInit(false.B)
@@ -102,133 +88,39 @@ class DataReuseExampleModuleImpl(outer: DataReuseExample)(implicit p: Parameters
   val sum    = Reg(Vec(totalSyncMems, SInt(params.XBitWidth.W)))  // sum in Select Products and Accumulation
   val DATA_Y = Reg(Vec(totalSyncMems, UInt(product_bitwidth.W)))                   // Store read results
   val Sign   = Reg(Vec(totalSyncMems, Bool()))                                     // Store the sign as a boolean (true/false) for each BRAM 
-
+  val Products = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(product_bitwidth.W)))) // Store read results
 
   //How many X_reg will neeed in worst case 
-  val regs_per_mem = (1 << (params.WBitWidth - params.minWeightBits)) * width_factor  * params.Mem_row_factor
+  val regs_per_mem = (1 << (params.WBitWidth - params.minWeightBits)) * params.Mem_row_factor
   val regs_per_mem_w = (params.XBitWidth/params.minInputBits) * regs_per_mem 
   val max_x_regs  = params.x_slice * regs_per_mem //same as total blocks (one X_reg at worst case for every SynMem)
   val max_w_elems = (params.XBitWidth/params.minInputBits) * max_x_regs              // How many W registers we will neeed in worst case to bring all corresping elemetns (speedup)
   val buffers     =  params.W_BUFFS 
+  val max_blocks_in_sync_mem = (1 << (params.WBitWidth - params.minWeightBits)) 
 
-  // Create Scratchpad Memory (Registers)  
+  // Create Scratchpad Memory 
   val O_reg     = RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.S(params.OutBitWidth.W))))))))  // Register for Output results
-  // val Acc_reg = Reg(Vec(params.y_slice, Int(params.OutBitWidth.W)))
-  // val X_reg = Reg(Vec(params.y_slice, Vec(max_x_regs, SInt(params.XBitWidth.W))))  // Register for each row of X 
-  // val W_reg = Reg(Vec(params.num_filters, Vec(max_w_elems, Vec(buffers, SInt(params.WBitWidth.W)))) )  // Register for current column of W for every filter 
-
-  // ------------- Sync Read Memory System ------------------ // 
-
-
-  // ----------------------- Activations Banks ------------------------------ //
-  // [0,blocks_in_Sync_mem-1] totalSyncMems =0 |  [blocks_in_Sync_mem,2*blocks_in_Sync_mem-1] totalSyncMems = 1 .... 
+  val X_MEM = Seq.fill(totalSyncMems)(SyncReadMem(regs_per_mem/4, UInt(params.DMA_bits.W)))
+  val W_MEM = Seq.fill(buffers, totalSyncMems) { SyncReadMem(regs_per_mem_w/8, UInt(params.DMA_bits.W))}
   
-  // val X_MEM = Seq.fill(totalSyncMems) {SyncReadMem(regs_per_mem, SInt(params.XBitWidth.W))} 
-   val X_MEM = Seq.fill(totalSyncMems)(SyncReadMem(regs_per_mem/4, UInt(params.DMA_bits.W)))
-  // val X_debug = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(64.W)))) // Store read results
-
-
-  //NEW logic 
-  val max_blocks_in_sync_mem = (1 << (params.WBitWidth - params.minWeightBits)) * row_factor
-
-  // counter register to iterate rows
+  // counter register to iterate rows -- for X_MEM
   val counter_row = RegInit(0.U(log2Ceil(max_blocks_in_sync_mem).W))
   val counter_reg = RegInit(0.U(log2Ceil(max_x_regs + 1).W))
   val counter_mem = RegInit(0.U(log2Ceil(totalSyncMems).W))
   val offset_counter = RegInit(0.U(log2Ceil(4).W))
+  val X_vals = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(params.DMA_bits.W)))) // Store read results
 
-  val X_vals = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(64.W)))) // Store read results
-
-   ///debug 
-    val initDone = RegInit(false.B)
-    val initAddr = RegInit(0.U(log2Ceil(regs_per_mem/4).W))
-
-    when (!initDone) {
-      for (i <- 0 until totalSyncMems) {
-        X_MEM(i).write(initAddr, 0.U)
-      }
-      initAddr := initAddr + 1.U
-      when (initAddr === (regs_per_mem/4-1).U) {
-        initDone := true.B
-      }
-    }
-   //debug 
-   
-  // ----------------------- Weight Banks ------------------------------ //
-   val W_MEM = Seq.fill(buffers, totalSyncMems) { SyncReadMem(regs_per_mem_w/8, UInt(64.W))}
-
-
-    // counter register to iterate rows
+  // counter register to iterate rows -- for W_MEM
   val counter_row_w = RegInit(0.U(log2Ceil(max_blocks_in_sync_mem).W))
   val counter_reg_w = RegInit(0.U(log2Ceil(max_w_elems + 1).W))
   val counter_mem_w = RegInit(0.U(log2Ceil(totalSyncMems).W))
-  val valid_inputs  = Reg(UInt((totalSyncMems*64/params.XBitWidth).W))
-  val valid_weights = Reg(Vec(buffers, UInt((totalSyncMems*64/params.WBitWidth).W)))
-
-
-  // val W_vals = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(64.W)))) // Store read results
-  // val W_debug = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(64.W)))) // Store read results
-  // val W_debug_2 = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(64.W)))) // Store read results
-
+  val valid_inputs  = Reg(UInt((totalSyncMems*params.DMA_bits/params.XBitWidth).W))
+  val valid_weights = Reg(Vec(buffers, UInt((totalSyncMems*params.DMA_bits/params.WBitWidth).W)))
 
   val w_elems_per_chunk = Reg(UInt(6.W)) // 6-bit register, no explicit init
-
-// BANK          BANK 0                 |        BANK 1                                   |  ... |     BANK n
-// row 0     [0-(w_elems_per_chunk-1)]   |  [w_elems_per_chunk - (2*w_elems_per_chunk -1)] |  ... |     [(n-1)*w_elems_per_chunk - (n*w_elems_per_chunk -1)]
- 
-// ----------------------------------- weight BANKS (totalSyncMems BANKS)  adn w_elems_per_chunk = (8, 16, 32) dynamically  
-//  ------- BANK i και ROW j --------
-//  startIndex = j * (totalSyncMems * w_elems_per_chunk) + i * w_elems_per_chunk
-//  endIndex   = startIndex + w_elems_per_chunk - 1
-//  BANK i, ROW j → [ startIndex ... endIndex ]
-// ----------------------------------- 
-
-
-// ----------------------------------- activations BANKS (totalSyncMems BANKS)
-//  ------- BANK i και ROW j --------
-//  startIndex = j * (totalSyncMems * 4) + i * 4
-//  endIndex   = startIndex + 4 - 1
-//  BANK i, ROW j → [ startIndex ... endIndex ]
-// ----------------------------------- 
-
-//note 
-// ✅ Άρα στην περίπτωσή σου (με w_elems_per_chunk = 8,16,32) δεν υπάρχει περίπτωση δύο activations στην ίδια row να ζητάνε weights από διαφορετικές rows.
-
-val row_weight = RegInit(0.U(log2Ceil(max_blocks_in_sync_mem).W))
-val offset_counter_w = RegInit(0.U(log2Ceil(8).W))
-val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
-
-  //  /debug 
-    val initDoneW = RegInit(false.B)
-    val initAddrW = RegInit(0.U(log2Ceil(regs_per_mem_w/8 ).W))
-    when (!initDoneW) {
-      for (b <- 0 until buffers) {
-        for (i <- 0 until totalSyncMems) {
-          W_MEM(b)(i).write(initAddrW, 0.U)
-        }
-      }
-      initAddrW := initAddrW + 1.U
-      when (initAddrW === (regs_per_mem_w/8 - 1).U) {
-        initDoneW := true.B
-      }
-    }
-    //  /debug 
-
-  
-  // ------------- Sync Read Memory System ------------------ // 
-
-// //  if(params.SimpleCache4x8){ 
-//     //Cache_4_8 Register mode 
-//     val Cache_4_8 = RegInit(VecInit(
-//       (1 to 128).map { w =>
-//         VecInit(Seq(2, 4, 6, 8).map { x =>
-//           (w * x).U(12.W)
-//         })
-//       }
-//     ))
-// //  }  
-
- val start_base = RegInit(0.U(log2Ceil(max_w_elems.toInt + 1).W))
+  val row_weight = RegInit(0.U(log2Ceil(max_blocks_in_sync_mem).W))
+  val offset_counter_w = RegInit(0.U(log2Ceil(8).W))
+  val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
 
   //Double Bufferig Parameters 
   val buffers_mode  = RegInit(VecInit(Seq.fill(buffers)(false.B)))  // 0-> load W ,  1 -> SelectandAccumulate 
@@ -236,8 +128,6 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   val dirty_elems_w = RegInit(VecInit(Seq.fill(buffers + 1)(0.U(log2Ceil(params.DMA_bits / params.minWeightBits).W))))
   val dirty_elems_w_counter_1  = RegInit(0.U(log2Ceil(buffers+1).W))
   val dirty_elems_w_counter_2  = RegInit(0.U(log2Ceil(buffers+1).W))
-
-
   val load_w_buff_idx  = RegInit(0.U(log2Ceil(buffers).W))
   val select_buff_idx  = RegInit(0.U(log2Ceil(buffers).W))
   val w_count          = RegInit(0.U(log2Ceil(params.Cout + 1).W)) // counter to for current Weight matrix Column 
@@ -269,20 +159,18 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   val j_x_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
   val i_w_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
 
-  //new -- dirty w 
-  // val i_w_d           = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
-  // val j_w_d           = RegInit(0.U(log2Ceil(params.Cout + 1).W)) 
+
   val init_cycle      = RegInit(true.B)
   val step_new        = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
 
- // Register to keep loops limit at runtime 
+ // Register to keep loops limit at runtime ChunkSignExtender
   val XS            =  RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W))
   val XS_W          =  RegInit(max_w_elems.U(log2Ceil(max_w_elems + 1).W))
   val YS            =  RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
   val XS_b          =  RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W))
   val YS_b          =  RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
 
-  val elems_per_chunk        = (64/params.OutBitWidth)
+  val elems_per_chunk        = (params.DMA_bits/params.OutBitWidth)
   val done_elems_in_block    =  RegInit(0.U(log2Ceil(elems_per_chunk).W))
 
   //Produce register files for method -2 only 
@@ -302,18 +190,11 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   val lock            = RegInit(false.B) //send one DMA request to A channel and wait the responce from D channel (muitex)  
   val READ_ON         = RegInit(false.B) 
   val read_on_delay   = RegInit(false.B)
-  // read_on_delay := (RegNext(READ_ON))
-  // val read_on_delay   = RegNext(RegNext(READ_ON))
 
-  
   // Matrices Addresses
   val adr_X      =  RegInit(0.U(64.W)) 
   val adr_W      =  RegInit(0.U(64.W)) 
   val adr_O      =  RegInit(0.U(64.W)) 
-
-  // // DEBUG ONLY 
-  // val X_DATA      =  RegInit(0.U(64.W)) 
-  // val W_DATA      =  RegInit(0.U(64.W)) 
   
   //Register to save dimension values 
   val dma_limit             = RegInit(0.U(log2Ceil(params.Cin + 1).W)) //Cin/X_slice
@@ -324,62 +205,50 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   val y_slice_Reg           = RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
   val x_slice_weights_reg   = RegInit(max_w_elems.U(log2Ceil(max_w_elems + 1).W)) // to bring all corresping weights for all x_elemnts  
   val x_slice_input_reg     = RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W)) // so in worst case every sync Mem have hiw own X_reg 
-
-
-  // if(params.SCALE){ //SCALE
-    val scale = RegInit(0.U(32.W)) // 32-bit register for IEEE 754 float
-  // }  
+  val scale = RegInit(0.U(32.W)) // 32-bit register for IEEE 754 float  
 
   //bitwidths 
   val input_bits  = RegInit(0.U(6.W)) //  input bits 
   val weight_bits = RegInit(0.U(6.W)) //  weights bits 
   val output_bits = RegInit(0.U(6.W)) //  output bits 
 
-  w_elems_per_chunk := 64.U / weight_bits 
+  w_elems_per_chunk := params.DMA_bits.U / weight_bits 
 
 
-  // if(params.DEBUG){
-    //Performace counters per state
-    val PC_loadX    =  RegInit(0.U(64.W)) 
-    val PC_Generate =  RegInit(0.U(64.W)) 
-    val PC_loadW    =  RegInit(0.U(64.W)) 
-    val PC_Select   =  RegInit(0.U(64.W)) 
-    val PC_storeO   =  RegInit(0.U(64.W)) 
-    val PC_loadW_and_Select = RegInit(0.U(64.W)) 
-  // }
+  val PC_loadX    =  RegInit(0.U(64.W)) 
+  val PC_Generate =  RegInit(0.U(64.W)) 
+  val PC_loadW    =  RegInit(0.U(64.W)) 
+  val PC_Select   =  RegInit(0.U(64.W)) 
+  val PC_storeO   =  RegInit(0.U(64.W)) 
+  val PC_loadW_and_Select = RegInit(0.U(64.W)) 
 
   //Dynamic Input Paramters  characteristcs for every w element 
-  val all_available_elems   = RegInit(0.U(log2Ceil(params.Cin + 1).W))                        //new 
+  val all_available_elems   = RegInit(0.U(log2Ceil(params.Cin + 1).W))                        // How many elements are available to read in current block (for both W and X since they are the same in worst case)
   val elemOffVec            = Reg(Vec(totalSyncMems, UInt(log2Ceil(maxParts).W)))             // Keep in what offset ot row is located the element weight want to read 
   val w_reg_valid           = Reg(Vec(totalSyncMems, Bool()))                                 // true -> selected value from BRAM is valid   
-  val dirty_elems_x         = RegInit(0.U(log2Ceil(params.DMA_bits/params.minInputBits).W))  //new 
-  val all_available_elems_x = RegInit(0.U(log2Ceil(params.Cout + 1).W))                       //new 
-  // val w_elems_per_reg       = RegInit((params.WBitWidth / params.minWeightBits).U)            //How many weight elements fit in one Weight register 
+  val dirty_elems_x         = RegInit(0.U(log2Ceil(params.DMA_bits/params.minInputBits).W))   // How many dirty elements we have in current X_reg (dirty -> the element is already used and we need to bring new one to replace it)
+  val all_available_elems_x = RegInit(0.U(log2Ceil(params.Cout + 1).W))                       // How many elements are available to read in current block for X (for W we have w_reg_valid vector)
   val x_elems_per_reg       = RegInit((params.XBitWidth / params.minInputBits).U)             //How many input elements fit  in one input register 
-
-  val readDataVec_part            = Reg(Vec(totalSyncMems, UInt(log2Ceil(maxParts).W)))             // Keep in what offset ot row is located the element weight want to read 
-
-
-  val w_elems_per_reg = RegInit(
-  (params.WBitWidth / params.minWeightBits).U(3.W) // 3-bit wide register
-)
+  val readDataVec_part            = Reg(Vec(totalSyncMems, UInt(log2Ceil(maxParts).W)))       // Keep in what offset ot row is located the element weight want to read 
+  val w_elems_per_reg = RegInit((params.WBitWidth / params.minWeightBits).U(3.W) )            //How many weight elements fit  in one weight register
 
 
   //Dynamic Bitwidth 
-    val mask_in              = RegInit(0.U(log2Ceil(((1 << params.XBitWidth) - 1) + 1).W))
-    val mask_w               = RegInit(0.U(log2Ceil(((1 << params.WBitWidth) - 1) + 1).W))  
-    val mask_p               = RegInit(0.U(log2Ceil(((1 << (params.WBitWidth + params.XBitWidth)) - 1) + 1).W))   
-    val block_rows_1         = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - 2)) + 1).W))
-    val block_rows_2         = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - 2)) + 1).W))
-    val blocks_in_Sync_mem_1 = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits) * row_factor) + 1).W))
-    val blocks_in_Sync_mem_2 = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits) * row_factor) + 1).W))
-
+  val mask_in              = RegInit(0.U(log2Ceil(((1 << params.XBitWidth) - 1) + 1).W))
+  val mask_w               = RegInit(0.U(log2Ceil(((1 << params.WBitWidth) - 1) + 1).W))  
+  val mask_p               = RegInit(0.U(log2Ceil(((1 << (params.WBitWidth + params.XBitWidth)) - 1) + 1).W))   
+  val block_rows_1         = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - 2)) + 1).W))
+  val block_rows_2         = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - 2)) + 1).W))
+  val blocks_in_Sync_mem_1 = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits) ) + 1).W))
+  val blocks_in_Sync_mem_2 = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits) ) + 1).W))
+  val shiftAmt  = Log2(block_rows_1)  //  block_rows_2 = {1,2,64}
   val chunks_per_Product_bits =  RegInit(0.U(log2Ceil((((params.WBitWidth +  params.XBitWidth) ))  + 1).W))   
+  val inputs_per_reg = RegInit((params.XBitWidth.U / input_bits))
+
 
   //indexing extra registers 
   val mul1 = RegInit(0.U(16.W))
   val mul2 = RegInit(0.U(16.W)) 
-  
 
   // A channel 
   val elements_to_read = RegInit(0.U((log2Ceil(max_w_elems) + 1).W))
@@ -391,46 +260,62 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   val offset_in_chunk_1     = RegInit(0.U(3.W))
   val offset_in_chunk_2     = RegInit(0.U(3.W))
 
-  
-  val step = params.x_slice * params.y_slice
-  val step_1 = step / row_factor 
-  val totalGroups_1= (totalSyncMems) / step_1
-  val stepCycle_1 = RegInit(0.U((log2Ceil(totalGroups_1) + 1).W))
-
-  val step_2 = step /row_factor   //TODO  make it work
-  val totalGroups_2= totalSyncMems / step_2
-  val stepCycle_2 = RegInit(0.U((log2Ceil(totalGroups_2) + 1).W))
-
-  val maxCount = totalSyncMems / step_2  
-  val product_counter = RegInit(0.U(log2Ceil(maxCount + 1).W))
-
-
   // ChunkSignExtender Module 
-  val chunk_nums = maxParts // + 2
-  val max_ch =  scala.math.max(step_1, step_2) 
-  val chunkExtenders = Seq.fill(totalSyncMems,chunk_nums) { Module(new ChunkSignExtender(params.XBitWidth,params.minInputBits))}
+  val chunkExtenders = Seq.fill(totalSyncMems,maxParts) { Module(new ChunkSignExtender(params.XBitWidth,params.minInputBits))}
   for {
     i <- 0 until totalSyncMems
-    j <- 0 until chunk_nums
+    j <- 0 until maxParts
   } {
     val ext = chunkExtenders(i)(j)
         ext.io.data       := 0.U
         ext.io.input_bits := 0.U
-        // ext.io.mask       := 0.U
         ext.io.idx        := 0.U
   }
 
+  // ------------------------------
+  // Instantiate totalSyncMems copies
+  // ------------------------------
+  val Product_Generator_Mesh = Seq.fill(totalSyncMems) {
+    Module(new Product_Generator(
+      totalSyncMems,
+      maxParts,
+      params.WBitWidth,
+      params.XBitWidth,
+      params.minWeightBits,
+      RowsPerBlock,
+      params.DMA_bits,
+      product_bitwidth,
+      params.minInputBits
+    ))
+  }
   
+// ------------------------------
+// Initialize with DEFAULT values
+// ------------------------------
+for (i <- 0 until totalSyncMems) {
+  val gen = Product_Generator_Mesh(i)
+
+  // Give VALID default values 
+  gen.io.sync_mem_idx := i.U  
+  gen.io.blocks_in_Sync_mem := blocks_in_Sync_mem_1
+  gen.io.counter := counter_1
+  gen.io.dirty_elems_x := dirty_elems_x
+  gen.io.X_vals := X_vals
+  gen.io.inputs_per_reg := inputs_per_reg
+  gen.io.input_bits := input_bits
+  gen.io.valid_inputs := valid_inputs
+  gen.io.mask_p := mask_p
+  gen.io.shiftAmt := shiftAmt
+  gen.io.chunks_per_Product_bits := chunks_per_Product_bits
+  gen.io.Product_in := Products(i)  
+}
+
   // DMA bus parameters (how many register or elements fitr in 64 bits dma channel)
    val elemsPerChunk_in = RegInit(0.U(5.W))  // holds up to 16  
-   val RegsPerChunk_in  = RegInit((64 / params.XBitWidth).U(math.max(1, log2Ceil(64 / params.XBitWidth) + 1).W)) 
-   val elemsPerChunk_w  = RegInit((64 / params.minInputBits).asUInt)  // and give it 6.W width
-   val RegsPerChunk_w   = RegInit((64 / params.WBitWidth).U(math.max(1, log2Ceil(64 / params.WBitWidth) + 1).W))
+   val RegsPerChunk_in  = RegInit((params.DMA_bits / params.XBitWidth).U(math.max(1, log2Ceil(params.DMA_bits / params.XBitWidth) + 1).W)) 
+   val elemsPerChunk_w  = RegInit((params.DMA_bits / params.minInputBits).asUInt)  // and give it 6.W width
+   val RegsPerChunk_w   = RegInit((params.DMA_bits / params.WBitWidth).U(math.max(1, log2Ceil(params.DMA_bits / params.WBitWidth) + 1).W))
    val  clmp = RegInit(0.U(64.W))  // holds up to 16  
- 
-
-  //new 
-  val inputs_per_reg = RegInit((params.XBitWidth.U / input_bits))
   inputs_per_reg     := params.XBitWidth.U/input_bits 
 
   //A Chunk Offset Module 
@@ -459,15 +344,13 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   chunkInfoModule_D.io.input_bits       := input_bits
   chunkInfoModule_D.io.max_bits         := 0.U 
 
-
-
   // Elaboration time parameters to avoid div(/) and mod(%)
   val x_slice: Int = params.x_slice  // must be power of 1,2, e.g. 16
   val x_slice_mask = (x_slice - 1).U
   val x_slice_log2 = log2Ceil(x_slice)
   val max_val = 16 * x_slice // maybe 64 here ? TODO 
   val max_mask = (max_val - 1).U
-  val mems_per_ys = params.x_slice/row_factor 
+  val mems_per_ys = params.x_slice
 
   val total_blocks_per_y =  params.x_slice.U * blocks_in_Sync_mem_2  
   blocks_in_Sync_mem_2 :=  blocks_in_Sync_mem_1
@@ -481,21 +364,15 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
     val W_off_Vec  = Reg(Vec(totalSyncMems, UInt(5.W)))
     val Data_Vec   = Reg(Vec(totalSyncMems, UInt(params.WBitWidth.W)))
 
-
     val N =  (params.DMA_bits/params.XBitWidth)*totalSyncMems
     val bankSize = params.DMA_bits/params.WBitWidth
-
 
     val N_in = (params.DMA_bits/params.XBitWidth)*totalSyncMems
     val bankSize_in = params.DMA_bits/params.XBitWidth 
     val numBanks_in    = totalSyncMems.U // (N_in/ bankSize_in).U
 
-
-
     val WRegIdxdVec = Reg(Vec(totalSyncMems, UInt(log2Ceil(N).W))) // make WBitWidth ≥ log2Ceil(N)
     val Valid_In_Vec = Reg(Vec(totalSyncMems, Bool()))
-
-
 
   // stage 2 Output Registers 
     val weight_Sint_part_Reg = Reg(Vec(totalSyncMems, SInt(params.WBitWidth.W)))
@@ -509,7 +386,6 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
     val partialSums = Reg(Vec(params.y_slice, Vec(2, SInt(Products(0).getWidth.W))))
     val cycle_2 = RegInit(false.B)
 
-
     //------------------------------------------
     // parameters
     val S = (params.DMA_bits / params.XBitWidth)
@@ -518,11 +394,10 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
 
     // state for current active bank (group)
     val curBank     = RegInit(0.U(log2Ceil(totalSyncMems).W))
-    val curElems    = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits)) * params.Row_factor + 1).W)) // up to g
+    val curElems    = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits)) + 1).W)) // up to g
     val curRowIdx   = RegInit(0.U(log2Ceil(regs_per_mem/4).W))                       // row in X_MEM(curBank)
     val curLaneCnt  = RegInit(0.U(log2Ceil(S + 1).W))                                // lanes filled in current row [0..S]
     val curRowBuf   = RegInit(0.U(params.DMA_bits.W))   
-
 
     val S_w = (params.DMA_bits / params.WBitWidth)
     val S_U_w = S_w.U
@@ -530,8 +405,8 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
 
     // state for current active bank (group)
     val curBank_w     = RegInit(0.U(log2Ceil(totalSyncMems).W))
-    val curElems_w    = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits)) * params.Row_factor + 1).W)) // up to g
-    val curRowIdx_w    = RegInit(0.U(log2Ceil(regs_per_mem/8).W))                       // row in X_MEM(curBank)
+    val curElems_w    = RegInit(0.U(log2Ceil((1 << (params.WBitWidth - params.minWeightBits)) + 1).W)) // up to g
+    val curRowIdx_w   = RegInit(0.U(log2Ceil(regs_per_mem/8).W))                       // row in X_MEM(curBank)
     val curLaneCnt_w  = RegInit(0.U(log2Ceil(S + 1).W))                                // lanes filled in current row [0..S]
     val curRowBuf_w   = RegInit(0.U(params.DMA_bits.W))  
     //------------------------------------------
@@ -541,7 +416,7 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
   val sIdle :: sLoadX :: sGenerateRegFiles :: sLoadW_and_sSelectAndAccumulate :: sStoreOutput :: sDELAY :: Nil = Enum(6)
   val state = RegInit(sIdle)
 
-  //If cmd.ready is hardcoded to true.B, the CPU ignores io.busy  SOS 
+  //If cmd.ready is hardcoded to true.B, the CPU ignores io.busy  (???) 
   io.busy     := (state =/= sIdle) 
   cmd.ready   := (state === sIdle)
   
@@ -569,17 +444,14 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
         j_x_temp  := 0.U 
 
         valid_inputs := 0.U
-        valid_weights := VecInit(Seq.fill(buffers)(0.U((totalSyncMems*64/params.WBitWidth).W)))
+        valid_weights := VecInit(Seq.fill(buffers)(0.U((totalSyncMems*params.DMA_bits/params.WBitWidth).W)))
         
         // XS YS Registers Init 
         val mux = Mux(rin_reg >= y_slice_Reg,y_slice_Reg,rin_reg)
         YS      := mux
         YS_b    := mux
-        elemsPerChunk_in :=  64.U / input_bits  // Mux(input_bits === 8.U , 8.U , 16.U)  
-        elemsPerChunk_w  :=  64.U /weight_bits   // Mux(weight_bits === 8.U , 8.U , 16.U)  
-
-
-        // X_reg := VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(max_x_regs)(0.S(params.XBitWidth.W)))))
+        elemsPerChunk_in :=  params.DMA_bits.U   / input_bits  
+        elemsPerChunk_w  :=   params.DMA_bits.U / weight_bits    
       } 
 
       when(cmd.fire && (mode_1)) {
@@ -589,34 +461,20 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
         x_slice_weights_reg   := rs2(31, 16)  // 16 bits
         dma_limit             := rs2(47, 32)  // 16 bits
 
-        // ///-------------------------------
-
-        // // how many logical blocks can  and need tp mapp in memory blocks  
-        // val clamped_new        = Mux(cin_reg >= scaledSlice, scaledSlice, cin_reg)
-
-        // //every memory blocks can fit this many logical blockst stakced  
-        // val logical_blocks_in_mem_block      = ( 1.U << (params.WBitWidth.U - weight_bits ) ) * row_factor.U  * params.Mem_row_factor.U  // How many blocks can fit in one psysical memory 
-        
-        // //split equal logical blocks to all memory blocks 
-        // val floor_div = clamped_new / mems_per_ys.U 
-
-        // val clamped  =  floor_div * mems_per_ys.U 
-
-        // ///-------------------------------
         clmp := scaledSlice
         val clamped        = Mux(cin_reg >= scaledSlice, scaledSlice, cin_reg) 
-        val elems_per_word = params.XBitWidth.U/input_bits  // Mux(input_bits === 4.U, params.XBitWidth.U >> 2, params.XBitWidth.U >> 3)
+        val elems_per_word = params.XBitWidth.U/input_bits  
         val temp_mul       = clamped * elems_per_word
 
         x_slice_input_reg := scaledSlice
         XS                := clamped
         XS_b              := clamped
 
-        x_elems_per_reg := elems_per_word // params.XBitWidth.U/input_bits 
-        w_elems_per_reg := params.WBitWidth.U/weight_bits  //Mux(weight_bits === 4.U, params.WBitWidth.U >> 2, params.WBitWidth.U >> 3)
+        x_elems_per_reg := elems_per_word 
+        w_elems_per_reg := params.WBitWidth.U/weight_bits 
 
         //before load X
-        all_available_elems_x := (temp_mul).min(cin_reg)  //( clamped * (params.XBitWidth.U/input_bits )).min(cin_reg - j_x) 
+        all_available_elems_x := (temp_mul).min(cin_reg) 
         mul1                  := 0.U
         mul2                  := temp_mul
 
@@ -627,14 +485,11 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
         mask_p                  := (1.U << p_bits) - 1.U
         mask_w                  := (1.U << weight_bits) - 1.U 
 
-        val block_rows              = (1.U << (weight_bits  -2.U )) 
-        block_rows_1              :=   block_rows
-        block_rows_2              :=   block_rows
+        val block_rows          = (1.U << (weight_bits  -2.U )) 
+        block_rows_1            :=   block_rows
+        block_rows_2            :=   block_rows
 
-
-        val blocks_in_Sync_mem_max      = ( 1.U << (params.WBitWidth.U - weight_bits ) ) * row_factor.U  * params.Mem_row_factor.U  // How many blocks can fit in one psysical memory 
-        // mems_per_ys    // How may psysical mems have for one actvation vector 
-        // val help = clamped / F 
+        val blocks_in_Sync_mem_max      = ( 1.U << (params.WBitWidth.U - weight_bits ) ) * params.Mem_row_factor.U  // How many blocks can fit in one psysical memory 
         val help =  (clamped + mems_per_ys.U - 1.U) / mems_per_ys.U //ceiled  
 
         val blocks_in_Sync_mem = Mux(help < blocks_in_Sync_mem_max, help,blocks_in_Sync_mem_max )
@@ -663,8 +518,6 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
         chunkInfoModule_D.io.mul2             := temp_mul
         chunkInfoModule_D.io.input_bits       := input_bits
         chunkInfoModule_D.io.max_bits         := params.XBitWidth.U
-
-
 
         //output 
         bytes_to_read         :=  chunkInfoModule_D.io.bytes_to_read 
@@ -733,9 +586,17 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
     dma_send      := dma_counter_a < all_available_elems_x  - elements_to_read
     j_x           := j_x_next 
 
+    //input 
+    chunkInfoModule_A.io.j_x              := j_x_next
+    chunkInfoModule_A.io.x_elems_per_reg  := x_elems_per_reg
+    chunkInfoModule_A.io.elemsPerChunk_in := elemsPerChunk_in
+    chunkInfoModule_A.io.adr_X            := adr_X
+    chunkInfoModule_A.io.RegsPerChunk_in  := RegsPerChunk_in
 
-    chunkInfoModule_A.io.j_x := j_x_next
-    elements_to_read := chunkInfoModule_A.io.elements_to_read 
+    val dma_counter_a_next = dma_counter_a + elements_to_read
+
+    //output
+    elements_to_read := Mux(chunkInfoModule_A.io.elements_to_read <= (all_available_elems - dma_counter_a_next), chunkInfoModule_A.io.elements_to_read, all_available_elems - dma_counter_a_next)
     chunk_addres     := chunkInfoModule_A.io.chunk_address
 
   }
@@ -745,45 +606,20 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
     val j_x_temp_next      = j_x_temp + elements_to_read_temp
     val dma_counter_d_next = dma_counter_d + elements_to_read_temp
 
-    // val data  = dma.io.readData                                                                                                         // UInt(64.W)
-    // val bytes = VecInit(Seq.tabulate(64 / params.XBitWidth)(i => data((i + 1) *  params.XBitWidth - 1, i *  params.XBitWidth).asSInt))
 
-    // for (i <- 0 until 64 / params.XBitWidth) {
-    //   // when(i.U < bytes_to_read ) { //|| input_bits === params.XBitWidth.U 
-    //     X_reg(Rin_cnt)(reg_idx_start + i.U) :=   bytes(offset_in_chunk_1 + i.U) 
-    //     // O_reg(0)(Rin_cnt)(reg_idx_start + i.U) := bytes(offset_in_chunk_1 + i.U) 
-    //   // }
-    // }
-
-    // ------------- Sync Read Memory System ------------------ // 
-
-    // counter_row  from 0 to blocks_in_Sync_mem_1 - 1 and then reset  
-    // counter_mem  from 0 to totalsynmem -1 and then reset 
-    // offset from 0 to 64/16 
-    // every row have  more X_reg elements 
-     
-  //  require(params.Mem_row_factor >= 4, s"Mem_row_factor must be >= 4, got ${params.Mem_row_factor}")
-   //need as input mem*4 Cin  at least  TODO (fix this)
-   //Στην καλυτερη γραψε 64 bit σε καθε μνημη το λιγοτερη ειναι ενα θεμα 
-   //blocks_in_Sync_mem_1 να ειναι μγεαλυτερο ίσο του 4 
-
-   valid_inputs := valid_inputs + elements_to_read_temp   // / (params.XBitWidth.U/input_bits)   //* (input_bits /params.XBitWidth.U)
-
-    //  X_DATA := data
+    valid_inputs := valid_inputs + elements_to_read_temp   
     
-    val data  = dma.io.readData                                                                                                         // UInt(64.W)
+    val data  = dma.io.readData                                                                                                       
     
     // loop through all memories
     for (i <- 0 until totalSyncMems) {
       when (counter_mem === i.U) {
         X_MEM(i).write(counter_row, data)
       }
-    }  //counter_mem === totalSyncMems.U
-
-    // update counters
+    }  
     
-    // when (counter_reg >= (blocks_in_Sync_mem_1 - (params.DMA_bits/params.XBitWidth).U )) { 
-    when (counter_reg.asSInt >=  (blocks_in_Sync_mem_1.asSInt - (params.DMA_bits / params.XBitWidth).S)) {
+    // update counters
+        when (counter_reg.asSInt >=  (blocks_in_Sync_mem_1.asSInt - (params.DMA_bits / params.XBitWidth).S)) {
       counter_row   := 0.U
       counter_reg   := 0.U 
       counter_mem := counter_mem + 1.U
@@ -792,95 +628,6 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
       counter_reg := counter_reg +  (params.DMA_bits/params.XBitWidth).U
     } 
 
-    // //------------------------------------------------------
-    
-    //   // scala
-    //   val data64 = dma.io.readData
-    //   val lanes  = VecInit(Seq.tabulate(S)(i => data64((i + 1) * params.XBitWidth - 1, i * params.XBitWidth)))
-
-    //   val capInGroup = g - curElems
-    //   val n0Total    = Mux(capInGroup <= S_U, capInGroup, S_U)   // to current bank (this beat)
-    //   val n1         = S_U - n0Total                             // spill to next bank
-
-    //   // 1) place as many as fit in the current row
-    //   val spaceInRow = S_U - curLaneCnt
-    //   val n0a        = Mux(n0Total <= spaceInRow, n0Total, spaceInRow) // into current row
-
-    //   val addCurA = (0 until S).foldLeft(0.U(params.DMA_bits.W)) { (acc, i) =>
-    //     val take      = i.U < n0a
-    //     val shiftBits = (curLaneCnt + i.U) * params.XBitWidth.U
-    //     acc | Mux(take, (lanes(i.U) << shiftBits), 0.U)
-    //   }
-    //   val bufA   = curRowBuf | addCurA
-    //   val laneA  = curLaneCnt + n0a
-    //   val fullA  = laneA === S_U
-
-    //   // 2) leftover lanes for same bank → start next row (combinational)
-    //   val rem0 = n0Total - n0a
-    //   val addCurB = (0 until S).foldLeft(0.U(params.DMA_bits.W)) { (acc, i) =>
-    //     val iU        = i.U
-    //     val take      = iU < rem0
-    //     val shiftBits = iU * params.XBitWidth.U
-    //     val srcIdx    = iU + n0a
-    //     acc | Mux(take, (lanes(srcIdx) << shiftBits), 0.U)
-    //   }
-
-    //   // “after-this-beat” combinational view for current bank
-    //   val bufAfter  = Mux(rem0 === 0.U, bufA, addCurB)
-    //   val laneAfter = Mux(rem0 === 0.U, laneA, rem0)
-    //   // if we filled rowA this cycle, the partial row (if any) lives in the next row index
-    //   val rowToWriteAfter = Mux(fullA, curRowIdx + 1.U, curRowIdx)
-
-    //   // 3) update regs for current bank row staging
-    //   when (fullA) {
-    //     // wrote rowA
-    //     for (i <- 0 until totalSyncMems) { when (curBank === i.U) { X_MEM(i).write(curRowIdx, bufA) } }
-    //     curRowIdx := curRowIdx + 1.U
-    //     // stage next row if rem0 > 0
-    //     curRowBuf  := Mux(rem0 === 0.U, 0.U, addCurB)
-    //     curLaneCnt := Mux(rem0 === 0.U, 0.U, rem0)
-    //   } .otherwise {
-    //     curRowBuf  := bufA
-    //     curLaneCnt := laneA
-    //   }
-
-    //   // 4) group progress and flush on boundary using the after-this-beat wires
-    //   val groupDone = (curElems + n0Total) === g
-    //   curElems := Mux(groupDone, 0.U, curElems + n0Total)
-
-    //   when (groupDone) {
-    //     // flush the partial row of this bank (the “5th” element case)
-    //     when (laneAfter =/= 0.U) {
-    //       for (i <- 0 until totalSyncMems) {
-    //         when (curBank === i.U) { X_MEM(i).write(rowToWriteAfter, bufAfter) }
-    //       }
-    //     }
-    //     // clear staging and advance bank
-    //     curRowBuf  := 0.U
-    //     curLaneCnt := 0.U
-    //     curBank    := Mux(curBank === (totalSyncMems - 1).U, 0.U, curBank + 1.U)
-    //     curRowIdx  := 0.U
-    //   }
-
-    //   // 5) spill to next bank (remaining lanes in this beat)
-    //   when (n1 =/= 0.U) {
-    //     val nextBank = Mux(groupDone, Mux(curBank === (totalSyncMems - 1).U, 0.U, curBank + 1.U), curBank)
-    //     val addNext = (0 until S).foldLeft(0.U(params.DMA_bits.W)) { (acc, i) =>
-    //       val iU        = i.U
-    //       val inRange   = iU >= n0Total
-    //       val relPos    = iU - n0Total
-    //       val shiftBits = relPos * params.XBitWidth.U
-    //       acc | Mux(inRange, (lanes(iU) << shiftBits), 0.U)
-    //     }
-    //     curBank    := nextBank
-    //     curRowIdx  := Mux(groupDone, 0.U, curRowIdx)
-    //     curRowBuf  := addNext
-    //     curLaneCnt := n1
-    //     curElems   := n1
-    //   }
-    // //------------------------------------------------------
-
-    
     // ------------- Sync Read Memory System ------------------ // 
 
     dma_counter_d := dma_counter_d_next
@@ -913,33 +660,22 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
       mul1          := Mux(Rin_cnt < YS -1.U,cin_reg*(i_x + 1.U),mul1)
 
       //before load X 
-      // val x_slice_input_reg_help = blocks_in_Sync_mem_1 * x_slice_input_reg 
-      // val XS_temp   = Mux(cin_reg - j_x_start  >= x_slice_input_reg_help,x_slice_input_reg_help,cin_reg - j_x_start ) //debug 
-      val XS_temp   = Mux(cin_reg - j_x_start  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x_start ) //comments out 
+      val XS_temp   = Mux(cin_reg - j_x_start  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x_start ) 
       val mul1_temp = (i_x + 1.U) * cin_reg
      
      //compute loigc 
-     //   val mul2_temp = XS_temp * x_elems_per_reg
-
-     //mux and shift logic
-     val mul2_temp = Mux(x_elems_per_reg === 1.U, XS_temp, XS_temp << 1)
+       val mul2_temp = XS_temp * x_elems_per_reg
 
       XS            := XS_temp
       mul2          := mul2_temp
       mul1          := mul1_temp
 
       //before load X
-      val bit_offset_in_byte = ((mul1_temp + j_x_start) * input_bits) & (params.XBitWidth.U - 1.U) //( ((i_x * cin_reg) + j_x) * input_bits) %  params.XBitWidth.U
-      val skipInFirstByte = bit_offset_in_byte / weight_bits //Mux(input_bits === 4.U, bit_offset_in_byte >> 2, bit_offset_in_byte >> 3) //bit_offset_in_byte / input_bits 
-      // dirty_elems_x          := skipInFirstByte
-
-      //++
-      val elems_per_word = params.XBitWidth.U/input_bits  // Mux(input_bits === 4.U, params.XBitWidth.U >> 2, params.XBitWidth.U >> 3)
-      all_available_elems_x := (XS * elems_per_word).min(cin_reg - j_x_start)  //( XS * (params.XBitWidth.U/input_bits )).min(cin_reg - j_x) 
+      val bit_offset_in_byte = ((mul1_temp + j_x_start) * input_bits) & (params.XBitWidth.U - 1.U) 
+      val skipInFirstByte = bit_offset_in_byte / weight_bits 
+      val elems_per_word = params.XBitWidth.U/input_bits  
+      all_available_elems_x := (XS * elems_per_word).min(cin_reg - j_x_start)  
       j_x_temp              := j_x_start
-
-    //  val mul1_temp = mul1 
-    //  val mul2_temp = mul2
 
       chunkInfoModule_A.io.j_x  := j_x_start
       chunkInfoModule_A.io.mul1 := mul1_temp
@@ -960,7 +696,6 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
       offset_in_chunk_1     :=  chunkInfoModule_D.io.offset_in_chunk_1
       elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
 
-
       // ------------- Sync Read Memory System ------------------ // 
       for (sync_mem_idx <- 0 until totalSyncMems) { 
         X_vals(sync_mem_idx) := X_MEM(sync_mem_idx).read(0.U, Rin_cnt + 1.U === YS )
@@ -978,17 +713,11 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
       i_x_start  := Mux(j_x_start + x_slice_reg_elems   >= cin_reg , i_x_start + YS -0.U,i_x_start)
       cycleCount_1 := 0.U
       Products.foreach(_ := 0.U)
-      stepCycle_1     := 0.U 
 
-
-      ////////////////////////////////////////////////////////////////////////////////////
       val remain_in_column      = cin_reg - i_w
-       val remain_in_column_regs = (remain_in_column + w_elems_per_reg -1.U)/w_elems_per_reg
-      // val remain_in_column_regs = Mux(w_elems_per_reg === 1.U,remain_in_column,(remain_in_column + w_elems_per_reg -1.U)/w_elems_per_reg)                  // (remain_in_column + w_elems_per_reg -1.U)/w_elems_per_reg 
+      val remain_in_column_regs = (remain_in_column + w_elems_per_reg -1.U)/w_elems_per_reg
       val XS_W_temp             = Mux(remain_in_column_regs >= x_slice_weights_reg,x_slice_weights_reg,remain_in_column_regs)  //max_w_elems
       XS_W  := XS_W_temp
-      // W_reg := VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(max_w_elems)(VecInit(Seq.fill(buffers)(0.S(params.WBitWidth.W)))))))  //new 
-
       dirty_elems_w.foreach(_ := 0.U)
 
       //before load W
@@ -998,7 +727,6 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
       mul2 := temp_mul2
       val bit_offset_in_byte = (((temp_mul1)) * weight_bits) & (params.WBitWidth.U - 1.U)
       val skipInFirstByte    = bit_offset_in_byte / weight_bits
-      // dirty_elems_w(0)    := skipInFirstByte
       all_available_elems := ( temp_mul2).min(cin_reg - i_w)
 
       //input 
@@ -1045,11 +773,9 @@ val elements_counter = RegInit(0.U(log2Ceil(totalSyncMems * 32).W))
       }
     
     // ------------- Sync Read Memory System ------------------ // 
-  
       counter_row := 0.U //TODO 
       counter_mem := 0.U 
       offset_counter := 0.U 
-
     // ------------- Sync Read Memory System ------------------ // 
 
 
@@ -1062,134 +788,26 @@ is(sGenerateRegFiles) {
         PC_Generate := PC_Generate + 1.U
       }
 
-      val shiftAmt  = Log2(block_rows_1)  //  block_rows_2 = {1,2,64}
+      // val shiftAmt  = Log2(block_rows_1)  //  block_rows_2 = {1,2,64}
       val start_row = counter_1 << shiftAmt 
-      // val shift_blocks = Log2(blocks_in_Sync_mem_1)
-      // val shift_y      = Log2(total_blocks_per_y)
-
    
   for (sync_mem_idx <- 0 until totalSyncMems) { 
-
-        // // mapping to 2D space  -- power of 2 optimizations --  (x_slice,blocks_in_Sync_mem) power of two 
-        // val global_block_idx = (sync_mem_idx.U << shift_blocks) + counter_1
-        // val x_th_x_reg = global_block_idx & (total_blocks_per_y - 1.U)
-        // val y_th_x_reg = global_block_idx >> shift_y
-
-        // mapping to 2D space -- compute logic -- 
-        // val global_block_idx   =  sync_mem_idx.U * blocks_in_Sync_mem_1 + counter_1 
-        // val x_th_x_reg = global_block_idx % total_blocks_per_y
-        // val y_th_x_reg  = global_block_idx / total_blocks_per_y 
 
         when(cycleCount_1 =/= 0.U ) { 
           val finalAddressInBRAM =  start_row + (cycleCount_1 -1.U)   
           temp_muls_mem(sync_mem_idx).write(finalAddressInBRAM, Products(sync_mem_idx)) 
         }  
 
+  } 
+   
+   // Product Generator Mesh
+   for (sync_mem_idx <- 0 until totalSyncMems)  
+     {
+      val gen = Product_Generator_Mesh(sync_mem_idx)
+      Products(sync_mem_idx) := gen.io.Product_out
+    }
 
-        //////////////////////////////////////////////// -- edition 1 
-
-        // mapping to 2D space  -- power of 2 optimizations --  (x_slice,blocks_in_Sync_mem) power of two 
-        //val global_block_idx = (sync_mem_idx.U << shift_blocks) + counter_1
-        val global_block_idx   =  sync_mem_idx.U * blocks_in_Sync_mem_1 + counter_1 
-        val x_th_x_reg = global_block_idx + dirty_elems_x //& (total_blocks_per_y - 1.U) // TODO 
-        // val y_th_x_reg =
-        //       if (params.y_slice > 1)
-        //         global_block_idx >> shift_y
-        //       else
-        //         0.U
-
-        //computation version
-        // val wrapped     = x_th_x_reg % N_in.U 
-        // val bank_in     = wrapped / bankSize_in.U
-        // val byte_index  = wrapped % bankSize_in.U     
-
-        // val rows_per_bank = (blocks_in_Sync_mem_1 + bankSize_in.U - 1.U) / bankSize_in.U
-        // val row_in_bank  = (x_th_x_reg / bankSize_in.U) % rows_per_bank
-        // val byte_index   = x_th_x_reg % bankSize_in.U
-        // val bank_in      = (x_th_x_reg / (bankSize_in.U * rows_per_bank)) % totalSyncMems.U
-
-        //--------------------------------- new code 
-        val S = bankSize_in.U
-        val B = totalSyncMems.U
-
-        val rows_used_per_bank =  (blocks_in_Sync_mem_1 + S - 1.U) / S // ceil(blocks_in_Sync_mem_1 / S)
-        
-        // x_th_x_reg is your linear element index
-        val chunkIdx    = x_th_x_reg / S
-        val bank_in     = (chunkIdx / rows_used_per_bank) % B
-        val row_in_bank = chunkIdx % rows_used_per_bank
-        val byte_index  = x_th_x_reg % S
-
-
-        // // group-per-bank
-        // val S = bankSize_in.U                 // elems per row
-        // val B = totalSyncMems.U               // banks
-        // val g = blocks_in_Sync_mem_1          // elems per bank (group)
-
-        // // x_th_x_reg is linear index
-        // val groupIdx    = x_th_x_reg / g
-        // val posInBank   = x_th_x_reg % g
-        // val bank_in     = groupIdx % B
-        // val row_in_bank = posInBank / S
-        // val byte_index  = posInBank % S
-        //--------------------------------- new code 
-
-
-
-        val data_64 =  X_vals(bank_in)
-        val bytes = VecInit(Seq.tabulate(params.DMA_bits / params.XBitWidth)(i => data_64((i + 1) *  params.XBitWidth - 1, i *  params.XBitWidth)))
-        val elem_start  = x_th_x_reg * inputs_per_reg
-        // val valid_x = valid_inputs >= elem_start
-        val data  = bytes(byte_index) //Mux(valid_x,bytes(byte_index),0.U)    
-
-        ////////////////////////////////////////////////
-
-        // ------------- Sync Read Memory System ------------------ //  -- edition 2
-        // val data_64 = X_vals(sync_mem_idx)
-        // val bytes = VecInit(Seq.tabulate(64 / params.XBitWidth)(i => data_64((i + 1) *  params.XBitWidth - 1, i *  params.XBitWidth)))
-        // val data = bytes(offset_counter)     
-        // ------------- Sync Read Memory System ------------------ // 
-            
-        // val data      =   X_reg(y_th_x_reg)(x_th_x_reg).asUInt  // width = XBITWIDTH.W
-
-        val P_data    =   Products(sync_mem_idx) 
-        val P_slices  =   Wire(Vec(maxParts, UInt((product_bitwidth).W)))
-          
-        //split 
-        for (i <- 0 until maxParts) {
-
-          val extender = chunkExtenders(sync_mem_idx)(i)
-          extender.io.data       := data
-          extender.io.input_bits := input_bits
-          extender.io.idx        := i.U
-          val signedChunk = extender.io.out
-
-         val absVal_new = Mux(signedChunk < 0.S, (-signedChunk), signedChunk)
-         //
-         val valid_x = valid_inputs + dirty_elems_x > elem_start + i.U // new
-         val absVal = Mux(valid_x ,absVal_new.asUInt,0.U) 
-
-          val chunk_p   = (P_data >> (i.U * chunks_per_Product_bits)) & mask_p  // UInt(input_bits.W)
-          val scaled    = (absVal << 1) 
-          P_slices(i)   := Mux(i.U < x_elems_per_reg , chunk_p + scaled,chunk_p)
-
-        }
-
-        val packed = Wire(UInt(product_bitwidth.W))
-        var acc: UInt = 0.U
-
-        //Concat and Accumulate 
-        for (i <- 0 until maxParts) {
-          val shiftAmt = i.U * chunks_per_Product_bits
-          val shifted  = P_slices(i) << shiftAmt
-          acc = acc | shifted
-        }
-
-        packed := acc
-        Products(sync_mem_idx) :=  packed 
-      }   
-
-      cycleCount_1 := cycleCount_1 + 1.U      
+    cycleCount_1 := cycleCount_1 + 1.U      
 
     when(cycleCount_1 === block_rows_1) { 
         counter_1    := counter_1 + 1.U
@@ -1223,7 +841,7 @@ is(sGenerateRegFiles) {
     }
     // ------------- Sync Read Memory System ------------------ // 
   
-    when(counter_1 === blocks_in_Sync_mem_1 - 1.U && cycleCount_1 === (block_rows_1 )) { //4bits => 7 cycles delay   
+    when(counter_1 === blocks_in_Sync_mem_1 - 1.U && cycleCount_1 === (block_rows_1 )) { // 4bits => 7 cycles delay   
         Rin_cnt       := 0.U
         j_x           := j_x_start
         i_x           := i_x_start
@@ -1234,9 +852,6 @@ is(sGenerateRegFiles) {
         read_on_delay := false.B  
         delay         := true.B
         delay_counter := 0.U
-        stepCycle_2 := 0.U 
-
-        state            := sLoadW_and_sSelectAndAccumulate
 
         // ------------- Sync Read Memory System ------------------ //   
         counter_row := 0.U 
@@ -1244,6 +859,7 @@ is(sGenerateRegFiles) {
         offset_counter := 0.U   
         // ------------- Sync Read Memory System ------------------ // 
 
+        state            := sLoadW_and_sSelectAndAccumulate
     }       
        
     }
@@ -1253,12 +869,11 @@ is(sLoadW_and_sSelectAndAccumulate) {
     PC_loadW_and_Select := PC_loadW_and_Select + 1.U 
   }  
 
-  
   when(buffers_mode.reduce(_ || _)) { // Select and accumualte Phase 
 
-  val buff_index = select_buff_idx //Mux(buffers(0), 0.U, 1.U)
+  val buff_index = select_buff_idx 
 
-  if(params.DEBUG){  
+  if(params.DEBUG) {  
       PC_Select := PC_Select + 1.U 
   } 
 
@@ -1286,15 +901,13 @@ is(sLoadW_and_sSelectAndAccumulate) {
         offset_counter := 0.U
         counter_row    := counter_row + 1.U
       }.otherwise {
-        // offset_counter := offset_counter + 1.U
         offset_counter    := Mux(cycleCount_2 === x_elems_per_reg - 1.U ,offset_counter + 1.U,offset_counter)
-
       }
 
       // ------------- Sync Read Memory System ------------------ // 
-      val enable_read_w = READ_ON && (elements_counter === 0.U ) // (elements_counter === w_elems_per_chunk *totalSyncMems.U - totalSyncMems.U)
+      val enable_read_w = READ_ON && (elements_counter === 0.U ) 
 
-      val W_wire = Wire(Vec(buffers, Vec(totalSyncMems, UInt(64.W))))
+      val W_wire = Wire(Vec(buffers, Vec(totalSyncMems, UInt(params.DMA_bits.W))))
 
       for (b <- 0 until buffers) { 
         val valid_read = (buff_index === b.U) && enable_read_w
@@ -1313,7 +926,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
       // ------------- Sync Read Memory System ------------------ // 
 
  
-          val shiftAmt  = Log2(block_rows_2) // block_rows_2 = {1,2,64}
+          // val shiftAmt  = Log2(block_rows_2) // block_rows_2 = {1,2,64}
           val start_row = RegNext(counter_2 << shiftAmt) 
           val shift_blocks = Log2(blocks_in_Sync_mem_2)
           val shift_y      = Log2(total_blocks_per_y)
@@ -1331,9 +944,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
             // 1. Compute Global Indices for Weights & Activations
             // ---------------------------------------------
 
-            // mapping to 2D space  -- power of 2 optimizations --  (x_slice,blocks_in_Sync_mem) power of two 
+            // mapping to 2D space  
             val global_block_idx   =  sync_mem_idx.U * blocks_in_Sync_mem_2 + counter_2 
-            // val global_block_idx = (sync_mem_idx.U << shift_blocks) + counter_2
             val x_th_x_reg = global_block_idx  // & (total_blocks_per_y - 1.U) // TODO
             val y_th_x_reg =
               if (params.y_slice > 1)
@@ -1342,36 +954,21 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 0.U
              
             val x_th_real = x_th_x_reg + dirty_elems_x
-            //new -- for validation
-            // val valid_x = valid_inputs >= x_th_x_reg 
             val valid_x = valid_inputs > x_th_x_reg * inputs_per_reg   
    
             Valid_In_Vec(sync_mem_idx)  := valid_x 
-             
-            // // mapping to 2D space -- compute logic -- 
-            // val global_block_idx = sync_mem_idx.U * blocks_in_Sync_mem_2 + counter_2
-            // val x_th_x_reg       = global_block_idx % total_blocks_per_y
-            // val y_th_x_reg        = global_block_idx / total_blocks_per_y
-            
-            //Compute Logic 
-            // val w_idx       = x_th_x_reg * x_elems_per_reg + cycleCount_2
 
             //Mux and shift logic 
             val w_idx = Mux(x_elems_per_reg === 1.U, x_th_x_reg, x_th_x_reg << 1) + cycleCount_2
-            // val w_idx = (x_th_x_reg << x_shift) + cycleCount_2
-            val linear_w    = w_idx + dirty_elems_w(dirty_elems_w_counter_1) // Mux(dirty_elems_w(buff_index) === 0.U, 0.U ,dirty_elems_w(buff_index) - 1.U)
-
-            // //Computation loigc -- Version 1 
-            // val W_reg_Index = linear_w / w_elems_per_reg
-            // val w_offset    = linear_w % w_elems_per_reg 
+            val linear_w    = w_idx + dirty_elems_w(dirty_elems_w_counter_1) 
 
             // ------------- Sync Read Memory System ------------------ // 
-              Data_Vec(sync_mem_idx) := global_block_idx //RegNext( global_block_idx )
+              Data_Vec(sync_mem_idx) := global_block_idx 
             // ------------- Sync Read Memory System ------------------ // 
             
             val W_reg_Index = Wire(UInt(linear_w.getWidth.W))
             val w_offset    = Wire(UInt(log2Ceil(4).W))
-            val shift_amt   = Wire(UInt((w_offset.getWidth + 3).W)) // enough width
+            val shift_amt   = Wire(UInt((w_offset.getWidth + 3).W)) 
 
             when (w_elems_per_reg === 1.U) {
               W_reg_Index := linear_w
@@ -1387,34 +984,10 @@ is(sLoadW_and_sSelectAndAccumulate) {
               shift_amt   := linear_w(1, 0) << 1  // 2-bit weights
             }
 
-            // // // Apply precomputed shift/mask -- version 4 W
-            // val W_reg_Index = linear_w >> shift_amt_w
-            // val w_offset    = linear_w & w_mask
-
-            // ---------------------------------------------
-            // 2. Extract Weight (W_reg) Value and Sign-Extend
-            // ---------------------------------------------
-
-            // //Compute 
-            // val shift_amt = w_offset * weight_bits
-
-            // Mux and shift 
-            // val shift_amt = Wire(UInt((w_offset.getWidth + 3).W))
-            // shift_amt := Mux( w_elems_per_reg === 4.U , w_offset << 1,   // 2-bit weights
-            //             Mux(w_elems_per_reg === 2.U, w_offset << 2,   // 4-bit weights
-            //                 w_offset << 3))    
-
-            // val shift_amt   = w_offset << shift_amt_w_new   
-
-            // val shifted   = W_reg(0)(W_reg_Index)(buff_index).asUInt  >> shift_amt //debug -- see 
             val shifted   = shift_amt
             
-            // W_debug_2(sync_mem_idx) := RegNext(W_reg(0)(W_reg_Index)(buff_index).asUInt)
-
-
             //Stage 1  Outputs 
             xThXRegVec(sync_mem_idx) := RegNext(x_th_real) 
-            // W_off_Vec(sync_mem_idx)  := w_offset
             yThXRegVec(sync_mem_idx) := RegNext(y_th_x_reg)
             shiftedVec(sync_mem_idx) := shifted
             WRegIdxdVec(sync_mem_idx) := W_reg_Index
@@ -1427,22 +1000,10 @@ is(sLoadW_and_sSelectAndAccumulate) {
   
           for (sync_mem_idx <- 0 until totalSyncMems) {
 
-          // ------------- Sync Read Memory System ------------------ // 
-
-                 //new new idea 
                  val W_reg_Index =  WRegIdxdVec(sync_mem_idx)
 
-                //  //computation version
-                // val wrapped = W_reg_Index % N.U 
-                //  val bank_w       = wrapped / bankSize.U
-                //  val byte_index = wrapped % bankSize.U
-
-                 //optimized version (power of 2)
-                //  val wrapped = W_reg_Index(log2Ceil(N)-1, 0)
-                //  val bank_w     = wrapped >> 3       // wrapped / 8
-                //  val byte_index = wrapped(2, 0)      // wrapped % 8, lower 3 bits
-
               //--------------------------------- new code 
+              //version - 1 
               val S = bankSize.U
               val B = totalSyncMems.U
 
@@ -1450,10 +1011,12 @@ is(sLoadW_and_sSelectAndAccumulate) {
               
               // x_th_x_reg is your linear element index
               val chunkIdx    = W_reg_Index / S
-              val bank_w     = (chunkIdx / rows_used_per_bank) % B
+              val bank_w_raw     = (chunkIdx / rows_used_per_bank) % B
+              val bank_w = bank_w_raw(log2Ceil(totalSyncMems) - 1, 0)
               val row_in_bank = chunkIdx % rows_used_per_bank
               val byte_index  = W_reg_Index % S
 
+              //version - 2 
 
                               // // group-per-bank
                               // val S = bankSize.U                 // elems per row
@@ -1468,39 +1031,15 @@ is(sLoadW_and_sSelectAndAccumulate) {
                               // val byte_index  = posInBank % S
               //--------------------------------- new code 
 
-
-                  // idea - 1 
-                  // global_block_idx points to the base index
-                  // val base_idx     = Data_Vec(sync_mem_idx)
-                  // val global_block_idx = base_idx * x_elems_per_reg + cycleCount_2_reg
-                  // val bank_w   = (global_block_idx / w_elems_per_chunk) % totalSyncMems.U
-                  // val row_w    = global_block_idx / (totalSyncMems.U * w_elems_per_chunk)
-                  // val offset_w = global_block_idx % w_elems_per_chunk
-                  // // position inside the 64-bit word
-                  // val offset_in_word = offset_w % w_elems_per_chunk 
-                  // val byte_index     = offset_in_word 
-
-                  
-                // idea - 2 
-                // val global_block_idx = Data_Vec(sync_mem_idx)
-                // val bank_w = (global_block_idx / w_elems_per_chunk) % totalSyncMems.U
-                // // val row_w = global_block_idx / (totalSyncMems * w_elems_per_chunk).U
-                // val offset_w = global_block_idx % w_elems_per_chunk
-                // val offset_in_word = global_block_idx % w_elems_per_chunk  // 0..elems_per_word-1
-                // val byte_index = offset_in_word * weight_bits / 8.U  // 0..7
-  
-                val data_64 =  W_wire(buff_index)(bank_w) // W_vals(bank_w) 
-                val bytes_8 = VecInit(Seq.tabulate(64 / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
+                val data_64 =  W_wire(buff_index)(bank_w) 
+                val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
                 val W_value = bytes_8(byte_index)  
-                // W_debug(sync_mem_idx) := W_value //debug -- see 
                 val shift_amt   = shiftedVec(sync_mem_idx) 
 
             // ------------- Sync Read Memory System ------------------ // 
 
             //Input from previues stages  
             val shiftedReg =  W_value >> shift_amt 
-            //  val shiftedReg =  shiftedVec(sync_mem_idx) //debug -- see 
-
             val weight_Sint_part = Wire(SInt(params.WBitWidth.W)) // adjust width as needed
             weight_Sint_part := 0.S  // default initialization to avoid uninitialized error
 
@@ -1529,7 +1068,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
             // 4. Extract Activation and Compute Product Sign
             // ---------------------------------------------
 
-            val w_reg_valid_temp =  (abs_weight_uint =/= 0.U)  &&  Valid_In_Vec(sync_mem_idx) //  && valid_weights(buff_index) >  W_reg_Index//NEW
+            val w_reg_valid_temp =  (abs_weight_uint =/= 0.U)  &&  Valid_In_Vec(sync_mem_idx)
 
             //Stage 2  Outputs  (all used in next satge as input )
             weight_Sint_part_Reg(sync_mem_idx) := weight_Sint_part
@@ -1555,22 +1094,9 @@ is(sLoadW_and_sSelectAndAccumulate) {
             val elemOffset       = elemOffset_Reg(sync_mem_idx)  
             val w_reg_valid_temp = w_reg_valid_temp_Reg(sync_mem_idx) 
 
-
-            // ------------- Sync Read Memory System ------------------ // 
-
-            //--version 1 
-            // val data_64 = X_vals(sync_mem_idx)
-            // val bytes = VecInit(Seq.tabulate(64 / params.XBitWidth)(i => data_64((i + 1) *  params.XBitWidth - 1, i *  params.XBitWidth)))
-            // val data = bytes(offset_counter_delay) 
-            
-            //--version 2
-            //computation version
-            // val wrapped     = x_th_x_reg % N_in.U 
-            // val bank_in     = wrapped / bankSize_in.U
-            // val byte_index  = wrapped % bankSize_in.U     
-
-
               //--------------------------------- new code 
+              //version - 1 
+
               val S = bankSize_in.U
               val B = totalSyncMems.U
 
@@ -1583,6 +1109,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
               val byte_index  = x_th_x_reg % S
 
 
+              //version - 2 
 
                 // // group-per-bank
                 // val S = bankSize_in.U                 // elems per row
@@ -1604,7 +1131,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
             // ------------- Sync Read Memory System ------------------ // 
 
             val extender = chunkExtenders(sync_mem_idx)(1)
-            extender.io.data       := data  //X_reg(y_th_x_reg)(x_th_x_reg).asUInt
+            extender.io.data       := data 
             extender.io.input_bits := input_bits
             extender.io.idx        := elemOffset
             val sign_X_reg_part = extender.io.out
@@ -1630,11 +1157,9 @@ is(sLoadW_and_sSelectAndAccumulate) {
             // ---------------------------------------------
 
             val enable_read        = READ_ON && w_reg_valid_temp
-            // val enable_read           = read_on_delay && w_reg_valid_temp
-
             val finalAddressInBRAM = row_idx
 
-            Products(sync_mem_idx) := temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read) //Mux(enable_read, temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read),0.U)
+            Products(sync_mem_idx) := temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read) 
             Sign(sync_mem_idx)     := RegNext(product_sign === 0.U)
 
             elemOffVec(sync_mem_idx)  := RegNext(elemOffset)
@@ -1651,14 +1176,9 @@ is(sLoadW_and_sSelectAndAccumulate) {
             cycleCount_2 := Mux(cycleCount_2 === x_elems_per_reg - 1.U , 0.U ,cycleCount_2 + 1.U) 
             counter_2    := Mux(cycleCount_2 === x_elems_per_reg - 1.U ,counter_2 + 1.U,counter_2)
             Done         := Done || (cycleCount_2 === x_elems_per_reg - 1.U  && counter_2 === blocks_in_Sync_mem_2 - 1.U)
-            // READ_ON      := !(cycleCount_2 === x_elems_per_reg - 1.U  && counter_2 === blocks_in_Sync_mem_2 - 1.U) //new 
           }
 
-          // READ_ON := !Done  
-          
-
-
-          when(!delay && !Done_acc ) { // Accumulate values ( delay for first value only 1 cycle delay )  //&& stepCycle_2  === 0.U
+          when(!delay && !Done_acc ) { // Accumulate values ( delay for first value only 1 cycle delay )  
             
             // ACCUMULATOR -- version 2 
             val groupSize = totalSyncMems / params.y_slice
@@ -1714,65 +1234,12 @@ is(sLoadW_and_sSelectAndAccumulate) {
               // Reduce with known SInt type
               signedValues.reduce(_ + _)
             }) 
-
-
-
-          // // Recursive balanced adder tree function
-          // def adderTree(values: Seq[SInt]): SInt = {
-          //   if (values.length == 1) values.head
-          //   else {
-          //     val sums = values.grouped(2).map {
-          //       case Seq(a, b) => a + b
-          //       case Seq(a)    => a
-          //     }.toSeq
-          //     adderTree(sums)
-          //   }
-          // }
-
-          // // Example usage for accum vector
-          // val accum = VecInit((0 until params.y_slice).map { y =>
-          //   val offset_accum = y * groupSize
-
-          //   // Collect signed values
-          //   val signedValues: Seq[SInt] = (0 until groupSize).map { value_idx =>
-          //     val product_idx     = offset_accum + value_idx
-          //     val offset          = elemOffVec(product_idx)
-          //     val w_reg_valid_tmp = w_reg_valid(product_idx)
-
-          //     val valid_read = Mux(
-          //       w_reg_valid_tmp,
-          //       Products(product_idx),
-          //       0.U(Products(product_idx).getWidth.W)
-          //     )
-
-          //     val readDataVec_part = (valid_read >> (offset * chunks_per_Product_bits)) & mask_p
-
-          //     val unsigned_clean = Mux1H(Seq(
-          //       (chunks_per_Product_bits === 12.U) -> readDataVec_part(11, 0),
-          //       (chunks_per_Product_bits === 16.U) -> readDataVec_part(15, 0),
-          //       (chunks_per_Product_bits === 18.U) -> readDataVec_part(17, 0),
-          //       (chunks_per_Product_bits === 20.U) -> readDataVec_part(19, 0),
-          //       (chunks_per_Product_bits === 24.U) -> readDataVec_part(23, 0)
-          //     ))
-
-          //     val readDataVec_part_sign = unsigned_clean.zext.asSInt
-
-          //     // Signed accumulation with conditional sign adjustment
-          //     Mux(Sign(product_idx),
-          //         readDataVec_part_sign - sum(product_idx),
-          //         -readDataVec_part_sign - sum(product_idx))
-          //   }
-
-          //   // Use balanced adder tree for accumulation
-          //   adderTree(signedValues)
-          // })
      
             for (y <- 0 until params.y_slice) {
-              O_reg(0)(y)(w_idx - 0.U) :=  (O_reg(0)(y)(w_idx - 0.U) +  accum(y))  //+xThXRegVec(y).asSInt // + X_DATA.asSInt + W_DATA.asSInt// RegNext(  ) //+ W_debug(0).asSInt + W_debug(1).asSInt + W_debug_2(0).asSInt + W_debug_2(1).asSInt
+              O_reg(0)(y)(w_idx - 0.U) :=  (O_reg(0)(y)(w_idx - 0.U) +  accum(y))
             }
             
-            // Done_acc := RegNext(Done) 
-            Done_acc := RegNext(RegNext(RegNext(Done))) //NEW_2
+           Done_acc := RegNext(RegNext(RegNext(Done))) 
 
         }  
 
@@ -1802,8 +1269,6 @@ is(sLoadW_and_sSelectAndAccumulate) {
           delay         := true.B
           delay_counter := 0.U
 
-          // dirty_elems_w(dirty_elems_w_counter_1) := 0.U
-          // dirty_elems_w_counter_1 := dirty_elems_w_counter_1 + 1.U 
           dirty_elems_w_counter_1 := Mux(dirty_elems_w_counter_1 === 2.U, 0.U, dirty_elems_w_counter_1 + 1.U)
 
 
@@ -1829,8 +1294,6 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 val mul1_temp = i_x * cin_reg
                 val mul2_temp = XS_temp * x_elems_per_reg
 
-                // i_w           := i_w_start + mul2_temp
-                // i_w_start     := i_w_start + mul2_temp
                 // --------------------------------------
                 i_w           := i_w_start + step_new 
                 i_w_start     := i_w_start + step_new 
@@ -1839,21 +1302,16 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
 
                 XS            := XS_temp
-                // X_reg         := VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(max_x_regs)(0.S(params.XBitWidth.W)))))
                 dma_counter_a := 0.U
                 dma_counter_d := 0.U
                 mul2          := mul2_temp
                 mul1          := mul1_temp
 
                 //before load X
-                val bit_offset_in_byte = ((mul1_temp + j_x) * input_bits) & (params.XBitWidth.U - 1.U) //( ((i_x * cin_reg) + j_x) * input_bits) %  params.XBitWidth.U
-                val skipInFirstByte =bit_offset_in_byte / input_bits  //Mux(input_bits === 4.U, bit_offset_in_byte >> 2, bit_offset_in_byte >> 3)  
-                // dirty_elems_x          := skipInFirstByte
-
-                //++
-                // val elems_per_word    = Mux(input_bits === 4.U, params.XBitWidth.U >> 2, params.XBitWidth.U >> 3)
+                val bit_offset_in_byte = ((mul1_temp + j_x) * input_bits) & (params.XBitWidth.U - 1.U) 
+                val skipInFirstByte =bit_offset_in_byte / input_bits  
                 val elems_per_word = params.XBitWidth.U / input_bits
-                all_available_elems_x := (XS * elems_per_word).min(cin_reg - j_x)  //( XS * (params.XBitWidth.U/input_bits )).min(cin_reg - j_x) 
+                all_available_elems_x := (XS * elems_per_word).min(cin_reg - j_x)  
                 j_x_temp              := j_x
 
                 //new
@@ -1869,7 +1327,6 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 chunkInfoModule_D.io.mul2             := mul2_temp
                 chunkInfoModule_D.io.input_bits       := input_bits 
                 chunkInfoModule_D.io.max_bits         := params.XBitWidth.U
-
 
                 //output 
                 bytes_to_read         :=  chunkInfoModule_D.io.bytes_to_read 
@@ -1909,20 +1366,28 @@ is(sStoreOutput) {
       when(dma_send && !dma.io.busy && !lock) { //send request to DMA in A Channel 
         dma.io.mode := true.B   
       
-      //NO Scale   
-      val data_chunk = (0 until elems_per_chunk).foldLeft(0.U(64.W)) { (acc, i) =>
-           acc | Mux( i.U < R_elems_per_chunk,
-            O_reg(0)(Rin_cnt)(dma_counter_a + i.U).asUInt << ((i.U + done_elems_in_block) * params.OutBitWidth.U),
-           0.U(64.W)
-          )
-      }
 
+      if(params.SCALE) { 
 
-       //YES Scale   
-      //  val scaleModule = Module(new Scale_Vector) 
-      //  val dataVector = VecInit((0 until elems_per_chunk).map(i => Mux(i.U < R_elems_per_chunk, O_reg(0)(Rin_cnt)(dma_counter_a + i.U), 0.S(64.W))))
-      //  scaleModule.io.inVector := dataVector 
-      //  scaleModule.io.scale    := scale 
+       val scaleModule = Module(new Scale_Vector) 
+       val dataVector = VecInit((0 until elems_per_chunk).map(i => Mux(i.U < R_elems_per_chunk, O_reg(0)(Rin_cnt)(dma_counter_a + i.U), 0.S(params.DMA_bits.W))))
+       scaleModule.io.inVector := dataVector 
+       scaleModule.io.scale    := scale 
+
+       dma.io.writeData := scaleModule.io.out
+
+      } else {  //NO Scale  
+
+        val data_chunk = (0 until elems_per_chunk).foldLeft(0.U(params.DMA_bits.W)) { (acc, i) =>
+            acc | Mux( i.U < R_elems_per_chunk,
+              O_reg(0)(Rin_cnt)(dma_counter_a + i.U).asUInt << ((i.U + done_elems_in_block) * params.OutBitWidth.U),
+            0.U(params.DMA_bits.W)
+            )
+        }
+
+        dma.io.writeData :=  data_chunk   
+     }
+
     
         // Option 2: Building the mask per byte lane (define beatBytes as total byte lanes in the beat)
         val beatBytes = 8  // Total number of byte lanes in a 64-bit word
@@ -1930,9 +1395,6 @@ is(sStoreOutput) {
         val startByte = done_elems_in_block * bytesPerElem
         val endByte   = startByte + (R_elems_per_chunk * bytesPerElem) //R_elems_per_chunk
         dma.io.mask := Cat((0 until beatBytes).map { i => (i.U >= startByte) && (i.U < endByte) }.reverse)
-
-        // dma.io.writeData := scaleModule.io.out  // YES SCALE 
-           dma.io.writeData :=  data_chunk        // NO Scale  
 
         dma.io.addr   := chunk_address
         dma.io.valid  := true.B
@@ -1975,11 +1437,7 @@ is(sStoreOutput) {
             done_elems_in_block := 0.U
             loops_cnt := 0.U 
 
-         }.otherwise{
-            // === NEW/CHANGED RESET LOGIC ===
-            // Reset and reinitialize the X-loading state when moving to the next loop (next set of Rin rows).
-            // Without resetting the X-related counters/memory-read state the next Rin may use stale/empty X_vals,
-            // producing zeros on subsequent Rin rows.
+         }.otherwise{         
             loops_cnt     := loops_cnt + 1.U
             dma_send      := true.B
             dma_resp      := true.B
@@ -1988,23 +1446,20 @@ is(sStoreOutput) {
 
             // Reset Rin/X indexing so the next group of Rin rows reload X from memory afresh.
             Rin_cnt       := 0.U
-
             j_x           := 0.U
             j_x_start     := 0.U
             j_x_temp      := 0.U
+
             // reset the counters used by the sync-read state machine
             counter_row   := 0.U
             counter_mem   := 0.U
             offset_counter := 0.U
             cycleCount_1  := 0.U
             counter_1     := 0.U
+
             // clear Products & valid flags used during generation
             Products.foreach(_ := 0.U)
             valid_inputs := 0.U
-            // clear X_vals to avoid using stale values in the transition cycle (helps simulation/debugging)
-            for (i <- 0 until totalSyncMems) {
-              X_vals(i) := 0.U
-            }
 
             val XS_temp = Mux(cin_reg >= x_slice_input_reg,x_slice_input_reg,cin_reg)
             XS := XS_temp
@@ -2023,10 +1478,7 @@ is(sStoreOutput) {
             // go to LoadX
             state := sLoadX
             valid_inputs := 0.U 
-
             val clamped        = Mux(cin_reg >= clmp, clmp, cin_reg) 
-
-
             val mul1_temp = i_x * cin_reg
             val mul2_temp = XS_temp * x_elems_per_reg 
 
@@ -2058,10 +1510,9 @@ is(sStoreOutput) {
 
                 // --- DIRTY INPUT ELEMENTS 
                 val row_bits = cin_reg * input_bits * YS  // Total bits in one row
-                val chunk_bits = params.DMA_bits.U  // Total bits in one chunk (e.g., 64 bits)
 
                 // Calculate dirty bits in the last chunk
-                val dirty_bits = row_bits % chunk_bits
+                val dirty_bits = row_bits % params.DMA_bits.U
                 val dirty_elements = dirty_bits / input_bits
                 dirty_elems_x := dirty_elements
 
@@ -2073,9 +1524,6 @@ is(sStoreOutput) {
                 // val skip_elems = linear_index_dirty % elems_per_chunk
                 // dirty_elems_w(dirty_elems_w_counter_2) := skip_elems
                 // --- DIRTY INPUT ELEMENTS 
-
-
-
 
          }
 
@@ -2153,7 +1601,6 @@ is(sStoreOutput) {
         val dma_counter_a_next = dma_counter_a + elements_to_read
 
         //output
-        // elements_to_read := min(chunkInfoModule_A.io.elements_to_read, all_available_elems - dma_counter_a)
         elements_to_read := Mux(chunkInfoModule_A.io.elements_to_read <= (all_available_elems - dma_counter_a_next), chunkInfoModule_A.io.elements_to_read, all_available_elems - dma_counter_a_next)
         chunk_addres     := chunkInfoModule_A.io.chunk_address
       }
@@ -2161,17 +1608,8 @@ is(sStoreOutput) {
       when(dma.io.d_valid) { // response from DMA in D channel   
         val i_w_temp_next      = i_w_temp + elements_to_read_temp
         val dma_counter_d_next = dma_counter_d + elements_to_read_temp
-        // val dma_counter_d_next = (dma_counter_d + elements_to_read)(dma_counter_d.getWidth - 1, 0)
+        val data  = dma.io.readData  
 
-        val data  = dma.io.readData  // UInt(64.W)
-        // val bytes = VecInit(Seq.tabulate(64 / params.WBitWidth)(i => data((i + 1) * params.WBitWidth - 1, i * params.WBitWidth).asSInt))
-        
-        // for (i <- 0 until 64 / params.WBitWidth) {
-        //   when(i.U < bytes_to_read ) {
-        //     W_reg(f_idx)(reg_idx_start + i.U)(buff_index) := bytes(offset_in_chunk_2 + i.U)
-        //   }
-        // }
-        
         dma_counter_d := dma_counter_d_next
         dma_resp      := dma_counter_d < all_available_elems - elements_to_read_temp
         i_w_temp      := i_w_temp_next
@@ -2189,15 +1627,10 @@ is(sStoreOutput) {
         bytes_to_read         :=  chunkInfoModule_D.io.bytes_to_read 
         reg_idx_start         :=  chunkInfoModule_D.io.reg_idx_start
         offset_in_chunk_2     := chunkInfoModule_D.io.offset_in_chunk_1
-        // elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
         elements_to_read_temp := Mux(chunkInfoModule_D.io.elements_to_read_temp <= (all_available_elems - dma_counter_d_next), chunkInfoModule_D.io.elements_to_read_temp, all_available_elems - dma_counter_d_next)
-
-
 
         // ------------- Sync Read Memory System ------------------ // 
        valid_weights(buff_index) := valid_weights(buff_index) +  bytes_to_read //elements_to_read_temp 
-
-      //  W_DATA := data 
 
         for (b <- 0 until buffers) {
           for (i <- 0 until totalSyncMems) {
@@ -2332,7 +1765,7 @@ is(sStoreOutput) {
               XS_W := XS_W_temp 
               ///next W elements 
 
-              load_w_buff_idx := load_w_buff_idx + 1.U //Mux( load_w_buff_idx === (buffers - 1).U ,load_w_buff_idx + 1.U,0.U)
+              load_w_buff_idx := load_w_buff_idx + 1.U
               w_count         := w_count + 1.U
       
               //before load W
@@ -2344,7 +1777,6 @@ is(sStoreOutput) {
 
               val bit_offset_in_byte = (((temp_mul1) + i_w_start) * weight_bits) & (params.WBitWidth.U - 1.U)
               val skipInFirstByte    = bit_offset_in_byte / weight_bits 
-              // dirty_elems_w(load_w_buff_idx + 1.U)     := skipInFirstByte //fix this  //load_w_buff_idx + 1.U
               val all_available_elems_next = (temp_mul2).min(cin_reg - i_w_start) 
               all_available_elems    := all_available_elems_next 
               i_w_temp               := i_w_start
@@ -2367,7 +1799,6 @@ is(sStoreOutput) {
               chunkInfoModule_A.io.mul1             := temp_mul1
               chunkInfoModule_A.io.mul2             := temp_mul2
 
-              // elements_to_read          := chunkInfoModule_A.io.elements_to_read
               elements_to_read := Mux(chunkInfoModule_A.io.elements_to_read <= all_available_elems_next, chunkInfoModule_A.io.elements_to_read, all_available_elems_next)
               chunk_addres              := chunkInfoModule_A.io.chunk_address
 
@@ -2381,12 +1812,10 @@ is(sStoreOutput) {
               chunkInfoModule_D.io.input_bits       := weight_bits 
               chunkInfoModule_D.io.max_bits         := params.WBitWidth.U
 
-
               //output 
               bytes_to_read         := chunkInfoModule_D.io.bytes_to_read
               reg_idx_start         := chunkInfoModule_D.io.reg_idx_start
               offset_in_chunk_2     := chunkInfoModule_D.io.offset_in_chunk_1
-              // elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
               elements_to_read_temp := Mux(chunkInfoModule_D.io.elements_to_read_temp <= all_available_elems_next , chunkInfoModule_D.io.elements_to_read_temp, all_available_elems_next)
 
 
