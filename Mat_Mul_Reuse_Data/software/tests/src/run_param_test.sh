@@ -1,64 +1,122 @@
 #!/bin/bash
 # ------------------------------------------------------------------
-# run_param_test.sh
-# Automates changing RIN_MAX / CIN_MAX / COUT_MAX, building, and running in Verilator
-# Usage:
-#   ./run_param_test.sh <RIN_MAX> <CIN_MAX> <COUT_MAX> [debug]
-# Example:
-#   ./run_param_test.sh 1 9 3
-#   ./run_param_test.sh 2 7 7 debug
+# run_param_test.sh   (PORTABLE VERSION)
+# Works on any machine as long as Chipyard directory structure
+# remains the same. All paths auto-detected from script location.
 # ------------------------------------------------------------------
 
-set -e  # Stop if any command fails
+set -e
 
-# --- Paths ---
-SRC_DIR="$HOME/Documents/Chipyard/kostis_latest/generators/Mat_Mul_Data_Reuse/software/tests/src"
-SIM_DIR="$HOME/Documents/Chipyard/kostis_latest/sims/verilator"
+# ----------- BASE PATHS (auto-detected) ----------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CHIPYARD_DIR="$(realpath "$SCRIPT_DIR/../../../../..")"
+
+GEN_DIR="$CHIPYARD_DIR/generators/Mat_Mul_Data_Reuse"
+SRC_DIR="$GEN_DIR/software/tests/src"
+SIM_DIR="$CHIPYARD_DIR/sims/verilator"
+SCALA_CFG="$GEN_DIR/src/main/scala/Config.scala"
+
 C_FILE="$SRC_DIR/Linear-sw.c"
-BINARY="$SRC_DIR/Linear-sw.riscv"    
+BINARY="$SRC_DIR/Linear-sw.riscv"
 
-# --- Inputs ---
-if [ $# -lt 3 ] || [ $# -gt 4 ]; then
-  echo "Usage: $0 <RIN_MAX> <CIN_MAX> <COUT_MAX> [debug]"
+# ----------- INPUTS -----------
+if [ $# -lt 3 ] || [ $# -gt 6 ]; then
+  echo "Usage: $0 <RIN_MAX> <CIN_MAX> <COUT_MAX> [IN_BITS] [W_BITS] [debug]"
+  echo "  IN_BITS allowed values: 16, 8 (default:16)"
+  echo "  W_BITS allowed values: 8, 4, 2 (default:8)"
   exit 1
 fi
 
 RIN=$1
 CIN=$2
 COUT=$3
-DEBUG_FLAG=$4
 
-echo "-------------------------------------------"
-echo ">>> Updating Linear-sw.c: RIN_MAX=$RIN, CIN_MAX=$CIN, COUT_MAX=$COUT"
-echo "-------------------------------------------"
+# Optional parameters with defaults
+IN_BITS=${4:-16}
+W_BITS=${5:-8}
+DEBUG_FLAG=$6
 
-# --- Edit defines in C file ---
-if grep -q "^#define[[:space:]]\+RIN_MAX" "$C_FILE"; then
-  sed -i "s/^#define[[:space:]]\+RIN_MAX[[:space:]]\+[0-9]\+/#define RIN_MAX $RIN/" "$C_FILE"
-else
-  echo "#define RIN_MAX $RIN" >> "$C_FILE"
+# ----------- VALIDATE OPTIONAL PARAMETERS -----------
+if [[ "$IN_BITS" != "16" && "$IN_BITS" != "8" ]]; then
+  echo "❌ ERROR: IN_BITS must be 16 or 8"
+  exit 1
 fi
 
-sed -i "s/^#define[[:space:]]\+CIN_MAX[[:space:]]\+[0-9]\+/#define CIN_MAX $CIN/" "$C_FILE"
-sed -i "s/^#define[[:space:]]\+COUT_MAX[[:space:]]\+[0-9]\+/#define COUT_MAX $COUT/" "$C_FILE"
+if [[ "$W_BITS" != "8" && "$W_BITS" != "4" && "$W_BITS" != "2" ]]; then
+  echo "❌ ERROR: W_BITS must be 8, 4, or 2"
+  exit 1
+fi
 
-# --- Rebuild the binary ---
+# ----------- SAFE EXTRACTION FROM SCALA FILE -----------
+extract_number() {
+  grep -E "$1[[:space:]]*=" "$SCALA_CFG" | sed -E "s/.*$1[[:space:]]*=[[:space:]]*([0-9]+).*/\1/"
+}
+
+XS=$(extract_number "x_slice")
+YS=$(extract_number "y_slice")
+RF=$(extract_number "Mem_row_factor")
+
+if [[ -z "$XS" || -z "$YS" || -z "$RF" ]]; then
+  echo "❌ ERROR: Could not extract all HW parameters."
+  exit 1
+fi
+
+# ----------- UPDATE C DEFINES -----------
+update_define() {
+  local name=$1
+  local value=$2
+  local file=$3
+
+  if grep -q "^#define $name" "$file"; then
+    sed -i "s/^#define $name.*/#define $name $value/" "$file"
+  else
+    echo "#define $name $value" >> "$file"
+  fi
+}
+
+update_define "RIN_MAX"  "$RIN"  "$C_FILE"
+update_define "CIN_MAX"  "$CIN"  "$C_FILE"
+update_define "COUT_MAX" "$COUT" "$C_FILE"
+
+update_define "XS" "$XS" "$C_FILE"
+update_define "YS" "$YS" "$C_FILE"
+update_define "RF" "$RF" "$C_FILE"
+
+# BITWIDTH of elements from optional arguments
+update_define "IN_BITS" "$IN_BITS" "$C_FILE"
+update_define "W_BITS" "$W_BITS" "$C_FILE"
+
+# ----------- BUILD SOFTWARE -----------
 cd "$SRC_DIR"
-echo ">>> Building baremetal binary..."
 ./build.sh baremetal
 
-# --- Run Verilator simulation ---
+# ----------- PREPARE LOG FILE -----------
+BASE_LOG_DIR="$SRC_DIR/Log"
+SUB_LOG_DIR="$BASE_LOG_DIR/XS=${XS}_YS=${YS}_RF=${RF}"
+mkdir -p "$SUB_LOG_DIR"
+LOG_FILE="$SUB_LOG_DIR/RIN=${RIN}_CIN=${CIN}_COUT=${COUT}_INBITS=${IN_BITS}_WBITS=${W_BITS}.txt"
+
+# ----------- RUN VERILATOR -----------
 cd "$SIM_DIR"
 
+echo "-------------------------------------------"
 if [ "$DEBUG_FLAG" == "debug" ]; then
-  echo ">>> Running Verilator simulation in DEBUG mode..."
-  make CONFIG=DataReuseRocketConfig run-binary-debug BINARY="$BINARY"
+  echo ">>> Running Verilator simulation (DEBUG)..."
+  make CONFIG=DataReuseRocketConfig run-binary-debug BINARY="$BINARY" | tee "$LOG_FILE"
 else
-  echo ">>> Running Verilator simulation (no debug)..."
-  make CONFIG=DataReuseRocketConfig # BINARY="$BINARY"
-  ./simulator-chipyard.harness-DataReuseRocketConfig "$BINARY" # /home/riscv/Documents/Chipyard/kostis_latest/generators/Mat_Mul_Data_Reuse/software/tests/src/Linear-sw.riscv 
+  echo ">>> Running Verilator simulation..."
+  make CONFIG=DataReuseRocketConfig | tee "$LOG_FILE"
+  ./simulator-chipyard.harness-DataReuseRocketConfig "$BINARY" | tee -a "$LOG_FILE"
+fi
+echo "-------------------------------------------"
+
+echo "Log saved to $LOG_FILE"
+
+# ----------- CHECK TEST RESULT -----------
+if grep -q "PASS" "$LOG_FILE"; then
+  echo "TEST [PASS]" | tee -a "$LOG_FILE"
+else
+  echo "TEST [FAIL]" | tee -a "$LOG_FILE"
 fi
 
-echo "-------------------------------------------"
-echo "✅ Done! Simulation completed for RIN=$RIN, CIN=$CIN, COUT=$COUT (Mode: ${DEBUG_FLAG:-normal})"
-echo "-------------------------------------------"
+# echo "DONE (Mode: ${DEBUG_FLAG:-normal})"
