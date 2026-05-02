@@ -229,7 +229,7 @@ class KostisZCU106Config extends Config( // kostis thesis
   // new chipyard.config.WithUniformBusFrequencies(100) ++
   // new WithFPGAFrequency(100) ++
   // new WithZCU106Tweaks ++
-  // new Data_Reuse.WithDataReuseAccelerator ++ 
+  // new Data_Reuse.WithLUMAXAccelerator ++ 
 
   // /// ----- Rocket Cores ----- // 
   // // new freechips.rocketchip.rocket.WithNMedCores(1) ++   // Mid core 

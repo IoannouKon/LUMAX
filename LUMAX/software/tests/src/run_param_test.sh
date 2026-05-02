@@ -11,7 +11,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHIPYARD_DIR="$(realpath "$SCRIPT_DIR/../../../../..")"
 
-GEN_DIR="$CHIPYARD_DIR/generators/Mat_Mul_Data_Reuse"
+GEN_DIR="$CHIPYARD_DIR/generators/LUMAX"
 SRC_DIR="$GEN_DIR/software/tests/src"
 SIM_DIR="$CHIPYARD_DIR/sims/verilator"
 SCALA_CFG="$GEN_DIR/src/main/scala/Config.scala"
@@ -56,8 +56,19 @@ XS=$(extract_number "x_slice")
 YS=$(extract_number "y_slice")
 RF=$(extract_number "Mem_row_factor")
 
+extract_number() {
+  grep -E "^[[:space:]]*$1[[:space:]]*=[[:space:]]*[0-9]+" "$SCALA_CFG" \
+  | head -n1 \
+  | sed -E "s/.*=[[:space:]]*([0-9]+).*/\1/"
+}
+
 if [[ -z "$XS" || -z "$YS" || -z "$RF" ]]; then
-  echo "❌ ERROR: Could not extract all HW parameters."
+  echo "❌ ERROR: Missing HW parameters:"
+
+  [[ -z "$XS" ]] && echo "  - x_slice not found or empty"
+  [[ -z "$YS" ]] && echo "  - y_slice not found or empty"
+  [[ -z "$RF" ]] && echo "  - Mem_row_factor not found or empty"
+
   exit 1
 fi
 

@@ -1,11 +1,11 @@
-package chipyard //kostis thesis 
+package chipyard 
 
 import org.chipsalliance.cde.config.{Config}
 import freechips.rocketchip.diplomacy.{AsynchronousCrossing}
 import freechips.rocketchip.subsystem.{InCluster}
 
-class DataReuseRocketConfig extends Config(
-  new Data_Reuse.WithDataReuseAccelerator ++ 
+class LUMAXROcketConfig extends Config(
+  new LUMAX_PACKAGE.WithLUMAXAccelerator ++ 
   new freechips.rocketchip.subsystem.WithoutTLMonitors ++ // //speedup RTL simulation
 
   // new freechips.rocketchip.subsystem.WithNBigCores(1) ++  // Big Core 

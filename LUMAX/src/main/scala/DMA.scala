@@ -1,4 +1,4 @@
-package Data_Reuse
+package LUMAX_PACKAGE
 
 import chisel3._
 import chisel3.util._
@@ -7,12 +7,12 @@ import org.chipsalliance.cde.config.Parameters
 // import freechips.rocketchip.diplomacy.{LazyModule, LazyModuleImp, IdRange}
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
-import Data_Reuse.Data_Reuse_Config
+import LUMAX_PACKAGE.LUMAX_Config
 
 
 import freechips.rocketchip.diplomacy._
 
-class DmaModule(val params: DataReuseParams)(implicit p: Parameters) extends LazyModule {
+class DmaModule(val params: LUMAXParams)(implicit p: Parameters) extends LazyModule {
   val dmaIds = params.Dma_Ids
 
   val node = TLClientNode(Seq(TLMasterPortParameters.v1(Seq(

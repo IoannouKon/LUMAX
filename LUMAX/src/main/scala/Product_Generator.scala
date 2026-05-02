@@ -1,4 +1,4 @@
-package Data_Reuse
+package LUMAX_PACKAGE
 
 import chisel3._
 import chisel3.util._

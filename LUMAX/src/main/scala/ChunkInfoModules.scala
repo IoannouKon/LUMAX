@@ -1,5 +1,5 @@
 
-package Data_Reuse
+package LUMAX_PACKAGE
 
 import chisel3._
 import chisel3.util._
@@ -186,10 +186,10 @@ object ChunkUtils {
   }
 }
 
-import Data_Reuse.ChunkUtils._   // import your function from the object
-import Data_Reuse.Data_Reuse_Config
+import LUMAX_PACKAGE.ChunkUtils._   // import your function from the object
+import LUMAX_PACKAGE.LUMAX_Config
 
-class ChunkInfoModule_A(params: DataReuseParams, max_w_elems: Int) extends Module {
+class ChunkInfoModule_A(params: LUMAXParams, max_w_elems: Int) extends Module {
   val io = IO(new Bundle {
     val cin_reg           = Input(UInt((log2Ceil(params.Cin + 1).W)))
     val j_x               = Input(UInt((log2Ceil(params.Cin + 1).W)))
@@ -221,7 +221,7 @@ class ChunkInfoModule_A(params: DataReuseParams, max_w_elems: Int) extends Modul
   io.chunk_address := chunkAddress
 }
 
-class ChunkInfoModule_D(params: DataReuseParams, max_w_elems: Int, max_x_regs :Int) extends Module {
+class ChunkInfoModule_D(params: LUMAXParams, max_w_elems: Int, max_x_regs :Int) extends Module {
   val io = IO(new Bundle {
     val cin_reg           = Input(UInt((log2Ceil(params.Cin + 1).W)))
     val j_x_temp          = Input(UInt((log2Ceil(params.Cin + 1).W)))

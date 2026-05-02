@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-package Data_Reuse
+package LUMAX_PACKAGE
 
 import chisel3._
 import chisel3.util._
@@ -23,23 +23,23 @@ import freechips.rocketchip.tilelink.{TLBuffer, TLInwardNode, TLToAXI4}
 import chisel3.experimental._
 
 //my imports
-import Data_Reuse.ChunkUtils._   // import your function from the object
-import Data_Reuse.Data_Reuse_Config 
+import LUMAX_PACKAGE.ChunkUtils._   // import your function from the object
+import LUMAX_PACKAGE.LUMAX_Config 
 
-class DataReuseExample(opcodes: OpcodeSet, val params: DataReuseParams)
+class LUMAXExample(opcodes: OpcodeSet, val params: LUMAXParams)
   (implicit p: Parameters) extends LazyRoCC(opcodes = opcodes) {
 
-  override lazy val module = new DataReuseExampleModuleImpl(this)  
+  override lazy val module = new LUMAXExampleModuleImpl(this)  
 
-  val dma = LazyModule(new DmaModule(Data_Reuse_Config.Data_Reuse_Config))
+  val dma = LazyModule(new DmaModule(LUMAX_Config.LUMAX_Config))
 
   tlNode   := dma.node  // Connect the memory module to the accelerator’s TileLink node
 
 }
 
-class DataReuseExampleModuleImpl(outer: DataReuseExample)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) with HasCoreParameters {
+class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) with HasCoreParameters {
 
-  val params: DataReuseParams = outer.params
+  val params: LUMAXParams = outer.params
   val dma = outer.dma.module
 
   // ROCC interface
@@ -776,12 +776,8 @@ for (i <- 0 until totalSyncMems) {
       w_count       := 0.U 
       i_w_temp      := i_w
 
-      if(params.SimpleCache4x8) {  
-        state := Mux(input_bits === 4.U && weight_bits === 8.U, sLoadW_and_sSelectAndAccumulate, sGenerateRegFiles )
-      } else { 
-        state      := sGenerateRegFiles 
-        Products.foreach(_ := 0.U)
-      }
+      state      := sGenerateRegFiles 
+      Products.foreach(_ := 0.U)
     
     // ------------- Sync Read Memory System ------------------ // 
       counter_row := 0.U //TODO 
@@ -1731,17 +1727,17 @@ is(sStoreOutput) {
 
    
 
-class WithDataReuseAccelerator extends Config((site, here, up) => {
+class WithLUMAXAccelerator extends Config((site, here, up) => {
   case BuildRoCC => Seq(
     (p: Parameters) => {
       implicit val implicitParams: Parameters = p
-      implicit val valName: ValName = ValName("MatMul_Data_Reuse_example")
+      implicit val valName: ValName = ValName("MatMul_LUMAX_example")
 
-      // Pass fbus to DataReuseExample
+      // Pass fbus to LUMAXExample
       LazyModule(
-        new DataReuseExample(
+        new LUMAXExample(
           opcodes = OpcodeSet.all,            // Opcode used for the accelerator
-          params  = Data_Reuse_Config.Data_Reuse_Config  // Use the config from the LinearFilterConfig object
+          params  = LUMAX_Config.LUMAX_Config  // Use the config from the LinearFilterConfig object
         ) {
   
         }

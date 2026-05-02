@@ -150,7 +150,7 @@ lazy val chipyard = (project in file("generators/chipyard"))
     sha3, // On separate line to allow for cleaner tutorial-setup patches
     dsptools, rocket_dsp_utils,
     gemmini, icenet, tracegen, cva6, nvdla, sodor, ibex, fft_generator,
-    Mat_Mul_Data_Reuse, // Kostis Thesis
+    LUMAX, // Kostis Thesis
     constellation, mempress, barf, shuttle, caliptra_aes)
   .settings(libraryDependencies ++= rocketLibDeps.value)
   .settings(
@@ -230,7 +230,7 @@ lazy val gemmini = (project in file("generators/gemmini"))
   .settings(libraryDependencies ++= rocketLibDeps.value)
   .settings(commonSettings)
 
-lazy val Mat_Mul_Data_Reuse = (project in file("generators/Mat_Mul_Reuse_Data")) //Kostis Thesis
+lazy val LUMAX = (project in file("generators/LUMAX")) //Kostis Thesis
   .dependsOn(rocketchip)
   .settings(libraryDependencies ++= rocketLibDeps.value)
   .settings(commonSettings)

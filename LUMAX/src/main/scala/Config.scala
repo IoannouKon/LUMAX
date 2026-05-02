@@ -1,6 +1,6 @@
-package Data_Reuse
+package LUMAX_PACKAGE
 
-case class DataReuseParams(
+case class LUMAXParams(
   Rin:            Int,
   Cin:            Int,
   Cout:           Int,
@@ -18,18 +18,13 @@ case class DataReuseParams(
   SCALE:          Boolean,
   DEBUG:          Boolean,
   W_BUFFS:        Int,
-  SimpleCache4x4:  Boolean,
-  SimpleCache4x8:  Boolean,
   DMA_bits:       Int,
   Mem_row_factor : Int,
-  Row_factor  : Int 
-
-
 )
 
 // Create an object to hold your configuration
-object Data_Reuse_Config {
-  val Data_Reuse_Config = DataReuseParams(
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
 
     //Μax Matrix Dimesnions 
     Rin         = 1,  //Used Only for a Counter  (SAME for YS for now)
@@ -48,7 +43,8 @@ object Data_Reuse_Config {
     
     //Max Parallelism Paramters 
     y_slice     =  1,    // IMPORTANT Design parameter  MAX value
-    x_slice     =  4,   // IMPORTANT Design parameter  MAX value 
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
     
     //NOT USED (TODO)
     w_slice     = 1,
@@ -65,16 +61,9 @@ object Data_Reuse_Config {
     //Debug from performance counters 
     DEBUG =  true, // 1 or  0
 
-    // How many Load Buffer have ( Registers for now )
+    // How many Load Buffer 
     W_BUFFS =  2,
 
-    SimpleCache4x4 = false ,  //not used 
-    SimpleCache4x8 = false , 
-
-    Mem_row_factor = 8,
-    Row_factor     = 1,
-
- 
   )
 
 }

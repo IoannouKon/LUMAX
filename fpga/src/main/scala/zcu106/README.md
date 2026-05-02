@@ -146,7 +146,7 @@ Build without waveform debugging:
 make CONFIG=LUMAXROcketConfig
 
 #Enable Wavefroms Debug - Slower (first build binary)
-make CONFIG=LUMAXROcketConfig run-binary-debug BINARY=Chipyard/generators/LUMAX/software/tests/src/Linear-sw.riscv
+make CONFIG=LUMAXROcketConfig run-binary-debug BINARY=Chipyard/generators/Mat_Mul_Reuse_Data/software/tests/src/Linear-sw.riscv
 
 ```
 
@@ -160,14 +160,14 @@ make CONFIG=LUMAXROcketConfig run-binary-debug BINARY=Chipyard/generators/LUMAX/
 Navigate to the LUMAX software test source:
 
 ```bash
-cd chipyard/generators/LUMAX/software/tests/src
+cd chipyard/generators/Mat_Mul_Reuse_Data/software/tests/src
 ```
 
 Edit `Linear-sw.c` to:
 
 - Set **matrix dimensions**
 - Adjust **activation and weight bitwidths**
-- Match **hardware parameters** in `Linear-sw.c` with your LUMAX config in `LUMAX/src/scala/Configs.scala`
+- Match **hardware parameters** in `Linear-sw.c` with your LUMAX config in `Mat_Mul_Reuse_Data/src/scala/Configs.scala`
 
 Then compile:
 
@@ -238,7 +238,7 @@ This builds the FPGA bitstream for the LUMAX + RISC-V SoC design targeting ZCU10
 Navigate to the test software directory:
 
 ```bash
-cd chipyard/generators/LUMAX/software/tests/src
+cd chipyard/generators/Mat_Mul_Reuse_Data/software/tests/src
 ```
 
 Compile the Linux version of the test binary:
