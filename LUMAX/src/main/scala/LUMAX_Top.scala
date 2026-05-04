@@ -1013,11 +1013,12 @@ is(sLoadW_and_sSelectAndAccumulate) {
               val elemsPerCell = params.WBitWidth.U / weight_bits
               val elemsPerRow = S * elemsPerCell
               val g = blocks_in_Sync_mem
-              val offsetWidth = math.max(1, log2Ceil(params.WBitWidth / params.minWeightBits))
+              val maxElemsPerCell = params.WBitWidth / params.minWeightBits
+              val offsetWidth = math.max(1, log2Ceil(maxElemsPerCell))
               val shift_amt = shiftedVec(sync_mem_idx)
               val offset_id = Wire(UInt(offsetWidth.W))
 
-              // shift_amt encodes element offset within a cell: 4-bit -> offset * 4, 2-bit -> offset * 2
+              // weight_bits is expected to be 2/4/8 (minWeightBits=2); shift_amt encodes offset within a cell
               when(weight_bits === 8.U) {
                 offset_id := 0.U
               }.elsewhen(weight_bits === 4.U) {
@@ -1055,8 +1056,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
               //--------------------------------- new code 
 
                 val data_64 =  W_wire(buff_index)(bank_w) 
-                val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
-                val W_value = bytes_8(cell_index)  
+                val cells_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
+                val W_value = cells_8(cell_index)  
 
             // ------------- Sync Read Memory System ------------------ // 
 
