@@ -1010,7 +1010,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
               //version - 1 
               val S = bankSize.U
               val B = totalSyncMems.U
-              val elemsPerCell = params.WBitWidth.U / weight_bits
+              val elemsPerCell = Mux(weight_bits === 8.U, 1.U, Mux(weight_bits === 4.U, 2.U, 4.U))
               val elemsPerRow = S * elemsPerCell
               val g = blocks_in_Sync_mem
               val maxElemsPerCell = params.WBitWidth / params.minWeightBits
@@ -1026,9 +1026,10 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 offset_id := shift_amt >> 1
               }
 
-              val elemIndexWidth = W_reg_Index.getWidth + log2Ceil(maxElemsPerCell) + 1 // extra bit for offset addition
+              val elemIndexWidth = W_reg_Index.getWidth + log2Ceil(maxElemsPerCell) + 1 // max shift + offset addition
               val elemIndex = Wire(UInt(elemIndexWidth.W))
-              val elemIndexBase = W_reg_Index << Log2(elemsPerCell)
+              val elemsPerCellShift = Mux(weight_bits === 8.U, 0.U, Mux(weight_bits === 4.U, 1.U, 2.U))
+              val elemIndexBase = W_reg_Index << elemsPerCellShift
               elemIndex := elemIndexBase + offset_id
               val posInBank = elemIndex % g
               val bank_row = posInBank / elemsPerRow
