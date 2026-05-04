@@ -1016,23 +1016,23 @@ is(sLoadW_and_sSelectAndAccumulate) {
               val maxElemsPerCell = params.WBitWidth / params.minWeightBits
               val offsetWidth = math.max(1, log2Ceil(maxElemsPerCell))
               val offset_id = Wire(UInt(offsetWidth.W))
-              val shift_amt = shiftedVec(sync_mem_idx)
+              val shiftAmt = shiftedVec(sync_mem_idx) // used for offset_id derivation
               // weight_bits is expected to be 2/4/8 (minWeightBits=2); shift_amt encodes offset within a cell
               when(weight_bits === 8.U) {
                 offset_id := 0.U
               }.elsewhen(weight_bits === 4.U) {
-                offset_id := shift_amt >> 2
+                offset_id := shiftAmt >> 2
               }.otherwise { // weight_bits === 2.U
-                offset_id := shift_amt >> 1
+                offset_id := shiftAmt >> 1
               }
 
-              val elemIndexWidth = W_reg_Index.getWidth + log2Ceil(maxElemsPerCell) + 1 // maxElemsPerCell shift + extra bit for offset_id addition
+              val elemIndexWidth = W_reg_Index.getWidth + log2Ceil(maxElemsPerCell) + 1 // max elemsPerCellShift (0-2) + extra bit for offset_id addition
               val elemIndex = Wire(UInt(elemIndexWidth.W))
               val elemsPerCellShift = Mux(weight_bits === 8.U, 0.U, Mux(weight_bits === 4.U, 1.U, 2.U))
               val elemIndexBase = W_reg_Index << elemsPerCellShift
               elemIndex := elemIndexBase + offset_id
               val elemInBankGroup = elemIndex % blocksPerSyncMem
-              val bank_row = elemInBankGroup / elemsPerRow
+              val rowInBank = elemInBankGroup / elemsPerRow
               val inRow = elemInBankGroup % elemsPerRow
               val cellIndex = inRow / elemsPerCell
 
@@ -1060,7 +1060,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
             // ------------- Sync Read Memory System ------------------ // 
 
             //Input from previues stages  
-            val shiftedReg =  W_value >> shift_amt 
+            val shiftedReg =  W_value >> shiftAmt 
             val weight_Sint_part = Wire(SInt(params.WBitWidth.W)) // adjust width as needed
             weight_Sint_part := 0.S  // default initialization to avoid uninitialized error
 
