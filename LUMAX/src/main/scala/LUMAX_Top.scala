@@ -1027,18 +1027,15 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 offset_id := shift_amt >> 1
               }
 
-              val elemIndexWidth = W_reg_Index.getWidth + offsetWidth + 1
+              val elemIndexWidth = W_reg_Index.getWidth + log2Ceil(maxElemsPerCell) + 1
               val elemIndex = Wire(UInt(elemIndexWidth.W))
               elemIndex := W_reg_Index * elemsPerCell + offset_id
-              val bank_id = (elemIndex / g) % B
               val posInBank = elemIndex % g
               val bank_row = posInBank / elemsPerRow
               val inRow = posInBank % elemsPerRow
               val cell_id = inRow / elemsPerCell
 
-              val bank_w = bank_id(log2Ceil(totalSyncMems) - 1, 0)
-              val row_in_bank = bank_row
-              val cell_index  = cell_id
+              val bank_w = ((elemIndex / g) % B)(log2Ceil(totalSyncMems) - 1, 0)
 
               //version - 2 
 
@@ -1057,7 +1054,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
                 val data_64 =  W_wire(buff_index)(bank_w) 
                 val cells_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
-                val W_value = cells_8(cell_index)  
+                val W_value = cells_8(cell_id)  
 
             // ------------- Sync Read Memory System ------------------ // 
 
