@@ -1010,15 +1010,31 @@ is(sLoadW_and_sSelectAndAccumulate) {
               //version - 1 
               val S = bankSize.U
               val B = totalSyncMems.U
+              val elemsPerCell = params.WBitWidth.U / weight_bits
+              val elemsPerRow = S * elemsPerCell
+              val g = blocks_in_Sync_mem
+              val offsetWidth = math.max(1, log2Ceil(params.WBitWidth / params.minWeightBits))
+              val shift_amt = shiftedVec(sync_mem_idx)
+              val offset_id = Wire(UInt(offsetWidth.W))
 
-              val rows_used_per_bank =  (blocks_in_Sync_mem + S - 1.U) / S // ceil(blocks_in_Sync_mem / S)
-              
-              // x_th_x_reg is your linear element index
-              val chunkIdx    = W_reg_Index / S
-              val bank_w_raw     = (chunkIdx / rows_used_per_bank) % B
-              val bank_w = bank_w_raw(log2Ceil(totalSyncMems) - 1, 0)
-              val row_in_bank = chunkIdx % rows_used_per_bank
-              val byte_index  = W_reg_Index % S
+              when(weight_bits === 8.U) {
+                offset_id := 0.U
+              }.elsewhen(weight_bits === 4.U) {
+                offset_id := shift_amt >> 2
+              }.otherwise { // weight_bits === 2.U
+                offset_id := shift_amt >> 1
+              }
+
+              val elemIndex = W_reg_Index * elemsPerCell + offset_id
+              val bank_id = (elemIndex / g) % B
+              val posInBank = elemIndex % g
+              val bank_row = posInBank / elemsPerRow
+              val inRow = posInBank % elemsPerRow
+              val cell_id = inRow / elemsPerCell
+
+              val bank_w = bank_id(log2Ceil(totalSyncMems) - 1, 0)
+              val row_in_bank = bank_row
+              val byte_index  = cell_id
 
               //version - 2 
 
@@ -1038,7 +1054,6 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 val data_64 =  W_wire(buff_index)(bank_w) 
                 val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
                 val W_value = bytes_8(byte_index)  
-                val shift_amt   = shiftedVec(sync_mem_idx) 
 
             // ------------- Sync Read Memory System ------------------ // 
 
