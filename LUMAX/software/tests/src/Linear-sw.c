@@ -12,13 +12,10 @@
 //////////////////////// TEST PARAMETERS ////////////////////////////////////
 
 //BITWITH of elemetns 
-#define IN_BITS  16
-#define W_BITS   8
+#define IN_BITS 16
+#define W_BITS 8
 
-// 16 - 8 32 x 32 pass 
-// 16 - 4 32 x 32 fail 
-
-#define Debug 0       // print input and output matrices 
+#define Debug 1       // print input and output matrices 
 #define PC_COUNTERS  1   // print Perforamce Counters of every stage of Accelerator 
 #define FPU  0           // Rocekt Core it used support FPU or not 
 #define BAREMETAl_NEW 0  // BAREMETAL->0 or Linux->1 
@@ -40,22 +37,24 @@
 
 //Matrix Multiplcation Parameters 
 #define RIN_MAX 1
-#define CIN_MAX 100
-#define COUT_MAX 100
+#define CIN_MAX 4
+#define COUT_MAX 4
 #define FILTERS_MAX 1
 
 //debug parameters 
 bool fast_mode = false; // run faster not compare if SW and HW is the same (it is just trust me)
 bool ultra_fast_mode = false; // even faster skip generate random values 
 
-#define XS 16
+#define XS 2
+#define YS 1
+#define Mem_row_factor 8
 //HW parameters  (WARNING this must be same as CONFIGS HW)
 int x_slice_max = XS;
-int y_slice = 1;
+int y_slice = YS;
 
 int ACTIVATION_MAX_BITS = 16;
 int WEIGHTS_MAX_BITS    = 8;
-int mem_row_factor = 1; //Mem_row_factor
+int RF = Mem_row_factor; 
 
 bool cahce4_8 = false; // true false 
 #define SCALE    0 // 0 1 
@@ -246,7 +245,7 @@ typedef struct {
     int num_filters; 
     int parallel_rin; 
 
-} DataReuseParams;
+} LUMAXParams;
 
 static inline long rdcycle(void)
 {
@@ -255,7 +254,7 @@ static inline long rdcycle(void)
 	return cycle;
 }
 
-void printMatrices_in(DataReuseParams p, input_t *inputMatrix) {
+void printMatrices_in(LUMAXParams p, input_t *inputMatrix) {
     // Printing Input Matrix
     #if IN_BITS == 16 || IN_BITS == 8  
         printf("Input Matrix (%d x %d):\n", p.Rin, p.Cin);
@@ -311,7 +310,7 @@ void printMatrices_in(DataReuseParams p, input_t *inputMatrix) {
     
 }
 
-void printMatrices_w(DataReuseParams p, weight_t *weightMatrix) {
+void printMatrices_w(LUMAXParams p, weight_t *weightMatrix) {
     printf("\nWeight Matrix (%d x %d):\n", p.Cin, p.Cout);
     for (int f = 0; f < 1; f++) {
         printf("Filter %d\n", f);
@@ -351,7 +350,7 @@ void printMatrices_w(DataReuseParams p, weight_t *weightMatrix) {
 }
 
 
-void printMatrices_out(DataReuseParams p, output_t *outputMatrix_SW, output_t *outputMatrix_HW) {
+void printMatrices_out(LUMAXParams p, output_t *outputMatrix_SW, output_t *outputMatrix_HW) {
     // Printing Output Matrix SW
     printf("\nOutput Matrix SW \n");
     for (int f = 0; f < 1; f++) {
@@ -396,7 +395,7 @@ void generate_random_matrix_in(input_t *matrix, int size) {
     
     #if IN_BITS == 16 || IN_BITS == 8
         for (int i = 0; i < size; ++i) { 
-            matrix[i] = i; // min_in + rand() % (max_in - min_in + 1);
+            matrix[i] = min_in + rand() % (max_in - min_in + 1);
         }
 
     #elif IN_BITS == 4
@@ -425,12 +424,12 @@ void generate_random_matrix_in(input_t *matrix, int size) {
 
 
 void generate_random_matrix_w(QuantizedTensor_weight *matrix, int size, int filters) {   
-    srand(time(NULL));  // Seed για διαφορετικά αποτελέσματα κάθε φορά
+    srand(time(NULL));  // Seed 
 
     #if W_BITS == 8
     for (int f = 0; f < filters; f++) {
         for (int i = 0; i < size; ++i) { 
-            matrix[f].q[i] = (weight_t)(min_w + rand() % (max_w - min_w + 1));
+            matrix[f].q[i] = i +1; //(weight_t)(min_w + rand() % (max_w - min_w + 1));
         }
     }
 
@@ -438,7 +437,7 @@ void generate_random_matrix_w(QuantizedTensor_weight *matrix, int size, int filt
     // 2 values per byte
     for (int f = 0; f < filters; f++) {
         for (int i = 0; i < size; i += 2) {
-            int8_t val1 =  min_w + rand() % (max_w - min_w + 1);
+            int8_t val1 =   min_w + rand() % (max_w - min_w + 1);
             int8_t val2 =  min_w + rand() % (max_w - min_w + 1);
             val1 &= 0x0F;  // keep lower 4 bits
             val2 &= 0x0F;
@@ -876,13 +875,13 @@ void matmul_hw_uniform(
 #define FP32_LOOSE_TOL   1e-3f  // Optimized kernels
 
 int main() { 
-    printf("HW parameters (WARNING: same as CONFIGS HW): x_slice_max = %d, y_slice_max = %d, ACTIVATION_MAX_BITS = %d, WEIGHTS_MAX_BITS = %d, cahce4_8 = %s\n", x_slice_max, y_slice, ACTIVATION_MAX_BITS, WEIGHTS_MAX_BITS, cahce4_8 ? "true" : "false");
+    printf("HW parameters (WARNING: same as CONFIGS HW): x_slice_max = %d, y_slice_max = %d, ACTIVATION_MAX_BITS = %d, WEIGHTS_MAX_BITS = %d\n", x_slice_max, y_slice, ACTIVATION_MAX_BITS, WEIGHTS_MAX_BITS);
 
     unsigned long sw_cycles,hw_cycles,start,end;
     
     int filters_max = 1;
 
-    DataReuseParams p = {
+    LUMAXParams p = {
         .w_slice        = 1,
         .num_filters    = 1
         }; 
@@ -992,65 +991,6 @@ int main() {
         printf("Generate matrices\n"); 
         generate_random_matrix_in(inputMatrix.q,Rin_max * Cin_max);
         generate_random_matrix_w(weightMatrix,filters_max * Cin_max * Cout_max,p.num_filters);  //new 
-
-        // extern const unsigned char _binary_precomp_input_bin_start[];
-        // extern const unsigned char _binary_precomp_input_bin_end[];
-
-        // extern const unsigned char _binary_precomp_weight_f0_bin_start[];
-        // extern const unsigned char _binary_precomp_weight_f0_bin_end[];
-
-        // /* compute sizes (in bytes) */
-        // size_t input_bytes = (size_t)(_binary_precomp_input_bin_end - _binary_precomp_input_bin_start);
-        // size_t weight0_bytes = (size_t)(_binary_precomp_weight_f0_bin_end - _binary_precomp_weight_f0_bin_start);
-
-        // /* Sanity checks */
-        // if (input_bytes == 0) {
-        //     printf("Error: embedded input binary not found or empty. Check objcopy/link step.\n");
-        // } else {
-        //     /* BAREMETAL == 0: use existing writable inputMatrix_q buffer and copy into it.
-        //     BAREMETAL == 1: your code maps a DMA buffer (dma_buffer) and sets inputMatrix.q = dma ptr;
-        //     adjust here if dma_buffer is used instead. */
-        // #if BAREMETAl_NEW == 0
-        //     if (input_bytes > sizeof(inputMatrix_q)) {
-        //         printf("Warning: embedded input.bin (%zu bytes) larger than inputMatrix_q buffer (%zu bytes)\n",
-        //             input_bytes, (size_t)sizeof(inputMatrix_q));
-        //     }
-        //     memcpy(inputMatrix_q, _binary_precomp_input_bin_start, input_bytes);
-        //     inputMatrix.q = inputMatrix_q;
-        // #else
-        //     /* Linux path: dma_buffer was mmap'd earlier and inputMatrix.q already points into dma_buffer.
-        //     Copy into the dma buffer region (the offsets used in your code: inputMatrix.q = (input_t*)dma_buffer) */
-        //     memcpy((void*)inputMatrix.q, _binary_precomp_input_bin_start, input_bytes);
-        // #endif
-        // }
-
-        // /* Copy weights for filter 0 (expand loop for more filters) */
-        // if (weight0_bytes == 0) {
-        //     printf("Error: embedded weight_f0 binary not found or empty. Check objcopy/link step.\n");
-        // } else {
-        // #if BAREMETAl_NEW == 0
-        //     if (weight0_bytes > sizeof(weightMatrix_q[0])) {
-        //         printf("Warning: embedded weight_f0.bin (%zu bytes) larger than weightMatrix_q[0] (%zu bytes)\n",
-        //             weight0_bytes, (size_t)sizeof(weightMatrix_q[0]));
-        //     }
-        //     memcpy(weightMatrix_q[0], _binary_precomp_weight_f0_bin_start, weight0_bytes);
-        //     weightMatrix[0].q = weightMatrix_q[0];
-        // #else
-        //     /* Linux mode: copy into the mapped DMA weights region */
-        //     memcpy((void*)weightMatrix[0].q, _binary_precomp_weight_f0_bin_start, weight0_bytes);
-        // #endif
-        // }
-
-        // /* If you have additional filters, add memcpy for each:
-        // extern const unsigned char _binary_precomp_weight_f1_bin_start[]; etc.
-        // Then memcpy into weightMatrix_q[1], weightMatrix[2], ... and set weightMatrix[f].q accordingly. */
-
-        // /* Optionally: you can skip copying and point directly to embedded read-only data:
-        // inputMatrix.q = (input_t*) _binary_precomp_input_bin_start;
-        // weightMatrix[0].q = (weight_t*) _binary_precomp_weight_f0_bin_start;
-        // BUT this is only safe if your accelerator / DMA does not write to these buffers.
-        // */
-
     }
 
     #if BAREMETAl_NEW == 1 
@@ -1106,7 +1046,7 @@ int main() {
     } 
 
     
-    p.x_slice = x_slice_max*mem_row_factor;
+    p.x_slice = x_slice_max*RF;
     p.parallel_rin = y_slice;
 
     printf("### Rin = %d, Cin = %d, Cout = %d, X Slice = %d, Parallel Rows = %d, input_t: %d bits, weight_t: %d bits, output_t: %d bits ###\n",
@@ -1141,8 +1081,8 @@ int main() {
         double speedup = (double)sw_cycles / hw_cycles;
         #endif    
 
-        printf("SW Mat-Mul %lu cycles, ", sw_cycles); 
-        printf("HW Mat-Mul %lu cycles", hw_cycles); 
+        printf("SW Mat-Mul %lu cycles\n", sw_cycles); 
+        printf("HW Mat-Mul %lu cycles\n", hw_cycles); 
         #if FPU == 1
         printf("Speed-up: %.2f \n", speedup);
         #endif    
@@ -1261,3 +1201,4 @@ int main() {
 
   return 0;
 }
+#define RF 8

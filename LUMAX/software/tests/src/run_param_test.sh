@@ -54,7 +54,7 @@ extract_number() {
 
 XS=$(extract_number "x_slice")
 YS=$(extract_number "y_slice")
-RF=$(extract_number "Mem_row_factor")
+Mem_row_factor=$(extract_number "Mem_row_factor")
 
 extract_number() {
   grep -E "^[[:space:]]*$1[[:space:]]*=[[:space:]]*[0-9]+" "$SCALA_CFG" \
@@ -62,12 +62,12 @@ extract_number() {
   | sed -E "s/.*=[[:space:]]*([0-9]+).*/\1/"
 }
 
-if [[ -z "$XS" || -z "$YS" || -z "$RF" ]]; then
+if [[ -z "$XS" || -z "$YS" || -z "$Mem_row_factor" ]]; then
   echo "❌ ERROR: Missing HW parameters:"
 
   [[ -z "$XS" ]] && echo "  - x_slice not found or empty"
   [[ -z "$YS" ]] && echo "  - y_slice not found or empty"
-  [[ -z "$RF" ]] && echo "  - Mem_row_factor not found or empty"
+  [[ -z "$Mem_row_factor" ]] && echo "  - Mem_row_factor not found or empty"
 
   exit 1
 fi
@@ -91,7 +91,7 @@ update_define "COUT_MAX" "$COUT" "$C_FILE"
 
 update_define "XS" "$XS" "$C_FILE"
 update_define "YS" "$YS" "$C_FILE"
-update_define "RF" "$RF" "$C_FILE"
+update_define "Mem_row_factor" "$Mem_row_factor" "$C_FILE"
 
 # BITWIDTH of elements from optional arguments
 update_define "IN_BITS" "$IN_BITS" "$C_FILE"
@@ -103,7 +103,7 @@ cd "$SRC_DIR"
 
 # ----------- PREPARE LOG FILE -----------
 BASE_LOG_DIR="$SRC_DIR/Log"
-SUB_LOG_DIR="$BASE_LOG_DIR/XS=${XS}_YS=${YS}_RF=${RF}"
+SUB_LOG_DIR="$BASE_LOG_DIR/XS=${XS}_YS=${YS}_Mem_row_factor=${Mem_row_factor}"
 mkdir -p "$SUB_LOG_DIR"
 LOG_FILE="$SUB_LOG_DIR/RIN=${RIN}_CIN=${CIN}_COUT=${COUT}_INBITS=${IN_BITS}_WBITS=${W_BITS}.txt"
 

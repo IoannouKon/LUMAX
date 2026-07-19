@@ -1,8 +1,0 @@
-Running with RISCV=/home/kioannou/chipyard_1.11.0/.conda-env/riscv-tools
-echo "Checking all submodules in generators/ are initialized. Uninitialized submodules will be displayed" ; ! git submodule status /home/kioannou/chipyard_1.11.0/generators | grep ^-
-Checking all submodules in generators/ are initialized. Uninitialized submodules will be displayed
-mkdir -p /home/kioannou/chipyard_1.11.0/.classpath_cache/
-cd /home/kioannou/chipyard_1.11.0 && java -jar /home/kioannou/chipyard_1.11.0/scripts/sbt-launch.jar -Dsbt.ivy.home=/home/kioannou/chipyard_1.11.0/.ivy2 -Dsbt.global.base=/home/kioannou/chipyard_1.11.0/.sbt -Dsbt.boot.directory=/home/kioannou/chipyard_1.11.0/.sbt/boot/ -Dsbt.color=always -Dsbt.supershell=false -Dsbt.server.forcestart=true ";project chipyard; set assembly / assemblyOutputPath := file(\"/home/kioannou/chipyard_1.11.0/.classpath_cache/chipyard.jar\"); assembly" && touch /home/kioannou/chipyard_1.11.0/.classpath_cache/chipyard.jar
-[0m[[0m[0minfo[0m] [0m[0mwelcome to sbt 1.8.2 (N/A Java 20.0.2-internal)[0m
-[0m[[0m[0minfo[0m] [0m[0mloading settings for project chipyard_1-11-0-build from plugins.sbt ...[0m
-[0m[[0m[0minfo[0m] [0m[0mloading project definition from /home/kioannou/chipyard_1.11.0/project[0m

@@ -1,0 +1,31 @@
+Running with RISCV=/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools
+make: Nothing to be done for 'default'.
+HW parameters (WARNING: same as CONFIGS HW): x_slice_max = 2, y_slice_max = 1, ACTIVATION_MAX_BITS = 16, WEIGHTS_MAX_BITS = 8
+Hello Baremetal Mode
+Generate matrices
+SW Mat-Mul Start
+### Rin = 1, Cin = 64, Cout = 64, X Slice = 2, Parallel Rows = 1, input_t: 16 bits, weight_t: 4 bits, output_t: 32 bits ###
+HW Mat-Mul Start
+SW Mat-Mul 907312 cycles
+HW Mat-Mul 5090 cycles
+Filter 0 
+Accuracy Report:
+----------------
+Exact matches:    64/64 
+PASS (All elements)
+
+Stage                  | Cycles
+-----------------------|------------
+Load X                 |         84
+Generate BRAMs         |        160
+Load W and Select      |       2694
+Store O                |        268
+-----------------------|------------
+Load W  Alone          |       1344
+Select  Alone          |       2688
+-----------------------|------------
+Total                  |       3206
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 22440' or larger
+[UART] UART0 is here (stdin/stdout).
+- /home/kioannou/chipyard_1.13.0/sims/verilator/generated-src/chipyard.harness.TestHarness.DataReuseRocketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+TEST [PASS]

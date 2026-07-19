@@ -27,9 +27,9 @@ object LUMAX_Config {
   val LUMAX_Config = LUMAXParams(
 
     //Μax Matrix Dimesnions 
-    Rin         = 1,  //Used Only for a Counter  (SAME for YS for now)
-    Cin         = 800, // Used only for OuputBitwidth 
-    Cout        = 800, // Used only to a a counter Registers  and how many output stationary outputs we have 
+    Rin         = 1,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 1000, // Used only for OuputBitwidth 
+    Cout        = 1000, // Used only to a a counter Registers  and how many output stationary outputs we have 
   
     // Element Bidwidths  
     XBitWidth   = 16,  // max Number of bits on input elemetns 
@@ -44,7 +44,7 @@ object LUMAX_Config {
     //Max Parallelism Paramters 
     y_slice     =  1,    // IMPORTANT Design parameter  MAX value
     x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
-    Mem_row_factor = 4,
+    Mem_row_factor = 8,
     
     //NOT USED (TODO)
     w_slice     = 1,

@@ -2,6 +2,7 @@ package LUMAX_PACKAGE
 
 import chisel3._
 import chisel3.util._
+import LUMAX_PACKAGE.MappingUtils._
 
 class Product_Generator(
     val totalSyncMems: Int,
@@ -18,13 +19,13 @@ class Product_Generator(
   val io = IO(new Bundle {
 
     val sync_mem_idx            = Input(UInt(log2Ceil(totalSyncMems).W))
-    val blocks_in_Sync_mem      = Input(UInt(log2Ceil((1 << (WBitWidth - minWeightBits)) + 1).W))
+    val blocks_in_Sync_mem      = Input(UInt(log2Ceil(RowsPerBlock + 1).W))
     val counter                 = Input(UInt(log2Ceil(RowsPerBlock + 2).W))
     val dirty_elems_x           = Input(UInt(log2Ceil(DMA_bits / minInputBits).W))
     val X_vals                  = Input(Vec(totalSyncMems, UInt(DMA_bits.W)))
     val inputs_per_reg          = Input(UInt(2.W))
     val input_bits              = Input(UInt(6.W))
-    val valid_inputs            = Input(UInt((totalSyncMems * DMA_bits / XBitWidth).W))
+    val valid_inputs            = Input(UInt((totalSyncMems * RowsPerBlock).W))
     val mask_p                  = Input(UInt(log2Ceil((1 << (WBitWidth + XBitWidth))).W))
     val shiftAmt                = Input(UInt(7.W))
     val chunks_per_Product_bits = Input(UInt(log2Ceil(WBitWidth + XBitWidth + 1).W))
@@ -58,32 +59,15 @@ class Product_Generator(
   //       else
    //         0.U
   
-  //--------------------------------- new code 
-
-        //Version - 1
-        val S = (DMA_bits/XBitWidth).U 
-        val B = totalSyncMems.U
-
-        val rows_used_per_bank =  (io.blocks_in_Sync_mem + S - 1.U) / S 
-
-        // x_th_x_reg is your linear element index
-        val chunkIdx    = x_th_x_reg / S
-        val bank_in     = (chunkIdx / rows_used_per_bank) % B
-        val row_in_bank = chunkIdx % rows_used_per_bank
-        val byte_index_raw = x_th_x_reg % S
-
-        //Version - 2
-        // // group-per-bank
-        // val S = bankSize_in.U                 // elems per row
-        // val B = totalSyncMems.U               // banks
-        // val g = blocks_in_Sync_mem_1          // elems per bank (group)
-
-        // // x_th_x_reg is linear index
-        // val groupIdx    = x_th_x_reg / g
-        // val posInBank   = x_th_x_reg % g
-        // val bank_in     = groupIdx % B
-        // val row_in_bank = posInBank / S
-        // val byte_index  = posInBank % S
+        val (bank_in, row_in_bank, byte_index_raw, offset_new) =
+            mapIndex(
+            idx = x_th_x_reg,
+            weight_bits = io.input_bits,
+            blocks_in_Sync_mem = io.blocks_in_Sync_mem,
+            bankSize = (DMA_bits/XBitWidth).U ,
+            totalBanks = totalSyncMems.U,
+            WBitWidth = XBitWidth
+        )
 
   //--------------------------------- new code 
 
