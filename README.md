@@ -1,265 +1,99 @@
-# 🚀 LUMAX Accelerator Integration, Simulation & Deployment in Chipyard (v1.11.0)
+# LUMAX / LUMIXED
 
-This guide explains how to **integrate**, **simulate**, and **deploy** the **LUMAX Accelerator** using **Chipyard v1.11.0**.
+LUMAX is a Chisel implementation of a lookup-table-based, mixed-precision matrix multiplication accelerator integrated with Rocket through RoCC and TileLink DMA. The accompanying manuscript calls the architecture **LUMIXED: LUT-Based MIXED-Precision GeMM Accelerator for Quantized DNN Inference**; source packages and build configurations retain the **LUMAX** name.
 
-It covers both **Verilator bare-metal testing** and **FPGA (ZCU106) Linux execution**.
+The accelerator computes `O[N,M] = X[N,K] × W[K,M]`, supporting 8- or 16-bit activations, 2-, 4-, or 8-bit weights, and 32-bit accumulation. It precomputes positive even activation products, reuses them across weight columns, and reconstructs signed products during selection. Pipelined selection and accumulation overlap with weight fetching through two weight buffers.
 
-You only need to copy specific folders and configuration files — **no need to upload the full Chipyard repository**.
+![LUMIXED architecture: product generation, LUT selection, and accumulation](docs/assets/paper/figure-1-dataflow.png)
 
----
+*Figure 1 from the supplied manuscript, PDF page 3. [Figure provenance](docs/README.md).*
 
-## 🧩 Prerequisites
+## Documentation
 
-- **Chipyard v1.11.0 (stable branch)** — cloned and compiled
-- Access to **ZCU106 FPGA board** (for hardware testing)
+| Topic | Contents |
+|---|---|
+| [Accelerator design](LUMAX/README.md) | Dataflow, memory organization, precision, configuration, and source map |
+| [Performance models](Performance%20Modeling/README.md) | Paper equations, Python usage, assumptions, and implementation differences |
+| [Measurements and reproduction](LUMAX/software/tests/README.md) | Saved simulation results, counters, benchmark instructions, FPGA/ASIC results, and ViT plots |
+| [Figures and data](docs/README.md) | Paper attribution and scripts to regenerate documentation assets |
 
----
+This repository is an integration overlay for Chipyard, not a complete standalone Chipyard checkout. The original integration guide targets **Chipyard 1.11.0**. Saved logs identify a **Chipyard 1.13.0** environment and an older `DataReuseRocketConfig`; they are historical results, not verification of the current checkout. The saved logs contain **28 PASS, 20 FAIL, and one incomplete run**; see the measurement guide before using their cycle counts.
 
-##  (A) Integrating LUMAX into Chipyard
+## Repository layout
 
-### **Step 1 — Add the LUMAX Generator**
+| Path | Purpose |
+|---|---|
+| `LUMAX/src/main/scala/` | Accelerator RTL generator and parameters |
+| `LUMAX/software/tests/src/` | C matrix multiplication test, build scripts, and saved logs |
+| `Performance Modeling/` | Analytical cycle model and notebook-oriented plots |
+| `LUMAXConfigs.scala` | `chipyard.LUMAXROcketConfig` SoC configuration |
+| `Configs.scala` | Rocket subsystem configuration customizations |
+| `build.sbt` | Chipyard build overlay with the `LUMAX` project |
+| `fpga/` | FPGA platform and ZCU106 support overlay |
 
-Navigate to the Chipyard generators directory:
+## Integrate into Chipyard
 
-```bash
-cd chipyard/generators
-```
+Use a separate, working Chipyard checkout with its RISC-V toolchain and dependencies installed. Merge these supplied files with the corresponding Chipyard files, preserving any local customizations:
 
-Copy and paste the provided folder:
+| Repository source | Destination relative to the Chipyard root |
+|---|---|
+| `LUMAX/` | `generators/LUMAX/` |
+| `build.sbt` | `build.sbt` |
+| `fpga/` | `fpga/` |
+| `Configs.scala` | `generators/rocket-chip/src/main/scala/subsystem/Configs.scala` |
+| `LUMAXConfigs.scala` | `generators/chipyard/src/main/scala/config/LUMAXConfigs.scala` |
 
-```
-LUMAX
-```
+The supplied `build.sbt` declares the accelerator project and adds it to Chipyard. The SoC configuration uses `LUMAX_PACKAGE.WithLUMAXAccelerator` and a custom medium Rocket core configuration. Hardware parameters live in [Config.scala](LUMAX/src/main/scala/Config.scala).
 
-This folder contains:
+## Run a bare-metal simulation
 
-- All **RTL Chisel sources** for the LUMAX generator
-- **C test files** for accelerator validation
-
----
-
-### **Step 2 — Update the Build Configuration**
-
-Go to the root of your Chipyard repository:
-
-```bash
-cd chipyard
-```
-
-Copy and replace the existing `build.sbt` file with the provided version.
-
-This ensures that **SBT recognizes and builds** the LUMAX accelerator.
-
----
-
-### **Step 3 — Add FPGA Support (ZCU106)**
-
-In the Chipyard root directory:
+From the **Chipyard root**, load the environment and build the simulator:
 
 ```bash
-cd chipyard
-```
-
-Copy and paste the provided `fpga` folder.
-
-This folder includes:
-
-- **ZCU106 board support files**
-- FPGA build configurations for running the accelerator
-
----
-
-### **Step 4 — Add Custom RISC-V Configurations**
-
-Navigate to the Rocket Chip subsystem configuration path:
-
-```bash
-cd chipyard/generators/rocket-chip/src/main/scala/subsystem/
-```
-
-Copy and paste the provided file:
-
-```
-Configs.scala
-```
-
-This adds:
-
-- Custom **RISC-V configuration classes**
-- Integration hooks to connect **LUMAX** with the Rocket subsystem
-
----
-
-### **Step 5 — Connect LUMAX to Chipyard System**
-
-Navigate to:
-
-```bash
-cd chipyard/generators/chipyard/src/main/scala/config/
-```
-
-Copy and paste the provided file:
-
-```
-LUMAXConfigs.scala
-```
-
-This file:
-
-- Defines the **LUMAX configuration class**
-- Connects the accelerator to the **Chipyard environment**
-- Creates a **custom SoC configuration** integrating Rocket cores and LUMAX
-
----
-
----
-
-##  (B) Testing LUMAX with Verilator (Bare-Metal)
-
-After integration, you can test the accelerator using Verilator simulation.
-
----
-
-### **Step 1 — Source the Environment**
-
-From the Chipyard root:
-
-```bash
-cd chipyard
 source env.sh
-```
-
----
-
-### **Step 2 — Build the Verilator Simulator**
-
-Navigate to the simulator directory:
-
-```bash
 cd sims/verilator
-```
-
-Build without waveform debugging:
-
-```bash
-#No waveform debug - Faster 
 make CONFIG=LUMAXROcketConfig
-
-#Enable Wavefroms Debug - Slower (first build binary)
-make CONFIG=LUMAXROcketConfig run-binary-debug BINARY=Chipyard/generators/LUMAX/software/tests/src/Linear-sw.riscv
-
 ```
 
-> ⚙️ Note: The build process may take several minutes.
-> 
-
----
-
-### **Step 3 — Configure and Build the Test Program**
-
-Navigate to the LUMAX software test source:
+In `generators/LUMAX/software/tests/src/Linear-sw.c`, set the dimensions and precisions, keep `BAREMETAl_NEW=0`, and match `XS`, `YS`, and `Mem_row_factor` to the Scala configuration. Then, from the Chipyard root:
 
 ```bash
-cd chipyard/generators/LUMAX/software/tests/src
+cd generators/LUMAX/software/tests/src
+bash build.sh baremetal
+cd ../../../../../sims/verilator
+./simulator-chipyard.harness-LUMAXROcketConfig \
+  ../../generators/LUMAX/software/tests/src/Linear-sw.riscv
 ```
 
-Edit `Linear-sw.c` to:
-
-- Set **matrix dimensions**
-- Adjust **activation and weight bitwidths**
-- Match **hardware parameters** in `Linear-sw.c` with your LUMAX config in `LUMAX/src/scala/Configs.scala`
-
-Then compile:
+For a waveform run, from `sims/verilator`:
 
 ```bash
-riscv64-unknown-elf-gcc -fno-common -fno-builtin-printf -specs=htif_nano.specs -c Linear-sw.c
-riscv64-unknown-elf-gcc -static -specs=htif_nano.specs Linear-sw.o -o Linear-sw.riscv
+make CONFIG=LUMAXROcketConfig run-binary-debug \
+  BINARY=../../generators/LUMAX/software/tests/src/Linear-sw.riscv
 ```
 
-You now have a **bare-metal test binary**:
+Inspect the simulator's reported waveform path with GTKWave. The spelling **`LUMAXROcketConfig`** is intentional and matches the checked-in class.
 
-```
-Linear-sw.riscv
-```
+The existing `run_param_test.sh` updates C parameters, builds, and saves logs, but still invokes `DataReuseRocketConfig`. Update its configuration and simulator names to `LUMAXROcketConfig` before using it with this integration. Its arguments are `RIN CIN COUT [IN_BITS] [W_BITS] [debug]`; it modifies `Linear-sw.c` in place.
 
----
+## FPGA and Linux
 
-### **Step 4 — Run the Simulation**
-
-Run the binary with the Verilator simulator:
+The FPGA make target is:
 
 ```bash
-cd chipyard/sims/verilator
-./simulator-chipyard.harness-LUMAXROcketConfig  /Chipyard/generators/Mat_Mul_Reuse_Data/software/tests/src/Linear-sw.riscv
-```
-
----
-
-### **Step 5 — View Waveforms (Optional)**
-
-If you built with debug support, view the waveform:
-
-```bash
-gtkwave chipyard/sims/verilator/output/chipyard.harness.TestHarness.LUMAXROcketConfig/Linear-sw.vcd
-```
-
-Use GTKWave to observe signal activity and debug your accelerator integration.
-
----
-
-Or you can just use the script 
-
-```bash
- cd Chipyard/generators/Mat_Mul_Data_Reuse/software/tests/src
- ./run_param_test.sh <RIN_MAX> <CIN_MAX> <COUT_MAX> [IN_BITS] [W_BITS] [debug]
-```
-
-##  (C) Running LUMAX on ZCU106 with Linux
-
-You can also deploy the LUMAX accelerator on **ZCU106 FPGA** under a Linux environment.
-
----
-
-### **Step 1 — Generate FPGA Bitstream**
-
-From the FPGA directory:
-
-```bash
+# From the Chipyard root, after completing the board configuration:
 cd fpga
 make SUB_PROJECT=kosszcu106 bitstream
 ```
 
-This builds the FPGA bitstream for the LUMAX + RISC-V SoC design targeting ZCU106.
+**The checked-in board configuration needs completion first.** `kosszcu106` selects `KostisZCU106Config` in [the ZCU106 configurations](fpga/src/main/scala/zcu106/Configs.scala). Its active chain contains `WithZCU106Tweaks`, while the base SoC selections are commented out. Compose the board tweaks with an accelerator-enabled SoC configuration and verify its clock/core settings before building; this snapshot is not a ready-to-build reproduction of the paper's FPGA system.
 
----
+For Linux, set `BAREMETAl_NEW=1` in `Linear-sw.c`, then run `bash build.sh linux` from the test source directory. The build script selects the compiler but does **not** change that macro. Execution requires a suitable Linux-capable SoC, boot image, and `/dev/my_accel` DMA-buffer driver implementing the test's `mmap` and `GET_PHYS_ADDR` interface. That driver and boot image are not included here. See [measurement prerequisites](LUMAX/software/tests/README.md#running-new-experiments).
 
-### **Step 2 — Build Linux Executable for LUMAX**
+## Results at a glance
 
-Navigate to the test software directory:
+The supplied manuscript reports FPGA operation up to **100 MHz / 62 GOP/s**, ASIC synthesis up to **1 GHz**, and peak on-chip compute efficiency of **2 TOPS/W**. Its footnote reports approximately **300 GOPS/W** when memory-loading latency is included. These are manuscript results with different measurement scopes, not fresh measurements of this checkout.
 
-```bash
-cd chipyard/generators/LUMAX/software/tests/src
-```
+![Saved simulation cycles, with passing and failing correctness checks distinguished](docs/assets/measurements/saved-simulation-cycles.png)
 
-Compile the Linux version of the test binary:
-
-```bash
-riscv64-unknown-linux-gnu-gcc -c Linear-sw.c -o executable.o
-riscv64-unknown-linux-gnu-gcc -static executable.o -o Linear-sw.riscv
-```
-
-This produces a **Linux-compatible binary**:
-
-```
-Linear-sw.riscv
-```
-
----
-
-### **Step 3 — Run on ZCU106**
-
-1. Boot Linux on the ZCU106 FPGA with your LUMAX-enabled bitstream.
-2. Copy the `Linear-sw.riscv` binary to the board.
-3. Run the program directly in Linux to verify correct accelerator operation.
-
----
+The plot is generated from the repository's historical logs. Crosses indicate failed correctness checks and are diagnostic data only. [Measurement details, paper plots, and reproduction steps](LUMAX/software/tests/README.md).
