@@ -12,6 +12,7 @@ The accelerator computes `O[N,M] = X[N,K] × W[K,M]`, supporting 8- or 16-bit ac
 
 | Topic | Contents |
 |---|---|
+| [Fast plug-and-run guide](FAST_PLUG_AND_RUN_README.md) | Previous quick-start integration and run instructions |
 | [Accelerator design](LUMAX/README.md) | Dataflow, memory organization, precision, configuration, and source map |
 | [Performance models](Performance%20Modeling/README.md) | Paper equations, Python usage, assumptions, and implementation differences |
 | [Measurements and reproduction](LUMAX/software/tests/README.md) | Saved simulation results, counters, benchmark instructions, FPGA/ASIC results, and ViT plots |
