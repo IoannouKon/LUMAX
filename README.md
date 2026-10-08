@@ -18,7 +18,7 @@ The accelerator computes `O[N,M] = X[N,K] × W[K,M]`, supporting 8- or 16-bit ac
 | [Measurements and reproduction](LUMAX/software/tests/README.md) | Saved simulation results, counters, benchmark instructions, FPGA/ASIC results, and ViT plots |
 | [Figures and data](docs/README.md) | Paper attribution and scripts to regenerate documentation assets |
 
-This repository is an integration overlay for Chipyard, not a complete standalone Chipyard checkout. The original integration guide targets **Chipyard 1.11.0**. Saved logs identify a **Chipyard 1.13.0** environment and an older `DataReuseRocketConfig`; they are historical results, not verification of the current checkout. The saved logs contain **28 PASS, 20 FAIL, and one incomplete run**; see the measurement guide before using their cycle counts.
+This repository is an integration overlay for Chipyard, not a complete standalone Chipyard checkout. **The active simulation target is Chipyard 1.13.0**; use the [1.13 integration guide](chipyard-1.13.0/README.md). The completed October 8 six-configuration sweep records **162 PASS and 18 FAIL out of 180 tests**, with hardware cycle counters; see the [sweep guide](chipyard-1.13.0/CONFIG_SWEEP.md) and [saved report](LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/REPORT.md). This snapshot precedes the diagnosed address-width and parallel-sum-width fixes. The original integration guide targets **Chipyard 1.11.0**, and the older historical logs contain **28 PASS, 20 FAIL, and one incomplete run**; those are a separate result set.
 
 ## Repository layout
 
@@ -34,7 +34,7 @@ This repository is an integration overlay for Chipyard, not a complete standalon
 
 ## Integrate into Chipyard
 
-Use a separate, working Chipyard checkout with its RISC-V toolchain and dependencies installed. Merge these supplied files with the corresponding Chipyard files, preserving any local customizations:
+For **Chipyard 1.13.0**, follow [the version-specific integration guide](chipyard-1.13.0/README.md), which preserves the newer Chipyard build and Rocket APIs. The table below describes the older 1.11 overlay; use it only with its original compatible workspace:
 
 | Repository source | Destination relative to the Chipyard root |
 |---|---|
@@ -75,7 +75,7 @@ make CONFIG=LUMAXROcketConfig run-binary-debug \
 
 Inspect the simulator's reported waveform path with GTKWave. The spelling **`LUMAXROcketConfig`** is intentional and matches the checked-in class.
 
-The existing `run_param_test.sh` updates C parameters, builds, and saves logs, but still invokes `DataReuseRocketConfig`. Update its configuration and simulator names to `LUMAXROcketConfig` before using it with this integration. Its arguments are `RIN CIN COUT [IN_BITS] [W_BITS] [debug]`; it modifies `Linear-sw.c` in place.
+The updated `run_param_test.sh` defaults to `LUMAXROcketConfig`, uses deterministic vectors and exact output checks, and returns a failure status on simulation or correctness errors. Its arguments are `RIN CIN COUT [IN_BITS] [W_BITS] [debug]`; it modifies `Linear-sw.c` in place. `CONFIG=DataReuseRocketConfig` selects the compatibility alias in Chipyard 1.13.
 
 ## FPGA and Linux
 

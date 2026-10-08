@@ -1,5 +1,5 @@
 
-# riscv64-unknown-elf-gcc -fno-common -fno-builtin-printf -specs=htif_nano.specs -c Linear-sw.c
+# riscv64-unknown-elf-gcc "${TEST_FLAGS[@]}" -fno-common -fno-builtin-printf -specs=htif_nano.specs -c Linear-sw.c
 # riscv64-unknown-elf-gcc -static -specs=htif_nano.specs Linear-sw.o -o Linear-sw.riscv 
 
 
@@ -25,10 +25,11 @@ if [ "$#" -ne 1 ]; then
 fi
 
 MODE="$1"
+read -r -a TEST_FLAGS <<< "${TEST_CFLAGS:--O2}"
 
 if [ "$MODE" = "baremetal" ]; then
   echo "🔧 Building bare-metal version..."
-  riscv64-unknown-elf-gcc -fno-common -fno-builtin-printf -specs=htif_nano.specs -c "$SRC" -o Linear-sw.o
+  riscv64-unknown-elf-gcc "${TEST_FLAGS[@]}" -fno-common -fno-builtin-printf -specs=htif_nano.specs -c "$SRC" -o Linear-sw.o
   riscv64-unknown-elf-gcc -static -specs=htif_nano.specs Linear-sw.o -o "$OUT"
   echo "✅ Bare-metal build complete: $OUT"
 

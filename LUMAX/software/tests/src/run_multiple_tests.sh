@@ -1,72 +1,47 @@
 #!/bin/bash
-
-# ============================================================
-# Usage:
-#
-#   ./run_multiple_tests.sh
-#       -> Runs all tests normally
-#
-#   ./run_multiple_tests.sh on
-#       -> Skips a test immediately if its output file exists
-#
-# The "on" argument enables "skip existing results" mode.
-# Useful for resuming interrupted sweeps.
-# ============================================================
-
-# Exit immediately if a command exits with a non-zero status
-set -e
-
-# Optional flag:
-# If "on" is provided, existing results will be skipped.
+# Run all requested cases sequentially; "on" resumes by skipping passing logs.
+set -euo pipefail
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+CHIPYARD_DIR="$(realpath "$SCRIPT_DIR/../../../../..")"
+if [[ -f "$CHIPYARD_DIR/LUMAX_CHECKPOINT.txt" ]]; then
+  CHECKPOINT=$(cat "$CHIPYARD_DIR/LUMAX_CHECKPOINT.txt")
+  [[ ! -e "$CHECKPOINT/STOP" ]] || { echo 'Panic restore has stopped this task.' >&2; exit 2; }
+  if [[ "${LUMAX_TASK_REGISTERED:-0}" != 1 ]]; then
+    exec python3 "$CHECKPOINT/run.py" env LUMAX_TASK_REGISTERED=1 bash "$SCRIPT_DIR/run_multiple_tests.sh" "$@"
+  fi
+fi
 SKIP_EXISTING=${1:-off}
-
-# Path to your execution script
-SCRIPT="./run_param_test.sh"
-
-# Define triplets in "RIN,CIN,COUT" format
-TRIPLETS=(
-  "1,4,4"
-  "1,8,8"
-  # "1,16,16"
-  # "1,32,32"
-  # "1,64,64"
-  # "1,128,128"
-  # "1,256,256"
-  # "1,512,512"
-  # "1,1024,1024"
-  # "1,2048,2048"
-)
-
-# Other parameters
-W_BITS_LIST=(8 4 2)
+[[ "$SKIP_EXISTING" == off || "$SKIP_EXISTING" == on ]] || { echo "Usage: $0 [on|off]" >&2; exit 2; }
+TRIPLETS=("1,4,4" "1,8,8" "1,16,16" "1,32,32" "1,64,64" "1,128,128" "1,256,256")
+W_BITS_LIST=(2 4 8)
 IN_BITS=16
-
-# Loop through each triplet
+SCALA_CFG="$SCRIPT_DIR/../../../src/main/scala/Config.scala"
+extract_number() { sed -nE "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*([0-9]+).*/\1/p" "$SCALA_CFG" | head -n1; }
+XS=$(extract_number x_slice) YS=$(extract_number y_slice) RF=$(extract_number Mem_row_factor)
+export LUMAX_LOG_DIR=${LUMAX_LOG_DIR:-$SCRIPT_DIR/Log/sweep_$(date +%Y%m%d_%H%M%S)}
+LOG_DIR="$LUMAX_LOG_DIR/XS=${XS}_YS=${YS}_Mem_row_factor=${RF}"
+mkdir -p "$LOG_DIR"
+SUMMARY="$LUMAX_LOG_DIR/summary.csv"
+printf 'RIN,CIN,COUT,IN_BITS,W_BITS,status,log\n' > "$SUMMARY"
+FAILED=0 PASSED=0
+# Optional rebuild happens only once, before the first case.
+REBUILD_FIRST=${REBUILD:-auto}
 for item in "${TRIPLETS[@]}"; do
-
-  # Split "RIN,CIN,COUT"
   IFS=',' read -r RIN CIN COUT <<< "$item"
-
-  # Loop through weight bit widths
   for W_BITS in "${W_BITS_LIST[@]}"; do
-
-    # Expected output file
-    OUTPUT_FILE="results_R${RIN}_CIN${CIN}_COUT${COUT}_IN${IN_BITS}_W${W_BITS}.txt"
-
-    # FIRST THING: skip immediately
-    if [[ "$SKIP_EXISTING" == "on" && -f "$OUTPUT_FILE" ]]; then
-      echo "Skipping existing file: $OUTPUT_FILE"
-      continue
+    LOG="$LOG_DIR/RIN=${RIN}_CIN=${CIN}_COUT=${COUT}_INBITS=${IN_BITS}_WBITS=${W_BITS}.txt"
+    if [[ "$SKIP_EXISTING" == on && -f "$LOG" ]] && grep -q '^TEST \[PASS\]$' "$LOG"; then
+      STATUS=PASS
+      echo "Skipping passing case: $RIN $CIN $COUT $IN_BITS $W_BITS"
+    elif REBUILD="$REBUILD_FIRST" bash "$SCRIPT_DIR/run_param_test.sh" "$RIN" "$CIN" "$COUT" "$IN_BITS" "$W_BITS"; then
+      STATUS=PASS
+    else
+      STATUS=FAIL
     fi
-
-    echo "------------------------------------------------"
-    echo "Running: RIN=$RIN CIN=$CIN COUT=$COUT IN_BITS=$IN_BITS W_BITS=$W_BITS"
-    echo "------------------------------------------------"
-
-    # Execute test
-    $SCRIPT "$RIN" "$CIN" "$COUT" "$IN_BITS" "$W_BITS"
-
+    REBUILD_FIRST=0
+    if [[ "$STATUS" == PASS ]]; then PASSED=$((PASSED+1)); else FAILED=$((FAILED+1)); fi
+    printf '%s,%s,%s,%s,%s,%s,%s\n' "$RIN" "$CIN" "$COUT" "$IN_BITS" "$W_BITS" "$STATUS" "$LOG" >> "$SUMMARY"
   done
 done
-
-echo "All runs completed successfully."
+printf 'Sweep finished: %s PASS, %s FAIL. Summary: %s\n' "$PASSED" "$FAILED" "$SUMMARY"
+(( FAILED == 0 ))

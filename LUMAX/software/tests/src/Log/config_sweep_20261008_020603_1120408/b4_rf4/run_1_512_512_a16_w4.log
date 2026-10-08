@@ -1,0 +1,24 @@
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+Mismatch [0,128]: HW=425081 SW=1958024
+Mismatch [0,129]: HW=2220403 SW=635766
+Mismatch [0,130]: HW=3055048 SW=1278880
+Mismatch [0,131]: HW=2608944 SW=3058231
+Mismatch [0,132]: HW=2815125 SW=-459237
+Mismatch [0,133]: HW=1252176 SW=428627
+Mismatch [0,134]: HW=2240034 SW=3489016
+Mismatch [0,135]: HW=-3933824 SW=-1733599
+Exact matches:    128/512 
+FAIL (384 elements exceeded tolerance)
+HW_CYCLES total=74114 load_x=466 generate_brams=640 load_w=60613 select_accumulate=70656 store_o=2033 load_w_and_select=70975
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+*** FAILED *** (tohost = 1)
+[1257875000] %Error: TestHarness.sv:99: Assertion failed in TOP.TestDriver.testHarness: Assertion failed: *** FAILED *** (exit code =          1)
+
+    at SimTSI.scala:21 assert(!error, "*** FAILED *** (exit code = %%d)\n", exit >> 1.U)
+
+%Error: /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestHarness.sv:99: Verilog $stop
+Aborting...
+TEST [FAIL] simulator_exit=255 log_exit=0

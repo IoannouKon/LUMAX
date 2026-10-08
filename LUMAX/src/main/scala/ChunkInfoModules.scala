@@ -231,8 +231,8 @@ class ChunkInfoModule_D(params: LUMAXParams, max_w_elems: Int, max_x_regs :Int) 
     val dma_counter_d     = Input(UInt(log2Ceil(math.max(max_x_regs, params.Cout) + 1).W))
     val mul1              = Input(UInt(16.W))
     val mul2              = Input(UInt(16.W))
-    val input_bits        = Input(UInt(4.W))
-    val max_bits          = Input(UInt(4.W))
+    val input_bits        = Input(UInt(6.W))
+    val max_bits          = Input(UInt(6.W))
 
     val bytes_to_read         = Output(UInt(4.W)) // Max is ceil(log2(16+2)) = 5~6
     val reg_idx_start         = Output(UInt(((log2Ceil(max_w_elems) + 1).W)))

@@ -64,7 +64,7 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   )
 
   mem.a.bits := a_bits
-  mem.a.valid := io.valid // && hasFree
+  mem.a.valid := io.valid && hasFree
   io.a_fire := mem.a.fire //()
   io.a_cor := mem.a.bits.corrupt
 
@@ -85,6 +85,6 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
 
   io.SourceOut := nextSource
   io.busy := outstanding.reduce(_ && _)
-  io.empty := outstanding.reduce(_ && !_)
+  io.empty := !outstanding.asUInt.orR
   io.err := false.B // Optional error logic can go here
 }

@@ -2,7 +2,7 @@
 
 [Project overview](../../../README.md) · [Accelerator design](../../README.md) · [Performance model](../../../Performance%20Modeling/README.md)
 
-This guide distinguishes three sources of results: the supplied LUMIXED manuscript, historical Verilator logs committed under [src/Log](src/Log), and estimates from the Python model. Updating this documentation did not run new RTL simulations, FPGA experiments, or ASIC synthesis.
+This guide distinguishes three sources of results: the supplied LUMIXED manuscript, historical Verilator logs committed under [src/Log](src/Log), and estimates from the Python model. The tables below describe the original historical snapshot. For the current Chipyard 1.13.0 workflow and new verification, see [the version-specific guide](../../../chipyard-1.13.0/README.md).
 
 ## Experimental setup reported in the paper
 
@@ -124,6 +124,6 @@ For a specified measured cycle scope `C` and clock `f` in Hz, elapsed time is `C
 4. For bare metal use `BAREMETAl_NEW=0` and `bash build.sh baremetal`. Set `Debug=0` if matrix dumps are not needed. Follow the root README's simulator commands and save stdout/stderr with the configuration metadata.
 5. Require an explicit correctness PASS before treating timing as validated. Record source revisions, tool versions, complete hardware parameters, clock, dimensions, precision, timing scope, and repeat-run variation.
 
-The [parameter script](src/run_param_test.sh) can automate parameter edits and logging after its stale `DataReuseRocketConfig` names are reconciled. It edits C defines in place and uses `tee` without `pipefail`; its final PASS/FAIL line should not replace checking build/simulator completion and the C correctness report. Review the other batch scripts' paths/configuration names before running them.
+The updated [parameter script](src/run_param_test.sh) defaults to `LUMAXROcketConfig`, edits C defines in place, and checks both simulator completion and the exact C correctness result. It uses `pipefail` and returns nonzero on failures. [The 1.13 guide](../../../chipyard-1.13.0/README.md) documents host-prepared vectors, the original on-core path, and waveform runs.
 
 For FPGA measurements, complete `KostisZCU106Config` as described in the root README and record the implemented clock and tool reports. For Linux, also set `BAREMETAl_NEW=1`, compile with `bash build.sh linux`, and supply a matching `/dev/my_accel` driver, DMA buffer mapping, and Linux boot environment. The build script does not switch the C mode macro. This repository does not supply the driver, full board boot image, ASIC technology libraries, or complete paper workloads; the manuscript's full evaluation cannot be reproduced solely from these files.

@@ -1,0 +1,10 @@
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+Exact matches:    32/32 
+PASS (All elements)
+HW_CYCLES total=1582 load_x=164 generate_brams=80 load_w=1225 select_accumulate=672 store_o=130 load_w_and_select=1208
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+TEST [PASS]

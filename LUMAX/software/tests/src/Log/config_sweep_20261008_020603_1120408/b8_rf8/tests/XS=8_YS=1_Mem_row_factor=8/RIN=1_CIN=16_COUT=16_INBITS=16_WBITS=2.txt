@@ -1,0 +1,16 @@
+CONFIG=LUMAXROcketConfig XS=8 YS=1 RF=8 RIN=1 CIN=16 COUT=16 IN=16 W=2
+TEST_SEED=1 QUIET_TEST=1 TEST_PATTERN=0
+FAST_VECTORS=1
+REFERENCE=HOST_PYTHON
+b4c49971624ee229cf62845395684c72fbef7f3ea2b8b5c2b34e6363d84398d7  /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/b8_rf8/simulator-LUMAXROcketConfig
+cf0bdac5147ab2e011da7d072182fafcc87603547a54301c72b27fd2afd30ed4  /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Linear-sw.c
+4c39ecb9ff2a1cd058c2d3d1538a97dcab19dfef97085b711799da2d8de03053  /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Config.scala
+c98e855c510f88241ed9fd83f2ee034f3fc2ec4e7d7e0b37940ddca422469c17  /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/prepare_test_vectors.py
+eda96497ffaadbece73ec4828fab6977be43924f227abbe1a353cc415d36b18a  /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/lumax_test_vectors.h
+Exact matches:    16/16 
+PASS (All elements)
+HW_CYCLES total=256 load_x=43 generate_brams=4 load_w=137 select_accumulate=112 store_o=68 load_w_and_select=141
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+TEST [PASS]

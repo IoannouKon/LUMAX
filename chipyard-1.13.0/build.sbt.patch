@@ -1,0 +1,25 @@
+diff --git a/build.sbt b/build.sbt
+index f50564e6..5fbbe5da 100644
+--- a/build.sbt
++++ b/build.sbt
+@@ -157,6 +157,7 @@ lazy val chipyard = (project in file("generators/chipyard"))
+   .dependsOn(testchipip, rocketchip, boom, rocketchip_blocks, rocketchip_inclusive_cache,
+     dsptools, rocket_dsp_utils,
+     gemmini, icenet, tracegen, cva6, nvdla, sodor, ibex, fft_generator,
++    LUMAX, // Kostis Thesis
+     constellation, mempress, barf, shuttle, caliptra_aes, rerocc,
+     compressacc, saturn, ara, firrtl2_bridge, vexiiriscv)
+   .settings(libraryDependencies ++= rocketLibDeps.value)
+@@ -248,6 +249,12 @@ lazy val gemmini = freshProject("gemmini", file("generators/gemmini"))
+   .settings(libraryDependencies ++= rocketLibDeps.value)
+   .settings(commonSettings)
+ 
++lazy val LUMAX = (project in file("generators/LUMAX")) //Kostis Thesis
++  .dependsOn(rocketchip)
++  .settings(libraryDependencies ++= rocketLibDeps.value)
++  .settings(commonSettings)
++
++
+ lazy val nvdla = (project in file("generators/nvdla"))
+   .dependsOn(rocketchip)
+   .settings(libraryDependencies ++= rocketLibDeps.value)

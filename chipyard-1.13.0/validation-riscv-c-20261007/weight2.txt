@@ -1,0 +1,8 @@
+REFERENCE=RISCV_C INPUT_BITS=16 WEIGHT_BITS=2 RIN=1 CIN=4 COUT=4 XS=2 RF=8
+SW Mat-Mul Start
+SW Mat-Mul 1064 cycles
+Exact matches:    4/4 
+PASS (All elements)
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /home/kioannou/chipyard_1.13.0/sims/verilator/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish

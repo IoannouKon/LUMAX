@@ -74,7 +74,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val delay         = RegInit(false.B)
   val delay_counter = RegInit(0.U(3.W))  // Enough to count up to 2
 
-  val sum    = Reg(Vec(totalSyncMems, SInt(params.XBitWidth.W)))  // sum in Select Products and Accumulation
+  val sum    = Reg(Vec(totalSyncMems, SInt((params.XBitWidth + 1).W)))  // sum in Select Products and Accumulation
   val DATA_Y = Reg(Vec(totalSyncMems, UInt(product_bitwidth.W)))                   // Store read results
   val Sign   = Reg(Vec(totalSyncMems, Bool()))                                     // Store the sign as a boolean (true/false) for each BRAM 
   val Products = RegInit(VecInit(Seq.fill(totalSyncMems)(0.U(product_bitwidth.W)))) // Store read results
@@ -300,6 +300,39 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
 //////////////////////////////////////////////////////////////// Help Functions //////////////////////////////////////////////////////// 
  
+// Scatter the valid portion of a DMA beat into the banks used by selection.
+// Small columns may start inside a beat or span more than one bank.
+private def storePackedResponse(
+  memories: Seq[SyncReadMem[UInt]],
+  precision: UInt,
+  firstElement: UInt,
+  elementCount: UInt,
+  linearElement: UInt
+): Unit = {
+  val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
+  val elementsPerWord = params.DMA_bits.U / precision
+  val beatOffset = (linearElement * precision) & (params.DMA_bits - 1).U
+  val responseEnd = firstElement + elementCount
+  for (bank <- 0 until totalSyncMems) {
+    val bankStart = bank.U * elementsPerBank
+    val first = firstElement.max(bankStart)
+    val end = responseEnd.min(bankStart + elementsPerBank)
+    when(first < end) {
+      val local = first - bankStart
+      val row = local / elementsPerWord
+      val bitOffset = Wire(UInt(log2Ceil(params.DMA_bits).W))
+      bitOffset := (local % elementsPerWord) * precision
+      val responseShift = Wire(UInt(log2Ceil(params.DMA_bits).W))
+      responseShift := beatOffset + (first - firstElement) * precision
+      val validBits = Wire(UInt(log2Ceil(params.DMA_bits + 1).W))
+      validBits := (end - first) * precision
+      val mask = ((1.U((params.DMA_bits + 1).W) << validBits) - 1.U)(params.DMA_bits - 1, 0)
+      val packed = ((dma.io.readData >> responseShift) & mask) << bitOffset
+      memories(bank).write(row, packed)
+    }
+  }
+}
+
 private def dmaRequest(
   index: UInt,
   elemsPerReg: UInt,
@@ -317,6 +350,7 @@ private def dmaRequest(
   dma.io.addr  := chunk_addres
   dma.io.valid := true.B
 
+  when(dma.io.a_fire) {
   // update DMA counter
   dma_counter_a := dma_counter_a + elements_to_read
 
@@ -342,8 +376,9 @@ private def dmaRequest(
 
   chunk_addres := chunkInfoModule_A.io.chunk_address
 
-  // return updated index
-  index_next
+  }
+  Mux(dma.io.a_fire, index_next, index)
+
 }
 
 private def dmaResponce(
@@ -666,75 +701,11 @@ for (i <- 0 until totalSyncMems) {
 
 // ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
 
-val splitBanks = (elemsPerChunk_in / blocks_in_Sync_mem).min(totalSyncMems.U) // In how many banks must splited 
-val splitEnable = splitBanks > 1.U //elemsPerChunk_in  > blocks_in_Sync_mem // If 64 bits must splited to more Banks 
-when(dma.io.d_valid) { 
-  val remainElems = elemsPerChunk_in - splitBanks * blocks_in_Sync_mem // How many elements remain after spliting to full banks
-  SplitEnable  := splitEnable
-  SplitCounter := splitBanks -1.U 
-}  
-
-when(SplitEnable) {
-  SplitCounter := SplitCounter - 1.U
-  SplitEnable := (SplitCounter -1.U)=/= 0.U
-  }
-
- when(dma.io.d_valid || SplitEnable ) { 
-
-    val data  = dma.io.readData 
-    val currentElements = Mux(splitEnable, blocks_in_Sync_mem*input_bits, elements_to_read_temp*input_bits)
-
-    // Inputs 
-    val currentData   = Mux(SplitEnable, 0.U, data)
-    val currentValid  = elements_to_read_temp * input_bits //Mux(!split_ready,  elements_to_read_temp * input_bits, 0.U) 
-    val prevData      = dataResponse 
-    val prevValid     = usedResponse 
-
-    def maskBits(data: UInt, valid: UInt): UInt = {
-      val mask = Mux(valid === params.DMA_bits.U,
-        Fill(params.DMA_bits, 1.U(1.W)),
-        ((1.U((params.DMA_bits + 1).W) << valid) - 1.U)(params.DMA_bits - 1, 0)
-      )
-      data & mask
-    }
-
-    val prevMasked    = maskBits(prevData, prevValid)
-    val currentMasked = maskBits(currentData, currentValid)
-
-    val combined      = prevMasked | (currentMasked << prevValid)
-    val combinedValid = prevValid + currentElements
-
-    // val writeData     = combined(params.DMA_bits - 1, 0)
-    val mask = (1.U << currentElements) - 1.U
-    val writeData =Mux(splitEnable, combined(params.DMA_bits - 1, 0) & mask, data)
-    // val nextValid     = combinedValid - params.DMA_bits.U
-    val nextValid = (combinedValid.asSInt - params.DMA_bits.S).abs.asUInt
-    // val nextData = ((combined >> params.DMA_bits).asUInt)(params.DMA_bits - 1, 0)
-    val nextData = ((combined >> currentElements).asUInt)(params.DMA_bits - 1, 0)
-    
-    //Outputs 
-    usedResponse := nextValid 
-    dataResponse := nextData
-
-    // --> Write data to memory row 
-    for (i <- 0 until totalSyncMems) {
-        when (counter_mem === i.U) {
-          I_MEM(i).write(counter_row, writeData)
-        }
-    }
-
-    // --> Update Counters 
-    when((storedInBlock.asSInt >= (blocks_in_Sync_mem - elemsPerChunk_in).asSInt)) {
-      counter_row := 0.U
-      counter_mem := counter_mem + 1.U 
-      storedInBlock :=  0.U 
-    }. otherwise { 
-      counter_row := counter_row + 1.U
-      storedInBlock := storedInBlock + elemsPerChunk_in
-    }   
-
- }
- // ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
+when(dma.io.d_valid) {
+  storePackedResponse(I_MEM, input_bits, dma_counter_d,
+    elements_to_read_temp, mul1 + j_x_temp)
+}
+// ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
 
 
 // ------------- Sync Read Memory System ------------------ // 
@@ -1150,7 +1121,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
               val data_64 =  W_wire(buff_idx)(bank_w_idx) 
               val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
               val W_value = bytes_8(byte_w_idx)  
-              val shift_amt   = shiftedVec(sync_mem_idx) 
+              val shift_amt   = offset_new * weight_bits 
 
             // ------------- Sync Read Memory System ------------------ // 
 
@@ -1245,7 +1216,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
             DATA_Y(sync_mem_idx) := RegNext(y_th_x_reg)
 
-            val abs_val_new = Mux(sign_X_reg_part < 0.S, -sign_X_reg_part, sign_X_reg_part)
+            val extended_activation = sign_X_reg_part.pad(params.XBitWidth + 1)
+            val abs_val_new = Mux(extended_activation < 0.S, -extended_activation, extended_activation)
             val signed_val  = Mux(product_sign === 1.U, -abs_val_new, abs_val_new)
 
             val disable = (abs_weight_uint(0) === 0.U) || (abs_weight_uint === 0.U)  || !w_reg_valid_temp
@@ -1507,9 +1479,9 @@ is(sStoreOutput) {
 
         dma.io.addr   := chunk_address
         dma.io.valid  := true.B
+        when(dma.io.a_fire) {
         dma_counter_a := dma_counter_a + R_elems_per_chunk
         dma_send      := dma_counter_a < cout_reg - R_elems_per_chunk
-        dma.io.valid  := true.B
 
         for (i <- 0 until elems_per_chunk) {
           when(i.U < R_elems_per_chunk) {
@@ -1519,6 +1491,8 @@ is(sStoreOutput) {
 
         lock    := true.B 
         j_o := j_o + R_elems_per_chunk 
+
+        }
 
       }
 
@@ -1721,80 +1695,16 @@ is(sStoreOutput) {
         offset_in_chunk_2 := chunkInfoModule_D.io.offset_in_chunk_1
       }
 
-    val splitBanks = (elemsPerChunk_w / blocks_in_Sync_mem).min(totalSyncMems.U) // In how many banks must splited 
-    val splitBanks_real = (elemsPerChunk_w / blocks_in_Sync_mem).min(params.W_BUFFS.U*totalSyncMems.U) // In how many banks must splited 
-    val splitEnable = splitBanks > 1.U //elemsPerChunk_in  > blocks_in_Sync_mem // If 64 bits must splited to more Banks 
-
-    when(dma.io.d_valid) { 
-      val remainElems = elemsPerChunk_w - splitBanks * blocks_in_Sync_mem // How many elements remain after spliting to full banks
-
-      SplitEnable  := splitEnable
-      SplitCounter := splitBanks -1.U 
-    }  
-
-    when(SplitEnable) {
-      SplitCounter := SplitCounter - 1.U
-      SplitEnable := (SplitCounter - 1.U) =/= 0.U
+    when(dma.io.d_valid) {
+      for (b <- 0 until buffers) {
+        when(buff_index === b.U) {
+          storePackedResponse(W_MEM(b), weight_bits, dma_counter_d,
+            elements_to_read_temp, mul1 + i_w_temp)
+        }
+      }
+      valid_weights(buff_index) := valid_weights(buff_index) + elements_to_read_temp
     }
 
-    when(dma.io.d_valid  || SplitEnable) { 
-
-          val data  = dma.io.readData 
-          // val elements = elements_to_read_temp  * 2.U //(splitBanks_real/splitBanks)
-          val currentElements = Mux(splitEnable, blocks_in_Sync_mem*weight_bits, elements_to_read_temp*weight_bits)
-
-          // Inputs 
-          val currentData   = Mux(SplitEnable, 0.U, data)
-          val currentValid  = elements_to_read_temp * weight_bits
-          val prevData      = dataResponse_w 
-          val prevValid     = usedResponse_w 
-
-          def maskBits(data: UInt, valid: UInt): UInt = {
-            val mask = Mux(valid === params.DMA_bits.U,
-              Fill(params.DMA_bits, 1.U(1.W)),
-              ((1.U((params.DMA_bits + 1).W) << valid) - 1.U)(params.DMA_bits - 1, 0)
-            )
-            data & mask
-          }
-
-          val prevMasked    = maskBits(prevData, prevValid)
-          val currentMasked = maskBits(currentData, currentValid)
-
-          val combined      = prevMasked | (currentMasked << prevValid)
-          val combinedValid = prevValid + currentElements //currentValid
-
-          val mask = (1.U << currentElements) - 1.U
-          val writeData =Mux(splitEnable, combined(params.DMA_bits - 1, 0) & mask, data)
-          val nextValid = (combinedValid.asSInt - params.DMA_bits.S).abs.asUInt
-          val nextData = ((combined >> currentElements).asUInt)(params.DMA_bits - 1, 0)
-          
-          //Outputs 
-          usedResponse_w := nextValid 
-          dataResponse_w := nextData
-
-          valid_weights(buff_index) := valid_weights(buff_index) +  bytes_to_read //elements 
-
-          // --> Write data to memory row 
-          for (b <- 0 until buffers) {
-            for (i <- 0 until totalSyncMems) {
-              when (buff_index === b.U && (counter_mem_w === i.U)) {
-                W_MEM(b)(i).write(counter_row_w, writeData)
-              }
-            }
-          }
-
-          // update counters
-          when (storedInBlock_w.asSInt >= (blocks_in_Sync_mem.asSInt - (elemsPerChunk_w).asSInt)) {
-              counter_row_w := 0.U
-              storedInBlock_w := 0.U
-              counter_mem_w := counter_mem_w + 1.U
-           } .otherwise {
-              counter_row_w := counter_row_w + 1.U
-              storedInBlock_w := storedInBlock_w +  (elemsPerChunk_w)
-          } 
-
-      }
-     
       // when(dma.io.d_valid) { // // store responce data in Weights memory blocks 
 
       //   // ------------- Sync Read Memory System ------------------ // 
@@ -1823,13 +1733,7 @@ is(sStoreOutput) {
       // }
       
         
-      when((!dma_resp && !SplitEnable && !(dma.io.d_valid  && splitEnable)) || (splitBanks > totalSyncMems.U && SplitCounter ===  totalSyncMems.U) ) {  //!dma_resp && !dma_send //&& !dma_send
-
-             val splitBanks_real = (elemsPerChunk_w / blocks_in_Sync_mem).min(params.W_BUFFS.U*totalSyncMems.U) // In how many banks must splited 
-              when(splitBanks_real > splitBanks ){
-                SplitEnable  := splitEnable
-                SplitCounter := splitBanks   
-              } 
+      when(!dma_resp && !SplitEnable) {
 
             // ------------- Sync Read Memory System ------------------ // 
             counter_row_w := 0.U 

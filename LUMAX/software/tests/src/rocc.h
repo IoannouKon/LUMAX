@@ -51,7 +51,7 @@
     asm volatile (                                                           \
         ".word " STR(CUSTOMX(X, 1, 1, 1, rd_n, rs1_n, rs2_n, funct)) "\n\t"  \
         : "=r" (rd_)                                                         \
-        : [_rs1] "r" (rs1_), [_rs2] "r" (rs2_));                             \
+        : [_rs1] "r" (rs1_), [_rs2] "r" (rs2_) : "memory");                             \
     rd = rd_;                                                                \
   }
 
@@ -60,7 +60,7 @@
     register uint64_t rs1_ asm ("x" # rs1_n) = (uint64_t) rs1;            \
     asm volatile (                                                        \
         ".word " STR(CUSTOMX(X, 1, 1, 0, rd_n, rs1_n, rs2, funct)) "\n\t" \
-        : "=r" (rd_) : [_rs1] "r" (rs1_));                                \
+        : "=r" (rd_) : [_rs1] "r" (rs1_) : "memory");                                \
     rd = rd_;                                                             \
   }
 
@@ -68,7 +68,7 @@
     register uint64_t rd_  asm ("x" # rd_n);                             \
     asm volatile (                                                       \
         ".word " STR(CUSTOMX(X, 1, 0, 0, rd_n, rs1, rs2, funct)) "\n\t"  \
-        : "=r" (rd_));                                                   \
+        : "=r" (rd_) : : "memory");                                                   \
     rd = rd_;                                                            \
   }
 
@@ -77,19 +77,19 @@
     register uint64_t rs2_ asm ("x" # rs2_n) = (uint64_t) rs2;            \
     asm volatile (                                                        \
         ".word " STR(CUSTOMX(X, 0, 1, 1, rd, rs1_n, rs2_n, funct)) "\n\t" \
-        :: [_rs1] "r" (rs1_), [_rs2] "r" (rs2_));                         \
+        :: [_rs1] "r" (rs1_), [_rs2] "r" (rs2_) : "memory");                         \
   }
 
 #define ROCC_INSTRUCTION_I_R_I(X, rd, rs1, rs2, funct, rs1_n) {         \
     register uint64_t rs1_ asm ("x" # rs1_n) = (uint64_t) rs1;          \
     asm volatile (                                                      \
         ".word " STR(CUSTOMX(X, 0, 1, 0, rd, rs1_n, rs2, funct)) "\n\t" \
-        :: [_rs1] "r" (rs1_));                                          \
+        :: [_rs1] "r" (rs1_) : "memory");                                          \
   }
 
 #define ROCC_INSTRUCTION_I_I_I(X, rd, rs1, rs2, funct) {                 \
     asm volatile (                                                       \
-        ".word " STR(CUSTOMX(X, 0, 0, 0, rd, rs1, rs2, funct)) "\n\t" ); \
+        ".word " STR(CUSTOMX(X, 0, 0, 0, rd, rs1, rs2, funct)) "\n\t" ::: "memory"); \
   }
 
 #endif  // SRC_MAIN_C_ACCUMULATOR_H
