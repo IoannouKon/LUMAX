@@ -29,7 +29,7 @@ if [[ "$SHOW_HELP" == 1 ]]; then
 elif [[ "$BACKGROUND" == 1 ]]; then
   command -v nohup >/dev/null && command -v setsid >/dev/null || { echo 'Background mode requires nohup and setsid.' >&2; exit 2; }
   if [[ -z "$OUTPUT" ]]; then
-    OUTPUT="$SCRIPT_DIR/Log/config_sweep_$(date +%Y%m%d_%H%M%S)_$$"
+    OUTPUT="$SCRIPT_DIR/Log/run_$(date +%Y%m%d_%H%M%S)"
     ARGS+=(--output "$OUTPUT")
   fi
   mkdir -p -- "$(dirname -- "$OUTPUT")"

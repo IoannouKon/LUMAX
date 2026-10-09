@@ -113,7 +113,7 @@ for key in (
 PY
 ```
 
-For this example, the checked-in model returns **2,524 cycles**: 65 input-load, 160 generation, 2,170 weight/select, and 129 output-store cycles. This is a model output, not a new simulation. The [corresponding historical log](../LUMAX/software/tests/src/Log/XS=2_YS=1_Mem_row_factor=8/RIN=1_CIN=64_COUT=64_INBITS=16_WBITS=4.txt) reports 2,885 accelerator-stage cycles and 4,768 host-bracketed cycles. The log does not record every model assumption, so this single example does not establish model accuracy.
+For this example, the checked-in model returns **2,524 cycles**: 65 input-load, 160 generation, 2,170 weight/select, and 129 output-store cycles. This is a model output, not a new simulation. The [final matching configuration log](../LUMAX/software/tests/src/Log/run_20261008_193240/b2_rf8/tests/X1x64_W64x64_A16_W4.log) reports 2,851 accelerator-stage cycles. The log does not record every model assumption, so this single example does not establish model accuracy.
 
 ## Interactive plots
 

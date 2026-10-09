@@ -10,12 +10,12 @@ if [ ! -d "$LOG_DIR" ]; then
 fi
 
 echo "Scanning logs for failures..."
-echo "Reporting format: [Index] [Path/To/Subfolder/Filename.txt]"
+echo "Reporting format: [Index] [Path/To/Subfolder/Filename.log]"
 echo "----------------------------------------------------"
 
 # Capture the list of failed files
 # We use 'nl' to add the [1], [2] formatting
-FAILED_LIST=$(find "$LOG_DIR" -type f -name "*.txt" -exec grep -l "TEST \[FAIL\]" {} + | nl -s " " -w 2 -n ln | sed 's/^\([0-9]\+\)/[\1]/')
+FAILED_LIST=$(find "$LOG_DIR" -type f \( -name "*.txt" -o -name "*.log" \) -exec grep -l "TEST \[FAIL\]" {} + | nl -s " " -w 2 -n ln | sed 's/^\([0-9]\+\)/[\1]/')
 
 if [ -n "$FAILED_LIST" ]; then
     echo "$FAILED_LIST"

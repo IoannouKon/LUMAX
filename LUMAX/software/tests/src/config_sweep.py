@@ -64,7 +64,7 @@ def hardware_cycles(content):
     return {field: int(values[key]) if key in values else '' for field, key in CYCLE_FIELDS.items()}
 
 def write_summary(folder, records, reference):
-    with (folder / 'summary.csv').open('w', newline='') as stream:
+    with (folder / 'total_results.csv').open('w', newline='') as stream:
         writer = csv.DictWriter(stream, fieldnames=FIELDS)
         writer.writeheader()
         writer.writerows(records)
@@ -73,14 +73,14 @@ def write_summary(folder, records, reference):
              '|---:|---:|---:|---:|---:|---:|---:|---:|']
     for b, rf in GEOMETRIES:
         counts = collections.Counter(row['status'] for row in records if int(row['b']) == b and int(row['RF']) == rf)
-        lines.append(f'| {b} | {rf} | {64*rf} | ' + ' | '.join(str(counts[s]) for s in ['PASS', 'FAIL', 'TIMEOUT', 'BUILD_FAIL', 'ERROR']) + ' |')
+        lines.append(f'| [{b}](b{b}_rf{rf}/results.md) | {rf} | {64*rf} | ' + ' | '.join(str(counts[s]) for s in ['PASS', 'FAIL', 'TIMEOUT', 'BUILD_FAIL', 'ERROR']) + ' |')
     counts = collections.Counter(row['status'] for row in records)
     lines += ['', f'Completed {len(records)}/180 tests. Counts: {dict(counts)}.', '',
               'Each geometry tests 1×K times K×K for K=4,8,16,32,64,128,256,512,',
               'plus 1×64 times 64×16 and 1×128 times 128×32.',
               'Every shape uses input16 and weight2/weight4/weight8; output32.',
-              '', 'See summary.csv for individual results and log paths.',
-              'Hardware cycle counters are saved in each test log and the hw_* columns in summary.csv.',
+              '', 'See total_results.csv for individual results and log paths.',
+              'Hardware cycle counters are saved in each test log and the hw_* columns in total_results.csv.',
               'hw_cycles = Load X + Generate BRAMs + combined Load W/Select + Store O hardware counters.',
               'Load W and Select counters describe overlapping activity; do not add them again to hw_cycles.',
               'Hardware counters exclude CPU reference calculation and host simulation time; seconds is wall-clock runner time.',
@@ -90,7 +90,24 @@ def write_summary(folder, records, reference):
                   'Python prepares the inputs, packed weights, and exact integer reference on the host.'
                   if reference == 'python' else
                   'The RISC-V CPU generates inputs and computes the pure-C reference.')]
-    (folder / 'REPORT.md').write_text('\n'.join(lines) + '\n')
+    (folder / 'total_results.md').write_text('\n'.join(lines) + '\n')
+    for b, rf in GEOMETRIES:
+        group = folder / f'b{b}_rf{rf}'
+        group.mkdir(exist_ok=True)
+        rows = [row for row in records if int(row['b']) == b and int(row['RF']) == rf]
+        with (group / 'results.csv').open('w', newline='') as stream:
+            writer = csv.DictWriter(stream, fieldnames=FIELDS)
+            writer.writeheader()
+            writer.writerows(rows)
+        counts = collections.Counter(row['status'] for row in rows)
+        report = [f'# Configuration b={b}, RF={rf}', '', f'Completed {len(rows)}/30: {dict(counts)}.', '',
+                  '[All results](../total_results.md) · [CSV](results.csv)', '',
+                  '| X | W | A bits | W bits | Result | Exact matches | HW cycles | Log |',
+                  '|---|---|---:|---:|---|---|---:|---|']
+        for row in rows:
+            log = Path(os.path.relpath(row['log'], group))
+            report.append(f"| {row['RIN']}×{row['CIN']} | {row['CIN']}×{row['COUT']} | {row['IN_BITS']} | {row['W_BITS']} | {row['status']} | {row['exact_matches']} | {row['hw_cycles']} | [log]({log}) |")
+        (group / 'results.md').write_text('\n'.join(report) + '\n')
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -112,14 +129,14 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         parser.error('Another configuration sweep is running.')
-    folder = (args.output or script / 'Log' / time.strftime('config_sweep_%Y%m%d_%H%M%S')).resolve()
+    folder = (args.output or script / 'Log' / time.strftime('run_%Y%m%d_%H%M%S')).resolve()
     if folder.exists() and any(folder.iterdir()) and not args.resume:
         parser.error('Output directory is nonempty; choose a new directory or --resume.')
     folder.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
     env.update(CONFIG='LUMAXROcketConfig', REBUILD='0',
                FAST_VECTORS='1' if args.reference == 'python' else '0',
-               REQUIRE_RISCV_REFERENCE='0' if args.reference == 'python' else '1', QUIET_TEST='1', DRAMSIM='0',
+               REQUIRE_RISCV_REFERENCE='0' if args.reference == 'python' else '1', QUIET_TEST='1', DRAMSIM='0', LUMAX_LOG_FLAT='1',
                TEST_CFLAGS='-O2', TEST_SEED=env.get('TEST_SEED', '1'), TEST_PATTERN=env.get('TEST_PATTERN', '0'),
                TIMEOUT_SECONDS=env.get('TIMEOUT_SECONDS', '3600'), TIMEOUT_CYCLES=env.get('TIMEOUT_CYCLES', '1000000000'))
     manifest = {'geometries': GEOMETRIES, 'cases': CASES, 'base_config': original,
@@ -130,17 +147,19 @@ def main():
               script/'Linear-sw.c', script/'rocc.h', script/'compiler.h', script/'build.sh',
               script/'run_param_test.sh', script/'prepare_test_vectors.py', Path(__file__)]:
         manifest['sources'][str(p.relative_to(cy))] = digest(p)
-    manifest_path = folder / 'manifest.json'
+    artifacts = folder / 'artifacts'
+    artifacts.mkdir(exist_ok=True)
+    manifest_path = artifacts / 'manifest.json'
     if args.resume and (not manifest_path.exists() or json.loads(manifest_path.read_text()) != json.loads(json.dumps(manifest))):
         parser.error('Source/configuration/test flags differ from saved manifest; start a new sweep.')
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
     records = []
     prior = {}
-    if args.resume and (folder/'summary.csv').exists():
-        with (folder/'summary.csv').open() as stream:
+    if args.resume and (folder/'total_results.csv').exists():
+        with (folder/'total_results.csv').open() as stream:
             for row in csv.DictReader(stream):
                 prior[tuple(int(row[k]) for k in ['b', 'RF', 'RIN', 'CIN', 'COUT', 'IN_BITS', 'W_BITS'])] = row
-    backup = folder / ('backup_' + time.strftime('%Y%m%d_%H%M%S'))
+    backup = artifacts / ('backup_' + time.strftime('%Y%m%d_%H%M%S'))
     backup.mkdir()
     saved = [scala] + [script / name for name in ['Linear-sw.c', 'Linear-sw.o', 'Linear-sw.riscv', 'lumax_test_vectors.h']]
     for path in saved:
@@ -154,23 +173,25 @@ def main():
             group = folder / f'b{b}_rf{rf}'
             group.mkdir(exist_ok=True)
             scala.write_text(geometry_config(original, b, rf))
-            shutil.copy2(scala, group / 'Config.scala')
-            sim = group / 'simulator-LUMAXROcketConfig'
+            design = group / 'design'
+            design.mkdir(exist_ok=True)
+            shutil.copy2(scala, design / 'Config.scala')
+            sim = design / 'simulator-LUMAXROcketConfig'
             build_ok = False
-            marker = group / 'simulator.sha256'
+            marker = design / 'simulator.sha256'
             if args.resume and sim.exists() and marker.exists() and digest(sim) == marker.read_text().strip():
                 build_ok = True
             else:
                 print(f'Building b={b}, RF={rf}, n={64*rf} ...', flush=True)
                 result, elapsed = command(['make', '-j' + env.get('BUILD_JOBS', '8'), 'CONFIG=LUMAXROcketConfig',
-                                           'sim=' + str(sim), 'gen_dir=' + str(group / 'generated-src')],
-                                          cy/'sims/verilator', env, group/'build.log')
+                                           'sim=' + str(sim), 'gen_dir=' + str(design / 'generated-src')],
+                                          cy/'sims/verilator', env, design/'build.log')
                 build_ok = result == 0 and sim.is_file()
                 print(f'Build b={b}, RF={rf}: {"OK" if build_ok else "FAILED"} ({elapsed:.0f}s)', flush=True)
                 if build_ok: marker.write_text(digest(sim) + '\n')
-            design = group / 'generated-src'
-            if not args.keep_design and design.exists():
-                shutil.rmtree(design)
+            generated = design / 'generated-src'
+            if not args.keep_design and generated.exists():
+                shutil.rmtree(generated)
             for r, k, m, a, w in CASES:
                 key = (b, rf, r, k, m, a, w)
                 row = dict(zip(['b', 'RF', 'n', 'RIN', 'CIN', 'COUT', 'IN_BITS', 'W_BITS'], [b, rf, 64*rf, r, k, m, a, w]))
@@ -179,12 +200,12 @@ def main():
                 if build_ok and old and old['status'] == 'PASS' and Path(old['log']).exists() and 'TEST [PASS]' in Path(old['log']).read_text():
                     row = old
                 elif not build_ok:
-                    row.update(status='BUILD_FAIL', seconds='0', exact_matches='', exit_code='2', log=str(group/'build.log'))
+                    row.update(status='BUILD_FAIL', seconds='0', exact_matches='', exit_code='2', log=str(design/'build.log'))
                 else:
                     env.update(SIM_BIN=str(sim), LUMAX_LOG_DIR=str(group/'tests'))
-                    command_log = group / f'run_{r}_{k}_{m}_a{a}_w{w}.log'
+                    command_log = artifacts / f'b{b}_rf{rf}_X{r}x{k}_W{k}x{m}_A{a}_W{w}.log'
                     result, elapsed = command(['bash', str(script/'run_param_test.sh'), *map(str, (r, k, m, a, w))], script, env, command_log)
-                    case_log = group/'tests'/f'XS={b}_YS=1_Mem_row_factor={rf}'/f'RIN={r}_CIN={k}_COUT={m}_INBITS={a}_WBITS={w}.txt'
+                    case_log = group/'tests'/f'X{r}x{k}_W{k}x{m}_A{a}_W{w}.log'
                     content = case_log.read_text() if case_log.exists() else command_log.read_text()
                     exact = re.search(r'Exact matches:\s*(\d+/\d+)', content)
                     row.update(hardware_cycles(content))
@@ -205,12 +226,12 @@ def main():
             elif path.exists(): path.unlink()
         if not args.keep_design:
             for b, rf in GEOMETRIES:
-                design = folder / f'b{b}_rf{rf}' / 'generated-src'
+                design = folder / f'b{b}_rf{rf}' / 'design' / 'generated-src'
                 if design.exists(): shutil.rmtree(design)
         write_summary(folder, records, args.reference)
         print('Original Scala configuration and C test files restored.', flush=True)
     counts = collections.Counter(row['status'] for row in records)
-    print(f'Finished: {dict(counts)}. Report: {folder / "REPORT.md"}', flush=True)
+    print(f'Finished: {dict(counts)}. Report: {folder / "total_results.md"}', flush=True)
     return 0 if len(records) == 180 and counts['PASS'] == 180 else 1
 
 if __name__ == '__main__':

@@ -1,15 +1,10 @@
 # LUMAX on Chipyard 1.13.0
 
-**October 8 configuration sweep: 162 PASS, 18 FAIL across 180 tests.**
-See the [sweep guide](CONFIG_SWEEP.md) and
-[saved report](../LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/REPORT.md).
-All 18 failures are 1x512 times 512x512. The address-width and parallel-sum-width
-defects are documented in the
-[investigation](../LUMAX/software/tests/src/Log/config_sweep_20261008_020603_1120408/investigation/REPORT.md)
-and remain present in this snapshot.
+**Final validation: 180 PASS, 0 FAIL.** The 18 previously failing cases passed first, followed by the remaining 162 tests.
 
-Earlier normal and debug smoke tests passed with 64/64 exact matches;
-see [the October 7 report](validation-20261007/REPORT.md).
+[Final report](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.md) · [Per-test results](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.csv).
+
+The hardware includes a 20-bit flattened matrix index and widening to 32 bits before parallel signed reduction. The standalone overlay and deployed generator contain the same corrected RTL.
 
 The active Verilator workspace is `/home/kioannou/chipyard_1.13.0`.
 The generator is LUMAX. Keep Chipyard 1.13's own build and Rocket sources.
@@ -30,14 +25,11 @@ and `fpga/` are older overlays; do not replace 1.13 files with them.
 The generator retains the local October 6 fixes for packed DMA placement,
 request backpressure, precision width, packed-weight selection, and signed
 minimum inputs. The C test retains exact output checks and memory clobbers.
-The optional checkpoint hooks in the runners apply only when the Chipyard
-checkout contains `LUMAX_CHECKPOINT.txt`.
+
 
 ## Reproduce the smoke test
 
-Use the historically passing case from
-`../LUMAX/software/tests/src/Log/XS=2_YS=1_Mem_row_factor=8/RIN=1_CIN=64_COUT=64_INBITS=16_WBITS=4.txt`:
-XS=2, YS=1, RF=8; N=1, K=64, M=64; input16, weight4, output32.
+Use the validated configuration: XS=2, YS=1, RF=8; N=1, K=64, M=64; input16, weight4, output32.
 SCALE=false, DEBUG=true, DMA=64 bits, two request IDs, two weight buffers.
 
 ```bash
@@ -59,15 +51,23 @@ the pure-C matrix multiplication reference. Every LUMAX output is compared
 exactly with that CPU result. `FAST_VECTORS=1` selects the host-prepared reference
 for individual cases. The configuration sweep accepts `--reference python` for
 faster host preparation or `--reference riscv` for the default CPU reference.
-The October 8 full sweep used Python; the October 7 smoke-test report records
-the earlier host-reference runs.
+The final validation used Python for the reference; every accelerator output was produced by actual Verilator simulation.
 The test exits nonzero on a simulator failure, logging failure, or output mismatch.
 Relative `LUMAX_LOG_DIR` paths are resolved before entering the simulator directory.
 Debug runs record waveforms; `TRACE_INSTRUCTIONS=1` additionally enables instruction dumps.
 `QUIET_TEST=1` keeps output compact while retaining exact comparisons and the
 hardware cycle record. The sweep saves total and per-stage hardware counters in
-each test log and `summary.csv`. `--background` keeps a sweep running after SSH
+each test log and `total_results.csv`. `--background` keeps a sweep running after SSH
 disconnection, and `--keep-design` retains generated build artifacts when needed.
 
 FPGA bitstream work remains in the existing older workspace. This procedure
 validates Verilator integration only.
+
+## Six-configuration regression
+
+```bash
+cd /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src
+BUILD_JOBS=24 ./run_config_sweep.sh --background --reference python
+```
+
+This command builds a separate design with make for each b=2,4,8 and RF=4,8 pair, then runs 30 cases per design. The retained final validation reused six verified binaries built earlier with make; those binaries and build logs remain in the deployed final result directory under each configuration’s design/ directory. Python prepares the reference, while the compiled Verilator binary executes the RISC-V test.

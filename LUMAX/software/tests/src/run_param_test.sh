@@ -81,9 +81,14 @@ TEST_CFLAGS="${TEST_CFLAGS:--O2} $VECTOR_FLAGS -DLUMAX_QUIET_TEST=${QUIET_TEST:-
 LOG_BASE=${LUMAX_LOG_DIR:-$SCRIPT_DIR/Log}
 mkdir -p "$LOG_BASE"
 LOG_BASE=$(realpath "$LOG_BASE")
-SUB_LOG_DIR="$LOG_BASE/XS=${XS}_YS=${YS}_Mem_row_factor=${Mem_row_factor}"
+if [[ "${LUMAX_LOG_FLAT:-0}" == 1 ]]; then
+  SUB_LOG_DIR="$LOG_BASE"
+  LOG_FILE="$SUB_LOG_DIR/X${RIN}x${CIN}_W${CIN}x${COUT}_A${IN_BITS}_W${W_BITS}.log"
+else
+  SUB_LOG_DIR="$LOG_BASE/XS=${XS}_YS=${YS}_Mem_row_factor=${Mem_row_factor}"
+  LOG_FILE="$SUB_LOG_DIR/RIN=${RIN}_CIN=${CIN}_COUT=${COUT}_INBITS=${IN_BITS}_WBITS=${W_BITS}.txt"
+fi
 mkdir -p "$SUB_LOG_DIR"
-LOG_FILE="$SUB_LOG_DIR/RIN=${RIN}_CIN=${CIN}_COUT=${COUT}_INBITS=${IN_BITS}_WBITS=${W_BITS}.txt"
 {
   printf 'CONFIG=%s XS=%s YS=%s RF=%s RIN=%s CIN=%s COUT=%s IN=%s W=%s\n' "$CONFIG" "$XS" "$YS" "$Mem_row_factor" "$RIN" "$CIN" "$COUT" "$IN_BITS" "$W_BITS"
   printf "TEST_SEED=%s QUIET_TEST=%s TEST_PATTERN=%s\n" "${TEST_SEED:-1}" "${QUIET_TEST:-1}" "${TEST_PATTERN:-0}"

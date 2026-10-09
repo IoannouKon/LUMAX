@@ -31,17 +31,6 @@ python3 docs/extract_paper_figures.py /path/to/LUMIXED_ICCAD2026-1.pdf
 
 [extract_paper_figures.py](extract_paper_figures.py) records the page/crop coordinates. These coordinates apply to this specific manuscript layout. The design guide's Mermaid system diagram is a new explanatory diagram based on the source structure, not a figure extracted from the paper. No AI-generated images or reconstructed experimental data are used.
 
-## Saved-log plot and CSV
+## Final validation
 
-[plot_saved_measurements.py](plot_saved_measurements.py) parses the existing logs under `LUMAX/software/tests/src/Log` and creates:
-
-- [CSV with configuration, status, cycle counts, and source paths](assets/measurements/saved-simulation-cycles.csv).
-- [Plot of saved stage-counter cycles](assets/measurements/saved-simulation-cycles.png).
-
-Run with Python 3 and Matplotlib:
-
-```bash
-python3 docs/plot_saved_measurements.py
-```
-
-The CSV includes 28 passing, 20 failing, and one incomplete historical run. Failed points are explicitly marked in the plot; the incomplete run has no plotted cycle value. The script verifies the stage sum whenever all counters are available. It does not establish that the old logs correspond to the current RTL. See [measurements](../LUMAX/software/tests/README.md) for interpretation and reproduction limits.
+The [final report](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.md) and [CSV](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.csv) contain the retained 180 passing tests and hardware counters.

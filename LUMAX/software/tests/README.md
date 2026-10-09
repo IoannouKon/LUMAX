@@ -2,7 +2,7 @@
 
 [Project overview](../../../README.md) · [Accelerator design](../../README.md) · [Performance model](../../../Performance%20Modeling/README.md)
 
-This guide distinguishes three sources of results: the supplied LUMIXED manuscript, historical Verilator logs committed under [src/Log](src/Log), and estimates from the Python model. The tables below describe the original historical snapshot. For the current Chipyard 1.13.0 workflow and new verification, see [the version-specific guide](../../../chipyard-1.13.0/README.md).
+This guide covers the supplied LUMIXED manuscript, the final Chipyard 1.13.0 Verilator validation, and Python model estimates. For integration and test commands, see [the version-specific guide](../../../chipyard-1.13.0/README.md).
 
 ## Experimental setup reported in the paper
 
@@ -62,28 +62,11 @@ The manuscript reports 8.5% mean relative cycle-model error, and theoretical exp
 
 ## Saved simulation results
 
-The 49 `.txt` logs under `src/Log` record older `DataReuseRocketConfig` runs in a Chipyard 1.13.0 environment. Filenames encode matrix dimensions and precisions; parent directories encode `XS`, `YS`, and `Mem_row_factor`. They do not record a source commit, all DMA settings, or a complete toolchain manifest.
+The retained [final report](src/Log/run_20261008_193240/total_results.md) records **180 PASS, 0 FAIL**: 18 formerly failing cases tested first, followed by the other 162 cases. All comparisons are exact signed integer checks.
 
-| Saved configuration | PASS | FAIL | Incomplete |
-|---|---:|---:|---:|
-| `XS=2, YS=1, RF=1` | 4 | 0 | 0 |
-| `XS=2, YS=1, RF=8` | 15 | 8 | 1 |
-| `XS=4, YS=1, RF=8` | 9 | 12 | 0 |
-| **Total** | **28** | **20** | **1** |
+The six designs use b=2,4,8 and RF=4,8, YS=1, input16, weight2/4/8, output32. Each design tests square K=4,8,16,32,64,128,256,512 plus 1×64 times 64×16 and 1×128 times 128×32.
 
-PASS means the saved C test reports all outputs matching its software reference. Of the 20 FAIL logs, 19 report output mismatches and one (`XS=2,RF=8,N=1,K=M=512,A16/W8`) records a simulator assertion/abort without cycle measurements. Those runs do not establish correct accelerator performance. The incomplete `XS=2,RF=8,N=1,K=M=512,A16/W4` log stops after matrix generation. These historical failures do not identify which version or component caused them, and were not debugged as part of the documentation update.
-
-![Cycles in saved simulation logs, with correctness status](../../../docs/assets/measurements/saved-simulation-cycles.png)
-
-*Generated from saved logs, not from the paper: `N=1`, `K=M`, 16-bit activations, `YS=1`, `RF=8`. Circles/lines show passing runs; crosses show failing runs for diagnosis. Incomplete runs have no plotted cycle count. Lines connect sampled cases and are not predictions for unsampled dimensions.*
-
-The [CSV export](../../../docs/assets/measurements/saved-simulation-cycles.csv) preserves every parsed log, its status, result detail, counters, configuration, and source path. Missing measurements remain blank. `status=UNKNOWN` identifies the incomplete run. There are 46 logs with all four stage counters and a printed total; the passing `XS=2,RF=8,N=1,K=64,M=1,A16/W8` log has stage values but no printed total. Regenerate both CSV and plot from the repository root:
-
-```bash
-python3 docs/plot_saved_measurements.py
-```
-
-This command needs Matplotlib. It reads existing logs, checks that complete stage totals equal the sum of their four components, and writes documentation assets. It does not launch a simulator.
+[total_results.csv](src/Log/run_20261008_193240/total_results.csv) records every test, exact matches, hardware counters, wall time, and log path. The accelerator ran in compiled Verilator; Python prepared the reference. The six verified simulator builds were reused for this final rerun.
 
 ## Interpreting the counters
 
@@ -100,19 +83,7 @@ This command needs Matplotlib. It reads existing logs, checks that complete stag
 | `Load W Alone`, `Select Alone` | Separate activity counters; do not add them to the combined stage |
 | `Total` | Sum of the four main accelerator stages |
 
-For the [passing `XS=2,RF=8,N=1,K=M=64,A16/W4` example](src/Log/XS=2_YS=1_Mem_row_factor=8/RIN=1_CIN=64_COUT=64_INBITS=16_WBITS=4.txt):
-
-| Quantity | Saved cycles |
-|---|---:|
-| Load X | 87 |
-| Generate BRAMs | 160 |
-| Load W and Select | 2,369 |
-| Store O | 269 |
-| Accelerator stage total | 2,885 |
-| Host-bracketed HW Mat-Mul | 4,768 |
-| Software Mat-Mul | 907,312 |
-
-Host-bracketed time includes work outside the accelerator's stage counters. Compare an accelerator cycle model with the accelerator stage total, and report host-bracketed time separately. This example's CPU software reference is not the paper's Gemmini baseline. Its printed `X Slice=16` is derived as `XS×RF`; the hardware bank count remains `XS=2`.
+For the [final passing b=2/RF=8, K=64, W4 example](src/Log/run_20261008_193240/b2_rf8/tests/X1x64_W64x64_A16_W4.log): Load X=75, Generate BRAMs=160, combined Load W/Select=2,369, Store O=247, hardware total=2,851 cycles. Separate Load W and Select counters overlap and are not added again. These counters exclude host reference generation and simulator wall time.
 
 For a specified measured cycle scope `C` and clock `f` in Hz, elapsed time is `C/f`. Counting a multiply and an add as two operations, nominal GeMM throughput is `2NKM f / (C×10^9)` GOP/s. State the clock, operation-count convention, correctness status, and whether transfer/host overhead is included. Energy efficiency additionally requires power measured or estimated for the same scope; cycle logs alone cannot establish TOPS/W.
 

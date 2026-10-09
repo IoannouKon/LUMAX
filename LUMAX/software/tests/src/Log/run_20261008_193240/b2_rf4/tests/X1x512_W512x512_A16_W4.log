@@ -1,0 +1,16 @@
+CONFIG=LUMAXROcketConfig XS=2 YS=1 RF=4 RIN=1 CIN=512 COUT=512 IN=16 W=4
+TEST_SEED=1 QUIET_TEST=1 TEST_PATTERN=0
+FAST_VECTORS=1
+REFERENCE=HOST_PYTHON
+301aa30b58ad4db04ef57e8ef75c1bba5ef935c29e72bf0618dc4d8d15abb254  /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/hw_width_fix_20261008_084813/builds/b2_rf4/simulator-LUMAXROcketConfig
+fc52734a65d62d4ebfe1d39e17bf50c82a181e1da8514fbe41793f4140e4f19f  /tmp/lumax-recheck-qlpbvzum/b2_rf4/generators/LUMAX/software/tests/src/Linear-sw.c
+cd1967eec7483ecb2254594660133a66243b449c9157b4604f874a62da865f52  /tmp/lumax-recheck-qlpbvzum/b2_rf4/generators/LUMAX/src/main/scala/Config.scala
+c98e855c510f88241ed9fd83f2ee034f3fc2ec4e7d7e0b37940ddca422469c17  /tmp/lumax-recheck-qlpbvzum/b2_rf4/generators/LUMAX/software/tests/src/prepare_test_vectors.py
+3c38b70638b78b1efed7e613136e6b1232ac91434d791afa0099830d56978ecb  /tmp/lumax-recheck-qlpbvzum/b2_rf4/generators/LUMAX/software/tests/src/lumax_test_vectors.h
+Exact matches:    512/512 
+PASS (All elements)
+HW_CYCLES total=145120 load_x=476 generate_brams=1280 load_w=66096 select_accumulate=141312 store_o=2048 load_w_and_select=141316
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/hw_width_fix_20261008_084813/builds/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+TEST [PASS]
