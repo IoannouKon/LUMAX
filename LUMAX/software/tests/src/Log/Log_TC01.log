@@ -1,0 +1,135 @@
+TC01 — RECOVERED ORIGINAL RESULTS, NOT A NEW RUN
+Original run completed: 2026-10-09T05:11:56.887218+03:00, Chipyard 1.13.0.
+Input16, weights8/4/2, one input row, K=M 4/8/16, six designs b2/b4/b8 and RF4/RF8.
+Original LUMAX_Top.scala SHA256=6bafd90926b9490d95fe8e1481631b769aef013263cdd20cb17733987e532111
+The requested TC01 rerun was stopped. Starting that rerun overwrote the detailed original log.
+Recovered below: the original 54-case execution console, original verified result summary, and the recorded first full case.
+Limitation: this is not a byte-for-byte recovery; the other 53 original full matrix/UART case blocks are unavailable.
+No interrupted rerun results are included or counted as an additional completed suite.
+
+ORIGINAL TC01 EXECUTION CONSOLE
+LOG=/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/Log_TC01.log
+RUN 03/54 b2_rf4 X1x4 W4x4 A16 W2: PASS 4/4
+RUN 01/54 b2_rf4 X1x4 W4x4 A16 W8: PASS 4/4
+RUN 02/54 b2_rf4 X1x4 W4x4 A16 W4: PASS 4/4
+RUN 06/54 b2_rf4 X1x8 W8x8 A16 W2: PASS 8/8
+RUN 05/54 b2_rf4 X1x8 W8x8 A16 W4: PASS 8/8
+RUN 04/54 b2_rf4 X1x8 W8x8 A16 W8: PASS 8/8
+RUN 11/54 b2_rf8 X1x4 W4x4 A16 W4: PASS 4/4
+RUN 10/54 b2_rf8 X1x4 W4x4 A16 W8: PASS 4/4
+RUN 12/54 b2_rf8 X1x4 W4x4 A16 W2: PASS 4/4
+RUN 09/54 b2_rf4 X1x16 W16x16 A16 W2: PASS 16/16
+RUN 08/54 b2_rf4 X1x16 W16x16 A16 W4: PASS 16/16
+RUN 07/54 b2_rf4 X1x16 W16x16 A16 W8: PASS 16/16
+RUN 14/54 b2_rf8 X1x8 W8x8 A16 W4: PASS 8/8
+RUN 15/54 b2_rf8 X1x8 W8x8 A16 W2: PASS 8/8
+RUN 13/54 b2_rf8 X1x8 W8x8 A16 W8: PASS 8/8
+RUN 18/54 b2_rf8 X1x16 W16x16 A16 W2: PASS 16/16
+RUN 16/54 b2_rf8 X1x16 W16x16 A16 W8: PASS 16/16
+RUN 17/54 b2_rf8 X1x16 W16x16 A16 W4: PASS 16/16
+RUN 19/54 b4_rf4 X1x4 W4x4 A16 W8: PASS 4/4
+RUN 20/54 b4_rf4 X1x4 W4x4 A16 W4: PASS 4/4
+RUN 21/54 b4_rf4 X1x4 W4x4 A16 W2: PASS 4/4
+RUN 24/54 b4_rf4 X1x8 W8x8 A16 W2: PASS 8/8
+RUN 23/54 b4_rf4 X1x8 W8x8 A16 W4: PASS 8/8
+RUN 22/54 b4_rf4 X1x8 W8x8 A16 W8: PASS 8/8
+RUN 27/54 b4_rf4 X1x16 W16x16 A16 W2: PASS 16/16
+RUN 26/54 b4_rf4 X1x16 W16x16 A16 W4: PASS 16/16
+RUN 25/54 b4_rf4 X1x16 W16x16 A16 W8: PASS 16/16
+RUN 28/54 b4_rf8 X1x4 W4x4 A16 W8: PASS 4/4
+RUN 29/54 b4_rf8 X1x4 W4x4 A16 W4: PASS 4/4
+RUN 30/54 b4_rf8 X1x4 W4x4 A16 W2: PASS 4/4
+RUN 31/54 b4_rf8 X1x8 W8x8 A16 W8: PASS 8/8
+RUN 33/54 b4_rf8 X1x8 W8x8 A16 W2: PASS 8/8
+RUN 32/54 b4_rf8 X1x8 W8x8 A16 W4: PASS 8/8
+RUN 36/54 b4_rf8 X1x16 W16x16 A16 W2: PASS 16/16
+RUN 35/54 b4_rf8 X1x16 W16x16 A16 W4: PASS 16/16
+RUN 34/54 b4_rf8 X1x16 W16x16 A16 W8: PASS 16/16
+RUN 37/54 b8_rf4 X1x4 W4x4 A16 W8: PASS 4/4
+RUN 39/54 b8_rf4 X1x4 W4x4 A16 W2: PASS 4/4
+RUN 38/54 b8_rf4 X1x4 W4x4 A16 W4: PASS 4/4
+RUN 40/54 b8_rf4 X1x8 W8x8 A16 W8: PASS 8/8
+RUN 41/54 b8_rf4 X1x8 W8x8 A16 W4: PASS 8/8
+RUN 42/54 b8_rf4 X1x8 W8x8 A16 W2: PASS 8/8
+RUN 45/54 b8_rf4 X1x16 W16x16 A16 W2: PASS 16/16
+RUN 44/54 b8_rf4 X1x16 W16x16 A16 W4: PASS 16/16
+RUN 43/54 b8_rf4 X1x16 W16x16 A16 W8: PASS 16/16
+RUN 46/54 b8_rf8 X1x4 W4x4 A16 W8: PASS 4/4
+RUN 47/54 b8_rf8 X1x4 W4x4 A16 W4: PASS 4/4
+RUN 48/54 b8_rf8 X1x4 W4x4 A16 W2: PASS 4/4
+RUN 51/54 b8_rf8 X1x8 W8x8 A16 W2: PASS 8/8
+RUN 49/54 b8_rf8 X1x8 W8x8 A16 W8: PASS 8/8
+RUN 50/54 b8_rf8 X1x8 W8x8 A16 W4: PASS 8/8
+RUN 54/54 b8_rf8 X1x16 W16x16 A16 W2: PASS 16/16
+RUN 53/54 b8_rf8 X1x16 W16x16 A16 W4: PASS 16/16
+RUN 52/54 b8_rf8 X1x16 W16x16 A16 W8: PASS 16/16
+TOTAL: 54 PASS, 0 FAIL; 504/504 exact matches; sources unchanged=True
+
+ORIGINAL POST-RUN VERIFICATION
+Verified: complete 54-case coverage, 108 unique seed replays, all full matrices, 504 actual HW outputs, exact Python references, cleanup.
+Log: /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/Log_TC01.log ; 3037 lines; 187639 bytes
+PER DESIGN
+b2_rf4: 9 PASS, 0 FAIL
+b2_rf8: 9 PASS, 0 FAIL
+b4_rf4: 9 PASS, 0 FAIL
+b4_rf8: 9 PASS, 0 FAIL
+b8_rf4: 9 PASS, 0 FAIL
+b8_rf8: 9 PASS, 0 FAIL
+
+TOTAL: 54 PASS, 0 FAIL; 504/504 exact HW/Python element matches.
+All 108 independent seeds unique: True
+Original HW/software/scripts unchanged: True
+Temporary test sources, headers, object files and RISC-V executables removed. Only Log_TC01.log was added; no separate scripts/results/summary files.
+End: 2026-10-09T05:11:56.887218+03:00
+
+RECORDED ORIGINAL FIRST CASE
+TC01 RUN 01/54: b2_rf4
+================================================================================================
+RIN=1 CIN=4 COUT=4 IN_BITS=16 W_BITS=8 XS=2 YS=1 RF=4
+INPUT_SEED=4092863393
+WEIGHT_SEED=2987943216
+INPUT MATRIX X (host-generated signed values) (1 x 4):
+   10282  30540 -19196   7218
+
+WEIGHT MATRIX W (host-generated logical unpacked values) (4 x 4):
+  -90  15  27  34
+   94 125  80 -93
+  -74  76  65  28
+  -43  54  -7 -46
+
+SW PYTHON OUTPUT = X @ W (1 x 4):
+   3055510  2902606  1422548 -3360148
+
+Random samples: X unique=4/4, W unique=16/16
+VERILATOR_BINARY=/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/run_20261008_193240/b2_rf4/design/simulator-LUMAXROcketConfig
+SIMULATOR_SHA256=301aa30b58ad4db04ef57e8ef75c1bba5ef935c29e72bf0618dc4d8d15abb254
+TEST_C_SHA256=711bae17503ee50cacb0d013c62fd5d108a6f0c66ed3fa338b691e5dcc129242
+VECTOR_HEADER_SHA256=534dcb5cce917f06964878c26788a952b0f79ea4108965e6ed2de0db02b53ab1
+RISC-V BUILD: TEST_CFLAGS='-O2 -DLUMAX_PREGENERATED_TEST=1 -DLUMAX_QUIET_TEST=1 -DLUMAX_TEST_PATTERN=2 -DLUMAX_TEST_SEED=4092863393' bash ./build.sh baremetal
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+RISC-V build exit status: 0
+RISC-V_ELF_SHA256=4a89927212b5c5fc5c5774fb2ceb52ef2b65202cbaa5ac0998bcf4f1cd6c6419
+VERILATOR COMMAND: /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/run_20261008_193240/b2_rf4/design/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000 +loadmem=/tmp/lumax-tc01-20261009/cases-pi55x3a1/run_01/Linear-sw.riscv +permissive-off /tmp/lumax-tc01-20261009/cases-pi55x3a1/run_01/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+Exact matches:    4/4 
+PASS (All elements)
+HW_CYCLES total=227 load_x=25 generate_brams=130 load_w=58 select_accumulate=28 store_o=32 load_w_and_select=40
+HW_OUTPUT 3055510 2902606 1422548 -3360148 
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Log/hw_width_fix_20261008_084813/builds/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+Verilator exit status: 0
+HW VERILATOR OUTPUT (parsed from actual HW_OUTPUT above) (1 x 4):
+   3055510  2902606  1422548 -3360148
+
+HW/PYTHON EXACT MATCHES: 4/4
+HW_MINUS_PYTHON: [0, 0, 0, 0]
+Wall time: 23.195 seconds
+FINAL RUN RESULT: PASS
+
+================================================================================================
+

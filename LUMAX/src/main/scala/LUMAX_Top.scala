@@ -300,14 +300,35 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
 //////////////////////////////////////////////////////////////// Help Functions //////////////////////////////////////////////////////// 
  
-// Scatter the valid portion of a DMA beat into the banks used by selection.
-// Small columns may start inside a beat or span more than one bank.
+// A source beat may start partway through a destination word. Consume only
+// through that word's end; the next request can reread the same source beat.
+// Bank boundaries can still be crossed in parallel, as in the original loader.
+private def packedReadCount(count: UInt, firstElement: UInt, elementsPerWord: UInt): UInt = {
+  val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
+  val limited = WireDefault(count)
+  for (bank <- 0 until totalSyncMems) {
+    val bankStart = bank.U * elementsPerBank
+    val bankEnd = bankStart + elementsPerBank
+    val local = firstElement - bankStart
+    val wordRemaining = elementsPerWord - (local & (elementsPerWord - 1.U))
+    when(firstElement >= bankStart && firstElement < bankEnd &&
+         wordRemaining < bankEnd - firstElement) {
+      limited := count.min(wordRemaining)
+    }
+  }
+  limited
+}
+
+// Keep the unfinished word across responses. At most the last bank touched
+// by a response is unfinished, so one existing carry register per stream is
+// sufficient; no additional memory ports or per-bank register arrays are used.
 private def storePackedResponse(
   memories: Seq[SyncReadMem[UInt]],
   precision: UInt,
   firstElement: UInt,
   elementCount: UInt,
-  linearElement: UInt
+  linearElement: UInt,
+  carry: UInt
 ): Unit = {
   val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
   val elementsPerWord = params.DMA_bits.U / precision
@@ -328,7 +349,11 @@ private def storePackedResponse(
       validBits := (end - first) * precision
       val mask = ((1.U((params.DMA_bits + 1).W) << validBits) - 1.U)(params.DMA_bits - 1, 0)
       val packed = ((dma.io.readData >> responseShift) & mask) << bitOffset
-      memories(bank).write(row, packed)
+      val assembled = Mux(bitOffset === 0.U, 0.U, carry) | packed
+      memories(bank).write(row, assembled)
+      when(end === responseEnd) {
+        carry := assembled
+      }
     }
   }
 }
@@ -343,7 +368,8 @@ private def dmaRequest(
 ): UInt = {
 
   // calculate next index
-  val index_next = index + elements_to_read
+  val consumed = packedReadCount(elements_to_read, dma_counter_a, elemsPerChunk)
+  val index_next = index + consumed
 
   // send DMA request
   dma.io.mode  := false.B
@@ -352,10 +378,10 @@ private def dmaRequest(
 
   when(dma.io.a_fire) {
   // update DMA counter
-  dma_counter_a := dma_counter_a + elements_to_read
+  dma_counter_a := dma_counter_a + consumed
 
   // update send flag
-  dma_send := dma_counter_a < allAvailableElems - elements_to_read
+  dma_send := dma_counter_a < allAvailableElems - consumed
 
   // configure chunk info module inputs
   chunkInfoModule_A.io.j_x              := index_next
@@ -365,7 +391,7 @@ private def dmaRequest(
   chunkInfoModule_A.io.RegsPerChunk_in  := regsPerChunk
 
   // calculate next counter
-  val dma_counter_a_next = dma_counter_a + elements_to_read
+  val dma_counter_a_next = dma_counter_a + consumed
 
   // update outputs
   elements_to_read := Mux(
@@ -393,17 +419,18 @@ private def dmaResponce(
 ): UInt = {
 
   // next values
-  val index_temp_next      = indexTemp + elements_to_read_temp
-  val dma_counter_d_next   = dma_counter_d + elements_to_read_temp
+  val consumed = packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk)
+  val index_temp_next      = indexTemp + consumed
+  val dma_counter_d_next   = dma_counter_d + consumed
 
   // optional valid_inputs update (only for X)
   if (updateValidInputs) {
-    valid_inputs := valid_inputs + elements_to_read_temp
+    valid_inputs := valid_inputs + consumed
   }
 
   // update registers
   dma_counter_d := dma_counter_d_next
-  dma_resp      := dma_counter_d < allAvailableElems - elements_to_read_temp
+  dma_resp      := dma_counter_d < allAvailableElems - consumed
 
   // configure chunk info inputs
   chunkInfoModule_D.io.j_x_temp         := index_temp_next
@@ -703,7 +730,8 @@ for (i <- 0 until totalSyncMems) {
 
 when(dma.io.d_valid) {
   storePackedResponse(I_MEM, input_bits, dma_counter_d,
-    elements_to_read_temp, mul1 + j_x_temp)
+    packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_in),
+    mul1 + j_x_temp, dataResponse)
 }
 // ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
 
@@ -1699,10 +1727,12 @@ is(sStoreOutput) {
       for (b <- 0 until buffers) {
         when(buff_index === b.U) {
           storePackedResponse(W_MEM(b), weight_bits, dma_counter_d,
-            elements_to_read_temp, mul1 + i_w_temp)
+            packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_w),
+            mul1 + i_w_temp, dataResponse_w)
         }
       }
-      valid_weights(buff_index) := valid_weights(buff_index) + elements_to_read_temp
+      valid_weights(buff_index) := valid_weights(buff_index) +
+        packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_w)
     }
 
       // when(dma.io.d_valid) { // // store responce data in Weights memory blocks 
