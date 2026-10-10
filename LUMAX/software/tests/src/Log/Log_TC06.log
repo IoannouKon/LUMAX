@@ -1,0 +1,2740 @@
+TC06: LUMAX CHIPYARD 1.13.0
+START: 2026-10-09T21:45:54.207352+03:00
+PLANNED: 54 independent simulator invocations. Input16, weights8/4/2, RIN=1, six designs.
+Each design built once with make and reused across every TC; Python generates/checks integer references only.
+No HW logic edits. Config.scala geometry is temporarily selected during the six initial builds and restored immediately after each.
+No dimension padding. DMA-readable buffers have nonzero guard bytes; output guards begin immediately after the logical output.
+Packed bytes use ceiling allocation for fractional-byte tails; unused packed bits are nonzero.
+TC11 uses six operations in one RISC-V ELF/Verilator boot, with shared buffers and no accelerator reset.
+Full X/W printed for up to 2048 weights; larger matrices include seeds and hashes, plus every Python/HW output.
+SOURCE SHA256: {"/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Linear-sw.c": "9afb20fe6d176e80a5b53f1e1bbfb80cb3734d405af0edde83b3db4f665ba584", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ChunkInfoModules.scala": "82aca247c111b08b40076319bd5acd3409f7864338797987fb95265d921c077f", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Config.scala": "37103f6003f691b804c1fbab5fbe13f0b53d23e7cc6305c1e71e4f3f554f7ea3", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala": "80b119aa95dfed4957c0de009e25cee6377fc56338b904c585fd889b5a02a2bd", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala": "1404c50d8e37ee3d7a4967bdc95e653190cbe880bf702e1873534aba3f38434c", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/MappingUtils.scala": "5b1c3e1bde3438139571de32e97a2375cdeff4f76b4f7f2ab73c9f251b77a8d8", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Product_Generator.scala": "74d3fc136107d5e518a3cede95e036c7ef1c0748186039e236c228266af383af", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Scale.scala": "005263d0fd829b5c8a87754feceba8e67d0bbfd360366b4dd9041d2be25b3c0c", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/SignExtractor.scala": "ca3f88160ca905f89615aba66f9eae93927e8c6a82e569d0f2e46dd9835e0ad6"}
+
+REBUILT DESIGN b2_rf4: SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a; make completed once, see Log_TC03.log.
+
+====================================================================================================
+TC06_0005 b2_rf4 input16 W4 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3471982287; WEIGHT_SEED=1290946230; pattern=zero_w
+INPUT X (1 x 16):
+-25899 13137 -3913 -2262 9549 -5018 14063 20211 4575 -27060 -25754 -2119 -16566 -1125 18862 7540
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=cc9f56e604afe88b2aa35fcb95b583b7cd0337835eef13c7a32b315edde95114
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=1842800606a5a0a999bb06481f268e5c2ef7c027054aa1719007295a268987ab
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0005/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0005/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 241
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.092
+
+====================================================================================================
+TC06_0006 b2_rf4 input16 W4 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=375398060; WEIGHT_SEED=3026335828; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=936ea4a3eb692259ead768d494609273dfe56de31d6d29a4421936697884b23d
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=7e59d57107ab17b5fcc796c7c642332894d1ea1ea095e13944622a7db9ea13e6
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0006/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0006/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 241
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.512
+
+====================================================================================================
+TC06_0004 b2_rf4 input16 W4 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2014451972; WEIGHT_SEED=1410899621; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-3 -1 0 -3 -6 3 6 4
+-1 0 3 -5 -7 6 0 -2
+2 -1 -6 0 -1 4 3 -8
+4 1 -4 2 3 -7 -3 -2
+1 5 -4 -8 4 -2 -6 -7
+-8 -7 -6 6 4 2 4 7
+-2 -4 -5 -4 2 -4 -4 -8
+6 -8 2 1 -4 3 5 6
+-5 7 -4 -8 3 5 1 3
+6 -4 -4 5 -1 -3 4 -5
+-6 7 6 -2 0 -1 6 -6
+6 -1 0 2 4 -8 7 -2
+0 -4 -5 -6 -7 -8 -6 -1
+3 3 -3 2 -8 0 5 -7
+7 7 -5 -3 -5 7 -5 -1
+2 -2 3 7 -3 -5 -6 5
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=8b0dceb398a7045967d28b4070375cace4a6fbc396d5717c3e8235b9702147bb
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=a2345150e8e5b741dd1dccf77b2e5fed8e58453e1721d197b1037d9f2df73e3e
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0004/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0004/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 239
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.669
+
+====================================================================================================
+TC06_0002 b2_rf4 input16 W8 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=142521179; WEIGHT_SEED=1329718826; pattern=zero_w
+INPUT X (1 x 16):
+22068 16130 3321 12027 -27746 29842 -11587 -4692 1745 32293 -11634 8307 11949 -18260 10978 -19449
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=f90df9eca567cae8425d17683eaf6fe4356d34e3240234381ec402e26cc8c674
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=59f181736ba9408efa0882638ee271a5c459d39d5d66a94040668c44685f9be0
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0002/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0002/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 772
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.168
+
+====================================================================================================
+TC06_0003 b2_rf4 input16 W8 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3766054420; WEIGHT_SEED=924474384; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=fc61ed4f8300ede01445a84d6bd0eb88c90cd6ee44761ba5193f0d5c783bb3ce
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=c95006362cb4f5d1aa2f6af1ececf6af5f9b6a925058ffa5b206776bd67dcc61
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0003/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0003/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 772
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.216
+
+====================================================================================================
+TC06_0001 b2_rf4 input16 W8 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1307859177; WEIGHT_SEED=1310804018; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-24 68 -23 28 29 106 -37 109
+-9 -55 28 81 -63 -99 5 -37
+-22 -16 3 114 123 -116 -33 -12
+95 48 -12 -113 -28 93 -19 2
+53 88 101 17 -18 -105 96 -20
+-108 -9 89 14 -75 -15 -40 16
+107 26 3 95 -71 94 125 -41
+64 80 81 39 92 -126 -20 61
+13 112 -84 100 27 -115 49 26
+-97 -115 20 -56 -21 40 -36 -25
+-120 38 111 -34 -76 -12 -39 91
+-74 93 -72 70 -63 -48 -95 3
+69 -29 83 -116 -80 -46 -25 -55
+-3 -41 -63 -37 51 -73 -38 -3
+-73 -68 117 -97 -86 54 -90 85
+-120 88 -123 -53 107 111 -67 4
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=80db0e24567e0abc9c201fad1e33c0efa64da25534b31e90aa7311950df20260
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=4b0056a3fcf4dae3cb435b094271aa9ecf099a7b380bab5e0e3e8c0e1b9d0c32
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0001/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0001/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 772
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.303
+
+====================================================================================================
+TC06_0008 b2_rf4 input16 W2 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1794747919; WEIGHT_SEED=473150982; pattern=zero_w
+INPUT X (1 x 16):
+-826 -31363 -905 -29837 10097 7608 -27227 15885 -14541 8579 -5968 -27841 -28087 -23757 -10623 -31922
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=c4e8830bb9c6cd650deedd5a3775bce8b85c7396b398c253619e3d59d66f31f4
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=17699838471b5c17083e6c788ccb7256588ce3f5027e59b5f7358d0c7a5ba0da
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0008/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0008/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 211
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.617
+
+====================================================================================================
+TC06_0009 b2_rf4 input16 W2 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3111966181; WEIGHT_SEED=469701446; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=c53f68b0643f0f7b6453af3081879f17bcd511920d45ab45202b1d3c7fe53731
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=41d6fcb07e25ab40613a24ce3ce3e7399ba43327e9a84e543a212518e00e56a1
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0009/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0009/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 211
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.915
+
+====================================================================================================
+TC06_0007 b2_rf4 input16 W2 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=807926819; WEIGHT_SEED=2582472319; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-1 1 -1 1 1 1 0 0
+-1 -2 -2 0 1 -1 1 0
+0 0 0 1 0 0 0 -1
+-2 1 0 0 0 -2 1 -2
+0 0 -1 1 -1 0 0 1
+1 1 0 1 0 -1 -2 -1
+-2 0 -2 1 0 -1 -1 -2
+1 0 0 0 -2 -2 -2 1
+0 -2 0 1 1 0 1 1
+1 -1 0 -1 0 1 -1 -1
+-2 -2 -2 0 -1 -2 -2 0
+0 -2 -1 -2 1 1 1 1
+1 0 0 1 -1 -1 0 -1
+-2 -1 -1 0 -1 -1 1 1
+1 -2 -1 -1 -2 -2 -1 -2
+0 1 1 1 0 1 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=344a26474f91a111aee9dc1ebe9f95e1dd3426bda541674edcc3648da9ae3b06
+SIMULATOR_SHA256=ad65f00a2b2fa3b219acbd86b536dcadac06c453cc58228da0a3ae29f417d31a
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=595965ef7d84846ff841863d806248446b669436932d8e317d1e32ac3d2dd006
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0007/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0007/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 211
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23159' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.975
+
+REBUILT DESIGN b2_rf8: SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c; make completed once, see Log_TC03.log.
+
+====================================================================================================
+TC06_0015 b2_rf8 input16 W4 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3710926598; WEIGHT_SEED=2641033334; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=f3f40a39080c206168a78d9a078493838a4a593b4f367bf12bb299e06a37fccd
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=f643892492c0787102f43c8fc7a296740d923d4e9601a021d7a1d88800ae29cf
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0015/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0015/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 241
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.172
+
+====================================================================================================
+TC06_0014 b2_rf8 input16 W4 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1083787306; WEIGHT_SEED=121005296; pattern=zero_w
+INPUT X (1 x 16):
+29212 -5749 -12064 22244 18831 4472 13177 -30416 -5281 -27212 26731 27313 -14888 -4641 13814 5528
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=5f1a7bd31662cdf2ef11cd7aa8d622dc17b2d89dc8f644a4652d7d82f622c6d6
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=05f37efbde83865b7081286460b473046add6c6176f6e205eb7a6c378f671383
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0014/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0014/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 241
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.311
+
+====================================================================================================
+TC06_0013 b2_rf8 input16 W4 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3684123246; WEIGHT_SEED=2882929373; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+7 -7 6 -8 1 -3 3 3
+-3 6 2 -5 -8 4 -6 -6
+3 -5 0 1 4 5 -3 -5
+2 3 -4 -3 6 2 -4 5
+3 -5 6 7 2 -8 -2 0
+-5 -8 2 -4 1 -1 -5 7
+1 -4 3 -4 1 -5 2 4
+-6 3 -6 5 -8 -5 -6 -5
+-7 -6 0 -7 1 4 3 -7
+-2 -3 -4 5 -6 -1 -1 -1
+6 1 5 3 7 -8 6 0
+7 -1 2 4 -1 5 -8 7
+3 -4 -4 -8 4 1 7 7
+-2 5 -6 7 4 2 -1 4
+3 -8 0 -5 -8 6 2 5
+-6 3 -3 -7 7 6 3 -2
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=c3a291b7ad0c946e54667ac0608cc71b81820e37cc26af783042e95f31864607
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=19f526cdfafdf325b8fac5ce4629f71316894b5924df36fe3448cb509306d815
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0013/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0013/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 239
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.676
+
+====================================================================================================
+TC06_0011 b2_rf8 input16 W8 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2377266006; WEIGHT_SEED=381109397; pattern=zero_w
+INPUT X (1 x 16):
+9335 14745 615 -25763 21463 -32649 -2787 24498 -12033 18395 -19487 30970 20316 -14286 -26864 -27310
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=4d3aacc7cf93a9821c522bca9ce4e5096c380323e582b769fd034ecbf2ffe677
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=afb8c804bd1d670c5bd43d814c65e97bda8398fd316ca71342cc00abc04accf6
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0011/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0011/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 720
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.147
+
+====================================================================================================
+TC06_0012 b2_rf8 input16 W8 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3596819955; WEIGHT_SEED=945186959; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=03c9fb2aa99167613b9724faedbb4c07544d66dae28f3213f077ebc4ea33a742
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=fe173b284010d45465e188adc435fbfb9ed56214d7294db717344574409b2850
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0012/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0012/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 720
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.196
+
+====================================================================================================
+TC06_0010 b2_rf8 input16 W8 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=106362977; WEIGHT_SEED=1014315602; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+126 89 -38 -42 78 48 -23 92
+47 -1 -13 -5 78 77 -76 79
+-5 40 48 34 -100 86 -100 -76
+-74 -11 6 1 -107 7 16 36
+64 -35 119 86 74 20 121 -6
+99 -4 123 39 53 109 35 53
+-112 14 75 72 87 -123 -81 47
+92 -16 47 -35 96 -51 -127 52
+113 51 58 111 -95 90 98 -4
+91 28 -8 -53 -23 101 96 -100
+107 44 11 -64 122 43 -94 85
+-119 -3 59 111 -43 81 -76 113
+-65 16 102 -59 -15 -50 -128 9
+-47 -35 102 92 39 15 -5 97
+29 68 -45 -52 -30 -64 63 63
+-77 44 54 45 -25 -120 -109 93
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=11adcbe20f890e8e5d0869150e6f08a31522b255bcc4f6c776de06cca87de1b1
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=3897211f388bff7979ed234bbeb2b72c11b3e80e92dfcc831f48d98a953fe6b9
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0010/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0010/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 720
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.256
+
+====================================================================================================
+TC06_0018 b2_rf8 input16 W2 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1707648034; WEIGHT_SEED=2071031049; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=19e8c9e6f8b895d16252245e081b62ddcb9ac685bd795b89a45777761450394c
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=8f1178edf07e51eb76a98af4576041074f9abee01c0948d6895dac524918e3da
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0018/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0018/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 211
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.643
+
+====================================================================================================
+TC06_0017 b2_rf8 input16 W2 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=449095808; WEIGHT_SEED=1211977809; pattern=zero_w
+INPUT X (1 x 16):
+8776 -8225 461 1874 15997 -16899 26362 24103 21230 29269 2154 24386 5249 6963 -4928 -13519
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=4bdc38335ebac52ed313c96a2ebaa5425e293c9fa885d31c0a5f66be2b656bfb
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=b875bc72bd85f1077df4379d72e82d9a780260025d76575fcf692c68062030f2
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0017/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0017/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 211
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.82
+
+====================================================================================================
+TC06_0016 b2_rf8 input16 W2 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=278592277; WEIGHT_SEED=799568713; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 1 -2 0 -2 1 0 0
+-1 -2 -1 -1 -2 -1 -1 0
+0 -1 -2 0 1 -1 1 0
+-1 -1 -1 1 -1 -2 -1 -1
+-1 1 0 -1 -1 0 0 1
+0 -1 1 -2 -1 -1 -2 0
+-1 -1 -1 1 0 -2 1 -2
+0 -1 1 -2 0 1 1 -1
+-2 -1 -1 -2 0 -2 -2 -1
+0 -2 0 0 -2 -2 0 1
+-2 0 -1 0 0 1 -1 1
+1 -2 0 0 -2 -1 1 -1
+1 -2 -1 0 1 -1 1 1
+0 0 1 -1 -2 -2 -1 -2
+0 -1 0 -2 -1 1 1 1
+1 1 -2 1 1 0 1 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=2a35e1b98831f194842eaff4959e1bb73f3e868c1c980b66c4be941e1d8215e8
+SIMULATOR_SHA256=849164f1f54cc32636d10e10d0dc439c013fb4238604904360bc8c68e8596e3c
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=afdc8ae348110e6af3b192d59ae682056f443b6c491cf000e929c5dedabca166
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b2_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0016/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0016/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 211
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23162' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b2_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.026
+
+REBUILT DESIGN b4_rf4: SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732; make completed once, see Log_TC03.log.
+
+====================================================================================================
+TC06_0023 b4_rf4 input16 W4 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1054368307; WEIGHT_SEED=2335667058; pattern=zero_w
+INPUT X (1 x 16):
+20295 -411 -6279 -21884 31149 -27914 -13711 14291 -25190 -21945 9076 -30219 -6905 21622 -32476 12325
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=d6544175653b0c0a11923bb2ec1e9c5e53a19725db81415a0516e677abb7e3b8
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=7553b8f50de766fc6307cdfb93645c44d3b7851a4199fc74051c5e678e7ee740
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0023/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0023/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 193
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.535
+
+====================================================================================================
+TC06_0024 b4_rf4 input16 W4 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3381231044; WEIGHT_SEED=483185223; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=140d4e3ddcd9781452d837aa500093cadda6d0f509d882567654f5bbd9202dcf
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=92f1b3355d74049e40e12693619a230af192a0ad89a2df0c8723112b6c7dc04c
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0024/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0024/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 193
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.651
+
+====================================================================================================
+TC06_0022 b4_rf4 input16 W4 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=567865886; WEIGHT_SEED=1654444461; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+3 7 -4 6 -8 7 6 -1
+-8 -1 -6 -3 1 -2 -2 1
+0 -1 -4 4 -2 -8 -8 6
+0 -8 1 -2 2 6 7 -7
+-4 6 -1 6 -8 -8 -3 -3
+-7 5 5 1 4 -7 -7 6
+-4 5 -6 -5 -7 2 -8 6
+6 0 -3 6 7 1 -3 -2
+-8 -5 -3 5 -6 -4 -3 -7
+0 2 -1 -4 6 -4 3 6
+-3 0 5 -1 2 -2 6 7
+0 -1 4 7 -8 4 -1 0
+-3 2 -7 -1 -6 -2 -3 -3
+-8 4 -3 6 -7 -2 -4 1
+2 -1 -3 3 -3 6 -3 4
+5 -5 3 -7 -1 -1 -2 6
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=24e249caff46662d9cb01df5bcbeb894f1572c390e285790b79c7e571cd4c1e8
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=219338b33449ce085ed1b7a93636f1d579948e5c81ada4b5d59e57496f13449a
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0022/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0022/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 191
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.046
+
+====================================================================================================
+TC06_0020 b4_rf4 input16 W8 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=856781607; WEIGHT_SEED=1721206869; pattern=zero_w
+INPUT X (1 x 16):
+-5487 13759 2133 16183 -1209 -30623 18252 -14910 -7899 -13682 -9577 -4023 -22161 -30625 2593 823
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=96e5bcf0c756db704c1414faf50bb56fb779da2a4e3bb0721e9363c3302effca
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=751197332f104892a8048e86511850ccaa783bd06a5e34d4b711f580ce1ee7f5
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0020/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0020/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 432
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.116
+
+====================================================================================================
+TC06_0019 b4_rf4 input16 W8 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3299524696; WEIGHT_SEED=974097428; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+126 1 123 109 52 29 -55 -40
+114 -50 49 3 -116 2 49 65
+77 84 -119 122 78 77 -20 -1
+10 -86 28 96 -87 102 114 -76
+-70 88 -45 -33 -120 -126 -76 -119
+-92 85 10 98 -96 25 96 -45
+57 -16 -76 10 -65 89 -28 15
+26 -120 -8 73 104 -22 -109 -6
+47 -74 122 -78 -76 -5 -26 60
+-114 80 45 -26 -2 99 -73 -50
+-85 111 116 27 -57 100 -11 35
+25 87 -26 -86 -19 68 49 -70
+-58 -19 -4 -86 15 -42 -4 -102
+-110 28 -126 123 -70 -84 -4 -19
+-108 87 -124 -58 -49 121 52 -91
+115 17 39 93 33 -17 -52 -16
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=8ceaec99445554a937e2b554d32da1e9c793bb96e4a19c20a3abc02ea2a537d5
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=24332c15a2a128f813b44b24577af35db08ea716ec6eb2a0020ca37c242026a3
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0019/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0019/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 432
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.199
+
+====================================================================================================
+TC06_0021 b4_rf4 input16 W8 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2995688761; WEIGHT_SEED=4198421496; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=99bce1473468accfcb33c5979dcc988f838ae57402c4bc64008eefc3d96d5c5d
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=119e7e2c43c10d82981b84c7772828f0f3082f65ef0a29548340a7909bc707fe
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0021/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0021/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 432
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.681
+
+====================================================================================================
+TC06_0027 b4_rf4 input16 W2 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1156581293; WEIGHT_SEED=1433926705; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=cc007f97b32fa1593959e6485a648e067759fcca3944b3ee762c89a15f24ad8f
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=a2d8642f51dfca8d0c29dd72eff948e52ed1c7c0e325bc9a1f726b61318355ab
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0027/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0027/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 175
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.698
+
+====================================================================================================
+TC06_0026 b4_rf4 input16 W2 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3971183400; WEIGHT_SEED=544439958; pattern=zero_w
+INPUT X (1 x 16):
+24128 -24582 -30743 4625 28852 -30466 -30327 24215 -14510 26583 10063 21461 6933 5458 -28344 -20483
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=0e20bc5e3a8dea599f35f3f14ccbbd20a0890be4807d2746c915bc65858d1a1d
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=fdae12d9bf40ab6727e64cae359aabbd3c823a8f138364aec7fec6badde559ae
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0026/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0026/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 175
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.9
+
+====================================================================================================
+TC06_0025 b4_rf4 input16 W2 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3534352828; WEIGHT_SEED=1070088781; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 1 -2 -1 -1 1 -2 -2
+1 1 -2 0 -2 -2 -2 0
+0 0 -2 -2 -1 -2 1 1
+-1 1 -1 1 -1 1 -1 -1
+-1 -2 1 1 1 1 0 -2
+1 1 0 1 -1 0 -1 1
+-2 -1 1 1 -1 0 -1 -2
+-2 0 1 -2 -1 -2 -2 -2
+0 1 1 1 0 0 -1 1
+1 -2 -1 1 1 0 0 1
+-1 -1 0 -2 -2 -1 -2 -1
+-1 0 1 1 -1 1 -2 -1
+-2 -1 0 -2 0 -2 0 -2
+0 -2 0 1 -1 -1 0 1
+-2 -1 0 -1 1 0 1 -2
+1 -1 -2 -1 -1 -1 -1 -1
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=cfc94532b4c0203bacdfe0a28ef66c934f8e395908cf44bee83cbdcca033eeef
+SIMULATOR_SHA256=a53726380234e4440b95ee8b47dfc96a0d397699a07b5da7b62bd69c53c11732
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=7f927bfc48f1138f51691bb39acdb47ca87f05c9ece51f30ed74b075faa723a1
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0025/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0025/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 175
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23166' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.299
+
+REBUILT DESIGN b4_rf8: SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed; make completed once, see Log_TC03.log.
+
+====================================================================================================
+TC06_0032 b4_rf8 input16 W4 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=796311625; WEIGHT_SEED=2167373713; pattern=zero_w
+INPUT X (1 x 16):
+-9828 -27469 -15108 -32567 -9033 13759 9721 -26852 -27300 -8021 30156 19412 -3776 6517 -27241 13733
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=bce6234562e6ce3da55282cb95e4f672b380986631fb1479990e936204e1a839
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=46ae80c3cafb10e2f0bb4e03cee58d3a014753239c099aefda1c2c05d9f9d0ee
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0032/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0032/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 193
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.027
+
+====================================================================================================
+TC06_0033 b4_rf8 input16 W4 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1004479099; WEIGHT_SEED=3762528577; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=874cdbcd6dbfb0b08c1a76d3e47e0d2f21b5734b425a0f4a7a8982674922a627
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=d815a89baf98b4a5153eda9d52afe8226d0a8d39fb92685e1d4bb6fd65ac0123
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0033/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0033/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 193
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.324
+
+====================================================================================================
+TC06_0031 b4_rf8 input16 W4 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3948927987; WEIGHT_SEED=1363761145; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-4 -1 1 -8 7 -2 4 -2
+-6 -6 1 -6 -3 1 7 7
+-2 2 -2 7 1 1 -5 0
+-4 7 2 -2 -6 -1 1 -7
+-2 -4 1 -5 5 -2 4 4
+-8 -8 5 3 -5 5 -1 5
+5 4 -5 -2 -1 4 -6 4
+3 -3 0 -6 1 -4 -2 -5
+7 6 5 -4 5 -8 -5 1
+0 -2 -3 -7 -4 -3 1 -6
+-3 2 2 -5 -3 -6 6 6
+7 1 3 7 -7 5 -6 -2
+4 3 7 3 1 2 2 7
+-7 3 -8 -5 -5 -1 -5 -7
+5 5 5 -4 -2 -3 -2 3
+-8 -5 -3 -1 0 1 -5 -3
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=7a112f8c4d78e95a676279235d2a981971f35db22307d67c684f2679740771bf
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=6c00696bee3031dd36273721bd23f329b373a54bb4d31697e46c0ed99bbe220d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0031/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0031/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 191
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.668
+
+====================================================================================================
+TC06_0029 b4_rf8 input16 W8 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=615798052; WEIGHT_SEED=1396081583; pattern=zero_w
+INPUT X (1 x 16):
+-16436 757 -9262 26958 -28471 21990 12425 3330 -23575 16017 5156 14596 15732 31200 -22146 -15062
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=c42e643d2ddab5f30a908722c28d6decb2c0e9e82a0060950f892a12bb8b5c2c
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=d6c789470f515c39836b17f647755c950b0ae73ceae6d1d45895a7f79755b42d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0029/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0029/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 432
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.982
+
+====================================================================================================
+TC06_0030 b4_rf8 input16 W8 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=312745042; WEIGHT_SEED=4096724569; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=560f000616047acc586e4ed5c84a55bcecda9095bba5a26ff9a6296d9c6a0035
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=b6da0f089f380c500cccafe45c841986674475fdb6f74234ac55c4192cb5bd20
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0030/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0030/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 432
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.327
+
+====================================================================================================
+TC06_0028 b4_rf8 input16 W8 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1095562100; WEIGHT_SEED=1306390434; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-7 -1 11 -69 -42 106 122 116
+61 -12 122 78 -117 79 -119 -41
+44 -75 87 -58 93 -8 -123 14
+-110 -7 48 -49 10 -10 36 -92
+103 -110 117 73 6 -72 54 10
+68 -57 -66 -125 120 43 -128 -45
+45 -118 32 10 80 -60 111 74
+40 -22 -87 85 -59 -75 -73 14
+-54 -55 -21 70 75 -63 -119 20
+-95 -73 30 94 -57 -29 -24 65
+56 -121 86 10 -106 -67 86 108
+24 -22 -51 113 -76 -111 -33 -117
+-11 50 53 -81 14 31 52 86
+-7 14 -95 81 -49 -63 93 -106
+-37 -44 112 -112 57 -98 65 6
+40 -79 79 -103 84 -72 -8 96
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=0a61857b6ea897cf24fb5eefce5df1638fb442b512920a5cdf24c7085b2f292a
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=f77102bf2a93dfaafd790adcefe752abc0cc614782b84d9888a643f1e7095116
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0028/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0028/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 432
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.382
+
+====================================================================================================
+TC06_0036 b4_rf8 input16 W2 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3325825537; WEIGHT_SEED=4127306554; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=62490f0e11fec6db06884161e199700ecd5da5df370279fe74da8f96776e3be0
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=89a9403b186fdca033d95679153b3341cfa76af0a99baca1fc495e6484042b8f
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0036/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0036/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 175
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.957
+
+====================================================================================================
+TC06_0035 b4_rf8 input16 W2 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1918600602; WEIGHT_SEED=3827955695; pattern=zero_w
+INPUT X (1 x 16):
+-18481 -1546 -5732 17839 29656 -23697 28530 -7836 -14131 -9010 -839 -19515 29558 -16145 32000 10238
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=bc49c37b55d344686196b46be58060f83d27aeb95930f39a5b7fb57a83b2e7f6
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=3ff000f002611f83d783406cda804beab9e7e4aea466b98c0382380fbf7e4f49
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0035/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0035/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 175
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.069
+
+====================================================================================================
+TC06_0034 b4_rf8 input16 W2 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=298157344; WEIGHT_SEED=3946349065; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-1 -1 0 1 -1 1 0 -1
+-1 -2 -1 1 -2 0 1 -1
+0 -2 -2 0 1 -2 0 1
+0 -1 -1 0 -1 1 -2 0
+-2 0 1 0 0 -2 1 -2
+-1 -2 0 -2 -2 1 -1 -2
+-2 1 1 -2 0 -1 0 -1
+1 0 0 -1 0 0 1 -2
+1 -2 -2 -1 -2 -1 -1 0
+1 -1 1 1 0 -2 -2 1
+-2 -2 0 -2 0 -1 -1 0
+0 1 1 -2 0 1 -2 -2
+1 -1 1 -2 1 -1 -2 -2
+-2 1 -1 0 1 0 0 -2
+-2 -1 -1 0 -1 -2 1 1
+-1 1 0 -1 0 -2 -1 -2
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=b1d759ba138e4f084263bf692fe8266843e3be77feed68be72e8ad51fd525449
+SIMULATOR_SHA256=9099b1787d337d4a5ea5b7d77e185d8b9b0de2055df4c430f91e6e976b58d1ed
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=22d59b8c9bbbcd280c929381ae3d82947bbb2d1c0a0094036a819de10045fac0
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b4_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0034/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0034/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 175
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23177' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b4_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.623
+
+REBUILT DESIGN b8_rf4: SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e; make completed once, see Log_TC03.log.
+
+====================================================================================================
+TC06_0042 b8_rf4 input16 W4 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3171967359; WEIGHT_SEED=269365738; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=2085d39f0a9b356b1066a1dd22ae82e98a761772271afdbf18a6a222af72e106
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=9a36953f496d071539ef5a84066ee6d3927150f02765439955351882c1135a06
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0042/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0042/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 174
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.134
+
+====================================================================================================
+TC06_0041 b8_rf4 input16 W4 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=4200407784; WEIGHT_SEED=2453611274; pattern=zero_w
+INPUT X (1 x 16):
+-25158 11323 -20926 20289 -19347 14892 29442 -20319 -9103 -28187 -26487 -11356 10552 7632 -16196 8153
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=ee4bb3a51186a6358fd9d3462a9c9f69c506233d821d653254552fbb47d6fee2
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=dec9d0effec921ab79153811287be2053740ec1486b0cb13c5a85f07455a0321
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0041/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0041/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 174
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.273
+
+====================================================================================================
+TC06_0040 b8_rf4 input16 W4 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=1619604039; WEIGHT_SEED=908784571; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-5 -7 -1 7 -3 6 4 -3
+6 6 -4 4 5 -6 -8 3
+3 6 3 4 -2 -1 -3 2
+-1 -1 1 5 -8 7 -4 -8
+2 -8 4 5 -1 3 -2 -4
+-4 -5 0 -5 1 3 7 -7
+7 7 -6 7 -8 2 4 6
+-5 -7 -3 -5 1 4 1 0
+-4 0 7 2 -4 2 7 -4
+-1 0 5 1 0 -8 1 3
+-4 2 -2 7 -3 -2 4 -7
+-6 -6 -7 -3 -1 0 -1 -8
+4 7 5 -3 -3 6 -2 0
+-8 -6 -7 -5 3 4 0 5
+0 -6 3 5 3 -5 3 2
+1 2 4 -8 1 -6 -6 -5
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=fb4ecacd54799957f156cc2555a2dc1fa235406b134beb5c85e5221307ed1243
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=25c6ea388a5295c637388ec5f5e15c3885e9656e722e3eeedd9a4b4a265c1974
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0040/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0040/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 171
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.764
+
+====================================================================================================
+TC06_0039 b8_rf4 input16 W8 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2062595926; WEIGHT_SEED=1831552809; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=ae0d9934824cccd164674d798cf11fc6c5b1da1d0786c9200d295640ac615286
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=90c35252954bc11dae084acbd42e0482b55de2760e4b01a5de09b051b9474afd
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0039/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0039/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 297
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.188
+
+====================================================================================================
+TC06_0037 b8_rf4 input16 W8 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2492879862; WEIGHT_SEED=822588621; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+13 -72 -84 127 12 -58 34 66
+18 34 80 36 27 -74 21 -112
+-17 -119 116 43 69 29 31 19
+81 -89 -17 -45 -42 109 60 27
+-83 -17 -32 -68 4 94 104 101
+-110 -120 -77 -24 -19 -64 38 100
+40 87 90 -45 -123 65 96 -100
+9 -69 53 -17 -11 -94 -97 42
+88 119 25 -80 -82 -64 64 -92
+-69 -15 -123 -6 71 99 52 -28
+-98 -81 -52 -105 -50 -72 108 94
+-27 -47 -28 15 54 1 -13 36
+-7 -31 23 6 7 -73 101 -84
+-56 55 -63 -16 111 66 60 9
+46 -45 -34 -48 106 13 49 20
+-29 105 14 65 -117 123 -107 -45
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=721c0fa4ade7d2a1a0926af392f44d57f3913e969327b79d87304ea342d4d321
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=32b4824b31c4d76b8a7af0455b9fab9423814f677cf7d02ba6e28cd70975cfed
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0037/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0037/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 297
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.504
+
+====================================================================================================
+TC06_0038 b8_rf4 input16 W8 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3069540011; WEIGHT_SEED=2430126867; pattern=zero_w
+INPUT X (1 x 16):
+3851 -18111 31630 27833 -31667 20500 9431 -1818 2293 3811 13805 7084 -5070 -20811 27008 694
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=184ddc19a6f23b802a6eda35672d80e3778d08351531720d0c8d1337edeee7e5
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=9688dc359bcd64560cac09e891a44dba90e6d5ea000ba82cc27586e423a2fd63
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0038/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0038/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 297
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.498
+
+====================================================================================================
+TC06_0045 b8_rf4 input16 W2 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3007690131; WEIGHT_SEED=3051944383; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=b47187fca6896b68d4e07974f4944183f6704299d9619a5dc4150df0a7a9e222
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=f29951ecf03d397c3064f8c9968a17e6b0d1a3a03085b4b60aca61b29de0785d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0045/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0045/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 166
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.911
+
+====================================================================================================
+TC06_0044 b8_rf4 input16 W2 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3141067360; WEIGHT_SEED=3287869053; pattern=zero_w
+INPUT X (1 x 16):
+818 453 -18374 19670 25323 -10310 -4164 -5948 19457 31541 -489 -20247 26959 -18279 30849 -1339
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=463937f4cab43b43e8703fb5c02af39dde7c764492d7a7e68694f39de7e9613d
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=384c3e7d8c0106abe60217a7860a941e447079104872381af7b3307a90684145
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0044/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0044/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 166
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.972
+
+====================================================================================================
+TC06_0043 b8_rf4 input16 W2 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=944064400; WEIGHT_SEED=291353061; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 1 -1 1 0 -2 0 -1
+0 0 0 -1 0 1 -1 -2
+0 -2 -1 -1 1 0 0 1
+-2 0 0 0 -2 -1 -1 -2
+-2 1 1 -1 0 1 0 1
+-1 -1 1 -2 -2 -1 -2 -2
+1 -2 0 0 1 1 -2 -2
+-2 0 -1 -1 -1 -2 -2 0
+0 1 -1 0 -1 -1 -1 0
+0 1 -1 0 0 -2 1 1
+-2 1 1 -1 1 1 -1 1
+-1 -1 -2 -2 1 -2 -2 0
+-1 1 -2 -2 -1 0 1 -1
+-2 -1 -1 0 -1 0 -2 -2
+-2 -2 1 1 -2 -1 1 -1
+1 1 0 0 1 0 0 1
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=d6f22db735da27bc77aece2879639bfc937218c6933e83dd61ab36c096d3ccfe
+SIMULATOR_SHA256=c16683e08c2bea91ad16ba6c498781be9461f150a7923becf5fcc88aaca6f06e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=7ea161c67a3686a8a99b3bed493492d2fdd37412a8d0c6726da194b2f42dcbd5
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0043/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0043/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 167
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23197' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf4/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.362
+
+REBUILT DESIGN b8_rf8: SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e; make completed once, see Log_TC03.log.
+
+====================================================================================================
+TC06_0051 b8_rf8 input16 W4 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2077373887; WEIGHT_SEED=2802170024; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=6fefbc667037f0513be0356bca107838c3bffd10063f4b7167366a55387f99a2
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=cd59a67ba6e72090a15a46163efb70e9788515e75c1ddc64cd4b67ed6be71c02
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0051/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0051/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 173
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.068
+
+====================================================================================================
+TC06_0050 b8_rf8 input16 W4 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=775403130; WEIGHT_SEED=81142373; pattern=zero_w
+INPUT X (1 x 16):
+25345 -31332 -27908 26021 -17169 13003 -26398 -28200 -1636 -28042 1208 26011 -22389 22183 -24076 14187
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=024ea9b9071957413be82fcc348e4b2c4ebb790042a168ee46a51750cdca753b
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=154fe9d63b7026ba06e617d0de9fac6cb2bd71cfa3750d68f93c39bc6c8d85be
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0050/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0050/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 173
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.185
+
+====================================================================================================
+TC06_0049 b8_rf8 input16 W4 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3063849770; WEIGHT_SEED=1604065345; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+1 4 6 5 -4 3 -2 4
+2 3 7 4 1 5 1 -6
+6 -1 -3 -8 2 4 0 -2
+-4 -4 6 6 3 7 -7 0
+2 -8 4 1 7 -7 -7 -5
+-3 3 5 -8 0 -7 3 1
+-8 0 -6 -1 0 -8 3 4
+3 -2 -6 3 -4 -6 4 1
+-7 4 7 -2 3 -8 1 3
+3 3 -6 -6 0 -1 1 -8
+-4 -7 -5 -7 5 -4 0 -1
+5 -5 -8 -2 -3 -6 -6 3
+-5 -5 2 -1 -7 -2 -3 -2
+-2 5 5 -4 5 5 0 -2
+-6 -2 5 -8 -4 2 -5 3
+5 -2 2 3 2 -2 -6 -1
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=e35731d0212b174ec46a5c12cc66cc70d0bef85763b5937168ffa80f1fea65e3
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=bbf0fa8e64ef21270831e4b1d4630cee1a08dc8dbb848c8ea542aa21f463d51e
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0049/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0049/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 171
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.723
+
+====================================================================================================
+TC06_0048 b8_rf8 input16 W8 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3767102492; WEIGHT_SEED=1112041216; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=927b56c7cda3790e8172cd4650bc479820379b9cd3d92db0f0b2b547b0409e26
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=40797bd67580d50c5a404d0286b15a39fe2e680c698a32f71aa8a76148a56e76
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0048/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0048/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 297
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.188
+
+====================================================================================================
+TC06_0047 b8_rf8 input16 W8 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=2785207139; WEIGHT_SEED=1367503112; pattern=zero_w
+INPUT X (1 x 16):
+-24049 20506 19295 -27832 4079 4267 3270 -24749 -20516 -2999 17538 20443 6393 17648 -28369 -2523
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=a76e9fc6284ed70be82e0b0d464f4692791be5a3477e37878c3817b9d15da46c
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=43e5c43506365b168f1c34efd10b8bfc23485d63fb241a82a190eca9b3a9873f
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0047/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0047/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 297
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.298
+
+====================================================================================================
+TC06_0046 b8_rf8 input16 W8 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=307932046; WEIGHT_SEED=4158889765; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-31 66 93 -64 -51 -107 -63 -128
+25 126 11 90 120 1 115 -77
+66 108 62 -109 24 5 -28 26
+-117 33 102 5 -13 -69 19 -122
+-34 47 19 -13 -39 1 124 26
+-69 -120 -79 79 125 43 102 5
+65 15 -107 -28 -120 -78 -92 -65
+78 72 -72 -74 -54 19 121 -73
+84 92 57 -107 124 10 2 57
+94 77 115 89 92 -35 -127 10
+78 37 66 72 54 85 93 -9
+81 109 -42 -83 8 -83 -102 82
+36 50 21 -115 -31 -124 72 29
+-111 125 119 12 42 -91 13 102
+85 -20 -28 -27 -13 47 -47 10
+57 -35 -11 28 124 106 49 -34
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=b99f067e49059bf11728fd56a139bbb9ba39129349d649159b64e600742dab17
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=b143d6cf0145f675a74740f98a6d07ff7daea1e67c6d17bdd1e0504c47846913
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0046/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0046/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 297
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=19.697
+
+====================================================================================================
+TC06_0053 b8_rf8 input16 W2 pattern=zero_w detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=737025288; WEIGHT_SEED=3374530325; pattern=zero_w
+INPUT X (1 x 16):
+-28048 10548 11874 -32365 18049 4818 32516 -8771 25527 32709 2188 18646 -32595 -26657 -32603 7362
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=0ea3257be018a0ecf4aaea055d7ad5d2f67162049fb4d93a6246cc9e48437429
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=94fc105eaaa072952ce385972e47a8008c0adde487b4a780dcc6fecf68691125
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0053/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0053/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 166
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.658
+
+====================================================================================================
+TC06_0054 b8_rf8 input16 W2 pattern=zero_both detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3186476041; WEIGHT_SEED=1453459882; pattern=zero_both
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=26f667cb6f299f59a12af90d3549dd70bdf5e3e715b584b982cc20126e0540d5
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=55e4ed5e385926b82989ff38de9e2742285ded61255c6b6ae902353e76e8471f
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0054/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0054/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 166
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=17.868
+
+====================================================================================================
+TC06_0052 b8_rf8 input16 W2 pattern=zero_x detail=None
+====================================================================================================
+STEP 1: X=1x16, W=16x8; INPUT_SEED=3961101958; WEIGHT_SEED=3748942274; pattern=zero_x
+INPUT X (1 x 16):
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+WEIGHTS W (16 x 8):
+-1 -1 -2 -2 -1 1 -1 -1
+0 -2 -1 -1 1 1 -2 1
+0 1 1 1 1 -2 0 -2
+-2 1 -2 -2 1 -1 1 1
+1 1 -2 1 1 -1 1 1
+0 0 -1 -2 -2 -2 1 1
+-2 0 1 0 0 0 -1 1
+-1 -2 -2 0 -1 -1 -1 1
+1 1 1 0 -2 1 1 -1
+-2 -2 1 0 1 -1 1 -1
+-2 0 -2 -2 1 1 -1 -1
+-1 -2 -2 0 1 1 1 -2
+0 1 0 -2 0 1 -1 -2
+-2 -2 -2 1 1 1 -1 -1
+-2 0 0 -2 0 -2 -1 1
+-2 0 0 1 -2 -2 0 -1
+PYTHON OUTPUT (1 x 8):
+0 0 0 0 0 0 0 0
+TEST_C_SHA256=28b417d161741804c921ac3f2b2e19db2f68d65eb7e88b87fb496540dad3dae0
+SIMULATOR_SHA256=ab21ac59510bfc90904b11f7095cba0857219ee027fa37a7bcfec41b3fc06c8e
+🔧 Building bare-metal version...
+/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: warning: Linear-sw.riscv has a LOAD segment with RWX permissions
+✅ Bare-metal build complete: Linear-sw.riscv
+
+RISC-V BUILD EXIT=0
+ELF_SHA256=40414074e75135ad2da9ee74bc3f1858b5491a6c67b28340ec922ca9c2e7df6c
+ACTUAL VERILATOR COMMAND: /tmp/lumax-remaining-state-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-remaining-state-1020/work/TC06_0052/Linear-sw.riscv +permissive-off /tmp/lumax-remaining-state-1020/work/TC06_0052/Linear-sw.riscv
+BEGIN ACTUAL VERILATOR OUTPUT
+STEP 1 MATCHES 8/8 GUARDS PASS HW_CYCLES 166
+HW_OUTPUT_1 0 0 0 0 0 0 0 0 
+TEST_FINAL PASS
+%Warning: System has stack size 8192 kb which may be too small; suggest 'ulimit -c 23233' or larger
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-remaining-state-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+END ACTUAL VERILATOR OUTPUT
+VERILATOR_EXIT=0
+OBSERVED HW OUTPUT STEP 1 (1 x 8):
+0 0 0 0 0 0 0 0
+HW/PYTHON MATCHES=8/8; GUARDS=PASS
+FINAL RESULT: PASS; MATCHES=8/8; SECONDS=18.126
+
+====================================================================================================
+TOTAL RESULTS
+====================================================================================================
+ID | Design | X | W | W bits | Pattern | Exact matches | Status | HW cycles
+TC06_0001 | b2_rf4 | 1x16 | 16x8 | 8 | zero_x:None | 8/8 | PASS | [772]
+TC06_0002 | b2_rf4 | 1x16 | 16x8 | 8 | zero_w:None | 8/8 | PASS | [772]
+TC06_0003 | b2_rf4 | 1x16 | 16x8 | 8 | zero_both:None | 8/8 | PASS | [772]
+TC06_0004 | b2_rf4 | 1x16 | 16x8 | 4 | zero_x:None | 8/8 | PASS | [239]
+TC06_0005 | b2_rf4 | 1x16 | 16x8 | 4 | zero_w:None | 8/8 | PASS | [241]
+TC06_0006 | b2_rf4 | 1x16 | 16x8 | 4 | zero_both:None | 8/8 | PASS | [241]
+TC06_0007 | b2_rf4 | 1x16 | 16x8 | 2 | zero_x:None | 8/8 | PASS | [211]
+TC06_0008 | b2_rf4 | 1x16 | 16x8 | 2 | zero_w:None | 8/8 | PASS | [211]
+TC06_0009 | b2_rf4 | 1x16 | 16x8 | 2 | zero_both:None | 8/8 | PASS | [211]
+TC06_0010 | b2_rf8 | 1x16 | 16x8 | 8 | zero_x:None | 8/8 | PASS | [720]
+TC06_0011 | b2_rf8 | 1x16 | 16x8 | 8 | zero_w:None | 8/8 | PASS | [720]
+TC06_0012 | b2_rf8 | 1x16 | 16x8 | 8 | zero_both:None | 8/8 | PASS | [720]
+TC06_0013 | b2_rf8 | 1x16 | 16x8 | 4 | zero_x:None | 8/8 | PASS | [239]
+TC06_0014 | b2_rf8 | 1x16 | 16x8 | 4 | zero_w:None | 8/8 | PASS | [241]
+TC06_0015 | b2_rf8 | 1x16 | 16x8 | 4 | zero_both:None | 8/8 | PASS | [241]
+TC06_0016 | b2_rf8 | 1x16 | 16x8 | 2 | zero_x:None | 8/8 | PASS | [211]
+TC06_0017 | b2_rf8 | 1x16 | 16x8 | 2 | zero_w:None | 8/8 | PASS | [211]
+TC06_0018 | b2_rf8 | 1x16 | 16x8 | 2 | zero_both:None | 8/8 | PASS | [211]
+TC06_0019 | b4_rf4 | 1x16 | 16x8 | 8 | zero_x:None | 8/8 | PASS | [432]
+TC06_0020 | b4_rf4 | 1x16 | 16x8 | 8 | zero_w:None | 8/8 | PASS | [432]
+TC06_0021 | b4_rf4 | 1x16 | 16x8 | 8 | zero_both:None | 8/8 | PASS | [432]
+TC06_0022 | b4_rf4 | 1x16 | 16x8 | 4 | zero_x:None | 8/8 | PASS | [191]
+TC06_0023 | b4_rf4 | 1x16 | 16x8 | 4 | zero_w:None | 8/8 | PASS | [193]
+TC06_0024 | b4_rf4 | 1x16 | 16x8 | 4 | zero_both:None | 8/8 | PASS | [193]
+TC06_0025 | b4_rf4 | 1x16 | 16x8 | 2 | zero_x:None | 8/8 | PASS | [175]
+TC06_0026 | b4_rf4 | 1x16 | 16x8 | 2 | zero_w:None | 8/8 | PASS | [175]
+TC06_0027 | b4_rf4 | 1x16 | 16x8 | 2 | zero_both:None | 8/8 | PASS | [175]
+TC06_0028 | b4_rf8 | 1x16 | 16x8 | 8 | zero_x:None | 8/8 | PASS | [432]
+TC06_0029 | b4_rf8 | 1x16 | 16x8 | 8 | zero_w:None | 8/8 | PASS | [432]
+TC06_0030 | b4_rf8 | 1x16 | 16x8 | 8 | zero_both:None | 8/8 | PASS | [432]
+TC06_0031 | b4_rf8 | 1x16 | 16x8 | 4 | zero_x:None | 8/8 | PASS | [191]
+TC06_0032 | b4_rf8 | 1x16 | 16x8 | 4 | zero_w:None | 8/8 | PASS | [193]
+TC06_0033 | b4_rf8 | 1x16 | 16x8 | 4 | zero_both:None | 8/8 | PASS | [193]
+TC06_0034 | b4_rf8 | 1x16 | 16x8 | 2 | zero_x:None | 8/8 | PASS | [175]
+TC06_0035 | b4_rf8 | 1x16 | 16x8 | 2 | zero_w:None | 8/8 | PASS | [175]
+TC06_0036 | b4_rf8 | 1x16 | 16x8 | 2 | zero_both:None | 8/8 | PASS | [175]
+TC06_0037 | b8_rf4 | 1x16 | 16x8 | 8 | zero_x:None | 8/8 | PASS | [297]
+TC06_0038 | b8_rf4 | 1x16 | 16x8 | 8 | zero_w:None | 8/8 | PASS | [297]
+TC06_0039 | b8_rf4 | 1x16 | 16x8 | 8 | zero_both:None | 8/8 | PASS | [297]
+TC06_0040 | b8_rf4 | 1x16 | 16x8 | 4 | zero_x:None | 8/8 | PASS | [171]
+TC06_0041 | b8_rf4 | 1x16 | 16x8 | 4 | zero_w:None | 8/8 | PASS | [174]
+TC06_0042 | b8_rf4 | 1x16 | 16x8 | 4 | zero_both:None | 8/8 | PASS | [174]
+TC06_0043 | b8_rf4 | 1x16 | 16x8 | 2 | zero_x:None | 8/8 | PASS | [167]
+TC06_0044 | b8_rf4 | 1x16 | 16x8 | 2 | zero_w:None | 8/8 | PASS | [166]
+TC06_0045 | b8_rf4 | 1x16 | 16x8 | 2 | zero_both:None | 8/8 | PASS | [166]
+TC06_0046 | b8_rf8 | 1x16 | 16x8 | 8 | zero_x:None | 8/8 | PASS | [297]
+TC06_0047 | b8_rf8 | 1x16 | 16x8 | 8 | zero_w:None | 8/8 | PASS | [297]
+TC06_0048 | b8_rf8 | 1x16 | 16x8 | 8 | zero_both:None | 8/8 | PASS | [297]
+TC06_0049 | b8_rf8 | 1x16 | 16x8 | 4 | zero_x:None | 8/8 | PASS | [171]
+TC06_0050 | b8_rf8 | 1x16 | 16x8 | 4 | zero_w:None | 8/8 | PASS | [173]
+TC06_0051 | b8_rf8 | 1x16 | 16x8 | 4 | zero_both:None | 8/8 | PASS | [173]
+TC06_0052 | b8_rf8 | 1x16 | 16x8 | 2 | zero_x:None | 8/8 | PASS | [166]
+TC06_0053 | b8_rf8 | 1x16 | 16x8 | 2 | zero_w:None | 8/8 | PASS | [166]
+TC06_0054 | b8_rf8 | 1x16 | 16x8 | 2 | zero_both:None | 8/8 | PASS | [166]
+TOTAL: 54 PASS, 0 FAIL, 0 TIMEOUT, 0 BUILD_FAIL, 0 ERROR, 0 STOPPED; 54/54 completed.
+EXACT OUTPUT MATCHES: 432/432.
+PER DESIGN:
+b2_rf4: {'PASS': 9}
+b2_rf8: {'PASS': 9}
+b4_rf4: {'PASS': 9}
+b4_rf8: {'PASS': 9}
+b8_rf4: {'PASS': 9}
+b8_rf8: {'PASS': 9}
+Original HW/SW sources unchanged and Config.scala restored: True
+Temporary builds/binaries/vector headers/ELFs/objects removed; runner script retained; no separate summary files.
+RUN COMPLETE
+END: 2026-10-10T07:06:13.511016+03:00
