@@ -33,4 +33,4 @@ python3 docs/extract_paper_figures.py /path/to/LUMIXED_ICCAD2026-1.pdf
 
 ## Final validation
 
-The [final report](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.md) and [CSV](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.csv) contain the retained 180 passing tests and hardware counters.
+The [final report](../verification/logs/regression/run_20261008_193240/total_results.md) and [CSV](../verification/logs/regression/run_20261008_193240/total_results.csv) contain the retained 180 passing tests and hardware counters.

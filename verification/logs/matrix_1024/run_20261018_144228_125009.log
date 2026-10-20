@@ -1,0 +1,95 @@
+LUMAX 1024 VERIFICATION
+START: 2026-10-18T14:42:28.210311+03:00
+DESIGN=b8_rf8; X=1x1024; W=1024x1024; Y=1x1024; input16; W8/W4/W2; output32
+Three independent native HW operations, one per precision. No output tiling, padding, or software partial sums.
+Python references remain on the host; only random operands go into the RISC-V ELF. Actual DMA outputs are checked element by element.
+Only results, seeds, randomness statistics, hashes and cycles are retained; no matrix dumps.
+TIMEOUTS: make=7200s; ELF compile=1200s; simulator=21600s per precision; max-cycles=100000000000
+ACTIVE HW cycles = Load X + Generate + combined Load W/Select + Store O. CORE_COMPUTE is the rdcycle interval around matmul_hw_uniform. Printing and Python work are excluded from these counters.
+SOURCE SHA256: {"/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/Linear-sw.c": "9afb20fe6d176e80a5b53f1e1bbfb80cb3734d405af0edde83b3db4f665ba584", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/build.sh": "a488a982562db1f94967ddf7400bba0da7b6cdad435c3ff66727cca1e0aec45e", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/compiler.h": "4c20b7d9e9a7137831f1aa9ec44966c5ef566bfcdf32d4cd8bc191839e39f6b0", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src/rocc.h": "f3e665c8e6e639c86c91819e3017ad15fe8e46d75d4f90c13ad10f101e120199", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ChunkInfoModules.scala": "82aca247c111b08b40076319bd5acd3409f7864338797987fb95265d921c077f", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Config.scala": "c41f5ccf40f7373a71346f492a8792e7e269c399d1f8847ff33cb2a8d3dafca7", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala": "80b119aa95dfed4957c0de009e25cee6377fc56338b904c585fd889b5a02a2bd", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala": "1404c50d8e37ee3d7a4967bdc95e653190cbe880bf702e1873534aba3f38434c", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/MappingUtils.scala": "5b1c3e1bde3438139571de32e97a2375cdeff4f76b4f7f2ab73c9f251b77a8d8", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Product_Generator.scala": "74d3fc136107d5e518a3cede95e036c7ef1c0748186039e236c228266af383af", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Scale.scala": "005263d0fd829b5c8a87754feceba8e67d0bbfd360366b4dd9041d2be25b3c0c", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/SignExtractor.scala": "ca3f88160ca905f89615aba66f9eae93927e8c6a82e569d0f2e46dd9835e0ad6"}
+RUNNER SHA256: 7f5b2acb8dac23842747ba1047b864d86f5caeaf6607b8987225b555711f7bb7; HARNESS SHA256: aed9c2a54d22425f49f55c5cc5ad7f822ee6b3fe4a4d6c169ef8af939638da3e
+MAKE ONCE CWD=/home/kioannou/chipyard_1.13.0/sims/verilator
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-1024-1020/work/b8_rf8/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-1024-1020/work/b8_rf8/generated-src
+MAKE OUTPUT:
+Running with RISCV=/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools
+echo "Checking all submodules in generators/ are initialized. Uninitialized submodules will be displayed" ; ! git submodule status /home/kioannou/chipyard_1.13.0/generators | grep ^-
+mkdir -p /tmp/lumax-1024-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig
+mkdir -p /tmp/lumax-1024-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/
+Checking all submodules in generators/ are initialized. Uninitialized submodules will be displayed
+echo "emittedLineLength=2048,noAlwaysComb,disallowLocalVariables,verifLabels,disallowPortDeclSharing,locationInfoStyle=wrapInAtSquareBracket" > /tmp/lumax-1024-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/.mfc_lowering_options
+cp -f /home/kioannou/chipyard_1.13.0/generators/testchipip/src/main/resources/testchipip/bootrom/bootrom.rv64.img /tmp/lumax-1024-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/bootrom.rv64.img
+cp -f /home/kioannou/chipyard_1.13.0/generators/testchipip/src/main/resources/testchipip/bootrom/bootrom.rv32.img /tmp/lumax-1024-1020/work/b8_rf8/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/bootrom.rv32.img
+mkdir -p /home/kioannou/chipyard_1.13.0/.classpath_cache/
+cd /home/kioannou/chipyard_1.13.0 && java -jar /home/kioannou/chipyard_1.13.0/scripts/sbt-launch.jar -Dsbt.ivy.home=/home/kioannou/chipyard_1.13.0/.ivy2 -Dsbt.global.base=/home/kioannou/chipyard_1.13.0/.sbt -Dsbt.boot.directory=/home/kioannou/chipyard_1.13.0/.sbt/boot/ -Dsbt.color=always -Dsbt.supershell=false -Dsbt.server.forcestart=true ";project chipyard; set assembly / assemblyOutputPath := file(\"/home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard.jar\"); assembly" && touch /home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard.jar
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M -Djava.io.tmpdir=/home/kioannou/chipyard_1.13.0/.java_tmp
+[0Jjava.nio.file.FileSystemException: /run/user/1020/.sbt: Read-only file system
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:100)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.createDirectory(UnixFileSystemProvider.java:438)
+	at java.base/java.nio.file.Files.createDirectory(Files.java:699)
+	at java.base/java.nio.file.Files.createAndCheckIsDirectory(Files.java:806)
+	at java.base/java.nio.file.Files.createDirectories(Files.java:792)
+	at sbt.internal.BootServerSocket.<init>(BootServerSocket.java:290)
+	at sbt.xMain$.getSocketOrExit(Main.scala:150)
+	at sbt.xMain$.bootServerSocket$lzycompute$1(Main.scala:77)
+	at sbt.xMain$.bootServerSocket$1(Main.scala:77)
+	at sbt.xMain$.withStreams$1(Main.scala:85)
+	at sbt.xMain$.run(Main.scala:121)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
+	at sbt.internal.XMainConfiguration.run(XMainConfiguration.java:57)
+	at sbt.xMain.run(Main.scala:46)
+	at xsbt.boot.Launch$$anonfun$run$1.apply(Launch.scala:109)
+	at xsbt.boot.Launch$.withContextLoader(Launch.scala:128)
+	at xsbt.boot.Launch$.run(Launch.scala:109)
+	at xsbt.boot.Launch$$anonfun$apply$1.apply(Launch.scala:35)
+	at xsbt.boot.Launch$.launch(Launch.scala:117)
+	at xsbt.boot.Launch$.apply(Launch.scala:18)
+	at xsbt.boot.Boot$.runImpl(Boot.scala:41)
+	at xsbt.boot.Boot$.main(Boot.scala:17)
+	at xsbt.boot.Boot.main(Boot.scala)
+Error during sbt execution: java.nio.file.FileSystemException: /run/user/1020/.sbt: Read-only file system
+make: *** [/home/kioannou/chipyard_1.13.0/common.mk:118: /home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard.jar] Error 1
+
+MAKE EXIT=2
+RUN INTERRUPTED: RuntimeError: 1024-capacity make build failed
+LAST MAKE DIAGNOSTICS:
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M -Djava.io.tmpdir=/home/kioannou/chipyard_1.13.0/.java_tmp
+[0Jjava.nio.file.FileSystemException: /run/user/1020/.sbt: Read-only file system
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:100)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.createDirectory(UnixFileSystemProvider.java:438)
+	at java.base/java.nio.file.Files.createDirectory(Files.java:699)
+	at java.base/java.nio.file.Files.createAndCheckIsDirectory(Files.java:806)
+	at java.base/java.nio.file.Files.createDirectories(Files.java:792)
+	at sbt.internal.BootServerSocket.<init>(BootServerSocket.java:290)
+	at sbt.xMain$.getSocketOrExit(Main.scala:150)
+	at sbt.xMain$.bootServerSocket$lzycompute$1(Main.scala:77)
+	at sbt.xMain$.bootServerSocket$1(Main.scala:77)
+	at sbt.xMain$.withStreams$1(Main.scala:85)
+	at sbt.xMain$.run(Main.scala:121)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
+	at sbt.internal.XMainConfiguration.run(XMainConfiguration.java:57)
+	at sbt.xMain.run(Main.scala:46)
+	at xsbt.boot.Launch$$anonfun$run$1.apply(Launch.scala:109)
+	at xsbt.boot.Launch$.withContextLoader(Launch.scala:128)
+	at xsbt.boot.Launch$.run(Launch.scala:109)
+	at xsbt.boot.Launch$$anonfun$apply$1.apply(Launch.scala:35)
+	at xsbt.boot.Launch$.launch(Launch.scala:117)
+	at xsbt.boot.Launch$.apply(Launch.scala:18)
+	at xsbt.boot.Boot$.runImpl(Boot.scala:41)
+	at xsbt.boot.Boot$.main(Boot.scala:17)
+	at xsbt.boot.Boot.main(Boot.scala)
+Error during sbt execution: java.nio.file.FileSystemException: /run/user/1020/.sbt: Read-only file system
+make: *** [/home/kioannou/chipyard_1.13.0/common.mk:118: /home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard.jar] Error 1
+
+TOTAL RESULTS
+W bits | Exact matches | Status | Active HW cycles | Core compute cycles | Wall seconds
+TOTAL: {}; 0/3 operations completed.
+Capacity-1024 configuration and original HW/SW sources unchanged after the build: True
+RUN INCOMPLETE
+END: 2026-10-18T14:42:48.993524+03:00
+Temporary RTL/builds, vectors, ELFs and raw UART removed. This script and one results log are retained.

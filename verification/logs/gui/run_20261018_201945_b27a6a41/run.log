@@ -1,0 +1,9 @@
+LUMAX GUI VERIFICATION
+START: 2026-10-18T20:19:46.098015+03:00
+SUITE: {"design_ids": ["b8_rf8"], "designs": [{"b": 8, "builtin": true, "id": "b8_rf8", "max_k": 1024, "max_m": 1024, "name": "b8_rf8", "rf": 8}], "kind": "llama_shapes", "name": "LLAMA2 DIMENSIONS CHECK", "options": {"build_timeout": 7200, "compile_timeout": 1200, "cycles": true, "guards": true, "integrity": false, "jobs": 8, "matrices": true, "max_cycles": 100000000000, "mode": "native", "reference": "python", "stop_on_fail": false, "t": 16, "tcs": [], "tile_k": 0, "tile_m": 0, "timeout": 21600, "workers": 6}, "tests": []}
+ALL MATRIX MULTIPLICATIONS USE MAKE-BUILT VERILATOR AND RISC-V ROCC. Python does not simulate the hardware.
+/home/kioannou/miniforge3/bin/python3 /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_llama_shapes.py start --design b8_rf8 --timeout 21600 --build-timeout 7200 --jobs 8 --t 16
+Started detached in background. PID: 124502
+You can close SSH. Log: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/llama_shapes/run_20261018_201948_372793.log
+Status: python3 /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_llama_shapes.py status
+

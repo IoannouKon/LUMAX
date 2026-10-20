@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUMAX · Verification</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="LUMAX home"><span class="brand-icon">L</span><span>LUMAX<small>VERIFICATION</small></span></a>
+    <div class="workspace"><span class="dot"></span> Chipyard 1.13.0</div>
+    <nav aria-label="Main navigation">
+      <button class="nav active" data-view="builder"><span>＋</span> Build a suite</button>
+      <button class="nav" data-view="runs"><span>▷</span> Runs <span id="run-count" class="nav-count">0</span></button>
+      <button class="nav" data-view="history"><span>▤</span> Saved logs</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="pill engine">VERILATOR</span><p>Real RTL. Exact comparisons.</p><small id="connection">Connecting…</small></div>
+  </aside>
+  <main>
+    <header class="topbar"><span id="breadcrumb">Workspace / New suite</span><span class="muted">Input16 · W8 / W4 / W2</span></header>
+    <div id="external"></div>
+    <section id="builder" class="view">
+      <div class="page-heading"><div><p class="eyebrow">TEST WORKSPACE</p><h1>Build a test suite.</h1><p class="muted">Choose a design, define your matrices, and verify on hardware.</p></div><button class="button secondary" id="load-suite">Open saved suite</button></div>
+      <div class="builder-layout">
+        <div class="builder-main">
+          <section class="card">
+            <div class="card-heading"><h2><span class="step">01</span> Suite</h2><span class="hint">Saved locally</span></div>
+            <div class="field-row"><label class="grow">Suite name<input id="suite-name" value="My verification suite" maxlength="80"></label><label class="grow">Start from<select id="suite-kind"><option value="custom">Custom matrices</option><option value="regression">Original 180-test regression</option><option value="test_cases">TC01–TC11</option><option value="llama_shapes">Llama2 dimensions</option><option value="matrix_1024">Native 1024×1024</option></select></label></div>
+            <p id="builtin-note" class="notice hidden">Runs the original script with its original coverage, Python reference and cycle checks.</p>
+            <div id="tc-picker" class="tc-picker hidden"></div>
+          </section>
+          <section class="card">
+            <div class="card-heading"><h2><span class="step">02</span> Designs</h2><button class="text-button" id="new-design">＋ Create design</button></div>
+            <div id="designs" class="design-grid"></div>
+            <p class="hint">Select several designs to compare them. Each design builds once per suite.</p>
+          </section>
+          <section class="card" id="matrix-card">
+            <div class="card-heading"><h2><span class="step">03</span> Matrices</h2><div class="inline"><select id="shape-preset" aria-label="Add a common shape"><option value="">Add common shape…</option><option value="16,8">Small · 16 × 8</option><option value="12,20">Irregular · 12 × 20</option><option value="512,512">Large · 512 × 512</option><option value="1024,1024">Capacity · 1024 × 1024</option><option value="288,288">LQ01 · 288 × 288</option><option value="288,768">LQ02 · 288 × 768</option><option value="768,288">LQ03 · 768 × 288</option><option value="288,32000">LQ04 · 288 × 32,000</option><option value="48,16">LQ05 · 48 × 16</option><option value="16,48">LQ06 · 16 × 48</option></select><button class="text-button" id="add-test">＋ Add test</button></div></div>
+            <p class="hint">One input row: <strong>X [1, K] × W [K, M] → Y [1, M]</strong></p>
+            <div id="tests"></div>
+          </section>
+          <section class="card">
+            <div class="card-heading"><h2><span class="step" id="checks-step">04</span> Execution</h2><span class="pill engine">ALWAYS VERILATOR</span></div>
+            <div id="custom-options">
+              <div class="field-row"><label class="grow">Matrix placement<select id="mode"><option value="auto">Auto · tile only when needed</option><option value="native">Native · one full HW operation</option><option value="tile">Tiles · choose block sizes</option></select></label><label class="grow">Reference comparison<select id="reference"><option value="python">Python · fast host reference</option><option value="riscv">RISC-V C · reference on simulated CPU</option><option value="none">Skip comparison · UNVERIFIED</option></select></label></div>
+              <div id="tile-options" class="field-row hidden"><label class="grow">Input block K<input id="tile-k" type="number" min="1" placeholder="Design capacity"></label><label class="grow">Output block M<input id="tile-m" type="number" min="1" placeholder="512 in Tiles mode"></label></div>
+              <div class="check-row"><label><input id="cycles" type="checkbox" checked> Record HW cycles</label><label><input id="guards" type="checkbox" checked> Check memory guards</label><label><input id="matrices" type="checkbox"> Include matrices in logs</label></div>
+            </div>
+            <details><summary>Advanced options</summary><div class="advanced-grid"><label>Timeout per HW operation (hours)<input id="timeout-hours" type="number" min="0.01" step="0.5" value="6"></label><label>Make jobs<input id="build-jobs" type="number" min="1" max="32" value="8"></label><label>Make timeout (hours)<input id="build-hours" type="number" min="1" max="24" value="2"></label><label id="workers-field">Original script parallel jobs<input id="workers" type="number" min="1" max="12" value="6"></label></div><div class="check-row" id="advanced-custom"><label><input id="integrity" type="checkbox"> Scan operand integrity (slower)</label><label><input id="stop-on-fail" type="checkbox"> Stop on first failure</label></div><label id="t-field" class="hidden">Attention context T<input id="context-t" type="number" min="2" max="1000" value="16"></label></details>
+          </section>
+        </div>
+        <aside class="plan card"><p class="eyebrow">RUN PREVIEW</p><h2>Your test plan</h2><div class="plan-number" id="plan-cases">—</div><p class="muted">logical tests</p><div class="plan-stats"><div><span>HW operations</span><strong id="plan-ops">—</strong></div><div><span>Design builds</span><strong id="plan-builds">—</strong></div><div><span>Input precision</span><strong>16 bits</strong></div></div><div id="plan-details"></div><p id="plan-note" class="hint"></p><p id="plan-error" class="error-text hidden" role="alert"></p><button class="button primary full" id="run">Run verification <span>→</span></button><button class="button secondary full" id="save">Save suite</button><p class="hint bottom-hint">Closing this page does not stop a run.</p></aside>
+      </div>
+    </section>
+    <section id="runs" class="view hidden"><div class="page-heading"><div><p class="eyebrow">EXECUTION</p><h1>Runs</h1><p class="muted">Live phases, exact matches, and measured hardware cycles.</p></div><button class="button secondary" data-go="builder">＋ New suite</button></div><div class="runs-layout"><div id="run-list"></div><section id="run-detail" class="card empty"><span class="empty-icon">▷</span><h2>Select a run</h2><p class="muted">Its progress, results and log appear here.</p></section></div></section>
+    <section id="history" class="view hidden"><div class="page-heading"><div><p class="eyebrow">VERIFICATION RECORD</p><h1>Saved logs</h1><p class="muted">Original results stay intact, including timeouts and incomplete runs.</p></div><button class="button secondary" id="refresh-history">Refresh</button></div><div id="history-list" class="history-grid"></div><section id="history-log" class="card hidden"></section></section>
+    <footer>Local workspace <span>·</span> Every native multiplication executes LUMAX RTL in Verilator.</footer>
+  </main>
+</div>
+<dialog id="design-dialog"><form id="design-form"><div class="card-heading"><h2>Create a design</h2><button type="button" class="icon-button" data-close="design-dialog" aria-label="Close">×</button></div><p class="muted">Choose parameters for a new make build. The current HW source is restored after building.</p><label>Design name<input id="design-name" required maxlength="64" placeholder="e.g. b16_rf8"></label><div class="field-row"><label class="grow">Parallel slices b<input id="design-b" type="number" min="2" max="32" value="8" required></label><label class="grow">Row factor RF<input id="design-rf" type="number" min="2" max="64" value="8" required></label></div><div class="field-row"><label class="grow">Maximum input K<input id="design-k" type="number" min="1" max="16384" value="1024" required></label><label class="grow">Maximum output M<input id="design-m" type="number" min="1" max="4096" value="1024" required></label></div><p class="hint">b and RF must be powers of two. New configurations are unverified until their tests pass.</p><div class="actions"><button type="button" class="button secondary" data-close="design-dialog">Cancel</button><button class="button primary" type="submit">Create design</button></div></form></dialog>
+<dialog id="suites-dialog"><div class="card-heading"><h2>Saved suites</h2><button class="icon-button" data-close="suites-dialog" aria-label="Close">×</button></div><div id="saved-suites"></div></dialog>
+<div id="toast" class="toast hidden" role="status"></div>
+</body>
+</html>

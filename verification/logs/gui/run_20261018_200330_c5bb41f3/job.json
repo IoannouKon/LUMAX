@@ -1,0 +1,197 @@
+{
+  "id": "run_20261018_200330_c5bb41f3",
+  "name": "Simple Test",
+  "status": "PASS",
+  "created": "2026-10-18T20:03:30.391861+03:00",
+  "phase": "Finished",
+  "completed": 3,
+  "total": 3,
+  "operations_done": 3,
+  "operations_total": 3,
+  "results": [
+    {
+      "name": "512\u00d7512",
+      "design": "b2_rf4",
+      "k": 32,
+      "m": 32,
+      "wb": 8,
+      "repeat": 1,
+      "status": "PASS",
+      "matches": 32,
+      "elements": 32,
+      "operations": 1,
+      "cycles": 2541,
+      "core_cycles": 2659,
+      "mismatches": [],
+      "operation_results": [
+        {
+          "status": "PASS",
+          "matches": 32,
+          "elements": 32,
+          "cycles": 2541,
+          "core_cycles": 2659,
+          "guards": "PASS",
+          "pc": [
+            62,
+            1040,
+            1205,
+            1152,
+            130,
+            1309
+          ],
+          "output_sha256": "74a2e2d71c6ade1234fe28bb8b9d25d776c1a9db752537552840f4fc47f0d1f3"
+        }
+      ]
+    },
+    {
+      "name": "512\u00d7512",
+      "design": "b2_rf4",
+      "k": 32,
+      "m": 32,
+      "wb": 4,
+      "repeat": 1,
+      "status": "PASS",
+      "matches": 32,
+      "elements": 32,
+      "operations": 1,
+      "cycles": 930,
+      "core_cycles": 1047,
+      "mismatches": [],
+      "operation_results": [
+        {
+          "status": "PASS",
+          "matches": 32,
+          "elements": 32,
+          "cycles": 930,
+          "core_cycles": 1047,
+          "guards": "PASS",
+          "pc": [
+            48,
+            80,
+            376,
+            672,
+            129,
+            673
+          ],
+          "output_sha256": "b4c011adbd736e2b2c85959064ca433928359e5aea220f2cd61dc313108ea3f6"
+        }
+      ]
+    },
+    {
+      "name": "512\u00d7512",
+      "design": "b2_rf4",
+      "k": 32,
+      "m": 32,
+      "wb": 2,
+      "repeat": 1,
+      "status": "PASS",
+      "matches": 32,
+      "elements": 32,
+      "operations": 1,
+      "cycles": 887,
+      "core_cycles": 981,
+      "mismatches": [],
+      "operation_results": [
+        {
+          "status": "PASS",
+          "matches": 32,
+          "elements": 32,
+          "cycles": 887,
+          "core_cycles": 981,
+          "guards": "PASS",
+          "pc": [
+            52,
+            32,
+            284,
+            672,
+            130,
+            673
+          ],
+          "output_sha256": "808675280ecfb536238c27b55462d9ed1bc6d37c72bfe923682a1592ea9188bc"
+        }
+      ]
+    }
+  ],
+  "suite": {
+    "name": "Simple Test",
+    "kind": "custom",
+    "design_ids": [
+      "b2_rf4"
+    ],
+    "designs": [
+      {
+        "id": "b2_rf4",
+        "name": "b2_rf4",
+        "b": 2,
+        "rf": 4,
+        "max_k": 1024,
+        "max_m": 1024,
+        "builtin": true
+      }
+    ],
+    "tests": [
+      {
+        "name": "512\u00d7512",
+        "k": 32,
+        "m": 32,
+        "weights": [
+          8,
+          4,
+          2
+        ],
+        "pattern": "random",
+        "repeats": 1,
+        "seed": ""
+      }
+    ],
+    "options": {
+      "mode": "auto",
+      "reference": "python",
+      "cycles": true,
+      "guards": true,
+      "integrity": false,
+      "matrices": false,
+      "timeout": 21600,
+      "build_timeout": 7200,
+      "compile_timeout": 1200,
+      "jobs": 8,
+      "workers": 6,
+      "max_cycles": 100000000000,
+      "stop_on_fail": false,
+      "tile_k": 0,
+      "tile_m": 0,
+      "t": 16,
+      "tcs": []
+    }
+  },
+  "plan": {
+    "cases": 3,
+    "operations": 3,
+    "builds": 1,
+    "detail": [
+      {
+        "design": "b2_rf4",
+        "test": "512\u00d7512",
+        "k": 32,
+        "m": 32,
+        "cases": 3,
+        "operations": 3,
+        "tiles": 1,
+        "reduction": false
+      }
+    ],
+    "note": "Each tile is computed in LUMAX. Output tiles concatenate; input-length tiles add partial outputs in host software. No padding."
+  },
+  "log": "gui/run_20261018_200330_c5bb41f3/run.log",
+  "heartbeat": "2026-10-18T20:10:28.962878+03:00",
+  "started": "2026-10-18T20:03:31.145065+03:00",
+  "pid": 113786,
+  "command": "/tmp/lumax-gui-patrrshn/b2_rf4/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-gui-patrrshn/operation/Linear-sw.riscv +permissive-off /tmp/lumax-gui-patrrshn/operation/Linear-sw.riscv",
+  "command_started": "2026-10-18T20:09:34.159868+03:00",
+  "process": null,
+  "current": "b2_rf4: 512\u00d7512, W2, repeat 1",
+  "tile": 1,
+  "tiles": 1,
+  "last_uart": "2026-10-18T20:09:46.169424+03:00",
+  "ended": "2026-10-18T20:10:28.962840+03:00"
+}

@@ -78,7 +78,7 @@ The current defaults in [Config.scala](src/main/scala/Config.scala) are:
 | `W_BUFFS` | 2 | Ping-pong weight buffers |
 | `SCALE` | false | Optional scaling path disabled |
 | `DEBUG` | true | Hardware debug/performance-counter support |
-| `Rin`, `Cin`, `Cout` | 1, 1000, 1000 | Elaboration sizing parameters for counters/storage |
+| `Rin`, `Cin`, `Cout` | 1, 1024, 1024 | Elaboration sizing parameters for counters/storage |
 
 Hardware geometry is chosen at elaboration. Runtime commands supply addresses, dimensions, precision information, loop counts, and start/control operations. `Linear-sw.c` wraps the custom instructions and handles quantization, packing, and weight transposition. Keep its `XS`, `YS`, `Mem_row_factor`, maximum precisions, and `SCALE` consistent with the hardware; ensure runtime dimensions fit the elaborated storage/counters.
 

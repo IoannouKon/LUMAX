@@ -1,0 +1,38 @@
+{
+  "name": "LLAMA2 DIMENSIONS CHECK",
+  "kind": "llama_shapes",
+  "design_ids": [
+    "b8_rf8"
+  ],
+  "designs": [
+    {
+      "id": "b8_rf8",
+      "name": "b8_rf8",
+      "b": 8,
+      "rf": 8,
+      "max_k": 1024,
+      "max_m": 1024,
+      "builtin": true
+    }
+  ],
+  "tests": [],
+  "options": {
+    "mode": "native",
+    "reference": "python",
+    "cycles": true,
+    "guards": true,
+    "integrity": false,
+    "matrices": true,
+    "timeout": 21600,
+    "build_timeout": 7200,
+    "compile_timeout": 1200,
+    "jobs": 8,
+    "workers": 6,
+    "max_cycles": 100000000000,
+    "stop_on_fail": false,
+    "tile_k": 0,
+    "tile_m": 0,
+    "t": 16,
+    "tcs": []
+  }
+}

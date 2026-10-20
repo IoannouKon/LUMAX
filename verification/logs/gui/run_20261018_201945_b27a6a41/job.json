@@ -1,0 +1,68 @@
+{
+  "id": "run_20261018_201945_b27a6a41",
+  "name": "LLAMA2 DIMENSIONS CHECK",
+  "status": "RUNNING",
+  "created": "2026-10-18T20:19:45.541809+03:00",
+  "phase": "Original script running",
+  "completed": 1,
+  "total": 18,
+  "operations_done": 105,
+  "operations_total": 204,
+  "results": [],
+  "suite": {
+    "name": "LLAMA2 DIMENSIONS CHECK",
+    "kind": "llama_shapes",
+    "design_ids": [
+      "b8_rf8"
+    ],
+    "designs": [
+      {
+        "id": "b8_rf8",
+        "name": "b8_rf8",
+        "b": 8,
+        "rf": 8,
+        "max_k": 1024,
+        "max_m": 1024,
+        "builtin": true
+      }
+    ],
+    "tests": [],
+    "options": {
+      "mode": "native",
+      "reference": "python",
+      "cycles": true,
+      "guards": true,
+      "integrity": false,
+      "matrices": true,
+      "timeout": 21600,
+      "build_timeout": 7200,
+      "compile_timeout": 1200,
+      "jobs": 8,
+      "workers": 6,
+      "max_cycles": 100000000000,
+      "stop_on_fail": false,
+      "tile_k": 0,
+      "tile_m": 0,
+      "t": 16,
+      "tcs": []
+    }
+  },
+  "plan": {
+    "cases": 18,
+    "operations": 204,
+    "builds": 1,
+    "detail": [],
+    "note": "Uses the original script settings and checks; all weight widths, input16. TC11 keeps its six-operation reuse test."
+  },
+  "log": "gui/run_20261018_201945_b27a6a41/run.log",
+  "heartbeat": "2026-10-20T20:49:12.216143+03:00",
+  "started": "2026-10-18T20:19:46.097541+03:00",
+  "pid": 124348,
+  "current": "b8_rf8",
+  "linked_logs": [
+    "llama_shapes/run_20261018_201948_372793.log"
+  ],
+  "counts": {
+    "PASS": 1
+  }
+}

@@ -15,16 +15,18 @@ The accelerator computes `O[N,M] = X[N,K] × W[K,M]`, supporting 8- or 16-bit ac
 | [Accelerator design](LUMAX/README.md) | Dataflow, memory organization, precision, configuration, and source map |
 | [Performance models](Performance%20Modeling/README.md) | Paper equations, Python usage, assumptions, and implementation differences |
 | [Measurements and reproduction](LUMAX/software/tests/README.md) | Saved simulation results, counters, benchmark instructions, FPGA/ASIC results, and ViT plots |
+| [Verification suites](verification/README.md) | Local GUI, background suite runners, saved results and native 1024 tests |
 | [Figures and data](docs/README.md) | Paper attribution and scripts to regenerate documentation assets |
 
-This repository is an integration overlay for Chipyard. The active target is **Chipyard 1.13.0**; use the [integration guide](chipyard-1.13.0/README.md). The final validation records **180 PASS, 0 FAIL** across six hardware configurations. Both the 20-bit matrix-index and 32-bit parallel-sum fixes are included. See the [final report](LUMAX/software/tests/src/Log/run_20261008_193240/total_results.md) and [per-test results](LUMAX/software/tests/src/Log/run_20261008_193240/total_results.csv).
+This repository is an integration overlay for Chipyard. The active target is **Chipyard 1.13.0**; use the [integration guide](chipyard-1.13.0/README.md). The final validation records **180 PASS, 0 FAIL** across six hardware configurations. Both the 20-bit matrix-index and 32-bit parallel-sum fixes are included. See the [final report](verification/logs/regression/run_20261008_193240/total_results.md) and [per-test results](verification/logs/regression/run_20261008_193240/total_results.csv).
 
 ## Repository layout
 
 | Path | Purpose |
 |---|---|
 | `LUMAX/src/main/scala/` | Accelerator RTL generator and parameters |
-| `LUMAX/software/tests/src/` | C matrix multiplication test, build scripts, and saved logs |
+| `LUMAX/software/tests/src/` | C matrix multiplication test and single-case build tools |
+| `verification/` | Local verification GUI, suite runners, saved designs and dated logs |
 | `Performance Modeling/` | Analytical cycle model and notebook-oriented plots |
 | `LUMAXConfigs.scala` | `chipyard.LUMAXROcketConfig` SoC configuration |
 | `Configs.scala` | Rocket subsystem configuration customizations |

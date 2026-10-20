@@ -1,0 +1,52 @@
+{
+  "name": "Simple Test",
+  "kind": "custom",
+  "design_ids": [
+    "b2_rf4"
+  ],
+  "designs": [
+    {
+      "id": "b2_rf4",
+      "name": "b2_rf4",
+      "b": 2,
+      "rf": 4,
+      "max_k": 1024,
+      "max_m": 1024,
+      "builtin": true
+    }
+  ],
+  "tests": [
+    {
+      "name": "512\u00d7512",
+      "k": 32,
+      "m": 32,
+      "weights": [
+        8,
+        4,
+        2
+      ],
+      "pattern": "random",
+      "repeats": 1,
+      "seed": ""
+    }
+  ],
+  "options": {
+    "mode": "auto",
+    "reference": "python",
+    "cycles": true,
+    "guards": true,
+    "integrity": false,
+    "matrices": false,
+    "timeout": 21600,
+    "build_timeout": 7200,
+    "compile_timeout": 1200,
+    "jobs": 8,
+    "workers": 6,
+    "max_cycles": 100000000000,
+    "stop_on_fail": false,
+    "tile_k": 0,
+    "tile_m": 0,
+    "t": 16,
+    "tcs": []
+  }
+}

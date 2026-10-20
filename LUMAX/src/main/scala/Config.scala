@@ -28,8 +28,8 @@ object LUMAX_Config {
 
     //Μax Matrix Dimesnions 
     Rin         = 1,    //Used Only for a Counter  (SAME for YS for now)
-    Cin         = 1000, // Used only for OuputBitwidth 
-    Cout        = 1000, // Used only to a a counter Registers  and how many output stationary outputs we have 
+    Cin         = 1024, // Used only for OuputBitwidth
+    Cout        = 1024, // Used only to a a counter Registers  and how many output stationary outputs we have
   
     // Element Bidwidths  
     XBitWidth   = 16,  // max Number of bits on input elemetns 

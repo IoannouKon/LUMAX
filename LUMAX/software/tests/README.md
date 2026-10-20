@@ -62,11 +62,15 @@ The manuscript reports 8.5% mean relative cycle-model error, and theoretical exp
 
 ## Saved simulation results
 
-The retained [final report](src/Log/run_20261008_193240/total_results.md) records **180 PASS, 0 FAIL**: 18 formerly failing cases tested first, followed by the other 162 cases. All comparisons are exact signed integer checks.
+The three runnable verification suites and their saved logs are organized in
+[verification/](../../../verification/README.md). Each suite has one background
+runner with `start`, `status`, `stop` and `check` commands.
+
+The retained [final report](../../../verification/logs/regression/run_20261008_193240/total_results.md) records **180 PASS, 0 FAIL**: 18 formerly failing cases tested first, followed by the other 162 cases. All comparisons are exact signed integer checks.
 
 The six designs use b=2,4,8 and RF=4,8, YS=1, input16, weight2/4/8, output32. Each design tests square K=4,8,16,32,64,128,256,512 plus 1×64 times 64×16 and 1×128 times 128×32.
 
-[total_results.csv](src/Log/run_20261008_193240/total_results.csv) records every test, exact matches, hardware counters, wall time, and log path. The accelerator ran in compiled Verilator; Python prepared the reference. The six verified simulator builds were reused for this final rerun.
+[total_results.csv](../../../verification/logs/regression/run_20261008_193240/total_results.csv) records every test, exact matches, hardware counters, wall time, and log path. The accelerator ran in compiled Verilator; Python prepared the reference. The six verified simulator builds were reused for this final rerun.
 
 ## Interpreting the counters
 
@@ -83,7 +87,7 @@ The six designs use b=2,4,8 and RF=4,8, YS=1, input16, weight2/4/8, output32. Ea
 | `Load W Alone`, `Select Alone` | Separate activity counters; do not add them to the combined stage |
 | `Total` | Sum of the four main accelerator stages |
 
-For the [final passing b=2/RF=8, K=64, W4 example](src/Log/run_20261008_193240/b2_rf8/tests/X1x64_W64x64_A16_W4.log): Load X=75, Generate BRAMs=160, combined Load W/Select=2,369, Store O=247, hardware total=2,851 cycles. Separate Load W and Select counters overlap and are not added again. These counters exclude host reference generation and simulator wall time.
+For the [final passing b=2/RF=8, K=64, W4 example](../../../verification/logs/regression/run_20261008_193240/b2_rf8/tests/X1x64_W64x64_A16_W4.log): Load X=75, Generate BRAMs=160, combined Load W/Select=2,369, Store O=247, hardware total=2,851 cycles. Separate Load W and Select counters overlap and are not added again. These counters exclude host reference generation and simulator wall time.
 
 For a specified measured cycle scope `C` and clock `f` in Hz, elapsed time is `C/f`. Counting a multiply and an add as two operations, nominal GeMM throughput is `2NKM f / (C×10^9)` GOP/s. State the clock, operation-count convention, correctness status, and whether transfer/host overhead is included. Energy efficiency additionally requires power measured or estimated for the same scope; cycle logs alone cannot establish TOPS/W.
 

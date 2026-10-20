@@ -2,7 +2,7 @@
 
 **Final validation: 180 PASS, 0 FAIL.** The 18 previously failing cases passed first, followed by the remaining 162 tests.
 
-[Final report](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.md) · [Per-test results](../LUMAX/software/tests/src/Log/run_20261008_193240/total_results.csv).
+[Final report](../verification/logs/regression/run_20261008_193240/total_results.md) · [Per-test results](../verification/logs/regression/run_20261008_193240/total_results.csv).
 
 The hardware includes a 20-bit flattened matrix index and widening to 32 bits before parallel signed reduction. The standalone overlay and deployed generator contain the same corrected RTL.
 
@@ -56,9 +56,9 @@ The test exits nonzero on a simulator failure, logging failure, or output mismat
 Relative `LUMAX_LOG_DIR` paths are resolved before entering the simulator directory.
 Debug runs record waveforms; `TRACE_INSTRUCTIONS=1` additionally enables instruction dumps.
 `QUIET_TEST=1` keeps output compact while retaining exact comparisons and the
-hardware cycle record. The sweep saves total and per-stage hardware counters in
-each test log and `total_results.csv`. `--background` keeps a sweep running after SSH
-disconnection, and `--keep-design` retains generated build artifacts when needed.
+hardware cycle record. The [verification runners](../verification/README.md)
+save hardware counters and exact comparison results, and `start` automatically
+detaches from SSH. Generated build artifacts are removed at the end of a run.
 
 FPGA bitstream work remains in the existing older workspace. This procedure
 validates Verilator integration only.
@@ -66,8 +66,13 @@ validates Verilator integration only.
 ## Six-configuration regression
 
 ```bash
-cd /home/kioannou/chipyard_1.13.0/generators/LUMAX/software/tests/src
-BUILD_JOBS=24 ./run_config_sweep.sh --background --reference python
+cd /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification
+python3 run_regression.py start
 ```
 
-This command builds a separate design with make for each b=2,4,8 and RF=4,8 pair, then runs 30 cases per design. The retained final validation reused six verified binaries built earlier with make; those binaries and build logs remain in the deployed final result directory under each configuration’s design/ directory. Python prepares the reference, while the compiled Verilator binary executes the RISC-V test.
+This command builds a separate design with make for each b=2,4,8 and RF=4,8
+pair, then runs 30 cases per design. Python prepares independent references
+and checks the actual hardware outputs, while Verilator executes the RISC-V
+test. Use `python3 run_regression.py status` to check progress. Saved historical
+reports and build metadata are under `verification/logs/regression/`; their
+original simulator binaries were removed after validation.
