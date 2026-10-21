@@ -2437,3 +2437,994 @@ TEST_C_SHA256=7e03cb5def12aa7f7283eb2929b9dc6b9e0001ce27f3934b6e899cb0d4621311; 
 RISC-V BUILD EXIT=0
 ELF_SHA256=9c3b1475863b93304f5cdabf580aa730558a0f0e4cfd15b4aefc8c8d1530cfef
 ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile043/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile043/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=21504:22016: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "af48471d543cca49e22ca6ae88e3ae4f5182c56c8ceea908df1dde96d2f717de", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1196.064, "status": "PASS"}
+TILE LQ04 W4 #44 X=1x288 W=288x512; COLUMNS=22016:22528; W_NONZERO=138152/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9276, "-7": 9151, "-6": 9228, "-5": 9153, "-4": 9207, "-3": 9131, "-2": 9365, "-1": 9125, "0": 9304, "1": 9279, "2": 9320, "3": 9062, "4": 9344, "5": 9109, "6": 9284, "7": 9118}; W_SHA256=e1c3900907bd9f3fa79dbd3f89fdbd150bae9d071b199c5a0311aff61d603751; PACKED_SHA256=5b8071e135b62e456d39cd6348efc6bcc8d26e82245b3d9fe8aa0105912e4882
+PYTHON_OUTPUT_SHA256=3f6ab25f3aaba6bcf63b9cd2dcbdddae7ac66b05a472eb023602e23c7c48c3b9
+TEST_C_SHA256=d41cc84188bdc2546a31f1013d624fb4ed077d8b5863480afff6b547bbc626a9; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=ef60ed3c2480ec96459f3cd63b4ba81d3706b67a746cdf47b469e9cc3313a37e
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile044/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile044/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=22016:22528: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "3f6ab25f3aaba6bcf63b9cd2dcbdddae7ac66b05a472eb023602e23c7c48c3b9", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1197.965, "status": "PASS"}
+TILE LQ04 W4 #45 X=1x288 W=288x512; COLUMNS=22528:23040; W_NONZERO=138256/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9248, "-7": 9197, "-6": 9227, "-5": 9181, "-4": 9149, "-3": 9169, "-2": 9440, "-1": 9199, "0": 9200, "1": 9293, "2": 9183, "3": 9095, "4": 9233, "5": 9248, "6": 9256, "7": 9138}; W_SHA256=46f018c7db58f4049bde909b145cfabe2de6a536c61d091163724e5afedd8c8b; PACKED_SHA256=479cf36bfb8e3502f18f43ade65e8f16ee5e2850c9d48365f715454c2908a008
+PYTHON_OUTPUT_SHA256=2976553344ea6020d0e37c847a5df20c85f70acb1dae070b26c37bb6e71192a0
+TEST_C_SHA256=3e3bdb65416c462b9b65369bb657a46bf6a968fb44180dd24c27605caba0d170; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=7d2e38f7241c9d58af48f4e1ec7297704405bd0ebeb8d826e5278e3667b68339
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile045/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile045/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=22528:23040: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "2976553344ea6020d0e37c847a5df20c85f70acb1dae070b26c37bb6e71192a0", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1200.795, "status": "PASS"}
+TILE LQ04 W4 #46 X=1x288 W=288x512; COLUMNS=23040:23552; W_NONZERO=138306/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9119, "-7": 9106, "-6": 9225, "-5": 9264, "-4": 9289, "-3": 9253, "-2": 9146, "-1": 9212, "0": 9150, "1": 9097, "2": 9493, "3": 9077, "4": 9346, "5": 9025, "6": 9243, "7": 9411}; W_SHA256=778709dacd8c5358eb84eb2630c2c44724c2a92f88a09abdb646e5057e876b61; PACKED_SHA256=ef11bb77e1bed870be445520c122299fb091e35a535637b9901f9cc69b4cde58
+PYTHON_OUTPUT_SHA256=7c5d72ae784b147a12dd822c91f679ea2cdf744c1bcd41e0709fa4e18da77f85
+TEST_C_SHA256=55ffead981a49334411a61b08f4c4bea37edfeac1c56c2f5aeb3552ebe23e1d9; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=8620770b348999f3dec2a41424d6022c2670441a866ebeafe275c6186769cf51
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile046/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile046/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=23040:23552: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "7c5d72ae784b147a12dd822c91f679ea2cdf744c1bcd41e0709fa4e18da77f85", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1195.322, "status": "PASS"}
+TILE LQ04 W4 #47 X=1x288 W=288x512; COLUMNS=23552:24064; W_NONZERO=138400/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9155, "-7": 9107, "-6": 9114, "-5": 9379, "-4": 9183, "-3": 9387, "-2": 9019, "-1": 9369, "0": 9056, "1": 8996, "2": 9354, "3": 9273, "4": 9223, "5": 9297, "6": 9350, "7": 9194}; W_SHA256=6e2a3993bb27ddf93b0fbbd3fae60dd0bff3e14e8ee62e0ecde314e5b4cdf8fa; PACKED_SHA256=c0589833c7be27be726082b56d4794ce0c44fae4bab33f57a6379c45be36c9dc
+PYTHON_OUTPUT_SHA256=6a6c67cb57c8023bddb2c06fa63ab01041f3a23d91389835ccde2d6af425f43a
+TEST_C_SHA256=5b2a1866aea5f05076c44c73e5eabe19c9dfa373aa7f0839c7d078f0fff897ed; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=136f569e91cf16849c0c1f2a0b35d303175e926ed368d2d36534f34fb52f5047
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile047/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile047/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=23552:24064: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "6a6c67cb57c8023bddb2c06fa63ab01041f3a23d91389835ccde2d6af425f43a", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1187.958, "status": "PASS"}
+TILE LQ04 W4 #48 X=1x288 W=288x512; COLUMNS=24064:24576; W_NONZERO=138260/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9218, "-7": 9197, "-6": 9137, "-5": 9227, "-4": 9319, "-3": 9275, "-2": 9166, "-1": 9201, "0": 9196, "1": 9152, "2": 9175, "3": 9165, "4": 9259, "5": 9257, "6": 9350, "7": 9162}; W_SHA256=e732f674498dc2dbe466c5a589f9484f41e644bfb3c39879a79a0fda4b898c1b; PACKED_SHA256=300486d7931ec981747235282c5b76a3d0afe53a61c28f5c41de1d326557da26
+PYTHON_OUTPUT_SHA256=a120d6a475551af1813fe249a1f1442daba98c27bbc83a5b1152cdd6c03005b8
+TEST_C_SHA256=e564f1590b4ccf77bcafa321f25f4393f5262ae5aefa20077ce343409d37b44e; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=4a78bb501d3a3f16a24d53f6458b5bfb14b97e5da45b6b82df44dafa962dbb88
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile048/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile048/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=24064:24576: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "a120d6a475551af1813fe249a1f1442daba98c27bbc83a5b1152cdd6c03005b8", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1206.318, "status": "PASS"}
+TILE LQ04 W4 #49 X=1x288 W=288x512; COLUMNS=24576:25088; W_NONZERO=138281/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9344, "-7": 9189, "-6": 9207, "-5": 9232, "-4": 9197, "-3": 9005, "-2": 9184, "-1": 9238, "0": 9175, "1": 9204, "2": 9304, "3": 9174, "4": 9388, "5": 9208, "6": 9246, "7": 9161}; W_SHA256=0e03fbc9415c2c158ff056f026c3316f7b4810bf6b3f0a13e542d713fe4e30bb; PACKED_SHA256=d49f589d57e9aff95d1f337e7535abbe4a2decba55c2c96e5008fc781b620b88
+PYTHON_OUTPUT_SHA256=2337354539ac456b4397d3207889e62876d97e3c852957701da88ec341be2127
+TEST_C_SHA256=f5451268dced98322a44c7b0867611b68515d8e6ec7cdfb20e485fa4db6ed2f2; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=d10f7b0cac4d1aa307ba48b5c892c75bf31737e65a48c5e8c17ede388f82a475
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile049/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile049/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=24576:25088: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "2337354539ac456b4397d3207889e62876d97e3c852957701da88ec341be2127", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1197.508, "status": "PASS"}
+TILE LQ04 W4 #50 X=1x288 W=288x512; COLUMNS=25088:25600; W_NONZERO=138121/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9422, "-7": 9221, "-6": 9084, "-5": 9232, "-4": 9195, "-3": 9069, "-2": 9220, "-1": 9206, "0": 9335, "1": 9384, "2": 9282, "3": 9070, "4": 9195, "5": 9283, "6": 9241, "7": 9017}; W_SHA256=3cfa569ad771855254e1b1b261d61c9b7a9e79b2ac891d5baa2fdb49de691b23; PACKED_SHA256=b0fd810706dc10952dbab4468f4d79c535dbe8305977fe829919489b13a1503f
+PYTHON_OUTPUT_SHA256=23647a0b1b3e81bbebca417dc06176c8a8d5f4d6d6f2e9b2ac654a530e410449
+TEST_C_SHA256=011ad3e88bb0edbb9682b74bd66e1b07467d2cf7a121d2dc3e053e4d84057c67; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=2bf5637a2625c128acb59254fe963dc3982c61c305bc33a3e7d54e312664e435
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile050/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile050/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=25088:25600: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "23647a0b1b3e81bbebca417dc06176c8a8d5f4d6d6f2e9b2ac654a530e410449", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1203.617, "status": "PASS"}
+TILE LQ04 W4 #51 X=1x288 W=288x512; COLUMNS=25600:26112; W_NONZERO=138017/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9340, "-7": 9257, "-6": 9150, "-5": 9327, "-4": 9147, "-3": 9424, "-2": 9159, "-1": 9282, "0": 9439, "1": 9139, "2": 9113, "3": 9180, "4": 9061, "5": 9152, "6": 9029, "7": 9257}; W_SHA256=d26a8396331949278854aa0c4598c140e28504d59f1c5a5033e4f12ced9fd008; PACKED_SHA256=6fd0bb2050687d547f553550e910746b2e7bb4a3ca57bec3f35a32a14c7506a7
+PYTHON_OUTPUT_SHA256=5f93a8599761d4a5c89c0516a02e9d78103200855ed391955a7a336deed0fd5e
+TEST_C_SHA256=cd41b0972bd026ca0aef84882649007e12a1ae9ed9594af3c99316b71a1641c3; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=b5f7a68d46fe7b407d7bc56430ab726974c5b3b7a1ee767e80792d27e840b0dc
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile051/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile051/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=25600:26112: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "5f93a8599761d4a5c89c0516a02e9d78103200855ed391955a7a336deed0fd5e", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1170.789, "status": "PASS"}
+TILE LQ04 W4 #52 X=1x288 W=288x512; COLUMNS=26112:26624; W_NONZERO=138238/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9162, "-7": 9298, "-6": 9166, "-5": 9155, "-4": 9363, "-3": 9095, "-2": 9108, "-1": 9090, "0": 9218, "1": 9265, "2": 9193, "3": 9339, "4": 9226, "5": 9193, "6": 9422, "7": 9163}; W_SHA256=93e93527a0be5332f2d1dc6f0663fbd867b60aa7da13c8a5dfee39e25896e0bc; PACKED_SHA256=703b6b1e2d6d87996d30af7b6c566fc949641668db73212e3e588f13a714a911
+PYTHON_OUTPUT_SHA256=d9cbdacd271bb7ea88e0fac94535b2d4bc9155b0305aed089656104acc0b3125
+TEST_C_SHA256=354123ca46ac56525136736dba750dbd5513b670831453cbf19726020508d6b7; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=7ea3b96af9cb88e0c8c1cb24b96f932f63b33b5dda259381aaaaa24c609aa3d9
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile052/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile052/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=26112:26624: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "d9cbdacd271bb7ea88e0fac94535b2d4bc9155b0305aed089656104acc0b3125", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1194.663, "status": "PASS"}
+TILE LQ04 W4 #53 X=1x288 W=288x512; COLUMNS=26624:27136; W_NONZERO=138134/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9328, "-7": 9166, "-6": 9089, "-5": 9293, "-4": 9247, "-3": 9320, "-2": 9039, "-1": 9255, "0": 9322, "1": 9178, "2": 9047, "3": 9080, "4": 9322, "5": 9341, "6": 9156, "7": 9273}; W_SHA256=1a4185192785028fc5d8d62f013afb09e50007f09d8fb92439af6d4abb224bac; PACKED_SHA256=c5b988bf4ec4280d02e72930adb8797893ed300c142445984912f43de74017be
+PYTHON_OUTPUT_SHA256=b865b430bf75479ceab941f00db8bf2133bad528f5a5aa5c2134090361d63516
+TEST_C_SHA256=38b64b778c6e41aeca2a5bfae4a01c757f851a9983d42f5cfe77a9049791017f; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=8e3057034846bd793c8f2db5642c6993e3d93a70a3bb611c2493b1493d12f701
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile053/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile053/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=26624:27136: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "b865b430bf75479ceab941f00db8bf2133bad528f5a5aa5c2134090361d63516", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1197.797, "status": "PASS"}
+TILE LQ04 W4 #54 X=1x288 W=288x512; COLUMNS=27136:27648; W_NONZERO=138289/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9323, "-7": 9236, "-6": 9232, "-5": 9031, "-4": 9026, "-3": 9414, "-2": 9089, "-1": 9322, "0": 9167, "1": 9326, "2": 9078, "3": 9135, "4": 9291, "5": 9285, "6": 9285, "7": 9216}; W_SHA256=989bff4b4a28dd11af1b14333a533925cd7368a7dd7602de013659f859b882bb; PACKED_SHA256=b8f0c21e2a199e863bba64d00cb26545715b21df7623ec3d2fe0d6afa543dc3a
+PYTHON_OUTPUT_SHA256=6131b8327d28e22b5eaa1015969553fc16822575a2afc9ce308125ebb2380dd1
+TEST_C_SHA256=e806e46d922ce46cfb840685db223d2d721480dd10e737046de26a04f61eb4a2; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=5f0f34883a3f8370b24a21d34895141e3353b8866b1f668a1de3ab718a081eb3
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile054/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile054/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=27136:27648: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "6131b8327d28e22b5eaa1015969553fc16822575a2afc9ce308125ebb2380dd1", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1195.966, "status": "PASS"}
+TILE LQ04 W4 #55 X=1x288 W=288x512; COLUMNS=27648:28160; W_NONZERO=138207/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9336, "-7": 9056, "-6": 9235, "-5": 9200, "-4": 9320, "-3": 9255, "-2": 9201, "-1": 9163, "0": 9249, "1": 9185, "2": 9272, "3": 9208, "4": 9200, "5": 9079, "6": 9172, "7": 9325}; W_SHA256=806557719dff6f4b4c0355ba910e183d5fbba893938cbee7a74d543f1517b640; PACKED_SHA256=4c495ac800a868e9abee177b4ddda2653af9ce3150dfef2e97faa46e0056d292
+PYTHON_OUTPUT_SHA256=dc1f51e269b23ae4824495fc88acceedaf85c3f477f4596aa3760f1c5940002c
+TEST_C_SHA256=57d9aedd6dd14ceef1bcb2e82bdac864812db7a04909d946fde40c9c7cbdf2d5; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=d3d329e8942d19e4541bed351a50095cde7a0716d2752adddbd27ef06a0c8e7d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile055/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile055/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=27648:28160: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "dc1f51e269b23ae4824495fc88acceedaf85c3f477f4596aa3760f1c5940002c", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1195.67, "status": "PASS"}
+TILE LQ04 W4 #56 X=1x288 W=288x512; COLUMNS=28160:28672; W_NONZERO=138101/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9185, "-7": 9160, "-6": 9245, "-5": 9279, "-4": 9251, "-3": 9034, "-2": 9239, "-1": 9176, "0": 9355, "1": 9353, "2": 9327, "3": 9153, "4": 9205, "5": 9034, "6": 9298, "7": 9162}; W_SHA256=9adbdb1a07a346426a34973cf805cd35396522c7965d455b7164266c21166887; PACKED_SHA256=1cbc68216b1524437d5d372881a0ae6289462c5e139596fc74b8b117b3026e86
+PYTHON_OUTPUT_SHA256=0960d67d429993ed2baa45896a1a6108cd43be9b5592f26d6fe7eadd995ecacb
+TEST_C_SHA256=3443203bf00554c8998fef1472678ce0132b5ded1dace57840230c1b0af3cfa1; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=f35b6ff2da28cedc8e7d8eece94aca0f5fce6b89b489b06a8c3c6f356f59557b
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile056/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile056/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=28160:28672: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "0960d67d429993ed2baa45896a1a6108cd43be9b5592f26d6fe7eadd995ecacb", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1186.56, "status": "PASS"}
+TILE LQ04 W4 #57 X=1x288 W=288x512; COLUMNS=28672:29184; W_NONZERO=138224/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9145, "-7": 9146, "-6": 9290, "-5": 9179, "-4": 9233, "-3": 9152, "-2": 9321, "-1": 9155, "0": 9232, "1": 9236, "2": 9255, "3": 9341, "4": 9233, "5": 9141, "6": 9257, "7": 9140}; W_SHA256=76b2665add72fd54eff3ef6733eedae8023b0f05e03c83bf987319df56aebbf5; PACKED_SHA256=be34409639d394f1d200aabb40696bcfab6ca4133cad930184270260bab99c48
+PYTHON_OUTPUT_SHA256=60a65760959f5ef1c99a9385c483406b4724a9c73d5ef1c8499bf67ea867ae14
+TEST_C_SHA256=a6b01eef1f5c9db83d9fd452b77f4f251cf0bb3915ca28e6da7135d36e81195b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=f3ad9e518044e7252387b1a3fe29ff7e76faa788af5ac26abe2348d0a487fce3
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile057/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile057/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=28672:29184: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "60a65760959f5ef1c99a9385c483406b4724a9c73d5ef1c8499bf67ea867ae14", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1200.62, "status": "PASS"}
+TILE LQ04 W4 #58 X=1x288 W=288x512; COLUMNS=29184:29696; W_NONZERO=138184/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9189, "-7": 9128, "-6": 9348, "-5": 9118, "-4": 9211, "-3": 9064, "-2": 9375, "-1": 9369, "0": 9272, "1": 9251, "2": 9101, "3": 9140, "4": 9245, "5": 9186, "6": 9272, "7": 9187}; W_SHA256=1aa66d70245fc1700ec1593edac8a542237a0088dd1a5c504b3fcff32858291f; PACKED_SHA256=7f8789da3b9cbd291acf6e44a7dc8a15b356df0cadc41f6b3836bdbbd2d46b84
+PYTHON_OUTPUT_SHA256=fb292337f4091616f149c02ce94e490d1600a24727d951ed77c13eba5da6a27c
+TEST_C_SHA256=b687692df5c39e17349324e30dad39e2c231f478bd2f55f2c14c330c86391f88; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=15c4d87c01296d8c8f4598b5d3b2e39eb4f3e44348f1541dd49a874d04c63073
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile058/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile058/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=29184:29696: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "fb292337f4091616f149c02ce94e490d1600a24727d951ed77c13eba5da6a27c", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1204.025, "status": "PASS"}
+TILE LQ04 W4 #59 X=1x288 W=288x512; COLUMNS=29696:30208; W_NONZERO=138330/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9256, "-7": 9147, "-6": 9202, "-5": 9289, "-4": 9041, "-3": 9253, "-2": 9083, "-1": 9442, "0": 9126, "1": 9241, "2": 9176, "3": 9279, "4": 9147, "5": 9192, "6": 9297, "7": 9285}; W_SHA256=fa6ed66c2dd4316e001a33348a87dc71f95e4c33bb2b485d4e00a1a4fbbf9169; PACKED_SHA256=3d640397e35ffaeae46fa4b60ee33ddf2253ff243c1b1fe6c8b0cf71999b8c70
+PYTHON_OUTPUT_SHA256=f8dc1481a46986b59ff2aed86f0e45a107752122040c883b632e54b49774d0f9
+TEST_C_SHA256=1447e871c7d731d372a613bd20a12971856bec16afc26f7bba1dc67f1d23350b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=b2b3083578380e9b95f4c17b08a47d308a5f7d714d6c6462773216b5d763e8e2
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile059/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile059/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=29696:30208: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "f8dc1481a46986b59ff2aed86f0e45a107752122040c883b632e54b49774d0f9", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1193.208, "status": "PASS"}
+TILE LQ04 W4 #60 X=1x288 W=288x512; COLUMNS=30208:30720; W_NONZERO=138284/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9082, "-7": 9153, "-6": 9120, "-5": 9325, "-4": 9243, "-3": 9247, "-2": 9284, "-1": 9099, "0": 9172, "1": 9195, "2": 9254, "3": 9332, "4": 9209, "5": 9284, "6": 9322, "7": 9135}; W_SHA256=ca44791ae1c0f1922017c01797316948bb4be6b7199b153ae3c64ea89c57486c; PACKED_SHA256=757ce6dc7dbeeedde73bb93ebd8a0ef6ccc783dfaf1914773bc4811096fa847e
+PYTHON_OUTPUT_SHA256=a2e717e15b8fa80c2a2e504d7e7e6f6edb48a84942bb099ed70cec2060a6519c
+TEST_C_SHA256=984ad132069dd39514cbc391127db62b7c206fe2428cbf4fc62f0130291864a9; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=2c92156295f53e9a89f35a1572c89423d6c34b8389be6f8d67cd80c0f6606968
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile060/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile060/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=30208:30720: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "a2e717e15b8fa80c2a2e504d7e7e6f6edb48a84942bb099ed70cec2060a6519c", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1188.713, "status": "PASS"}
+TILE LQ04 W4 #61 X=1x288 W=288x512; COLUMNS=30720:31232; W_NONZERO=138188/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9237, "-7": 9237, "-6": 9145, "-5": 9253, "-4": 9289, "-3": 9137, "-2": 9283, "-1": 9112, "0": 9268, "1": 9254, "2": 9277, "3": 9207, "4": 9262, "5": 8966, "6": 9247, "7": 9282}; W_SHA256=44efe0b9033a26fb12e3d68e13392c8fa441f7d9f41e9477b8fa711b46ae4bf9; PACKED_SHA256=8ccc4b03720a2a5f7b6c56b03f8901fc63c10978c59440dd1c5b06f297892ef7
+PYTHON_OUTPUT_SHA256=7beb62db9818e0eb4beb68cfcbd6ba273af3052768b993d16cdf726b4a6ad3dc
+TEST_C_SHA256=6be930cb76c2b93ae0714b643d98713e79fd6c311e6381c399e05c28a9e10817; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=23c826fef57657747cff331d1caff2530faa74840bfabbfc2577990577a8959a
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile061/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile061/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=30720:31232: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "7beb62db9818e0eb4beb68cfcbd6ba273af3052768b993d16cdf726b4a6ad3dc", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1199.833, "status": "PASS"}
+TILE LQ04 W4 #62 X=1x288 W=288x512; COLUMNS=31232:31744; W_NONZERO=138334/147456; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 9126, "-7": 9284, "-6": 9103, "-5": 9202, "-4": 9301, "-3": 9362, "-2": 9164, "-1": 9235, "0": 9122, "1": 9204, "2": 9142, "3": 8981, "4": 9332, "5": 9291, "6": 9285, "7": 9322}; W_SHA256=d9e347667be0e4bca03ba20f31bde5df27042c109c8d75f1f3ef52b870471674; PACKED_SHA256=72979e2f647ad668ed437f01b3916ffd2685640936162e216fcc127478ae2f36
+PYTHON_OUTPUT_SHA256=e4f809352ddc5c65c3b2067278cd64d202db178f95f483fc9bcead7a4a624656
+TEST_C_SHA256=88ae5ed7f6364b433542827816c4192e564d86c4ff3ea8e9a6790ab957448f1d; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=5c7db7f40ccd02f569e2e0e3aab59f2c8d53094fe27e1cb257733f3e70c97bc1
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile062/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile062/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=31232:31744: {"actual_elements": 512, "core_compute": 58741, "core_preload": 449, "cycles": 58563, "elements": 512, "guards": "PASS", "hw_sha256": "e4f809352ddc5c65c3b2067278cd64d202db178f95f483fc9bcead7a4a624656", "matches": 512, "pc": [284, 180, 56121, 20992, 2116, 55983], "seconds": 1159.505, "status": "PASS"}
+TILE LQ04 W4 #63 X=1x288 W=288x256; COLUMNS=31744:32000; W_NONZERO=69085/73728; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 4636, "-7": 4469, "-6": 4550, "-5": 4645, "-4": 4562, "-3": 4632, "-2": 4679, "-1": 4587, "0": 4643, "1": 4627, "2": 4697, "3": 4480, "4": 4594, "5": 4611, "6": 4645, "7": 4671}; W_SHA256=967e9bd7b55ec352720a1046d74053810c71c3100fbc837a2f0c4a694239cdf3; PACKED_SHA256=fac0bbb87df4aa443409c77bc7aafe8f6cf047618c18fdd33aabcc64b5137cca
+PYTHON_OUTPUT_SHA256=94715ba85cc6a7ede77195f21efc80917479d5f01aa068e082312a1b609cd014
+TEST_C_SHA256=fc7ac0c09a6ba7a1b6789dcc33c434b749db992e32bbf2af0ccc01a0741729d5; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=37e6acc6dc5d1823a87811e5c938e243930f0ff9e3b707b151dd8924aa73dbae
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile063/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w4_tile063/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W4 columns=31744:32000: {"actual_elements": 256, "core_compute": 29753, "core_preload": 448, "cycles": 29614, "elements": 256, "guards": "PASS", "hw_sha256": "94715ba85cc6a7ede77195f21efc80917479d5f01aa068e082312a1b609cd014", "matches": 256, "pc": [255, 180, 28256, 10496, 1061, 28118], "seconds": 611.255, "status": "PASS"}
+CASE RESULT: {"active_cycles": 3660520, "case": "LQ04", "core_compute": 3671695, "k": 288, "m": 32000, "matches": 32000, "measured_tiles": 63, "seconds": 74510.507, "status": "PASS", "tile_results": {"PASS": 63}, "tiles": 63, "wb": 4}
+
+CASE LQ04 X=1x288 W=288x32000 input16 W2; INPUT_SEED=12813880510679661807; WEIGHT_SEED=15320971836832881352
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32707; X_MAX=32633; X_DISTINCT=287; X_SHA256=bd4965b472b141dfba954962df86fa590b2fe05162961d497d16caaa07757615
+TILE LQ04 W2 #1 X=1x288 W=288x512; COLUMNS=0:512; W_NONZERO=110758/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36807, "-1": 36928, "0": 36698, "1": 37023}; W_SHA256=8f4f4e7d458afd1f0cff206942e15a10923c79abfc283f6aa6be0920c18d2c6d; PACKED_SHA256=a03b2940122b1402f20401d01a04af8463519573facb78289c5b83c6cd98f5a2
+PYTHON_OUTPUT_SHA256=5018580358635bdd2e616ba946f3e63af5141be36708feebc721e7f4997fa7a0
+TEST_C_SHA256=c442d2fbb68c2eec5b304f2231a890629ab979243be42e21419180bd88d9b12f; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=110417eddcc39f7e5133e6953d6a651855d76fd568a9b054ac4f9dcacd26cc9b
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=0:512: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "5018580358635bdd2e616ba946f3e63af5141be36708feebc721e7f4997fa7a0", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 845.649, "status": "PASS"}
+TILE LQ04 W2 #2 X=1x288 W=288x512; COLUMNS=512:1024; W_NONZERO=110308/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36623, "-1": 36942, "0": 37148, "1": 36743}; W_SHA256=1cad90089486626f33b733b1d75bbcb6faaabaf3219547bd586f2b039ae61b92; PACKED_SHA256=4b785ae3136f507b5cbd160b009c569115298c4fb2500d62fbbf685d2a631530
+PYTHON_OUTPUT_SHA256=72e54fba4293d818a91ee4fef68526a80656ed0962e5e79a34ba9d4c4ddacee8
+TEST_C_SHA256=438ad6214caf84efdba8210679f62c53fc6bdf2b99b0aaa293129578b564464e; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=c621c58d13840c8ffc8e29d9a7e598a5402f68f1c96c93674ed16e3ad7ca103e
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile002/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile002/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=512:1024: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "72e54fba4293d818a91ee4fef68526a80656ed0962e5e79a34ba9d4c4ddacee8", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 852.013, "status": "PASS"}
+TILE LQ04 W2 #3 X=1x288 W=288x512; COLUMNS=1024:1536; W_NONZERO=110689/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36555, "-1": 37139, "0": 36767, "1": 36995}; W_SHA256=2c7d1cbc288c9a0bd75a815348955706e4068c4362ecf2d8c2f0926fc77fb8b1; PACKED_SHA256=f8e0ad6cb1167641dc43d555e58fd7914d4a3746eba814d73620f9a9785478e8
+PYTHON_OUTPUT_SHA256=374f9ec0316357c00f36d595e42f72c7fb360470d4e71dc7f417118f120cd01e
+TEST_C_SHA256=b872ddb32e8812d9197f81b220b8f2ffda2e92b0ada676efd6f7b608bb4c44c6; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=6191e02e47d69cd584a2392d41b74c38b795aef2ed7d4742531d124331c3d6aa
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile003/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile003/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=1024:1536: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "374f9ec0316357c00f36d595e42f72c7fb360470d4e71dc7f417118f120cd01e", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 852.467, "status": "PASS"}
+TILE LQ04 W2 #4 X=1x288 W=288x512; COLUMNS=1536:2048; W_NONZERO=110607/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36963, "-1": 36932, "0": 36849, "1": 36712}; W_SHA256=ec263d42f95669d44aa2b452f7779ef9f898f1d0565d0a212fd6c3e357b6bb85; PACKED_SHA256=575d3b08b11fb2d65eac54fee4a7b2c059d5c6b63d577a54da2d67c860a4cde3
+PYTHON_OUTPUT_SHA256=1e675ff04d09965b7f8160955fceca2962acdc59f462be36ada0cb22616f409c
+TEST_C_SHA256=207ba35617480d2fee7cc0e02e700a5a316fad2d1ba69a9462152c3d6e7f36a1; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=ad95cc063e52eb50bff0b989216028436b78c7047a67afc6da47c67fbbcc4e6d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile004/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile004/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=1536:2048: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1e675ff04d09965b7f8160955fceca2962acdc59f462be36ada0cb22616f409c", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 845.122, "status": "PASS"}
+TILE LQ04 W2 #5 X=1x288 W=288x512; COLUMNS=2048:2560; W_NONZERO=110428/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36953, "-1": 36622, "0": 37028, "1": 36853}; W_SHA256=029267f3748ecc8af900fda2de1a8898880923606b0e7088409cf33e2483d279; PACKED_SHA256=21042cd56ede6f019070ed0e40c419d3ddb69a6d3487dd34950ba0ad9a7e1235
+PYTHON_OUTPUT_SHA256=6c16ed64e148fa23744e5d2b49341403a535267f382b1cbea28b172a580c9235
+TEST_C_SHA256=a6d3cc744722103c63faab632a44fe0d76186ddc15d7a1a4f8d09f0bea34d293; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=763077d69308c8499d2c2bad589bfd40dadf42320842bb0c3e67384aeaefee96
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile005/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile005/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=2048:2560: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "6c16ed64e148fa23744e5d2b49341403a535267f382b1cbea28b172a580c9235", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 843.869, "status": "PASS"}
+TILE LQ04 W2 #6 X=1x288 W=288x512; COLUMNS=2560:3072; W_NONZERO=110405/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36875, "-1": 36762, "0": 37051, "1": 36768}; W_SHA256=e07a84835cbdd84cc002e6fad924fdc00d39d6e7362393d9303fef462863f313; PACKED_SHA256=9aa08a618fa30483ace1adabfab35558bb7acca119861e2f59001353b6e3fcb3
+PYTHON_OUTPUT_SHA256=7db625dc51834e7d88bb798cd599575f11069d938ec08f40499d07ddf8927759
+TEST_C_SHA256=583c0d126b26d2a2703f7019546af6553c13d11127dfd08e3be663f4047bea4b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=4e8c63b2972d59800af34ee75b0260beaf10a38d95b612eb3c0f660b3bb5b336
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile006/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile006/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=2560:3072: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "7db625dc51834e7d88bb798cd599575f11069d938ec08f40499d07ddf8927759", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 844.614, "status": "PASS"}
+TILE LQ04 W2 #7 X=1x288 W=288x512; COLUMNS=3072:3584; W_NONZERO=110647/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36642, "-1": 36879, "0": 36809, "1": 37126}; W_SHA256=ae690787e5ed93982b5949dcfb1e0df15c29704e036f994a0d2ebdfe6fdd9cfe; PACKED_SHA256=ed8bdaf04c95cd176027f577d2f5aaa55d39dbc4df4d8fa9dc079781f372e304
+PYTHON_OUTPUT_SHA256=53e79f82fa3c435ebe9950a644465b23fa5916d1ed3ad475e0db5112c3c47416
+TEST_C_SHA256=e7369dde4bcab838d49995ad6c16abab799319fd85ce2c10399abdec63d3d9ac; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=29696b5da0b0f882ffd6d681d7f809a2ee0ef2dac116f313f6832a1b9ac27d8f
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile007/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile007/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=3072:3584: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "53e79f82fa3c435ebe9950a644465b23fa5916d1ed3ad475e0db5112c3c47416", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 843.066, "status": "PASS"}
+TILE LQ04 W2 #8 X=1x288 W=288x512; COLUMNS=3584:4096; W_NONZERO=110283/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36684, "-1": 36610, "0": 37173, "1": 36989}; W_SHA256=ae08425256874239ad8d988b2e7404d87ca5630537e6bd78513e83a6a566e79d; PACKED_SHA256=111eae97fe6bf25b8ea3ebea7d6c843956d4721dac65fa05d18deec32e3e2114
+PYTHON_OUTPUT_SHA256=64c9bc7e76b37bc4774b19d2664567654490d3dd4d89efc159745418b9db158d
+TEST_C_SHA256=ef7c96144a77a7a573bae23d54acb7f76d2e95cab60ebe1e1b400a38462bd2e0; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=b8b99c87f6870ab156846bcc32f61d672ce1245bce2578b27726088fea5cbfb1
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile008/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile008/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=3584:4096: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "64c9bc7e76b37bc4774b19d2664567654490d3dd4d89efc159745418b9db158d", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 844.614, "status": "PASS"}
+TILE LQ04 W2 #9 X=1x288 W=288x512; COLUMNS=4096:4608; W_NONZERO=110973/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36943, "-1": 37116, "0": 36483, "1": 36914}; W_SHA256=9e6b3b7cc0d919f5e02e53a78265cd02157461ea7d86aff509b1b6ea8ca8e699; PACKED_SHA256=162ab97d7481f1f6d304ecb23381756ed48d32e7cb640fc4860f75a807bd13a6
+PYTHON_OUTPUT_SHA256=83db788269f3270bb9e99fdc23b0c5ec8a3fd0290d1fedb86a0e441dc82ede21
+TEST_C_SHA256=01a1e363696b9419a84538b3268de9977ed29a72746c394f868fa7a0e2178e20; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=0fccd07ffd9a263ea648da666171854b5295755266893d1913e7d00c82f6a461
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile009/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile009/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=4096:4608: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "83db788269f3270bb9e99fdc23b0c5ec8a3fd0290d1fedb86a0e441dc82ede21", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 847.266, "status": "PASS"}
+TILE LQ04 W2 #10 X=1x288 W=288x512; COLUMNS=4608:5120; W_NONZERO=110748/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36843, "-1": 36858, "0": 36708, "1": 37047}; W_SHA256=2445af5f49661b2b6b6b4693f64cdc486bc6a24ec1f74fad20974732a607f21e; PACKED_SHA256=b73582e321ff4144a54d7395ce2de68b2abdc16ea34ae917dbf4747077194f37
+PYTHON_OUTPUT_SHA256=0b836399d50b5e8f9dab5b792945dd2e370dbbae12ffe84c7f0da462fabe3180
+TEST_C_SHA256=efb5276529fc3e475cd19fd6f921aaffa053675adab6a3021fb378fe9a6496e4; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=a0277ed82660fd32bbbec490361bf4bb68a10e994d8712efc83e0b4df15eccf4
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile010/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile010/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=4608:5120: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "0b836399d50b5e8f9dab5b792945dd2e370dbbae12ffe84c7f0da462fabe3180", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 826.647, "status": "PASS"}
+TILE LQ04 W2 #11 X=1x288 W=288x512; COLUMNS=5120:5632; W_NONZERO=110648/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36756, "-1": 36889, "0": 36808, "1": 37003}; W_SHA256=5f1447449d2cb97a9cbee8a495b49e2ecb8e45547567bb91b951257da8da4daa; PACKED_SHA256=6d458386a4cdcfe7800c6269bf3d260c58cadb92b5d2a469b33a35e1a8725ffd
+PYTHON_OUTPUT_SHA256=6567184149eb16fb1d391feed5d6bb0bbb923516469b8e78d1181f7a57121d7b
+TEST_C_SHA256=e83f04ee6106729eb9518dd16ff7f200c2534ecb95063e6f084eaf0d78edc168; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=720d46cbd402a9e0491b7e33d276bbcae18cc684fbd2b9af57eaf189e3b08956
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile011/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile011/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=5120:5632: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "6567184149eb16fb1d391feed5d6bb0bbb923516469b8e78d1181f7a57121d7b", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 846.063, "status": "PASS"}
+TILE LQ04 W2 #12 X=1x288 W=288x512; COLUMNS=5632:6144; W_NONZERO=110439/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36958, "-1": 36816, "0": 37017, "1": 36665}; W_SHA256=e32c52ea6b6bd527e2324fd38a4627befb4a2805f7f9ce29e9b9b958e3c56014; PACKED_SHA256=6d31fadf446ff0c9ac8fccff42aee630671709485c06402d01f2902878522b3d
+PYTHON_OUTPUT_SHA256=8b51b9ba0c13927914fc2e37d47705aedd6035a3f4b28e0735abcf375789ccf7
+TEST_C_SHA256=04d6cfd112895612a6f56b8507829ad707a85ae97d0a0e4f09481f98c842e5a5; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=f2acbc262fd6cd1b4d83921d39276a6e45315208741f14ff665c5216dddb8e96
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile012/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile012/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=5632:6144: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "8b51b9ba0c13927914fc2e37d47705aedd6035a3f4b28e0735abcf375789ccf7", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 849.918, "status": "PASS"}
+TILE LQ04 W2 #13 X=1x288 W=288x512; COLUMNS=6144:6656; W_NONZERO=110509/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36726, "-1": 37095, "0": 36947, "1": 36688}; W_SHA256=1129323aa32da3b96419f6373c390ae2e6551e53d3ec6153fc0370747a2278eb; PACKED_SHA256=dc34339ecef9cbdb80042a77cdedc6d65ff30cd794b228c8485333a1ee8abff2
+PYTHON_OUTPUT_SHA256=9d33599e2e1d4d24ce652840c9acc1581adf6d77e9afb68d493a6058b801074d
+TEST_C_SHA256=dca1ac678f366afd6f78d447fbccd6b1f6844ae807fbda56741d1d11ced54dfe; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=628722100ff94563b6ecff08a291fdb2d7a1c307a52aa83d09b5ad58ceef8702
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile013/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile013/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=6144:6656: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "9d33599e2e1d4d24ce652840c9acc1581adf6d77e9afb68d493a6058b801074d", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 850.613, "status": "PASS"}
+TILE LQ04 W2 #14 X=1x288 W=288x512; COLUMNS=6656:7168; W_NONZERO=110693/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36780, "-1": 36868, "0": 36763, "1": 37045}; W_SHA256=d1b7d2d540aafa5eeccd25e02f466f1c9c4dd17f9809295e15956cc32014c479; PACKED_SHA256=4e68e4700c99f552d772c32536a17cb1e73ba640d5d0fe04eca946e62267823d
+PYTHON_OUTPUT_SHA256=655039128e69ecf61062dfae18f58e8b811b726fcf60852b713a4fe98f5d4b57
+TEST_C_SHA256=210081f5a7769e3b58afc17f4feffcc692e45f7faf2bbb1f87dd9ce1cb3caeed; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=441f35cd73b444e23d42ea51803a9aee48177b013b24f2401eb4807b946ad91c
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile014/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile014/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=6656:7168: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "655039128e69ecf61062dfae18f58e8b811b726fcf60852b713a4fe98f5d4b57", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 823.304, "status": "PASS"}
+TILE LQ04 W2 #15 X=1x288 W=288x512; COLUMNS=7168:7680; W_NONZERO=110291/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36877, "-1": 36891, "0": 37165, "1": 36523}; W_SHA256=2a387cdc7355d434006bc2ff9f7298a04aaa04342853ece9ddfd195a12d91a50; PACKED_SHA256=45071e2e4f3436f8b9a1b9db030b2c42cc4b2c8b74330d9afba0caf60020f730
+PYTHON_OUTPUT_SHA256=2d580031a25ce4253f233414ca2579ef10affa31a35ed5136ffc73cd6480a4ba
+TEST_C_SHA256=0538a60bec818bd8e67a5472bbe6fb4bb29d17c9eb7af02da4149e70df53e429; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=de80fdf3e5dc726583d09822279a9079a30b31db2a9008b76173976d52ca8cbe
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile015/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile015/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=7168:7680: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "2d580031a25ce4253f233414ca2579ef10affa31a35ed5136ffc73cd6480a4ba", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 851.172, "status": "PASS"}
+TILE LQ04 W2 #16 X=1x288 W=288x512; COLUMNS=7680:8192; W_NONZERO=110496/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36916, "-1": 36790, "0": 36960, "1": 36790}; W_SHA256=f129d46a3648e54f3be3674f76854ff89241a3bd352063fae38431477c1b610b; PACKED_SHA256=8440b51035440d386c8fc2787c41403f4f1b76d7683db4048e3a92040d4e658c
+PYTHON_OUTPUT_SHA256=e27578da340160c92f0d3b8b120aafff0e94406831cec45e42d6385ee39ef373
+TEST_C_SHA256=e463d40fb8936ba4b6c32fe3428e9ce1b45155e509fff3989638ea0d827db4ca; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=3b902bbabd308dcf428bb10f4fb9dcf267a40a7869653601b23bf481cb40a90a
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile016/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile016/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=7680:8192: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "e27578da340160c92f0d3b8b120aafff0e94406831cec45e42d6385ee39ef373", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 844.965, "status": "PASS"}
+TILE LQ04 W2 #17 X=1x288 W=288x512; COLUMNS=8192:8704; W_NONZERO=110756/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37114, "-1": 36817, "0": 36700, "1": 36825}; W_SHA256=91c85e520b77962ad496f753537b4d88d0fb42e4f3abd33fab92ef1a39af5da0; PACKED_SHA256=6542d46946b3a497dc7dfa574dc73743edc258a4ee3e0d284463cb1992c0846a
+PYTHON_OUTPUT_SHA256=893e4ac1cccbc2dac1f2a7e226f4f2f84af28041d6cf37367244e3f185270a85
+TEST_C_SHA256=e17ec62e65c4d6534d4e8f78b2880097934d0603d8ba2de13ca448fe88ca1651; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=10acf583616d73a01e3e7c9b14da422469873e02a61a94bf75d8e79694bdc138
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile017/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile017/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=8192:8704: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "893e4ac1cccbc2dac1f2a7e226f4f2f84af28041d6cf37367244e3f185270a85", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 849.014, "status": "PASS"}
+TILE LQ04 W2 #18 X=1x288 W=288x512; COLUMNS=8704:9216; W_NONZERO=110469/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36853, "-1": 36977, "0": 36987, "1": 36639}; W_SHA256=2a3993f8bb7909e234fbc9a728b0cb4acb62c54f8181585b041404affa278a29; PACKED_SHA256=b9c8d3832a891b27e635eb860e7b0a2ecae43f68de626829afc06a9f0d3519a8
+PYTHON_OUTPUT_SHA256=1f90268dd484348897a0943d8ff44b625652a0db5e2f431a89ddd640a689dabf
+TEST_C_SHA256=86d2aacbb37a42d6acb6960b5b8cf2810876e676643fac89ecf0aa6cb138ed78; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=2cbdc62b465419751a2364fb4388eb6ed7dc7744d98d823b65d20984faa4b731
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile018/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile018/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=8704:9216: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1f90268dd484348897a0943d8ff44b625652a0db5e2f431a89ddd640a689dabf", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 819.952, "status": "PASS"}
+TILE LQ04 W2 #19 X=1x288 W=288x512; COLUMNS=9216:9728; W_NONZERO=110948/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36883, "-1": 37067, "0": 36508, "1": 36998}; W_SHA256=eca4b352b2c2da498b2dc58b82847d7c23a0c09a97035f6bcab60d3ac03b1878; PACKED_SHA256=3b254f308e908799a89c85c292aadee7f3e451cea009d3c1aefea505969bd542
+PYTHON_OUTPUT_SHA256=7d45090c9af210c3c2744246a8fb2e5785ffd7313b55724a28f622ebbd1c7d74
+TEST_C_SHA256=022a7acfda23bb4025bf4bbd7402ea1a3369774f8d1d79527bd750a73042a91f; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=5a9abd42280fc60fbdf6f466ae76e7f32632b0a8eec326febea0fa1ff5e4e544
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile019/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile019/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=9216:9728: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "7d45090c9af210c3c2744246a8fb2e5785ffd7313b55724a28f622ebbd1c7d74", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 854.318, "status": "PASS"}
+TILE LQ04 W2 #20 X=1x288 W=288x512; COLUMNS=9728:10240; W_NONZERO=110993/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37087, "-1": 37043, "0": 36463, "1": 36863}; W_SHA256=9dc932551427214f3505bbde3c2e4f5e76bb79c5e1944fc69cc668dcc1e156b9; PACKED_SHA256=85eb34de20717a51e2cc2167f2a524499b72b5676a0ca82b843c6306afc0ea5a
+PYTHON_OUTPUT_SHA256=dbc6d743d74e142a9e59f32d51f9e06c0c894f481af7410bfb12a6baddcfb661
+TEST_C_SHA256=2456d4767ba03402724e7a988b788d16756abe36cf71cdde2514e5828be4baae; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=34b873767fa495255964128f332173887a32015e147b7be5213c66cc13fa2dc7
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile020/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile020/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=9728:10240: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "dbc6d743d74e142a9e59f32d51f9e06c0c894f481af7410bfb12a6baddcfb661", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 846.363, "status": "PASS"}
+TILE LQ04 W2 #21 X=1x288 W=288x512; COLUMNS=10240:10752; W_NONZERO=110506/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36596, "-1": 37033, "0": 36950, "1": 36877}; W_SHA256=1f5c6e0e3e9c24c3f6c50ebdc9cc5aa510a7e6aa9b1491929ccabb2dbffec903; PACKED_SHA256=3205ea81bac45b2b7bcf420cbabe44bce34af7f3f1f8fb27fd87c1aa1ab450e0
+PYTHON_OUTPUT_SHA256=c82e728d8f41b455cba24e0aaa203e0ddf25533604f1804d3dd5caed6e9aed54
+TEST_C_SHA256=fbb3c15a34c51c270eecd5a146059bd8bf121065697c53efe91955b82e806096; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=36b96a371b820de8fd602a3345689745e12394bdf169967373d588ae870c3dd6
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile021/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile021/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=10240:10752: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "c82e728d8f41b455cba24e0aaa203e0ddf25533604f1804d3dd5caed6e9aed54", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 842.812, "status": "PASS"}
+TILE LQ04 W2 #22 X=1x288 W=288x512; COLUMNS=10752:11264; W_NONZERO=110287/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36684, "-1": 36701, "0": 37169, "1": 36902}; W_SHA256=0697df094d2359994d6bbdb554bae3dce57eb3628a5fb3069f69a01f67e5ad33; PACKED_SHA256=21b1db642ad6286313ca782529f27dbaec0fdc06bb2639d8b22c0be3af0807dc
+PYTHON_OUTPUT_SHA256=d58282ff77f39e728b9eddeb07a41ca71d0909004a292066ff6d5be5c7696cba
+TEST_C_SHA256=dd5cbd0a368e335a06a4a439b4454c5a5ef0b6b094ee1dd49a3e4ec9ea8ca0e0; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=e900a88959d210fe20b08609ac9ae5d850a983fe7b8c0d49f37c4478874beb45
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile022/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile022/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=10752:11264: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "d58282ff77f39e728b9eddeb07a41ca71d0909004a292066ff6d5be5c7696cba", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 842.36, "status": "PASS"}
+TILE LQ04 W2 #23 X=1x288 W=288x512; COLUMNS=11264:11776; W_NONZERO=110647/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36718, "-1": 36914, "0": 36809, "1": 37015}; W_SHA256=9d9ea01a1e70c96b5e5b0b060c344f0f871301f75c7b7a4ce730a498b216c59b; PACKED_SHA256=537d8fd2acf2d96ff651e3175dc81dabeccc7157e3f9420fc897fdac3956ee42
+PYTHON_OUTPUT_SHA256=a1a05527cb1f6e9b59ccc1d211168a1ff4491299bc0f17739807653e6c27cc88
+TEST_C_SHA256=9f019617f78f0da83b1ab327e884f71a198c94c6b87275efa8bf4f691c87fdb1; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=195109b024b639bbc09b25e0423b85400205211411c2ab3d41511ec25c2a8a81
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile023/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile023/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=11264:11776: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "a1a05527cb1f6e9b59ccc1d211168a1ff4491299bc0f17739807653e6c27cc88", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 847.611, "status": "PASS"}
+TILE LQ04 W2 #24 X=1x288 W=288x512; COLUMNS=11776:12288; W_NONZERO=110488/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36829, "-1": 36671, "0": 36968, "1": 36988}; W_SHA256=3b3eec4cc672cec7862c2a262fdb38ab7b3b50d6b9daca466786a588b41c782d; PACKED_SHA256=8b2702552cd5e82c757b2c79853c184171bab10a20219b9b6cd2387b9d350e86
+PYTHON_OUTPUT_SHA256=3dd456658585afd873ce468e64a668458d4121dfa9b768f0266851bb28907458
+TEST_C_SHA256=390db6c721fe598236057d494d68fb3dbcc85df0561bd64e44fa4561ff1fbd9f; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=c772b895083f8f4190a7a61eb1b13da1893eaf27411e543f2aefe326fea4517e
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile024/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile024/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=11776:12288: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "3dd456658585afd873ce468e64a668458d4121dfa9b768f0266851bb28907458", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 845.81, "status": "PASS"}
+TILE LQ04 W2 #25 X=1x288 W=288x512; COLUMNS=12288:12800; W_NONZERO=110486/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36877, "-1": 36648, "0": 36970, "1": 36961}; W_SHA256=e4b76ea9e65e58c10dad2ef635d2eb40a970c6ac53e17ba0f304794d291f3e51; PACKED_SHA256=4e2bc70b3e7fad7c28b62a1dff933fa35e419e7c6181e3e5279af0c51348441c
+PYTHON_OUTPUT_SHA256=df987a9e875290cdfc0c8906ee806f6c15406e01d14b8e5c1fafa6a00b7ea5ed
+TEST_C_SHA256=ee15e27183c66231e3ba536342311b8dd6c05322488ea26b1c5b02299bd322b2; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=dc2d15dda383b796e02ab753252f9fbd48919d4650bcaf12f4ef44593002449e
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile025/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile025/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=12288:12800: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "df987a9e875290cdfc0c8906ee806f6c15406e01d14b8e5c1fafa6a00b7ea5ed", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 849.166, "status": "PASS"}
+TILE LQ04 W2 #26 X=1x288 W=288x512; COLUMNS=12800:13312; W_NONZERO=110612/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36927, "-1": 36776, "0": 36844, "1": 36909}; W_SHA256=18694d32eb73f03bca37b67b2d85fb74ac79eda8ce63ee534594bd3d95ab92fa; PACKED_SHA256=d0d61ae87a5005a372202087b7bb393b011237734174665b02cd458edeade040
+PYTHON_OUTPUT_SHA256=9f71c12a12d46d7abd670c4670c148107adfc59c9cbd84b366088a24aa2a0776
+TEST_C_SHA256=78412b543393b187c483a8461370cdb0c28360f81e6e38663e2ca944c07f209a; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=8730244345e348718277dff47589682866ed0a21406838c31e745c9963994f9d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile026/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile026/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=12800:13312: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "9f71c12a12d46d7abd670c4670c148107adfc59c9cbd84b366088a24aa2a0776", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 830.753, "status": "PASS"}
+TILE LQ04 W2 #27 X=1x288 W=288x512; COLUMNS=13312:13824; W_NONZERO=110575/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36877, "-1": 36881, "0": 36881, "1": 36817}; W_SHA256=882febb30526a37996219890ffe7e1801abda0c209151103e37f7fa7bde6eac5; PACKED_SHA256=4bfbac925107da2cdc738aacd864f92c75d974ec2a479696a843339a5e3d8b4f
+PYTHON_OUTPUT_SHA256=0adafb7710967607af6a4f9cb3e2830a2c04e45d5bd779b3909179d8a0dee1ab
+TEST_C_SHA256=ac3b2292473f17321563d39afe43413f7218365077eed637d813f8a280047bda; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=e1ad7a31a27cffc8dd972c9e9a2b6c0b44847d1d5fac5247ddb8bd85919ff865
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile027/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile027/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=13312:13824: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "0adafb7710967607af6a4f9cb3e2830a2c04e45d5bd779b3909179d8a0dee1ab", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 853.164, "status": "PASS"}
+TILE LQ04 W2 #28 X=1x288 W=288x512; COLUMNS=13824:14336; W_NONZERO=110600/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37057, "-1": 36763, "0": 36856, "1": 36780}; W_SHA256=c4e0f6e0539602a573be1586c5d8b499ee60346bfc0d9cba439f67cbf932bacc; PACKED_SHA256=ed538c80bd42213f3a0cbe5c6ec30b7401ebd65c3337309ae2e812ac678bacf2
+PYTHON_OUTPUT_SHA256=69b03d1b71d03160f1f1a4bdc4324e4cba9712c333585bddd4119bb6a2166781
+TEST_C_SHA256=326355316a9dc004f78f540a69bff67f36529e4775ca350ca20d1faa869c1c40; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=fc2132fd33510f976b0804733af46ce638bba83782aad4ebf579a22b28ada465
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile028/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile028/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=13824:14336: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "69b03d1b71d03160f1f1a4bdc4324e4cba9712c333585bddd4119bb6a2166781", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 826.005, "status": "PASS"}
+TILE LQ04 W2 #29 X=1x288 W=288x512; COLUMNS=14336:14848; W_NONZERO=110519/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36845, "-1": 36744, "0": 36937, "1": 36930}; W_SHA256=a606bdedf5ea72c72cc8e99703d23529c7ac1f2980d9516dc41be08abebf1f82; PACKED_SHA256=6b07d14fef0b62b107cdd69980cc1464a80a0d53a5c8fcf9fb0116b4e6e0a94f
+PYTHON_OUTPUT_SHA256=60bb7524329ee0b88bc9bd916dd52dcaf91577e228bf08e7d5c17ecd63c02401
+TEST_C_SHA256=a6d4454f0f8829919312ee9336f1eed265bd9acd918e851c4765fce02ebbbee3; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=81e781861cdfbf28d741f533ac54d3e752c4e08e6113aa9e57fd1289c9ff3a23
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile029/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile029/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=14336:14848: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "60bb7524329ee0b88bc9bd916dd52dcaf91577e228bf08e7d5c17ecd63c02401", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 850.86, "status": "PASS"}
+TILE LQ04 W2 #30 X=1x288 W=288x512; COLUMNS=14848:15360; W_NONZERO=110677/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36885, "-1": 37051, "0": 36779, "1": 36741}; W_SHA256=6f569b44a5e7621226130b56562c9d9ad4ac801f31143bb64851bb2a2ae5c4d2; PACKED_SHA256=158d6d64455bc229100ef9b2cc8a949d49715216547dd6ad377515c02b5df153
+PYTHON_OUTPUT_SHA256=c2b3ecfcb555a8c36e47814645294ebb8bf68d2bd83b21a8fb73e42608194e4f
+TEST_C_SHA256=d18b9fe14ade8d22a32cc710a5c4fe1430df6daf7d7b1ba8d3782b117017af47; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=f3cdba65d1bb0f34b4dbc174d2836295b7422fd237e7e18f3a74466d8b5e532d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile030/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile030/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=14848:15360: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "c2b3ecfcb555a8c36e47814645294ebb8bf68d2bd83b21a8fb73e42608194e4f", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 848.209, "status": "PASS"}
+TILE LQ04 W2 #31 X=1x288 W=288x512; COLUMNS=15360:15872; W_NONZERO=110626/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36907, "-1": 36995, "0": 36830, "1": 36724}; W_SHA256=00139a61fd236cfab83c37cc82a6c5df69a63a0885c6fc1ae5dc96348f1884ff; PACKED_SHA256=c60ef36bf2d4aa0862e8aae7e659e5063534dbfc0562b7eac0df7828862e1240
+PYTHON_OUTPUT_SHA256=1dda6abc5fa2139bdeb27b6c597d5f9fc7bd2767b1518cef7940ac8da3086075
+TEST_C_SHA256=8f3a10bae72c7be1c7979d8a6dcd1fdf6ad5596e07d0528ddb499cf7f63f2c63; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=07c5f288744ea0de1ad472360689dbcafc9d041426566bbb9ce9567838543d52
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile031/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile031/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=15360:15872: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1dda6abc5fa2139bdeb27b6c597d5f9fc7bd2767b1518cef7940ac8da3086075", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 848.911, "status": "PASS"}
+TILE LQ04 W2 #32 X=1x288 W=288x512; COLUMNS=15872:16384; W_NONZERO=110588/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36747, "-1": 36764, "0": 36868, "1": 37077}; W_SHA256=8af5df17390dbe202c853904ce0c8f7897eab0666b4321d972f612223f36c6ce; PACKED_SHA256=7a89585d9d3f0d3cf96e18dc0d14a8f75c6719a2ddf2ed4918930c817a3b4b99
+PYTHON_OUTPUT_SHA256=1ca2bdf301f387f2104f69df37b1b9d7894b7f52db8411b699bee09f2365e232
+TEST_C_SHA256=cb5ba5e2ce3ed45d39b56c743b08dd97dc8bfb969fb97e11fddeb68a1780e3c8; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=b40d578801aab990358bfdfaead047aafd9b2b7b4229294c813ac4d448fc2fce
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile032/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile032/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=15872:16384: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1ca2bdf301f387f2104f69df37b1b9d7894b7f52db8411b699bee09f2365e232", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 833.256, "status": "PASS"}
+TILE LQ04 W2 #33 X=1x288 W=288x512; COLUMNS=16384:16896; W_NONZERO=110194/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36807, "-1": 36443, "0": 37262, "1": 36944}; W_SHA256=100acf178d2115215e5aef8541143267b73c718d9115341cb31204c396315bf9; PACKED_SHA256=11150f0d242376ed42276134b4e809822b8081be6914cba520267c3f917b0fba
+PYTHON_OUTPUT_SHA256=1ba5aa1f5ded247cc05363025dd9125045abc971b5c217aa26050aded08bed58
+TEST_C_SHA256=d097cdffee95b4376368ab7f7a5c00961dcf69e1e17e1580cfbfc250b919782c; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=08dd6a870c9fa43e01818be716dffed95f0129a82b73c144a40c8bd14aa53a52
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile033/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile033/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=16384:16896: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1ba5aa1f5ded247cc05363025dd9125045abc971b5c217aa26050aded08bed58", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 854.165, "status": "PASS"}
+TILE LQ04 W2 #34 X=1x288 W=288x512; COLUMNS=16896:17408; W_NONZERO=111041/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37341, "-1": 36873, "0": 36415, "1": 36827}; W_SHA256=974c914d17620b47ca8341ed2ebdd57078e287820e9e56fdf685aced5b489feb; PACKED_SHA256=8e64ef73bb0b5f4ef039b63bb8ef9233267f9eddbe3b601b2657dc843d7dbb6a
+PYTHON_OUTPUT_SHA256=3b2bbee5b9077a78e16a29c83c796d171ae74c9480ee89653a666fa18c68b85d
+TEST_C_SHA256=eef9d06469e15cc1457e0827251f4f417122182151167e2e6febc0619246c52a; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=59bfd45868eca289afeef04f2a4cc81fa9f866a368d8376f06b9319abc610374
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile034/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile034/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=16896:17408: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "3b2bbee5b9077a78e16a29c83c796d171ae74c9480ee89653a666fa18c68b85d", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 839.304, "status": "PASS"}
+TILE LQ04 W2 #35 X=1x288 W=288x512; COLUMNS=17408:17920; W_NONZERO=110519/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36798, "-1": 36816, "0": 36937, "1": 36905}; W_SHA256=7683c3a276e3ac2eb23ca5685034a3964073eb0baa89e3fe2017ac18a6b57b28; PACKED_SHA256=bff7574437c7f188f3c4752130a3cf3d9aa46c799065fe4aaa29fed8f69b5c25
+PYTHON_OUTPUT_SHA256=5ba13850827f616f407270a6bad50295ff83c9517658561e2c71bca782cad422
+TEST_C_SHA256=59b773d818b530ecb603c9d0e401b635b73a720ab4f961505787df4637f7725a; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=0292a41881a9a2a45acbe716e9bc03f2e465a96a796db798be7bcfdfbf1abf8b
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile035/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile035/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=17408:17920: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "5ba13850827f616f407270a6bad50295ff83c9517658561e2c71bca782cad422", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 848.06, "status": "PASS"}
+TILE LQ04 W2 #36 X=1x288 W=288x512; COLUMNS=17920:18432; W_NONZERO=110640/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36929, "-1": 37155, "0": 36816, "1": 36556}; W_SHA256=14dbff5de77ed92215e530b1acdd4a339f1886064e8309c3a769bc752999b82a; PACKED_SHA256=20591ca0272515f7e38f4aa26068f93f48c707596513ef46e9488fb0477e2368
+PYTHON_OUTPUT_SHA256=1d3504382cae8c8725d754885b282e1fe405e2888eb1824071d378ff1b8c4bf6
+TEST_C_SHA256=32c6c52b36c62b3355a30eb0a63c5ba0bc427dd9b678dc599cc6663ea2e59e1b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=931d8b4a126e00ff645a4d6c7da37d202ab45faf99b976ce9d7dfa471b5045c6
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile036/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile036/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=17920:18432: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1d3504382cae8c8725d754885b282e1fe405e2888eb1824071d378ff1b8c4bf6", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 844.507, "status": "PASS"}
+TILE LQ04 W2 #37 X=1x288 W=288x512; COLUMNS=18432:18944; W_NONZERO=110469/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36607, "-1": 36837, "0": 36987, "1": 37025}; W_SHA256=5b6eaaea4c9d0bca89e23971d3c3b628ce02c16fa5763407bb860ae3e07f9b27; PACKED_SHA256=efe0751c79ebaf4062016581c4f969c826e98f7bbd6e970140e899bd14ec7d8e
+PYTHON_OUTPUT_SHA256=3dcfd104a6d730d918e5b7ad01eb3125d4e99408f7ceb3aad0aef82daf0ca09d
+TEST_C_SHA256=2230a20ed16e39a07af275c50d429cf552700b8e469114abf589be94322ca40b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=2e13591e24e279f9e93032e07dc946a5a206c13f19cc853706b79daf2fbfea72
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile037/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile037/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=18432:18944: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "3dcfd104a6d730d918e5b7ad01eb3125d4e99408f7ceb3aad0aef82daf0ca09d", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 842.156, "status": "PASS"}
+TILE LQ04 W2 #38 X=1x288 W=288x512; COLUMNS=18944:19456; W_NONZERO=110889/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37011, "-1": 36894, "0": 36567, "1": 36984}; W_SHA256=79183d8fa9b96d3c2a7619260bb2194a92848b90a894df1fca711b1a59c5aeb5; PACKED_SHA256=ba35fe230f0a2e9f9978979513b5987cdfe1aa7e05ad167f53c73d0da1e3433f
+PYTHON_OUTPUT_SHA256=5030e5d3604360cbf2ea78995d545e6ab8de8c0c7c218344d0a55a83a5011674
+TEST_C_SHA256=afccd1976a6886ec6c582d436babff457422c1d2bf67fb0b4799291628646170; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=19b04f1b0600fd758cf3db567f7c07a3271024214c16025685370bc75f767b62
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile038/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile038/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=18944:19456: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "5030e5d3604360cbf2ea78995d545e6ab8de8c0c7c218344d0a55a83a5011674", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 849.613, "status": "PASS"}
+TILE LQ04 W2 #39 X=1x288 W=288x512; COLUMNS=19456:19968; W_NONZERO=110728/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36811, "-1": 37036, "0": 36728, "1": 36881}; W_SHA256=c393249eb9740bdae4e01c83491b7d77dc7e081b331602098544cfba8b3c06da; PACKED_SHA256=7bcc9654b178311d1fb8a90d46fa3d8643a204b9025692224396766329ed32bd
+PYTHON_OUTPUT_SHA256=7deda32c8ae8ac7cda7ad5b906d909cd544414d377923cf9300b908c5adb880f
+TEST_C_SHA256=899c8304778b30ba3b602f74756faf9383e0e0504f1b7ec7781c1e29f6283279; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=5fc97d9904ee0bb3b0fac735368d213447472986ec6f14d275548ec6134bc586
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile039/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile039/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=19456:19968: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "7deda32c8ae8ac7cda7ad5b906d909cd544414d377923cf9300b908c5adb880f", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 849.69, "status": "PASS"}
+TILE LQ04 W2 #40 X=1x288 W=288x512; COLUMNS=19968:20480; W_NONZERO=110763/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36979, "-1": 36805, "0": 36693, "1": 36979}; W_SHA256=336b82652b10b9a77dd5625f7041d3fb6d2c6b63ed97d4a1090279e406efb3b3; PACKED_SHA256=5111823dd5affac9fd5dbfd60147265db5d7fa4d9dabfaaf70be2b00c4b51710
+PYTHON_OUTPUT_SHA256=507b7d0a51ea5508af96ba22d9236ebcc0f4250e02f00960c43b37d466579e1b
+TEST_C_SHA256=5fd895d8ae6594328635a5ecb3a07d1d1bbbfef7206fbba3f8fa697e72e042ea; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=e2b854632aaf14547a95a4d9ce6c6195b81192ee4ca53eb91960f6682e6ca766
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile040/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile040/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=19968:20480: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "507b7d0a51ea5508af96ba22d9236ebcc0f4250e02f00960c43b37d466579e1b", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 845.561, "status": "PASS"}
+TILE LQ04 W2 #41 X=1x288 W=288x512; COLUMNS=20480:20992; W_NONZERO=110757/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36904, "-1": 37038, "0": 36699, "1": 36815}; W_SHA256=f91711bd0e2da8bd8da4cb5318f13fc30da511b994caa61cd038f07067b08f41; PACKED_SHA256=db714608bd388ea578ace327e77e000c4489c3276b6635d1d8dc7487ed313a0d
+PYTHON_OUTPUT_SHA256=5820d9f3281b8cea4e802f57e7e5f9881084f0606adc4c344027ab378defcd3f
+TEST_C_SHA256=901eb7ee934def02e2b4303128462a11c4ce7618844bbf9b836bb0ff40c8639b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=5a230ce93df178ff1bb9a9a1f7300f87951d36bb7127a4b2fcf300f08332db8c
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile041/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile041/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=20480:20992: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "5820d9f3281b8cea4e802f57e7e5f9881084f0606adc4c344027ab378defcd3f", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 843.365, "status": "PASS"}
+TILE LQ04 W2 #42 X=1x288 W=288x512; COLUMNS=20992:21504; W_NONZERO=110478/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36789, "-1": 36806, "0": 36978, "1": 36883}; W_SHA256=80b71408d4e9eb9e92772bd6eccc25364f746ea48e1c4dc09a8ba1cd458e5ec5; PACKED_SHA256=ba90d1b214bacf18e82519bf00ee9762ec744d88e7630e25ebbc023be1ae8078
+PYTHON_OUTPUT_SHA256=bc5f3505e2ae71d1503f0c9008dafc22ef08788c600359c7d85fd1a76dc831f4
+TEST_C_SHA256=9b4ab6c3e83a3da824e6db4b38a9ef9a616d769c0695baa3d8307c7b7fcdd42a; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=4318e239981feb4f6efcff40a71f44a5aaf0f1d8d4e6006959a8ee8927370177
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile042/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile042/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=20992:21504: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "bc5f3505e2ae71d1503f0c9008dafc22ef08788c600359c7d85fd1a76dc831f4", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 841.97, "status": "PASS"}
+TILE LQ04 W2 #43 X=1x288 W=288x512; COLUMNS=21504:22016; W_NONZERO=110408/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36652, "-1": 36832, "0": 37048, "1": 36924}; W_SHA256=4fcec9aecd4d3b2b5e37b09d9ceccf85163a3f62207a7fb0f64b553397b2f365; PACKED_SHA256=7d8db15e473d8bf54dbe8c893fa3186eb8c74599f77a2a42851ae4a0cbd1a124
+PYTHON_OUTPUT_SHA256=862cf4ba4427e84d3c716735124b79b53f926d9fe2094d3f638f440203964bdc
+TEST_C_SHA256=2eb2ea56f9968b1556f2fddc90051354fb49e5c0a275611c2b965d277401e0c7; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=f35084f2ab2e46a777c0ad7d519e2d4f14c1fb08e1fb8847989bce4f76e6cc2f
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile043/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile043/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=21504:22016: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "862cf4ba4427e84d3c716735124b79b53f926d9fe2094d3f638f440203964bdc", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 825.644, "status": "PASS"}
+TILE LQ04 W2 #44 X=1x288 W=288x512; COLUMNS=22016:22528; W_NONZERO=110750/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37024, "-1": 36874, "0": 36706, "1": 36852}; W_SHA256=c3be02a852730d27e0d41cea1c8bd6c60b1f7703552d126a49cc2ead88db8462; PACKED_SHA256=71bf8ccfeb72605c93b67234d178c176594add31058d3ea776e638bb1e499096
+PYTHON_OUTPUT_SHA256=f1c9e698a14c20d37e3676d300745eac77be7e7856b215c991ac884b77ae1386
+TEST_C_SHA256=470b91d390fd9cc393ece4e34171bc2a29970ff8a09755681c83cb8ac2a16984; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=b28335d815f945bcab832ae8217936e7d6b4d8bd96a18f601e2d76bd628c1b14
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile044/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile044/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=22016:22528: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "f1c9e698a14c20d37e3676d300745eac77be7e7856b215c991ac884b77ae1386", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 852.622, "status": "PASS"}
+TILE LQ04 W2 #45 X=1x288 W=288x512; COLUMNS=22528:23040; W_NONZERO=110556/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36796, "-1": 36723, "0": 36900, "1": 37037}; W_SHA256=87535091599c69e9533c64d88fe377b0f13d39bb7d0cb2cb4b470bd5f92c5de8; PACKED_SHA256=0f73ca3ccf04080915fe9e4843bf736a1e8a6fd7cb7dbdecd312be28acc8091d
+PYTHON_OUTPUT_SHA256=1a7e6151ad79550ffb807f2dbd726697c11e0a473285441ef796bea69ddae3cb
+TEST_C_SHA256=614c7d0f8000edae45b808fc9a62ce057dcb39fdf7d00d2b727ed6c2dc91407b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=a39967d25663bc409ef623c817bf5108c686acdd76032c205949aa0447ae0554
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile045/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile045/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=22528:23040: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1a7e6151ad79550ffb807f2dbd726697c11e0a473285441ef796bea69ddae3cb", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 847.371, "status": "PASS"}
+TILE LQ04 W2 #46 X=1x288 W=288x512; COLUMNS=23040:23552; W_NONZERO=110469/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36860, "-1": 36979, "0": 36987, "1": 36630}; W_SHA256=9f89fce654b9b7669c777878bb12a2db838305de9be4468d5d373e4238cfe7eb; PACKED_SHA256=84545d8b541a914e28f80669f40cbd2a182a9ef7adb2461b9dcc4f77fb1b0fcc
+PYTHON_OUTPUT_SHA256=9f17b841743804f3b8b48eda4b1999c6376ffe304d1d084a70c006d898bb6319
+TEST_C_SHA256=56b702ad0141fab5be5257e8922c307d2bd8272966a97da2db9a2d93908462a4; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=7edb5939c7b08a57e3fe754800d52299cd7a503ef4d712481383073e48382fc5
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile046/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile046/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=23040:23552: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "9f17b841743804f3b8b48eda4b1999c6376ffe304d1d084a70c006d898bb6319", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 845.716, "status": "PASS"}
+TILE LQ04 W2 #47 X=1x288 W=288x512; COLUMNS=23552:24064; W_NONZERO=110760/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36791, "-1": 37070, "0": 36696, "1": 36899}; W_SHA256=0ee7f019636d6efc65751e5f267662cd2eb5fe05da45c086821eace2c16da573; PACKED_SHA256=2be821b0429e3d8716893e8d258a1d82d587e6955301e8388d8aa628ab931aed
+PYTHON_OUTPUT_SHA256=ee8fde9c25fbf1074f4a209e87841ef8c0935f100b868f39f13ac91cda03e6a8
+TEST_C_SHA256=8dccac94654b7549d028d066aaa7d988f47c70fec4dcb7a472d5d37bb49a082f; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=da5687e2b6e70703e69bbae839cde7d16fa054f80f825d9330765a9f26ca45fa
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile047/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile047/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=23552:24064: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "ee8fde9c25fbf1074f4a209e87841ef8c0935f100b868f39f13ac91cda03e6a8", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 848.021, "status": "PASS"}
+TILE LQ04 W2 #48 X=1x288 W=288x512; COLUMNS=24064:24576; W_NONZERO=110803/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37034, "-1": 37083, "0": 36653, "1": 36686}; W_SHA256=3c51b8e4638993c0f4e51dfffcc06dcfa70633fe950973d12ceecf7a00e842b4; PACKED_SHA256=3b872fa0abaa33994b40982b8fe26b67163c528c2d32a48e47c5285c9fd05726
+PYTHON_OUTPUT_SHA256=7eae8016c84342c605d87c460f51806837b51c1c393795abb6173dd298847247
+TEST_C_SHA256=93871b09fe03da87f059356646aad87f6cf1d23e65fad63aa08e54b9bb48d6f0; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=3d998416b8718c37ac99a9eccca03cff2d69745dd55f3684a2cd05a3132955f2
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile048/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile048/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=24064:24576: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "7eae8016c84342c605d87c460f51806837b51c1c393795abb6173dd298847247", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 824.103, "status": "PASS"}
+TILE LQ04 W2 #49 X=1x288 W=288x512; COLUMNS=24576:25088; W_NONZERO=110807/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36929, "-1": 37089, "0": 36649, "1": 36789}; W_SHA256=c0d0fd397b3798cf96a0e5aa20aaf272d98daff5d965dbc38fc7d77f0fb4ba32; PACKED_SHA256=01ac0640ad102054824a0c467e227f3be2c366eec30d4197b01ce9f6d49a35db
+PYTHON_OUTPUT_SHA256=3e71b6ed63080677af0e75f678de1c28782d720124d28a546aa1b2fff148a428
+TEST_C_SHA256=855d4bb345d9fd0e8a5195ab649f65b1116b4042298d018cc9aae5ccda5714dd; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=0ba02bfd2e8e55b7d17b7d25f46823e527dded76469b1531f5dc9efa430eb716
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile049/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile049/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=24576:25088: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "3e71b6ed63080677af0e75f678de1c28782d720124d28a546aa1b2fff148a428", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 852.263, "status": "PASS"}
+TILE LQ04 W2 #50 X=1x288 W=288x512; COLUMNS=25088:25600; W_NONZERO=110436/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37010, "-1": 36625, "0": 37020, "1": 36801}; W_SHA256=4daeb2c59f1096851ff38dc8029019c19739c453b6c4f95bc2a6f91c7c91591b; PACKED_SHA256=14eec30257065271410c2e05a3e28ad192428c6a34a4421aae4f95bc5dc527fc
+PYTHON_OUTPUT_SHA256=0d3783a961a8f7edb63a577c9d6f6e39a92bb2abd16f1c7f3a179efb6f98d4ae
+TEST_C_SHA256=b28a2a2d10cd9a1afb9ca23a0b13cf3d7b26a56cf1e6609ccb56e73fcdfc44d5; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=d613c2ee82145976b8c86ae45d19d6deb7c909ab72171a9938b2efc295f52b9a
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile050/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile050/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=25088:25600: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "0d3783a961a8f7edb63a577c9d6f6e39a92bb2abd16f1c7f3a179efb6f98d4ae", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 826.11, "status": "PASS"}
+TILE LQ04 W2 #51 X=1x288 W=288x512; COLUMNS=25600:26112; W_NONZERO=110306/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36574, "-1": 36699, "0": 37150, "1": 37033}; W_SHA256=3d4c44c1ecebf11859b3fd6561e36ecf1379d9b1603217f1494ad0feeec30a0c; PACKED_SHA256=047aa80c765e78cff5f17b726c8cd55a031d488419ea299d61b4df72571497be
+PYTHON_OUTPUT_SHA256=708b6bbb81bce90628f11a859c9808efb7368900692337381e7213f6886df09e
+TEST_C_SHA256=9fc88057106a5ecc62aa81597d083f0aaf4f35747d4bb50f2dee153813b46bc5; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=14597a8b053b84ae48e9f11244ff727320f8994e85225c4f6d7ca2dd34650915
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile051/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile051/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=25600:26112: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "708b6bbb81bce90628f11a859c9808efb7368900692337381e7213f6886df09e", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 853.416, "status": "PASS"}
+TILE LQ04 W2 #52 X=1x288 W=288x512; COLUMNS=26112:26624; W_NONZERO=110728/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37084, "-1": 36653, "0": 36728, "1": 36991}; W_SHA256=6cd0462c427e5dc6bf9d1dcab566e62b113cbcf534504c21c569c51b1944fa8a; PACKED_SHA256=9540e11ad2c03921cb449e867bf8714e4e8e0421f1c1f98a25902aec4d4be5d0
+PYTHON_OUTPUT_SHA256=b8f82140cf8be09b2848021998d2d22a14bdbd7c540e9d6682ee7c4bc142dde9
+TEST_C_SHA256=0558842262e34f6ac2ad6f7ef81313b1fc1edb5e1ebe8dbb83b97f27aa9c8d1e; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=9b317cde2339368c57bafc050d9db68b3bbc733b6db149cc4b06b721072c0805
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile052/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile052/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=26112:26624: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "b8f82140cf8be09b2848021998d2d22a14bdbd7c540e9d6682ee7c4bc142dde9", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 853.863, "status": "PASS"}
+TILE LQ04 W2 #53 X=1x288 W=288x512; COLUMNS=26624:27136; W_NONZERO=110646/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37086, "-1": 36402, "0": 36810, "1": 37158}; W_SHA256=de9153dfdc8603c057628964ef427cc6ecec6931bd22ba7a6c26262f0e5c2f0d; PACKED_SHA256=64e99ac0df938b67efb860ce306dee2692761ebbdec9c9fb4d10d3d27cba95b7
+PYTHON_OUTPUT_SHA256=fb349bf99679cbfeb9ce62ed5f2baa49337586488edd69742455cb55ea4fd39a
+TEST_C_SHA256=1348a3047adfbc55b8590d64ecabebe59cb82eb23e58b9d2ff94cb331483c603; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=4f14f53c7a2dc95c563bc1d6e720cb3db71c20fe93a7bc8fd19c8ecf51c99cad
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile053/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile053/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=26624:27136: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "fb349bf99679cbfeb9ce62ed5f2baa49337586488edd69742455cb55ea4fd39a", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 843.663, "status": "PASS"}
+TILE LQ04 W2 #54 X=1x288 W=288x512; COLUMNS=27136:27648; W_NONZERO=110388/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36526, "-1": 36904, "0": 37068, "1": 36958}; W_SHA256=34609b696def0382288c8c69a921ec7308f3e83d7dab3833ee4edd6c4e7622ee; PACKED_SHA256=51a7028e4865106fbbd11e2a68f82587c2573905294202f43bda4ec5a7b838c0
+PYTHON_OUTPUT_SHA256=25c4d9fa27b57579699814234f47eb56f7635b5635e151e309fff4982d4e133e
+TEST_C_SHA256=097733c16f6427513d7ce1cbd7af550902817948b946f9bbe12fd1e4bff2532f; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=f67d7aa16babf585c4584eba602a508273871f5d3c43f3be049f97b64e8cf718
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile054/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile054/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=27136:27648: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "25c4d9fa27b57579699814234f47eb56f7635b5635e151e309fff4982d4e133e", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 828.857, "status": "PASS"}
+TILE LQ04 W2 #55 X=1x288 W=288x512; COLUMNS=27648:28160; W_NONZERO=110858/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37068, "-1": 36791, "0": 36598, "1": 36999}; W_SHA256=7dbbc4328b80489328c15d9b3874778a5ecd7d51a80f1251c561f54d75db472c; PACKED_SHA256=76ccbb52c64b09962998a81d835fccdf87336667af474d5440e4021b59c28d09
+PYTHON_OUTPUT_SHA256=0ac4346d2bec3ef4fc632431e6f88bb4b9874272e44f1d071782c690a1931f8c
+TEST_C_SHA256=bb6e31126f47931411557f7b853f17e1047f9b9151421aef97aa2907d5ecda89; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=1d0da2f31a3315bb8da9aff01e97042dd1dd7531731a9dae1680c8bc49f6cf2c
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile055/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile055/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=27648:28160: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "0ac4346d2bec3ef4fc632431e6f88bb4b9874272e44f1d071782c690a1931f8c", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 852.314, "status": "PASS"}
+TILE LQ04 W2 #56 X=1x288 W=288x512; COLUMNS=28160:28672; W_NONZERO=110572/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36737, "-1": 37050, "0": 36884, "1": 36785}; W_SHA256=f934d0154cd5320c219f0b67bd71d73dc15c5d52b6bb4186ce5f384bbfc59e38; PACKED_SHA256=cb5e7f2833a10d87a00528adc92a04ae597b354771eaa8827dd4636a6e723638
+PYTHON_OUTPUT_SHA256=eb55bb9ba2787c5f168807b44f9b00700ba0347a8c769aba9a72fac4a49d4324
+TEST_C_SHA256=4ff4efe33c67a2ae925f44a5cb637b76fd9c40ff05acd1b32a69ee2de0c55cb4; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=cc05d638c1185a4e27d9f2226f2822a0276dab00f4fe54954fac88d7fd104933
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile056/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile056/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=28160:28672: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "eb55bb9ba2787c5f168807b44f9b00700ba0347a8c769aba9a72fac4a49d4324", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 853.514, "status": "PASS"}
+TILE LQ04 W2 #57 X=1x288 W=288x512; COLUMNS=28672:29184; W_NONZERO=110486/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 37080, "-1": 36856, "0": 36970, "1": 36550}; W_SHA256=b9b536a0f3fb2d2582cd8177345de4c0d691e0f8921720840f7d89b2760899ff; PACKED_SHA256=6cd2d1d5e2b6b458a06ded5c7845bbb334f1db80c66b0291e8afa3f9813cadba
+PYTHON_OUTPUT_SHA256=495a3870461f8cbed1b712da124f6988dbf11df49b2143b7119e81b31be1e5f5
+TEST_C_SHA256=a14b1d80c05ca1579553a578468d721c068bcc9b1c7ba6f58c8693b0ee6dea85; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=91c2b03d85f6ab50b1da45277d5f1beff15d3bb6e06ecd707e7b7717e4aaf11d
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile057/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile057/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=28672:29184: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "495a3870461f8cbed1b712da124f6988dbf11df49b2143b7119e81b31be1e5f5", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 848.263, "status": "PASS"}
+TILE LQ04 W2 #58 X=1x288 W=288x512; COLUMNS=29184:29696; W_NONZERO=110674/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36829, "-1": 36901, "0": 36782, "1": 36944}; W_SHA256=9b58d29928f38704ac8e837b5a2abea04eebcab8288165978f275f8df0248dd7; PACKED_SHA256=e9554c0a473bcbe086cd67416612803848c52cd665acb0d413060a7bcac1a7cf
+PYTHON_OUTPUT_SHA256=fd6efa3333e26362ad7e0d82f3597d3b7ce09bda5ddc2444124e5639defc70a9
+TEST_C_SHA256=03d7925bf2b7abd83de5f3c87fe65846b39fa41bbf909fbd8ee70627b541b9ba; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=771345931b02984dfd9588d2f0cb913d730148dde3f6c145b6c9346dba894f53
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile058/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile058/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=29184:29696: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "fd6efa3333e26362ad7e0d82f3597d3b7ce09bda5ddc2444124e5639defc70a9", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 849.715, "status": "PASS"}
+TILE LQ04 W2 #59 X=1x288 W=288x512; COLUMNS=29696:30208; W_NONZERO=110728/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36920, "-1": 37129, "0": 36728, "1": 36679}; W_SHA256=293e7ac774dda8a06a316cedde3fd971e5b433abace736fc3925b4a980856dbd; PACKED_SHA256=7fc7336f22a3874ef0d0c34ff1078b1f6d4574161447f9a82fb66b20515b1bf5
+PYTHON_OUTPUT_SHA256=c818bbc11a4191d2ee9333f0e8b9963194c9c1941037315a2a5bfa087335fc92
+TEST_C_SHA256=d03dff2dd27fbf0c08ba5dc0a57f958a2e4838274328da03472236233c5780b4; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=850b980c2040a38aff8b08dfa2a1f09619b335a1b6ebabbf6cf787f3d364e443
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile059/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile059/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=29696:30208: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "c818bbc11a4191d2ee9333f0e8b9963194c9c1941037315a2a5bfa087335fc92", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 842.571, "status": "PASS"}
+TILE LQ04 W2 #60 X=1x288 W=288x512; COLUMNS=30208:30720; W_NONZERO=110709/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36682, "-1": 36827, "0": 36747, "1": 37200}; W_SHA256=07f905a17180b5e6e5ece98ac51f916ba9cacf7e2127fb9caced4d2b6b1ed850; PACKED_SHA256=40aa8c9c4f27a349c8c4c0ddf5238d027cae6cb3409cb1fd8e939dfb05e89553
+PYTHON_OUTPUT_SHA256=516e21d36950e97b4ab8112e6d1644c0996aa8c9c812bce8f9050f8a52e2a91e
+TEST_C_SHA256=e97cb05e0f9ab8b1d223089fd1c0109f9e3005c183f370dbacb16b9f17fdcbbe; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=2c380628203e4e969cc321492870bb2b4d911cd4c35a66c063d51eee4369fff1
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile060/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile060/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=30208:30720: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "516e21d36950e97b4ab8112e6d1644c0996aa8c9c812bce8f9050f8a52e2a91e", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 832.365, "status": "PASS"}
+TILE LQ04 W2 #61 X=1x288 W=288x512; COLUMNS=30720:31232; W_NONZERO=110648/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36520, "-1": 36849, "0": 36808, "1": 37279}; W_SHA256=85d10bcee99f24cfc85b2fe9d54be0ba486afc4b66f352452bf570297357a32f; PACKED_SHA256=0258b55664f24188741afe6c870e47ea542f749653c5e915dfad749cf23ae15e
+PYTHON_OUTPUT_SHA256=1a410b7cbdd1e3f4da05da87818a66de5de44f69f9927a3795c30a05d42c20d7
+TEST_C_SHA256=855928519074c5a60d46d55bb62064f23b00d044b8f4f731a202a14e00da27d7; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=b3f0f5d9491a54f3a1d11e117f4d14bd397dc7641cb1aabdb58df1e26cb4b9e3
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile061/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile061/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=30720:31232: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "1a410b7cbdd1e3f4da05da87818a66de5de44f69f9927a3795c30a05d42c20d7", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 828.615, "status": "PASS"}
+TILE LQ04 W2 #62 X=1x288 W=288x512; COLUMNS=31232:31744; W_NONZERO=110657/147456; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 36944, "-1": 36740, "0": 36799, "1": 36973}; W_SHA256=644d7e5b621d348af77099f873446f3fcea65c32c9f0b1b5191704a4655e961b; PACKED_SHA256=8192b722025f64c91c17cc3eab3f09ea6c4b2b5aed38c7ce0f6b6fcbedf33541
+PYTHON_OUTPUT_SHA256=0e6c199f0d252c45394e2897cdfd3e64d128e80c08716390c6631f7b44fa6a3d
+TEST_C_SHA256=7669b7a65ed492c6f35b38ae87e110df233f770eadeb67249e7bb533e57e94e5; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=9266752f8f902e6b3b0deb4ad0a2181673d6de9e0042cdf53f70cd541f1f2dd1
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile062/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile062/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=31232:31744: {"actual_elements": 512, "core_compute": 33015, "core_preload": 421, "cycles": 32852, "elements": 512, "guards": "PASS", "hw_sha256": "0e6c199f0d252c45394e2897cdfd3e64d128e80c08716390c6631f7b44fa6a3d", "matches": 512, "pc": [266, 72, 30427, 20992, 2117, 30397], "seconds": 847.712, "status": "PASS"}
+TILE LQ04 W2 #63 X=1x288 W=288x256; COLUMNS=31744:32000; W_NONZERO=55194/73728; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 18509, "-1": 18369, "0": 18534, "1": 18316}; W_SHA256=c7e343a4f76162e9562cde2cc6981bb8407b0f86c60ac55cbd08d61e8f95837c; PACKED_SHA256=41cff3ab24fadc6ddd9ad9d0bcf253856b17511b2b14027568c97e74237e6423
+PYTHON_OUTPUT_SHA256=76f99ab9d27ffaf58341e4886a5d9670372fe079cfdabaf8cddd33fc8fa4e479
+TEST_C_SHA256=bbdf7fb886f85cee468023cd2541b13f83b92225d34f18ea8380ba72e467b7bb; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=2f367cf7404aa76d7c67e70942f4502bbade5eb44fa21c96c0fe15a9494febe5
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile063/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ04_w2_tile063/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ04 W2 columns=31744:32000: {"actual_elements": 256, "core_compute": 16857, "core_preload": 374, "cycles": 16714, "elements": 256, "guards": "PASS", "hw_sha256": "76f99ab9d27ffaf58341e4886a5d9670372fe079cfdabaf8cddd33fc8fa4e479", "matches": 256, "pc": [255, 72, 15354, 10496, 1063, 15324], "seconds": 425.296, "status": "PASS"}
+CASE RESULT: {"active_cycles": 2053538, "case": "LQ04", "core_compute": 2063787, "k": 288, "m": 32000, "matches": 32000, "measured_tiles": 63, "seconds": 52740.331, "status": "PASS", "tile_results": {"PASS": 63}, "tiles": 63, "wb": 2}
+
+CASE LQ01 X=1x288 W=288x288 input16 W8; INPUT_SEED=6990298478915472203; WEIGHT_SEED=2418876105638871435
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32399; X_MAX=32704; X_DISTINCT=288; X_SHA256=9791207c740ec73861e010662ff6ad3179cea226d78436f68d28b5e74005d1d9
+TILE LQ01 W8 #1 X=1x288 W=288x288; COLUMNS=0:288; W_NONZERO=82625/82944; W_DISTINCT=256
+W_DISTRIBUTION={"-128": 316, "-127": 336, "-126": 295, "-125": 293, "-124": 331, "-123": 340, "-122": 373, "-121": 326, "-120": 326, "-119": 330, "-118": 342, "-117": 335, "-116": 333, "-115": 337, "-114": 316, "-113": 324, "-112": 325, "-111": 315, "-110": 335, "-109": 306, "-108": 329, "-107": 315, "-106": 333, "-105": 331, "-104": 314, "-103": 276, "-102": 333, "-101": 297, "-100": 309, "-99": 331, "-98": 303, "-97": 307, "-96": 310, "-95": 355, "-94": 319, "-93": 321, "-92": 320, "-91": 329, "-90": 312, "-89": 338, "-88": 311, "-87": 328, "-86": 301, "-85": 348, "-84": 350, "-83": 321, "-82": 337, "-81": 312, "-80": 339, "-79": 317, "-78": 325, "-77": 315, "-76": 322, "-75": 319, "-74": 322, "-73": 286, "-72": 290, "-71": 321, "-70": 299, "-69": 314, "-68": 281, "-67": 313, "-66": 353, "-65": 311, "-64": 366, "-63": 327, "-62": 304, "-61": 337, "-60": 353, "-59": 334, "-58": 321, "-57": 339, "-56": 335, "-55": 305, "-54": 337, "-53": 336, "-52": 294, "-51": 359, "-50": 338, "-49": 345, "-48": 323, "-47": 329, "-46": 362, "-45": 350, "-44": 279, "-43": 315, "-42": 344, "-41": 314, "-40": 304, "-39": 299, "-38": 306, "-37": 344, "-36": 331, "-35": 283, "-34": 331, "-33": 288, "-32": 317, "-31": 317, "-30": 333, "-29": 339, "-28": 326, "-27": 326, "-26": 346, "-25": 337, "-24": 352, "-23": 334, "-22": 302, "-21": 332, "-20": 313, "-19": 342, "-18": 317, "-17": 300, "-16": 299, "-15": 295, "-14": 322, "-13": 336, "-12": 319, "-11": 303, "-10": 324, "-9": 320, "-8": 359, "-7": 340, "-6": 336, "-5": 347, "-4": 319, "-3": 330, "-2": 327, "-1": 335, "0": 319, "1": 317, "2": 337, "3": 318, "4": 334, "5": 305, "6": 311, "7": 323, "8": 291, "9": 388, "10": 348, "11": 330, "12": 320, "13": 292, "14": 317, "15": 317, "16": 322, "17": 325, "18": 310, "19": 303, "20": 320, "21": 334, "22": 316, "23": 321, "24": 321, "25": 302, "26": 333, "27": 327, "28": 306, "29": 339, "30": 344, "31": 359, "32": 308, "33": 323, "34": 321, "35": 313, "36": 321, "37": 337, "38": 334, "39": 321, "40": 330, "41": 342, "42": 310, "43": 312, "44": 335, "45": 346, "46": 359, "47": 319, "48": 336, "49": 316, "50": 346, "51": 318, "52": 331, "53": 321, "54": 311, "55": 303, "56": 340, "57": 327, "58": 311, "59": 309, "60": 317, "61": 323, "62": 320, "63": 348, "64": 309, "65": 305, "66": 305, "67": 325, "68": 337, "69": 287, "70": 296, "71": 320, "72": 385, "73": 346, "74": 320, "75": 355, "76": 328, "77": 313, "78": 331, "79": 310, "80": 344, "81": 309, "82": 336, "83": 320, "84": 305, "85": 317, "86": 340, "87": 312, "88": 305, "89": 353, "90": 320, "91": 328, "92": 334, "93": 345, "94": 312, "95": 371, "96": 331, "97": 324, "98": 302, "99": 326, "100": 307, "101": 327, "102": 309, "103": 312, "104": 313, "105": 346, "106": 355, "107": 326, "108": 329, "109": 342, "110": 275, "111": 335, "112": 291, "113": 339, "114": 314, "115": 337, "116": 317, "117": 283, "118": 352, "119": 361, "120": 299, "121": 350, "122": 301, "123": 327, "124": 315, "125": 338, "126": 316, "127": 338}; W_SHA256=ce1dd81f187ad2b1f1ee82233734a76c099ad450e8443ee8c45a0f5a267b6372; PACKED_SHA256=ce1dd81f187ad2b1f1ee82233734a76c099ad450e8443ee8c45a0f5a267b6372
+PYTHON_OUTPUT_SHA256=549960f3bcd2366ea225c0afc9c10cbe04f18461ca243bd397031f6aeaa6f20d
+TEST_C_SHA256=64114cd1882449db5c2b9ccd288935b52a50961cbf7463282a4819a21feb48fe; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=3213f3de6825412a0bd5e3ef1007700748d88c9a9aba79fe88810aa588382bdf
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ01_w8_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ01_w8_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ01 W8 columns=0:288: {"actual_elements": 288, "core_compute": 44730, "core_preload": 465, "cycles": 44601, "elements": 288, "guards": "PASS", "hw_sha256": "549960f3bcd2366ea225c0afc9c10cbe04f18461ca243bd397031f6aeaa6f20d", "matches": 288, "pc": [278, 2600, 40675, 18720, 1202, 40521], "seconds": 1073.535, "status": "PASS"}
+CASE RESULT: {"active_cycles": 44601, "case": "LQ01", "core_compute": 44730, "k": 288, "m": 288, "matches": 288, "measured_tiles": 1, "seconds": 1073.535, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 8}
+
+CASE LQ01 X=1x288 W=288x288 input16 W4; INPUT_SEED=11474157181985354611; WEIGHT_SEED=7467994893730222641
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32540; X_MAX=32601; X_DISTINCT=288; X_SHA256=57837bdfc297bed21552cff6a91eb6e27cbe7f6369ada6622ace5879a70f6f28
+TILE LQ01 W4 #1 X=1x288 W=288x288; COLUMNS=0:288; W_NONZERO=77812/82944; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 5041, "-7": 5135, "-6": 5182, "-5": 5328, "-4": 5229, "-3": 5196, "-2": 5249, "-1": 5258, "0": 5132, "1": 5088, "2": 5348, "3": 5057, "4": 5202, "5": 5176, "6": 5170, "7": 5153}; W_SHA256=eea52e8422fe1b83d435a1b4d0150e5037303f6cc46985111c64ffb21fcbcae0; PACKED_SHA256=a2592a76db3d98130511de88166729f17ace327ead1997c5195b40d44cfa61dc
+PYTHON_OUTPUT_SHA256=2327909f7486bbd035a53d54c215c9ee23d9261c0db4c60ea6c0b32035f57d8c
+TEST_C_SHA256=33bfe229dc67817f9523f74361eaa15207ed5bff057a61086b45ce293cf82970; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=0e58d3076fd85bcd592bba85244c70deda551dea617645631ac48e97a8c93848
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ01_w4_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ01_w4_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ01 W4 columns=0:288: {"actual_elements": 288, "core_compute": 33385, "core_preload": 448, "cycles": 33245, "elements": 288, "guards": "PASS", "hw_sha256": "2327909f7486bbd035a53d54c215c9ee23d9261c0db4c60ea6c0b32035f57d8c", "matches": 288, "pc": [266, 180, 31735, 11808, 1202, 31597], "seconds": 699.727, "status": "PASS"}
+CASE RESULT: {"active_cycles": 33245, "case": "LQ01", "core_compute": 33385, "k": 288, "m": 288, "matches": 288, "measured_tiles": 1, "seconds": 699.727, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 4}
+
+CASE LQ01 X=1x288 W=288x288 input16 W2; INPUT_SEED=12838041248463929626; WEIGHT_SEED=13713458186536874377
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32646; X_MAX=32433; X_DISTINCT=287; X_SHA256=c3f4a6b21cac346cc0f6804f90f7a38638b00e34d6c4ee2c0f80b2b829d5bfb6
+TILE LQ01 W2 #1 X=1x288 W=288x288; COLUMNS=0:288; W_NONZERO=62152/82944; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 20864, "-1": 20763, "0": 20792, "1": 20525}; W_SHA256=4ffbdf8ad50b522262ae86372607325d56f064dcc1a35e3aa10d0e54c034f2a2; PACKED_SHA256=45a37bb7a3ad74a47835e90c9b077f1a3cd0c50171ab6a58ea064ef7e6394c94
+PYTHON_OUTPUT_SHA256=f9ece6653a901b946e6a58a2227bced8ae042a0fd43a7e309815be1e3ed60d66
+TEST_C_SHA256=86244f00d18d1ea0d2559b5fa2d3354e79691ce2a0f026cbc098aa770b12a780; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=3bd7fb5afd38c853988dde8a27980f0aa2c881b79c26c6ee52d836407dd2d0d0
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ01_w2_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ01_w2_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ01 W2 columns=0:288: {"actual_elements": 288, "core_compute": 18746, "core_preload": 394, "cycles": 18585, "elements": 288, "guards": "PASS", "hw_sha256": "f9ece6653a901b946e6a58a2227bced8ae042a0fd43a7e309815be1e3ed60d66", "matches": 288, "pc": [255, 72, 17086, 11808, 1202, 17056], "seconds": 480.217, "status": "PASS"}
+CASE RESULT: {"active_cycles": 18585, "case": "LQ01", "core_compute": 18746, "k": 288, "m": 288, "matches": 288, "measured_tiles": 1, "seconds": 480.217, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 2}
+
+CASE LQ02 X=1x288 W=288x768 input16 W8; INPUT_SEED=10669421582425098387; WEIGHT_SEED=17230280160341801261
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32689; X_MAX=32732; X_DISTINCT=288; X_SHA256=23f2e670dff4e06ce96a4c1f5d09857e60d2f2f07161b3a3dd497f2b2f158f29
+TILE LQ02 W8 #1 X=1x288 W=288x768; COLUMNS=0:768; W_NONZERO=220304/221184; W_DISTINCT=256
+W_DISTRIBUTION={"-128": 837, "-127": 884, "-126": 818, "-125": 877, "-124": 904, "-123": 851, "-122": 892, "-121": 807, "-120": 836, "-119": 902, "-118": 867, "-117": 801, "-116": 874, "-115": 816, "-114": 875, "-113": 802, "-112": 917, "-111": 861, "-110": 846, "-109": 916, "-108": 803, "-107": 861, "-106": 849, "-105": 883, "-104": 877, "-103": 869, "-102": 855, "-101": 814, "-100": 859, "-99": 867, "-98": 858, "-97": 841, "-96": 860, "-95": 877, "-94": 866, "-93": 859, "-92": 827, "-91": 848, "-90": 865, "-89": 889, "-88": 866, "-87": 874, "-86": 827, "-85": 859, "-84": 871, "-83": 895, "-82": 848, "-81": 870, "-80": 841, "-79": 885, "-78": 879, "-77": 802, "-76": 935, "-75": 865, "-74": 843, "-73": 906, "-72": 846, "-71": 900, "-70": 883, "-69": 889, "-68": 859, "-67": 862, "-66": 860, "-65": 831, "-64": 865, "-63": 914, "-62": 905, "-61": 854, "-60": 893, "-59": 838, "-58": 842, "-57": 865, "-56": 879, "-55": 832, "-54": 878, "-53": 895, "-52": 857, "-51": 823, "-50": 828, "-49": 842, "-48": 836, "-47": 904, "-46": 851, "-45": 890, "-44": 876, "-43": 863, "-42": 901, "-41": 881, "-40": 926, "-39": 857, "-38": 840, "-37": 836, "-36": 818, "-35": 861, "-34": 894, "-33": 852, "-32": 887, "-31": 874, "-30": 875, "-29": 916, "-28": 851, "-27": 867, "-26": 879, "-25": 837, "-24": 837, "-23": 884, "-22": 858, "-21": 811, "-20": 888, "-19": 772, "-18": 889, "-17": 865, "-16": 897, "-15": 873, "-14": 889, "-13": 902, "-12": 876, "-11": 859, "-10": 874, "-9": 866, "-8": 849, "-7": 843, "-6": 848, "-5": 813, "-4": 872, "-3": 870, "-2": 879, "-1": 855, "0": 880, "1": 903, "2": 854, "3": 894, "4": 866, "5": 854, "6": 856, "7": 837, "8": 842, "9": 808, "10": 845, "11": 849, "12": 865, "13": 888, "14": 901, "15": 824, "16": 810, "17": 856, "18": 860, "19": 863, "20": 873, "21": 805, "22": 896, "23": 891, "24": 908, "25": 899, "26": 814, "27": 843, "28": 856, "29": 878, "30": 843, "31": 844, "32": 849, "33": 885, "34": 871, "35": 842, "36": 846, "37": 871, "38": 815, "39": 878, "40": 964, "41": 854, "42": 867, "43": 898, "44": 850, "45": 849, "46": 838, "47": 870, "48": 879, "49": 876, "50": 854, "51": 851, "52": 884, "53": 895, "54": 854, "55": 898, "56": 921, "57": 854, "58": 861, "59": 808, "60": 875, "61": 849, "62": 882, "63": 926, "64": 906, "65": 836, "66": 888, "67": 824, "68": 867, "69": 872, "70": 909, "71": 879, "72": 840, "73": 907, "74": 882, "75": 844, "76": 892, "77": 865, "78": 854, "79": 851, "80": 838, "81": 874, "82": 847, "83": 846, "84": 877, "85": 869, "86": 878, "87": 859, "88": 866, "89": 886, "90": 850, "91": 868, "92": 878, "93": 918, "94": 833, "95": 884, "96": 843, "97": 847, "98": 867, "99": 838, "100": 890, "101": 878, "102": 883, "103": 798, "104": 873, "105": 791, "106": 828, "107": 840, "108": 856, "109": 866, "110": 866, "111": 876, "112": 858, "113": 883, "114": 875, "115": 884, "116": 833, "117": 837, "118": 857, "119": 855, "120": 876, "121": 892, "122": 887, "123": 934, "124": 909, "125": 910, "126": 831, "127": 860}; W_SHA256=74dc22f5f484e601e2f5003050269a0350c9d0050219466580aa010c64919b98; PACKED_SHA256=74dc22f5f484e601e2f5003050269a0350c9d0050219466580aa010c64919b98
+PYTHON_OUTPUT_SHA256=d5057b8396687f057b8a65f84f250bd80e6488ca1cbe0f350db1d9ca2a82beb5
+TEST_C_SHA256=75e4f4a94a8dfb4d88ada1aeed4ee41dbe20de7f34b377e85cb4413d7473cf6e; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=0964b19e70bb56ef8347185a1b177c8dba4c26ead0ab029b9d00a192eb571584
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ02_w8_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ02_w8_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ02 W8 columns=0:768: {"actual_elements": 768, "core_compute": 122990, "core_preload": 443, "cycles": 122830, "elements": 768, "guards": "PASS", "hw_sha256": "d5057b8396687f057b8a65f84f250bd80e6488ca1cbe0f350db1d9ca2a82beb5", "matches": 768, "pc": [338, 2600, 116905, 49920, 3154, 116738], "seconds": 2936.384, "status": "PASS"}
+CASE RESULT: {"active_cycles": 122830, "case": "LQ02", "core_compute": 122990, "k": 288, "m": 768, "matches": 768, "measured_tiles": 1, "seconds": 2936.384, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 8}
+
+CASE LQ02 X=1x288 W=288x768 input16 W4; INPUT_SEED=9746353555546421593; WEIGHT_SEED=5540561725742317292
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32608; X_MAX=32687; X_DISTINCT=287; X_SHA256=53f3dcf3ef903be759a591c8c6f8d88a6d55528c074c0b47bc703ff1781e67e2
+TILE LQ02 W4 #1 X=1x288 W=288x768; COLUMNS=0:768; W_NONZERO=207453/221184; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 13693, "-7": 14145, "-6": 13934, "-5": 13707, "-4": 13731, "-3": 14038, "-2": 13910, "-1": 13727, "0": 13731, "1": 13903, "2": 13724, "3": 13898, "4": 13831, "5": 13594, "6": 13886, "7": 13732}; W_SHA256=4504170a4094e7b25f8ac17f6612e6d36f07bb21fe45cfa6eedae0cb41662ccf; PACKED_SHA256=62c91caa20328649e3bb70a8803ea091e24302771ac315e7ccba4940005a763c
+PYTHON_OUTPUT_SHA256=c1a59cf6c648b06ba99a07a0417e4d184bafad82d870aa1934f47c8686cb385a
+TEST_C_SHA256=e3c0b632a1be5761435052643120ee8cd93e9750af70c033802e6eba2bd5fb78; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=a588ed38e91d2ea4f241bd21e8a224ae979d2fbf0c55d25abaad9882ce96f65b
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ02_w4_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ02_w4_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ02 W4 columns=0:768: {"actual_elements": 768, "core_compute": 88181, "core_preload": 450, "cycles": 88029, "elements": 768, "guards": "PASS", "hw_sha256": "c1a59cf6c648b06ba99a07a0417e4d184bafad82d870aa1934f47c8686cb385a", "matches": 768, "pc": [283, 180, 84531, 31488, 3173, 84393], "seconds": 1743.212, "status": "PASS"}
+CASE RESULT: {"active_cycles": 88029, "case": "LQ02", "core_compute": 88181, "k": 288, "m": 768, "matches": 768, "measured_tiles": 1, "seconds": 1743.212, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 4}
+
+CASE LQ02 X=1x288 W=288x768 input16 W2; INPUT_SEED=7000302496147464053; WEIGHT_SEED=13351779136735106023
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=288/288; X_MIN=-32746; X_MAX=32525; X_DISTINCT=288; X_SHA256=f4fb13324e22e07a4cfe96bd5edfebbcc29fca7af0119503c44dd054bdced5a7
+TILE LQ02 W2 #1 X=1x288 W=288x768; COLUMNS=0:768; W_NONZERO=165739/221184; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 55550, "-1": 55214, "0": 55445, "1": 54975}; W_SHA256=e30e51bb63b96643a0aac0ee07611e7019829adf284c5e089aa9d63ec5487789; PACKED_SHA256=2e4a07e0eae853f9dedb86d9b7b2fe71e7025a020fa69b9a5d281f311dc758c6
+PYTHON_OUTPUT_SHA256=a0f13d07906b09cca44343b7c93ef858bcd0e9b89a28a7f226eee1f881b9fa48
+TEST_C_SHA256=838a3c6813f5261d50788492db55026a8b6d4e821b30950a3be5b067b317d560; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=27913aef3e21765b3a18896b80c675eff4521f707a592053efefcedcc6b7e5f4
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ02_w2_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ02_w2_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ02 W2 columns=0:768: {"actual_elements": 768, "core_compute": 48315, "core_preload": 407, "cycles": 48178, "elements": 768, "guards": "PASS", "hw_sha256": "a0f13d07906b09cca44343b7c93ef858bcd0e9b89a28a7f226eee1f881b9fa48", "matches": 768, "pc": [266, 72, 44695, 31488, 3175, 44665], "seconds": 1235.619, "status": "PASS"}
+CASE RESULT: {"active_cycles": 48178, "case": "LQ02", "core_compute": 48315, "k": 288, "m": 768, "matches": 768, "measured_tiles": 1, "seconds": 1235.619, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 2}
+
+CASE LQ03 X=1x768 W=768x288 input16 W8; INPUT_SEED=14175546365758896339; WEIGHT_SEED=11484042227450954495
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=768/768; X_MIN=-32675; X_MAX=32722; X_DISTINCT=762; X_SHA256=cd7d77bd1baeb042cd61b652fa7f6c7b84b8c5ea6754a0200f9a0748346e9859
+TILE LQ03 W8 #1 X=1x768 W=768x288; COLUMNS=0:288; W_NONZERO=220309/221184; W_DISTINCT=256
+W_DISTRIBUTION={"-128": 830, "-127": 873, "-126": 871, "-125": 849, "-124": 879, "-123": 908, "-122": 839, "-121": 886, "-120": 849, "-119": 827, "-118": 870, "-117": 877, "-116": 885, "-115": 814, "-114": 848, "-113": 823, "-112": 921, "-111": 847, "-110": 829, "-109": 921, "-108": 891, "-107": 877, "-106": 846, "-105": 870, "-104": 876, "-103": 891, "-102": 889, "-101": 834, "-100": 852, "-99": 858, "-98": 806, "-97": 857, "-96": 836, "-95": 863, "-94": 874, "-93": 881, "-92": 858, "-91": 832, "-90": 928, "-89": 861, "-88": 866, "-87": 866, "-86": 923, "-85": 815, "-84": 869, "-83": 879, "-82": 864, "-81": 823, "-80": 823, "-79": 834, "-78": 912, "-77": 906, "-76": 846, "-75": 841, "-74": 794, "-73": 896, "-72": 880, "-71": 884, "-70": 863, "-69": 921, "-68": 913, "-67": 825, "-66": 840, "-65": 845, "-64": 875, "-63": 857, "-62": 892, "-61": 920, "-60": 885, "-59": 889, "-58": 902, "-57": 806, "-56": 868, "-55": 866, "-54": 796, "-53": 855, "-52": 875, "-51": 821, "-50": 872, "-49": 875, "-48": 873, "-47": 886, "-46": 885, "-45": 883, "-44": 845, "-43": 853, "-42": 887, "-41": 846, "-40": 825, "-39": 846, "-38": 915, "-37": 834, "-36": 830, "-35": 854, "-34": 849, "-33": 855, "-32": 834, "-31": 856, "-30": 882, "-29": 908, "-28": 916, "-27": 839, "-26": 849, "-25": 854, "-24": 936, "-23": 857, "-22": 872, "-21": 880, "-20": 863, "-19": 857, "-18": 846, "-17": 891, "-16": 903, "-15": 850, "-14": 867, "-13": 842, "-12": 886, "-11": 870, "-10": 873, "-9": 839, "-8": 887, "-7": 839, "-6": 876, "-5": 896, "-4": 843, "-3": 866, "-2": 840, "-1": 829, "0": 875, "1": 859, "2": 866, "3": 806, "4": 893, "5": 864, "6": 805, "7": 879, "8": 919, "9": 922, "10": 803, "11": 891, "12": 818, "13": 874, "14": 840, "15": 851, "16": 811, "17": 859, "18": 934, "19": 881, "20": 828, "21": 817, "22": 873, "23": 867, "24": 817, "25": 871, "26": 867, "27": 909, "28": 890, "29": 857, "30": 850, "31": 856, "32": 876, "33": 864, "34": 865, "35": 864, "36": 876, "37": 864, "38": 923, "39": 907, "40": 865, "41": 918, "42": 858, "43": 849, "44": 818, "45": 834, "46": 832, "47": 835, "48": 880, "49": 867, "50": 857, "51": 877, "52": 880, "53": 894, "54": 811, "55": 887, "56": 815, "57": 848, "58": 846, "59": 823, "60": 883, "61": 863, "62": 882, "63": 870, "64": 824, "65": 889, "66": 869, "67": 874, "68": 878, "69": 850, "70": 943, "71": 853, "72": 852, "73": 903, "74": 829, "75": 884, "76": 846, "77": 799, "78": 846, "79": 895, "80": 889, "81": 894, "82": 867, "83": 964, "84": 880, "85": 869, "86": 926, "87": 875, "88": 882, "89": 907, "90": 878, "91": 892, "92": 801, "93": 889, "94": 837, "95": 841, "96": 877, "97": 834, "98": 850, "99": 828, "100": 820, "101": 874, "102": 789, "103": 818, "104": 901, "105": 864, "106": 865, "107": 870, "108": 861, "109": 845, "110": 870, "111": 891, "112": 828, "113": 848, "114": 876, "115": 826, "116": 876, "117": 833, "118": 862, "119": 862, "120": 916, "121": 841, "122": 876, "123": 850, "124": 873, "125": 863, "126": 898, "127": 871}; W_SHA256=d277463d9576c8f34337910a48c113aee92007a541a83db883f1982b8ac7c94f; PACKED_SHA256=d277463d9576c8f34337910a48c113aee92007a541a83db883f1982b8ac7c94f
+PYTHON_OUTPUT_SHA256=673c3cf405fc99c847ea3955239bb152b653ddc403412191310ef83bc02d5b47
+TEST_C_SHA256=541101ed360aab95e11be0e969e47cc02775e3f15b3c6b5a360969fda385b626; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=6c03d1eb0f641bd0d9d707354b5c4b37e44856ca79f8c3464492d4b9b4a3e2b4
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ03_w8_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ03_w8_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ03 W8 columns=0:288: {"actual_elements": 288, "core_compute": 125090, "core_preload": 486, "cycles": 124947, "elements": 288, "guards": "PASS", "hw_sha256": "673c3cf405fc99c847ea3955239bb152b653ddc403412191310ef83bc02d5b47", "matches": 288, "pc": [850, 6240, 117163, 44928, 1200, 116657], "seconds": 2378.896, "status": "PASS"}
+CASE RESULT: {"active_cycles": 124947, "case": "LQ03", "core_compute": 125090, "k": 768, "m": 288, "matches": 288, "measured_tiles": 1, "seconds": 2378.896, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 8}
+
+CASE LQ03 X=1x768 W=768x288 input16 W4; INPUT_SEED=10176075609622126757; WEIGHT_SEED=14041048087437864966
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=768/768; X_MIN=-32699; X_MAX=32699; X_DISTINCT=764; X_SHA256=f2b578a3505d9e3025989e55d667e606edf6d976a303707591e210311c1e0474
+TILE LQ03 W4 #1 X=1x768 W=768x288; COLUMNS=0:288; W_NONZERO=207523/221184; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 13810, "-7": 13952, "-6": 13721, "-5": 13749, "-4": 13719, "-3": 14067, "-2": 13875, "-1": 13819, "0": 13661, "1": 13740, "2": 13889, "3": 13921, "4": 13796, "5": 13911, "6": 13711, "7": 13843}; W_SHA256=82fa5007b593b1c5c736ad62fd9173714f2f499f8832e98914e1fc43305eefee; PACKED_SHA256=115acaabb656dcf88c4836bc6b95c310679aea9d10f3866df70efd0f257593b1
+PYTHON_OUTPUT_SHA256=76bff69dd96657cdd194906ad5a1924b1da7b85cf65cb9b7e9f3e392e03df318
+TEST_C_SHA256=f68aa581da16b61d45a3e97713a33e882bb57373105aaeff3c9fc869886d377e; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=97498d72e55a1e83de050a908d3d2c0401ab4db4c3f6b0917f8100ecd4b22f10
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ03_w4_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ03_w4_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ03 W4 columns=0:288: {"actual_elements": 288, "core_compute": 54351, "core_preload": 490, "cycles": 54210, "elements": 288, "guards": "PASS", "hw_sha256": "76bff69dd96657cdd194906ad5a1924b1da7b85cf65cb9b7e9f3e392e03df318", "matches": 288, "pc": [732, 480, 51958, 29088, 1204, 51794], "seconds": 1341.049, "status": "PASS"}
+CASE RESULT: {"active_cycles": 54210, "case": "LQ03", "core_compute": 54351, "k": 768, "m": 288, "matches": 288, "measured_tiles": 1, "seconds": 1341.049, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 4}
+
+CASE LQ03 X=1x768 W=768x288 input16 W2; INPUT_SEED=8440334857937684740; WEIGHT_SEED=16042368252067914666
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=768/768; X_MIN=-32745; X_MAX=32575; X_DISTINCT=763; X_SHA256=6bbc4ffb3e02d466bc2bdaa5dc2a5cb2118abea835946ac41fa470e9b5c21517
+TILE LQ03 W2 #1 X=1x768 W=768x288; COLUMNS=0:288; W_NONZERO=165852/221184; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 55170, "-1": 55079, "0": 55332, "1": 55603}; W_SHA256=aae70fdebb7a4c92ff9c2ca5e80723542454f6e5521fa3970f2f57cbb6ca4a5b; PACKED_SHA256=21adb353de113861efbdb19196b30a6b582f54216b410c7517f4d4614531a6b3
+PYTHON_OUTPUT_SHA256=b509c8872a0464e1cabf8acddade37439ac3934d4beb7f70463a13a3e31d51ec
+TEST_C_SHA256=36578f8e0b94e783c53db4989120bf16f92e27e639d60d383ddc8971a4eb1b28; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=e9f1e283395778f42322425756dc96ff04e2e1b01bcdefdc001603dc1fe6e789
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ03_w2_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ03_w2_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ03 W2 columns=0:288: {"actual_elements": 288, "core_compute": 31578, "core_preload": 404, "cycles": 31417, "elements": 288, "guards": "PASS", "hw_sha256": "b509c8872a0464e1cabf8acddade37439ac3934d4beb7f70463a13a3e31d51ec", "matches": 288, "pc": [698, 192, 25379, 29088, 1202, 29325], "seconds": 831.156, "status": "PASS"}
+CASE RESULT: {"active_cycles": 31417, "case": "LQ03", "core_compute": 31578, "k": 768, "m": 288, "matches": 288, "measured_tiles": 1, "seconds": 831.156, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 2}
+
+CASE LQ05 X=1x48 W=48x16 input16 W8; INPUT_SEED=1505142010444668852; WEIGHT_SEED=5658684831979160641
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=48/48; X_MIN=-27972; X_MAX=32685; X_DISTINCT=48; X_SHA256=2b6b40e0d2e1141d2a5b410fdff182491692d10da94046ccad6904494f4035d9
+TILE LQ05 W8 #1 X=1x48 W=48x16; COLUMNS=0:16; W_NONZERO=762/768; W_DISTINCT=243
+W_DISTRIBUTION={"-128": 2, "-127": 2, "-126": 6, "-125": 4, "-124": 2, "-123": 2, "-122": 5, "-121": 1, "-120": 3, "-119": 3, "-118": 3, "-117": 5, "-116": 4, "-115": 3, "-114": 1, "-113": 3, "-112": 2, "-111": 5, "-110": 2, "-109": 2, "-108": 5, "-107": 4, "-106": 4, "-105": 1, "-104": 3, "-103": 3, "-102": 2, "-101": 4, "-100": 6, "-99": 4, "-98": 8, "-97": 3, "-95": 9, "-94": 4, "-93": 4, "-92": 3, "-91": 3, "-90": 1, "-89": 4, "-88": 2, "-87": 1, "-86": 5, "-85": 3, "-84": 4, "-83": 1, "-82": 2, "-81": 3, "-80": 6, "-79": 4, "-78": 3, "-76": 6, "-75": 3, "-74": 5, "-73": 2, "-72": 8, "-71": 3, "-70": 1, "-68": 1, "-67": 2, "-66": 2, "-65": 2, "-64": 4, "-63": 6, "-62": 7, "-61": 4, "-60": 1, "-59": 5, "-58": 1, "-57": 2, "-56": 4, "-55": 2, "-54": 4, "-53": 3, "-52": 3, "-51": 4, "-50": 1, "-49": 1, "-48": 1, "-47": 2, "-46": 5, "-45": 3, "-43": 4, "-42": 2, "-41": 4, "-40": 2, "-39": 3, "-38": 6, "-37": 3, "-36": 3, "-35": 5, "-34": 5, "-33": 2, "-32": 2, "-31": 3, "-30": 3, "-29": 5, "-27": 1, "-26": 2, "-25": 4, "-24": 6, "-23": 3, "-22": 2, "-21": 3, "-20": 4, "-19": 2, "-18": 4, "-17": 4, "-16": 2, "-15": 2, "-14": 3, "-13": 2, "-12": 2, "-11": 4, "-10": 5, "-9": 3, "-8": 3, "-7": 2, "-6": 9, "-5": 3, "-4": 1, "-3": 2, "-2": 1, "-1": 3, "0": 6, "1": 4, "3": 4, "4": 5, "5": 4, "6": 2, "7": 1, "8": 1, "9": 3, "10": 2, "11": 3, "12": 5, "14": 1, "15": 2, "16": 1, "17": 2, "18": 1, "19": 4, "20": 2, "21": 3, "22": 3, "23": 1, "24": 3, "25": 2, "26": 3, "27": 2, "28": 4, "29": 3, "30": 4, "31": 3, "32": 6, "33": 3, "34": 1, "35": 4, "37": 1, "38": 1, "39": 5, "40": 4, "41": 3, "42": 1, "43": 1, "44": 1, "45": 5, "46": 1, "47": 5, "48": 2, "49": 4, "50": 1, "51": 4, "53": 2, "54": 3, "55": 6, "56": 3, "57": 2, "58": 2, "59": 3, "61": 2, "62": 1, "63": 2, "64": 3, "65": 3, "66": 3, "67": 3, "68": 1, "70": 2, "71": 3, "72": 5, "73": 6, "74": 2, "75": 3, "76": 4, "77": 2, "78": 6, "79": 2, "80": 6, "81": 6, "82": 3, "83": 2, "84": 5, "85": 4, "86": 2, "87": 3, "88": 9, "89": 5, "90": 2, "91": 1, "92": 2, "93": 2, "94": 1, "95": 4, "96": 4, "97": 4, "98": 4, "99": 3, "100": 3, "101": 1, "102": 2, "104": 1, "105": 5, "106": 2, "107": 4, "108": 5, "109": 2, "110": 5, "111": 3, "113": 7, "114": 4, "115": 2, "116": 3, "117": 5, "118": 3, "119": 8, "120": 4, "121": 2, "122": 2, "123": 3, "124": 1, "125": 1, "126": 2, "127": 4}; W_SHA256=5ccdb5002915912d8c37d7d6038efdbf4b180d2a6a61224c043f0bfaa701d5cb; PACKED_SHA256=5ccdb5002915912d8c37d7d6038efdbf4b180d2a6a61224c043f0bfaa701d5cb
+PYTHON_OUTPUT_SHA256=49bcf5d745d6df954968076f65de3ae539a029e41d5b46df8e91ca28eeb6da18
+TEST_C_SHA256=84e5229e17cff9c8925334c27fb82e9eb4933d44868e7e61b5a49c2af4a9f41e; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=8a8cb7fe8647a08c375e241ee30d351c567d635d884de836a0d5b4146f60c09c
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ05_w8_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ05_w8_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ05 W8 columns=0:16: {"actual_elements": 16, "core_compute": 1091, "core_preload": 410, "cycles": 1000, "elements": 16, "guards": "PASS", "hw_sha256": "49bcf5d745d6df954968076f65de3ae539a029e41d5b46df8e91ca28eeb6da18", "matches": 16, "pc": [102, 390, 484, 176, 68, 440], "seconds": 42.249, "status": "PASS"}
+CASE RESULT: {"active_cycles": 1000, "case": "LQ05", "core_compute": 1091, "k": 48, "m": 16, "matches": 16, "measured_tiles": 1, "seconds": 42.249, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 8}
+
+CASE LQ05 X=1x48 W=48x16 input16 W4; INPUT_SEED=2178471274442087349; WEIGHT_SEED=6849698559430605728
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=48/48; X_MIN=-32713; X_MAX=31665; X_DISTINCT=48; X_SHA256=8d5aacb0ac0a558654ed874e74840af42e571798583c27af4402bdd7e998a1a7
+TILE LQ05 W4 #1 X=1x48 W=48x16; COLUMNS=0:16; W_NONZERO=701/768; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 58, "-7": 43, "-6": 41, "-5": 40, "-4": 52, "-3": 32, "-2": 48, "-1": 34, "0": 67, "1": 58, "2": 40, "3": 49, "4": 48, "5": 53, "6": 45, "7": 60}; W_SHA256=85a54ed517065f347ad2270efaf6465aea5c47f54ab57b8892d0f81e89a2babb; PACKED_SHA256=c02e76990db60e008bd010f660a1002ef222b78671f30a57208c218d4db04414
+PYTHON_OUTPUT_SHA256=12218fb7707bfa08f7de08b00679d5dd46ae90935909aadff630c61946fc72b7
+TEST_C_SHA256=fbb91e33edad486f4d7d298d79b333eb992d8f15183d632687a45b78cce1f4e3; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=0e394df835829b6f83972b28c65053fde7db04183f620a750a28b4684017472f
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ05_w4_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ05_w4_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ05 W4 columns=0:16: {"actual_elements": 16, "core_compute": 549, "core_preload": 410, "cycles": 484, "elements": 16, "guards": "PASS", "hw_sha256": "12218fb7707bfa08f7de08b00679d5dd46ae90935909aadff630c61946fc72b7", "matches": 16, "pc": [102, 30, 302, 176, 68, 284], "seconds": 37.446, "status": "PASS"}
+CASE RESULT: {"active_cycles": 484, "case": "LQ05", "core_compute": 549, "k": 48, "m": 16, "matches": 16, "measured_tiles": 1, "seconds": 37.446, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 4}
+
+CASE LQ05 X=1x48 W=48x16 input16 W2; INPUT_SEED=5013230086675918576; WEIGHT_SEED=5538947913133414015
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=48/48; X_MIN=-29189; X_MAX=32469; X_DISTINCT=48; X_SHA256=7e52c72ba72b259c3970283957138edcbe64319e6569b8e8dd98a08a92f740ca
+TILE LQ05 W2 #1 X=1x48 W=48x16; COLUMNS=0:16; W_NONZERO=587/768; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 183, "-1": 198, "0": 181, "1": 206}; W_SHA256=a7845033d446931e9f232b723bead9045aff5337ab591fdf8716080071933f79; PACKED_SHA256=9cdc794d08ef9fc3a5fbad3cbbf7d692f5019823a0c007ab1d4a9e5ddf62d224
+PYTHON_OUTPUT_SHA256=8c5602791ae11fe42a931fb33fec5522f0e2784cebb50c434010c2386a745c76
+TEST_C_SHA256=5c13fe635bd0880e7e33c7d6af1c83d628fb5c6824cf1c0ca0ded2262faf050a; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=a46946988b224f78f7051b086d7d90c638395a61fc18bf1cc7b46356d0593d23
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ05_w2_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ05_w2_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ05 W2 columns=0:16: {"actual_elements": 16, "core_compute": 478, "core_preload": 360, "cycles": 389, "elements": 16, "guards": "PASS", "hw_sha256": "8c5602791ae11fe42a931fb33fec5522f0e2784cebb50c434010c2386a745c76", "matches": 16, "pc": [102, 12, 178, 176, 68, 207], "seconds": 34.298, "status": "PASS"}
+CASE RESULT: {"active_cycles": 389, "case": "LQ05", "core_compute": 478, "k": 48, "m": 16, "matches": 16, "measured_tiles": 1, "seconds": 34.298, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 2}
+
+CASE LQ06 X=1x16 W=16x48 input16 W8; INPUT_SEED=13801906701671757026; WEIGHT_SEED=2287225123126735388
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=16/16; X_MIN=-30306; X_MAX=25044; X_DISTINCT=16; X_SHA256=0b868c18bc8bca318624188bcf5179fef6bef7c0d0fe36e1a8101c3f4e2f18ac
+TILE LQ06 W8 #1 X=1x16 W=16x48; COLUMNS=0:48; W_NONZERO=764/768; W_DISTINCT=242
+W_DISTRIBUTION={"-128": 4, "-127": 3, "-126": 6, "-125": 3, "-124": 3, "-123": 4, "-122": 5, "-121": 1, "-120": 2, "-119": 2, "-118": 4, "-117": 2, "-116": 4, "-115": 3, "-113": 3, "-112": 1, "-111": 2, "-110": 1, "-109": 4, "-108": 2, "-107": 2, "-106": 1, "-105": 1, "-104": 4, "-103": 3, "-102": 6, "-101": 5, "-99": 6, "-98": 1, "-97": 3, "-96": 5, "-95": 2, "-94": 3, "-93": 5, "-92": 2, "-90": 2, "-89": 5, "-88": 2, "-87": 5, "-86": 2, "-85": 3, "-84": 2, "-83": 1, "-82": 5, "-81": 5, "-80": 6, "-79": 8, "-78": 2, "-77": 3, "-76": 6, "-75": 2, "-74": 2, "-73": 3, "-71": 5, "-70": 7, "-69": 3, "-68": 6, "-67": 3, "-66": 3, "-65": 2, "-64": 7, "-63": 5, "-62": 3, "-61": 1, "-60": 1, "-59": 3, "-58": 3, "-57": 3, "-55": 2, "-54": 5, "-53": 2, "-52": 3, "-51": 2, "-50": 3, "-49": 2, "-48": 1, "-47": 1, "-46": 3, "-45": 4, "-43": 3, "-42": 2, "-41": 3, "-40": 1, "-39": 3, "-38": 6, "-37": 5, "-36": 2, "-35": 3, "-34": 1, "-33": 3, "-32": 3, "-31": 2, "-30": 4, "-28": 8, "-27": 8, "-26": 7, "-25": 3, "-24": 5, "-23": 2, "-22": 1, "-21": 4, "-20": 4, "-19": 3, "-18": 1, "-17": 3, "-16": 4, "-15": 3, "-14": 3, "-13": 2, "-12": 6, "-11": 2, "-10": 4, "-9": 1, "-8": 3, "-7": 6, "-6": 2, "-5": 6, "-4": 3, "-3": 1, "-2": 4, "-1": 2, "0": 4, "1": 4, "2": 5, "3": 2, "5": 2, "6": 4, "7": 2, "8": 3, "10": 1, "11": 8, "12": 4, "13": 1, "14": 2, "15": 4, "16": 4, "17": 4, "19": 2, "20": 3, "21": 1, "22": 1, "23": 2, "24": 2, "25": 5, "26": 2, "27": 4, "28": 1, "29": 4, "30": 4, "31": 1, "33": 1, "34": 3, "35": 2, "36": 3, "37": 1, "38": 5, "39": 5, "40": 2, "42": 2, "43": 5, "44": 5, "45": 2, "46": 4, "47": 4, "48": 4, "49": 7, "50": 5, "51": 1, "52": 3, "53": 3, "54": 4, "55": 2, "56": 3, "57": 4, "58": 4, "59": 6, "60": 1, "61": 4, "62": 3, "63": 5, "64": 2, "65": 2, "66": 1, "67": 2, "68": 4, "69": 1, "70": 2, "71": 4, "72": 7, "73": 6, "74": 3, "75": 6, "76": 4, "78": 3, "79": 7, "80": 5, "81": 2, "82": 2, "83": 2, "84": 3, "85": 2, "86": 4, "87": 3, "88": 2, "89": 1, "90": 2, "91": 7, "92": 3, "93": 2, "94": 5, "95": 2, "96": 2, "97": 2, "98": 2, "99": 3, "100": 2, "101": 5, "102": 4, "103": 2, "104": 1, "105": 2, "106": 3, "107": 2, "108": 1, "109": 2, "110": 1, "111": 5, "112": 2, "113": 2, "114": 4, "115": 2, "116": 2, "117": 4, "118": 3, "119": 1, "120": 1, "121": 3, "123": 3, "124": 3, "125": 2, "126": 4, "127": 6}; W_SHA256=4ffbb809fe64f96de467bc29b9ca6c5f398940e5b394dee83e670f17d19023a3; PACKED_SHA256=4ffbb809fe64f96de467bc29b9ca6c5f398940e5b394dee83e670f17d19023a3
+PYTHON_OUTPUT_SHA256=c1b8a40bc00148875bd868ca9396df5b6e537db781aba04b77bd0a632a6cbcf4
+TEST_C_SHA256=edf0e1a9601b7c339be07c4febab50cddd125796713344a5de0aa22f9f5a7a3a; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=e93e1b08219a1878bceb8c05b9f2b08fee9f4cfb392a955e29ddbf37bc179a01
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ06_w8_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ06_w8_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ06 W8 columns=0:48: {"actual_elements": 48, "core_compute": 982, "core_preload": 411, "cycles": 891, "elements": 48, "guards": "PASS", "hw_sha256": "c1b8a40bc00148875bd868ca9396df5b6e537db781aba04b77bd0a632a6cbcf4", "matches": 48, "pc": [33, 130, 541, 336, 200, 528], "seconds": 70.656, "status": "PASS"}
+CASE RESULT: {"active_cycles": 891, "case": "LQ06", "core_compute": 982, "k": 16, "m": 48, "matches": 48, "measured_tiles": 1, "seconds": 70.656, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 8}
+
+CASE LQ06 X=1x16 W=16x48 input16 W4; INPUT_SEED=6970636297225812883; WEIGHT_SEED=14506356125446883792
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=16/16; X_MIN=-29405; X_MAX=30014; X_DISTINCT=16; X_SHA256=e2a9da58e79d5c0ec840c3535954a4e516c4d8b60ff7291ccb4e92d1fa838558
+TILE LQ06 W4 #1 X=1x16 W=16x48; COLUMNS=0:48; W_NONZERO=726/768; W_DISTINCT=16
+W_DISTRIBUTION={"-8": 43, "-7": 46, "-6": 43, "-5": 55, "-4": 65, "-3": 50, "-2": 51, "-1": 46, "0": 42, "1": 45, "2": 55, "3": 45, "4": 55, "5": 45, "6": 45, "7": 37}; W_SHA256=0ab56b871ec166f4c045892c1fad848259098fc302e23c73cc20cc5c7ed372cd; PACKED_SHA256=987124f827a7acc89fd703e477283c77c7743702bd87a0d3ca302845f95b0415
+PYTHON_OUTPUT_SHA256=abd39492c6d23f00079f1a206d1d564799d5cbefabdcc4b921b19f2ec6bafc06
+TEST_C_SHA256=dd41c965965738fda7c28eeee9c1fc28d1ab441cd2e1bdf4c4b5f2bfd4d4d605; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=6383ce76d4d220193ba5d4c89d7ab8a0159cbb399e73a69cb0c55585182df810
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ06_w4_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ06_w4_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ06 W4 columns=0:48: {"actual_elements": 48, "core_compute": 779, "core_preload": 411, "cycles": 687, "elements": 48, "guards": "PASS", "hw_sha256": "abd39492c6d23f00079f1a206d1d564799d5cbefabdcc4b921b19f2ec6bafc06", "matches": 48, "pc": [50, 10, 438, 336, 190, 437], "seconds": 67.504, "status": "PASS"}
+CASE RESULT: {"active_cycles": 687, "case": "LQ06", "core_compute": 779, "k": 16, "m": 48, "matches": 48, "measured_tiles": 1, "seconds": 67.504, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 4}
+
+CASE LQ06 X=1x16 W=16x48 input16 W2; INPUT_SEED=3834555281858012574; WEIGHT_SEED=6863246208072518032
+RNG=SplitMix64; X uses one stream; W uses one continuous column-major stream across all tiles.
+X_NONZERO=16/16; X_MIN=-29728; X_MAX=30616; X_DISTINCT=16; X_SHA256=fcc4122a083099fcdc5596d3fb7da3532be8bfb43c8f6bda98990280dc7aef3d
+TILE LQ06 W2 #1 X=1x16 W=16x48; COLUMNS=0:48; W_NONZERO=589/768; W_DISTINCT=4
+W_DISTRIBUTION={"-2": 188, "-1": 206, "0": 179, "1": 195}; W_SHA256=1e1403423b8ae784077ba5aaa3a64c45983ff4504dfafc6479a6f88295747490; PACKED_SHA256=aa02e1a76f981e70b9030f1857d0eb6f3e335b1096d01b735730fbe7e6ce2d4c
+PYTHON_OUTPUT_SHA256=9a0447db87892a5659a819c121c40cb2af7ac8a221e0a38c1647e8d420348d5e
+TEST_C_SHA256=3ea457fc59c9d1a90573a9963af9821717770abbaae2f61b7747bf51c1ccd86b; no Python reference array in test ELF
+RISC-V BUILD EXIT=0
+ELF_SHA256=70303a47d9dea6b76b16a8776e707a34b5ad13d1632ffb94065356700d3e9b50
+ACTUAL VERILATOR COMMAND: /tmp/lumax-llama-shapes-1020/work/b8_rf8/simulator-LUMAXROcketConfig +permissive +max-cycles=20000000000 +loadmem=/tmp/lumax-llama-shapes-1020/work/LQ06_w2_tile001/Linear-sw.riscv +permissive-off /tmp/lumax-llama-shapes-1020/work/LQ06_w2_tile001/Linear-sw.riscv
+VERILATOR EXIT=0; wall timeout=False
+TILE RESULT LQ06 W2 columns=0:48: {"actual_elements": 48, "core_compute": 785, "core_preload": 361, "cycles": 668, "elements": 48, "guards": "PASS", "hw_sha256": "9a0447db87892a5659a819c121c40cb2af7ac8a221e0a38c1647e8d420348d5e", "matches": 48, "pc": [49, 4, 411, 336, 200, 415], "seconds": 63.205, "status": "PASS"}
+CASE RESULT: {"active_cycles": 668, "case": "LQ06", "core_compute": 785, "k": 16, "m": 48, "matches": 48, "measured_tiles": 1, "seconds": 63.205, "status": "PASS", "tile_results": {"PASS": 1}, "tiles": 1, "wb": 2}
+
+TOTAL RESULTS
+Case | X | W | W bits | Status | Exact matches | HW tiles | Measured tiles | Active HW cycles | Core compute cycles
+LQ04 | 1x288 | 288x32000 | 8 | PASS | 32000/32000 | 63 | 63 | 4981673 | 4992233
+LQ04 | 1x288 | 288x32000 | 4 | PASS | 32000/32000 | 63 | 63 | 3660520 | 3671695
+LQ04 | 1x288 | 288x32000 | 2 | PASS | 32000/32000 | 63 | 63 | 2053538 | 2063787
+LQ01 | 1x288 | 288x288 | 8 | PASS | 288/288 | 1 | 1 | 44601 | 44730
+LQ01 | 1x288 | 288x288 | 4 | PASS | 288/288 | 1 | 1 | 33245 | 33385
+LQ01 | 1x288 | 288x288 | 2 | PASS | 288/288 | 1 | 1 | 18585 | 18746
+LQ02 | 1x288 | 288x768 | 8 | PASS | 768/768 | 1 | 1 | 122830 | 122990
+LQ02 | 1x288 | 288x768 | 4 | PASS | 768/768 | 1 | 1 | 88029 | 88181
+LQ02 | 1x288 | 288x768 | 2 | PASS | 768/768 | 1 | 1 | 48178 | 48315
+LQ03 | 1x768 | 768x288 | 8 | PASS | 288/288 | 1 | 1 | 124947 | 125090
+LQ03 | 1x768 | 768x288 | 4 | PASS | 288/288 | 1 | 1 | 54210 | 54351
+LQ03 | 1x768 | 768x288 | 2 | PASS | 288/288 | 1 | 1 | 31417 | 31578
+LQ05 | 1x48 | 48x16 | 8 | PASS | 16/16 | 1 | 1 | 1000 | 1091
+LQ05 | 1x48 | 48x16 | 4 | PASS | 16/16 | 1 | 1 | 484 | 549
+LQ05 | 1x48 | 48x16 | 2 | PASS | 16/16 | 1 | 1 | 389 | 478
+LQ06 | 1x16 | 16x48 | 8 | PASS | 48/48 | 1 | 1 | 891 | 982
+LQ06 | 1x16 | 16x48 | 4 | PASS | 48/48 | 1 | 1 | 687 | 779
+LQ06 | 1x16 | 16x48 | 2 | PASS | 48/48 | 1 | 1 | 668 | 785
+TOTAL: {'PASS': 18}; 18/18 logical tests completed. Missing cycles are unavailable, never estimated; totals cover measured tiles only.
+Original HW/SW sources unchanged and Config.scala restored: True
+RUN COMPLETE
+END: 2026-10-21T21:40:38.246331+03:00
+Temporary vector sources, binaries, UART output and build files removed; script and this single log retained.

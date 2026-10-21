@@ -225,7 +225,7 @@ def serve(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', nargs='?', default='start', choices=('start', 'serve', 'status', 'stop', 'worker'))
+    parser.add_argument('action', nargs='?', default='start', choices=('start', 'restart', 'serve', 'status', 'stop', 'worker'))
     parser.add_argument('--host', default='127.0.0.1')
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--job', help=argparse.SUPPRESS)
@@ -240,6 +240,16 @@ def main():
         (core.RUNTIME / 'STOP').touch()
         print('Dashboard stop requested. Active verification jobs continue; queued jobs wait until the dashboard restarts.')
         return 0
+    if args.action == 'restart':
+        info = core.read_json(core.RUNTIME / 'server.json', {})
+        if not any(a == '--host' or a.startswith('--host=') for a in sys.argv): args.host = info.get('host', args.host)
+        if not any(a == '--port' or a.startswith('--port=') for a in sys.argv): args.port = info.get('port', args.port)
+        if core.is_locked(core.RUNTIME / 'server.lock'):
+            (core.RUNTIME / 'STOP').touch()
+            for _ in range(150):
+                if not core.is_locked(core.RUNTIME / 'server.lock'): break
+                time.sleep(0.1)
+            else: raise RuntimeError('Dashboard did not stop; active verification jobs were not stopped')
     if core.is_locked(core.RUNTIME / 'server.lock'):
         info = core.read_json(core.RUNTIME / 'server.json', {})
         print('Dashboard active.\n' + info.get('url', 'Starting…'))

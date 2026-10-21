@@ -1,14 +1,25 @@
 {
   "id": "run_20261018_201945_b27a6a41",
   "name": "LLAMA2 DIMENSIONS CHECK",
-  "status": "RUNNING",
+  "status": "PASS",
   "created": "2026-10-18T20:19:45.541809+03:00",
-  "phase": "Original script running",
-  "completed": 1,
+  "phase": "Finished",
+  "completed": 18,
   "total": 18,
-  "operations_done": 105,
+  "operations_done": 204,
   "operations_total": 204,
-  "results": [],
+  "results": [
+    {
+      "name": "Llama2 dimensions",
+      "design": "b8_rf8",
+      "status": "PASS",
+      "counts": {
+        "PASS": 18
+      },
+      "completed": 18,
+      "log": "llama_shapes/run_20261018_201948_372793.log"
+    }
+  ],
   "suite": {
     "name": "LLAMA2 DIMENSIONS CHECK",
     "kind": "llama_shapes",
@@ -55,7 +66,7 @@
     "note": "Uses the original script settings and checks; all weight widths, input16. TC11 keeps its six-operation reuse test."
   },
   "log": "gui/run_20261018_201945_b27a6a41/run.log",
-  "heartbeat": "2026-10-20T20:49:12.216143+03:00",
+  "heartbeat": "2026-10-21T21:40:39.482571+03:00",
   "started": "2026-10-18T20:19:46.097541+03:00",
   "pid": 124348,
   "current": "b8_rf8",
@@ -63,6 +74,8 @@
     "llama_shapes/run_20261018_201948_372793.log"
   ],
   "counts": {
-    "PASS": 1
-  }
+    "PASS": 17
+  },
+  "ended": "2026-10-21T21:40:39.482541+03:00",
+  "process": null
 }

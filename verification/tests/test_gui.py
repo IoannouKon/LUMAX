@@ -1,6 +1,7 @@
 """Dashboard checks; fake HW is used only in isolated worker unit tests."""
 import ast
 import copy
+import collections
 from email.message import Message
 import io
 import json
@@ -53,6 +54,78 @@ class DashboardTests(unittest.TestCase):
         chunks = g.tile_ranges(288, 32000, d, options)
         self.assertEqual(len(chunks), 63)
         self.assertEqual(chunks[-1], (0, 288, 31744, 256))
+
+    def fast_suite(self, design=None):
+        design=design or dict(self.design,max_k=1024,max_m=1024)
+        payload=dict(name='Fast Llama2',kind='llama_fast',design_ids=[design['id']])
+        return g.normalize_suite(payload,[design])
+
+    def test_fast_llama_uses_selected_capacity_not_fixed_tile(self):
+        suite=self.fast_suite()
+        plan=g.make_plan(suite)
+        self.assertEqual((plan['cases'],plan['operations'],plan['builds']),(18,18,1))
+        classifier=next(d for d in plan['detail'] if d['test']=='LQ04')
+        self.assertEqual((classifier['sample_k'],classifier['sample_m'],classifier['tiles']),(288,1024,32))
+        self.assertEqual(suite['options']['mode'],'native')
+        self.assertTrue(suite['options']['cycles'])
+        suite=self.fast_suite(dict(self.design,max_k=256,max_m=128))
+        tile=g.representative_tile(suite['tests'][0],suite['designs'][0])
+        self.assertEqual(tile,dict(k=256,m=128,k_tiles=2,m_tiles=250,tiles=500))
+        self.assertEqual(g.make_plan(suite)['operations'],18)
+        custom=dict(self.design,id='design_123456abcdef',builtin=False,max_k=288,max_m=2048)
+        suite=self.fast_suite(custom)
+        self.assertEqual(g.representative_tile(suite['tests'][0],custom)['tiles'],16)
+
+    def test_cycle_extrapolation_is_marked_and_never_verifies_missing_outputs(self):
+        design=dict(self.design,max_k=1024,max_m=1024)
+        test=dict(k=288,m=32000)
+        sample=dict(status='PASS',cycles=123,core_cycles=150,matches=1024,elements=1024)
+        result=g.add_cycle_estimate(dict(sample),test,design)
+        self.assertEqual(result['estimated_cycles'],123*32)
+        self.assertEqual(result['estimated_core_cycles'],150*32)
+        self.assertEqual(result['matches'],1024)
+        self.assertEqual(result['status'],'ESTIMATED')
+        self.assertEqual(result['sample_status'],'PASS')
+        self.assertFalse(result['full_result_verified'])
+        self.assertEqual(g.suite_status([result]),'ESTIMATED')
+        whole=g.add_cycle_estimate(dict(sample),dict(k=288,m=1024),design)
+        self.assertTrue(whole['full_result_verified'])
+        self.assertEqual(whole['status'],'PASS')
+        for status in ('FAIL','TIMEOUT','BUILD_FAIL'):
+            bad=g.add_cycle_estimate(dict(sample,status=status),test,design)
+            self.assertIsNone(bad['estimated_cycles'])
+            self.assertFalse(bad['full_result_verified'])
+            self.assertEqual(bad['status'],status)
+        unverified=g.add_cycle_estimate(dict(sample,status='UNVERIFIED'),test,design)
+        self.assertEqual(g.suite_status([unverified]),'UNVERIFIED')
+        self.assertFalse(unverified['full_result_verified'])
+        self.assertEqual(g.suite_status([result,dict(status='FAIL')]),'FAIL')
+
+    def test_fast_llama_worker_runs_only_one_sample_per_shape_precision(self):
+        suite=self.fast_suite(dict(self.design,max_k=16,max_m=32))
+        folder=self.root/'fast';folder.mkdir()
+        g.write_json(folder/'job.json',dict(suite=suite,status='QUEUED',results=[],completed=0,operations_done=0))
+        job=g.Job(folder)
+        config=self.root/'fast-config';config.write_text(g.hw.CONFIG.read_text())
+        temporary=self.root/'fast-work';temporary.mkdir()
+        seen=[]
+        def build(job,design,base,tmp,env):
+            p=tmp/design['id'];p.mkdir();s=p/'simulator';s.touch();return s
+        def operation(job,sim,design,base,options,x,w,wb,folder,env,expected):
+            seen.append((len(x),len(w)//len(x),wb))
+            self.assertEqual(options['mode'],'native')
+            # Isolated orchestration test, not a hardware verification result.
+            return dict(status='PASS',actual=list(expected),expected=list(expected),cycles=17,core_cycles=19)
+        with patch.object(g.hw,'CONFIG',config),patch.object(g,'fingerprint',lambda:{str(config):g.hw.sha(config)}),patch.object(g,'build_design',build),patch.object(g,'run_operation',operation):
+            g.run_custom(job,temporary,{})
+        self.assertEqual(len(seen),18)
+        self.assertEqual(job.data['operations_done'],18)
+        self.assertEqual(collections.Counter(b for _,_,b in seen),{8:6,4:6,2:6})
+        self.assertTrue(all(k<=16 and m<=32 for k,m,_ in seen))
+        self.assertEqual(g.suite_status(job.data['results']),'ESTIMATED')
+        self.assertTrue(all(r['estimated_cycles']==17*r['tiles_needed'] for r in job.data['results'] if r['tiles_needed']>1))
+        self.assertTrue(all(not r['full_result_verified'] for r in job.data['results'] if r['tiles_needed']>1))
+        self.assertIn('TILES NEEDED=18000', (folder/'run.log').read_text())
 
     def test_original_suite_counts(self):
         designs = [dict(self.design, id=f'b{b}_rf{rf}') for b in (2,4,8) for rf in (4,8)]
@@ -226,6 +299,20 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(self.request('/api/runs')['value']['runs'][0]['id'],result['value']['id'])
         self.assertEqual(self.request('/api/runs','POST',self.payload,origin='http://other.example')['code'],403)
         self.assertEqual(self.request('/api/designs','POST',[])['code'],400)
+
+    def test_fast_llama_http_plan_and_saved_suite(self):
+        payload=dict(name='Fast classifier',kind='llama_fast',design_ids=['b8_rf8'])
+        plan=self.request('/api/plan','POST',payload)
+        self.assertEqual(plan['code'],200)
+        self.assertEqual(plan['value']['operations'],18)
+        saved=self.request('/api/suites','POST',payload)
+        self.assertEqual(saved['code'],200)
+        self.assertEqual(saved['value']['kind'],'llama_fast')
+        self.assertEqual(len(saved['value']['tests']),6)
+        job=self.request('/api/runs','POST',payload)
+        self.assertEqual(job['code'],200)
+        self.assertEqual(job['value']['operations_total'],18)
+        self.assertEqual(job['value']['status'],'QUEUED')
 
     def test_log_reads_stay_inside_logs_root(self):
         logs=self.root/'logs';logs.mkdir(exist_ok=True)

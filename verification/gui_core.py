@@ -32,7 +32,8 @@ ROOT = Path(__file__).resolve().parent
 LOGS = ROOT / 'logs'
 DATA = ROOT / 'gui_data'
 RUNTIME = ROOT / '.gui'
-FINAL = {'PASS', 'FAIL', 'TIMEOUT', 'ERROR', 'BUILD_FAIL', 'STOPPED', 'UNVERIFIED', 'INTERRUPTED'}
+FINAL = {'PASS', 'FAIL', 'TIMEOUT', 'ERROR', 'BUILD_FAIL', 'STOPPED', 'UNVERIFIED', 'INTERRUPTED', 'ESTIMATED'}
+LOCAL_SUITES = ('custom', 'llama_fast')
 PATTERNS = ['random', 'zero_x', 'zero_w', 'zero_both', 'min_min', 'max_max',
             'min_max', 'max_min', 'alternating', 'onehot_x', 'onehot_w']
 BUILTINS = {
@@ -183,7 +184,7 @@ def normalize_suite(value, designs):
     if not 1 <= len(name) <= 80:
         raise ValueError('Give the suite a name, up to 80 characters')
     kind = value.get('kind', 'custom')
-    if kind not in ('custom', *BUILTINS):
+    if kind not in (*LOCAL_SUITES, *BUILTINS):
         raise ValueError('Unknown suite type')
     lookup = {d['id']: d for d in designs}
     identifiers = value.get('design_ids', [])
@@ -194,7 +195,7 @@ def normalize_suite(value, designs):
         if identifier not in lookup:
             raise ValueError('Selected design no longer exists')
         chosen.append(dict(lookup[identifier]))
-    if kind != 'custom' and any(not d['builtin'] for d in chosen):
+    if kind not in LOCAL_SUITES and any(not d['builtin'] for d in chosen):
         raise ValueError('Original script suites use standard designs; choose Custom for a new design')
     options = dict(DEFAULT_OPTIONS)
     incoming = value.get('options', {})
@@ -216,6 +217,11 @@ def normalize_suite(value, designs):
     if not isinstance(options['tcs'], list) or any(t not in [f'TC{i:02d}' for i in range(1, 12)] for t in options['tcs']):
         raise ValueError('Invalid TC selection')
     tests = []
+    if kind == 'llama_fast':
+        # One largest-fitting native tile for each shape and precision.
+        options.update(mode='native', tile_k=0, tile_m=0, cycles=True)
+        tests = [dict(name=name, k=k, m=m, weights=[8, 4, 2], pattern='random', repeats=1, seed='')
+                 for name, k, m, wb in hw.plans(options['t']) if wb == 8]
     if kind == 'custom':
         rows = value.get('tests', [])
         if not isinstance(rows, list) or not 1 <= len(rows) <= 200:
@@ -257,8 +263,50 @@ def tile_ranges(k, m, design, options):
             for c in range(0, m, tm) for a in range(0, k, tk)]
 
 
+def representative_tile(test, design):
+    """Sample the largest native rectangle; edge tiles are charged full cost."""
+    k, m = min(test['k'], design['max_k']), min(test['m'], design['max_m'])
+    k_tiles = (test['k'] + k - 1) // k
+    m_tiles = (test['m'] + m - 1) // m
+    return dict(k=k, m=m, k_tiles=k_tiles, m_tiles=m_tiles, tiles=k_tiles * m_tiles)
+
+
+def add_cycle_estimate(result, test, design):
+    geometry = representative_tile(test, design)
+    cycles, core = result.get('cycles'), result.get('core_cycles')
+    usable = result['status'] in ('PASS', 'UNVERIFIED') and cycles is not None and cycles > 0
+    tiled = geometry['tiles'] > 1
+    result.update(full_k=test['k'], full_m=test['m'], tile_grid=[geometry['k_tiles'], geometry['m_tiles']],
+                  tiles_needed=geometry['tiles'], sample_status=result['status'],
+                  full_result_verified=result['status'] == 'PASS' and not tiled,
+                  estimated_cycles=cycles * geometry['tiles'] if usable and tiled else None,
+                  estimated_core_cycles=core * geometry['tiles'] if usable and tiled and core else None,
+                  estimate_note='One measured tile × required tile count; smaller edge tiles charged as full tiles. Host assembly and boot overhead excluded.')
+    if tiled and result['status'] == 'PASS': result['status'] = 'ESTIMATED'
+    return result
+
+
+def suite_status(rows):
+    if not rows: return 'ERROR'
+    if any(r['status'] == 'TIMEOUT' for r in rows): return 'TIMEOUT'
+    if any(r['status'] not in ('PASS', 'ESTIMATED', 'UNVERIFIED') for r in rows): return 'FAIL'
+    if any(r['status'] == 'UNVERIFIED' for r in rows): return 'UNVERIFIED'
+    return 'ESTIMATED' if any(r['status'] == 'ESTIMATED' for r in rows) else 'PASS'
+
+
 def make_plan(suite):
     kind = suite['kind']
+    if kind == 'llama_fast':
+        details = []
+        for design in suite['designs']:
+            for test in suite['tests']:
+                tile = representative_tile(test, design)
+                details.append(dict(design=design['name'], test=test['name'], k=test['k'], m=test['m'],
+                                    sample_k=tile['k'], sample_m=tile['m'], cases=3, operations=3,
+                                    tiles=tile['tiles'], reduction=tile['k_tiles'] > 1))
+        return dict(cases=len(details) * 3, operations=len(details) * 3,
+                    builds=len(suite['designs']), detail=details, estimated=True,
+                    note='Run one largest-fitting HW tile per shape/precision. Estimated full cycles = measured tile cycles × required tile count (ceil in each dimension). Only sampled outputs are checked; edge tiles charged full cost.')
     if kind != 'custom':
         designs = len(suite['designs'])
         per_tc = dict(zip([f'TC{i:02d}' for i in range(1, 12)], [9, 9, 12, 36, 27, 9, 30, 432, 60, 6, 3]))
@@ -618,10 +666,17 @@ def run_custom(job, temporary, env):
             if not re.search(r'(?m)^\s*' + key + r'\s*=\s*' + str(value) + r'\s*,', original.decode()):
                 raise ValueError(f'Custom verification requires {key}={value}')
         job.log('SOURCE SHA256=' + json.dumps(hashes, sort_keys=True))
+        fast = suite['kind'] == 'llama_fast'
+        if fast:
+            job.log('LLAMA2 FAST ESTIMATE: one largest-fitting native tile per shape and W8/W4/W2. Extrapolated cycles are estimates, not full-matrix verification.')
         try:
             for design in suite['designs']:
                 sim = build_design(job, design, original, temporary, env)
-                for index, test in enumerate(suite['tests']):
+                for index, logical_test in enumerate(suite['tests']):
+                    test = dict(logical_test)
+                    if fast:
+                        sample_tile = representative_tile(logical_test, design)
+                        test.update(k=sample_tile['k'], m=sample_tile['m'])
                     for repeat in range(test['repeats']):
                         for wb in test['weights']:
                             job.cancelled()
@@ -636,6 +691,8 @@ def run_custom(job, temporary, env):
                             output, combined_ref = [0] * m, [0] * m
                             rows, measured, failed = [], [], False
                             job.log('\nCASE ' + label + f' X=1x{k} W={k}x{m} INPUT_SEED={xs} WEIGHT_SEED={ws} PATTERN={test["pattern"]}')
+                            if fast:
+                                job.log(f'FULL SHAPE 1x{logical_test["k"]} @ {logical_test["k"]}x{logical_test["m"]}; SAMPLE 1x{k} @ {k}x{m}; TILES NEEDED={sample_tile["tiles"]} ({sample_tile["k_tiles"]} × {sample_tile["m_tiles"]})')
                             job.log(f'X_NONZERO={sum(v != 0 for v in x)}/{k}; X_DISTINCT={len(set(x))}; W_DISTRIBUTION=' + json.dumps(dict(collections.Counter(w)), sort_keys=True))
                             ranges = tile_ranges(k, m, design, options)
                             for tile, (a, n, c, d) in enumerate(ranges, 1):
@@ -667,11 +724,16 @@ def run_custom(job, temporary, env):
                                 core_cycles=sum(r.get('core_cycles') or 0 for r in rows) if options['cycles'] else None,
                                 mismatches=[dict(index=i, hw=v, reference=full_ref[i]) for i, v in enumerate(output) if full_ref is not None and v != full_ref[i]][:16],
                                 operation_results=rows)
+                            if fast:
+                                add_cycle_estimate(result, logical_test, design)
+                                job.log('CYCLE ESTIMATE: ' + json.dumps(dict(measured_tile_cycles=result['cycles'],
+                                    tiles_needed=result['tiles_needed'], estimated_full_cycles=result['estimated_cycles'],
+                                    full_result_verified=result['full_result_verified'], note=result['estimate_note'])))
                             with job.lock:
                                 job.data['results'].append(result)
                                 job.update(completed=job.data['completed'] + 1)
                             job.log('CASE RESULT: ' + json.dumps(result, sort_keys=True))
-                            if status not in ('PASS', 'UNVERIFIED') and options['stop_on_fail']: return
+                            if result['status'] not in ('PASS', 'ESTIMATED', 'UNVERIFIED') and options['stop_on_fail']: return
                 shutil.rmtree(sim.parent)
         finally:
             # Every make restores immediately; never overwrite an external edit.
@@ -786,10 +848,10 @@ def execute_job(folder):
             runtime.mkdir(mode=0o700)
             env['XDG_RUNTIME_DIR'] = str(runtime)
             env['SBT_OPTS'] = (env.get('SBT_OPTS') or f'-Dsbt.ivy.home={hw.CY}/.ivy2 -Dsbt.global.base={hw.CY}/.sbt -Dsbt.boot.directory={hw.CY}/.sbt/boot/') + ' -Dsbt.server.forcestart=true -Dsbt.server.autostart=false -Dsbt.supershell=false'
-            if job.data['suite']['kind'] == 'custom': run_custom(job, temporary, env)
+            if job.data['suite']['kind'] in LOCAL_SUITES: run_custom(job, temporary, env)
             else: run_builtin(job, env)
             rows = job.data['results']
-            status = 'ERROR' if not rows else 'TIMEOUT' if any(r['status'] == 'TIMEOUT' for r in rows) else 'FAIL' if any(r['status'] not in ('PASS', 'UNVERIFIED') for r in rows) else 'UNVERIFIED' if any(r['status'] == 'UNVERIFIED' for r in rows) else 'PASS'
+            status = suite_status(rows)
             job.update(status=status, phase='Finished', ended=now(), process=None)
         except Cancelled as error:
             job.update(status='STOPPED', phase=str(error), ended=now(), process=None)
@@ -801,7 +863,7 @@ def execute_job(folder):
             thread.join(timeout=5)
             if not job.data.get('recovery'): shutil.rmtree(temporary)
             job.log('END: ' + now() + '\nSTATUS: ' + job.data['status'])
-    return 0 if job.data['status'] == 'PASS' else 1
+    return 0 if job.data['status'] in ('PASS', 'ESTIMATED') else 1
 
 
 def external_runs():

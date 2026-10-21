@@ -28,7 +28,7 @@
         <div class="builder-main">
           <section class="card">
             <div class="card-heading"><h2><span class="step">01</span> Suite</h2><span class="hint">Saved locally</span></div>
-            <div class="field-row"><label class="grow">Suite name<input id="suite-name" value="My verification suite" maxlength="80"></label><label class="grow">Start from<select id="suite-kind"><option value="custom">Custom matrices</option><option value="regression">Original 180-test regression</option><option value="test_cases">TC01–TC11</option><option value="llama_shapes">Llama2 dimensions</option><option value="matrix_1024">Native 1024×1024</option></select></label></div>
+            <div class="field-row"><label class="grow">Suite name<input id="suite-name" value="My verification suite" maxlength="80"></label><label class="grow">Start from<select id="suite-kind"><option value="custom">Custom matrices</option><option value="regression">Original 180-test regression</option><option value="test_cases">TC01–TC11</option><option value="llama_shapes">Llama2 dimensions</option><option value="llama_fast">Llama2 · fast cycle estimate</option><option value="matrix_1024">Native 1024×1024</option></select></label></div>
             <p id="builtin-note" class="notice hidden">Runs the original script with its original coverage, Python reference and cycle checks.</p>
             <div id="tc-picker" class="tc-picker hidden"></div>
           </section>
@@ -45,7 +45,7 @@
           <section class="card">
             <div class="card-heading"><h2><span class="step" id="checks-step">04</span> Execution</h2><span class="pill engine">ALWAYS VERILATOR</span></div>
             <div id="custom-options">
-              <div class="field-row"><label class="grow">Matrix placement<select id="mode"><option value="auto">Auto · tile only when needed</option><option value="native">Native · one full HW operation</option><option value="tile">Tiles · choose block sizes</option></select></label><label class="grow">Reference comparison<select id="reference"><option value="python">Python · fast host reference</option><option value="riscv">RISC-V C · reference on simulated CPU</option><option value="none">Skip comparison · UNVERIFIED</option></select></label></div>
+              <div class="field-row"><label class="grow" id="placement-field">Matrix placement<select id="mode"><option value="auto">Auto · tile only when needed</option><option value="native">Native · one full HW operation</option><option value="tile">Tiles · choose block sizes</option></select></label><label class="grow">Reference comparison<select id="reference"><option value="python">Python · fast host reference</option><option value="riscv">RISC-V C · reference on simulated CPU</option><option value="none">Skip comparison · UNVERIFIED</option></select></label></div>
               <div id="tile-options" class="field-row hidden"><label class="grow">Input block K<input id="tile-k" type="number" min="1" placeholder="Design capacity"></label><label class="grow">Output block M<input id="tile-m" type="number" min="1" placeholder="512 in Tiles mode"></label></div>
               <div class="check-row"><label><input id="cycles" type="checkbox" checked> Record HW cycles</label><label><input id="guards" type="checkbox" checked> Check memory guards</label><label><input id="matrices" type="checkbox"> Include matrices in logs</label></div>
             </div>

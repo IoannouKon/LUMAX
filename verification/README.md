@@ -87,6 +87,44 @@ Original preset results also retain their usual suite log paths. Temporary
 ELFs and build directories are removed when the run ends. Private dashboard
 runtime files are in the Git-ignored `verification/.gui/` directory.
 
+### Llama2 fast cycle estimate
+
+Choose **Llama2 · fast cycle estimate** in the suite selector. For each of the
+six shapes and each of W8/W4/W2, the runner selects the largest tile that fits
+the selected design's configured Cin/Cout capacities:
+
+```text
+tile_K = min(shape_K, design_max_K)
+tile_M = min(shape_M, design_max_M)
+required_tiles = ceil(shape_K / tile_K) × ceil(shape_M / tile_M)
+estimated_full_HW_cycles = measured_tile_HW_cycles × required_tiles
+```
+
+Each shape/precision runs only that one tile in real Verilator and compares
+its actual output using the selected reference method. A design builds once
+and is reused for all 18 sampled cases. There is no fixed 512-column tile size.
+For a 1024×1024-capacity design, LQ04 samples `1×288 × 288×1024` once per
+precision and estimates the full classifier using `tile_cycles × 32`.
+
+Smaller edge tiles are charged at the full sample-tile cost, so this is an
+approximation. It excludes host assembly and simulator startup. The log and
+GUI keep measured cycles, required tile count and estimated totals separately.
+Only sampled outputs are verified; shapes requiring multiple tiles report
+**ESTIMATED**, not a full-shape PASS. A shape fitting into one tile can report
+PASS because the whole shape was checked. Disabling comparison still reports
+UNVERIFIED. Failed or timed-out samples have no extrapolated cycle total.
+The original **Llama2 dimensions** option still runs all tiles for full coverage.
+
+After installing a GUI code update, restart the web server from your SSH
+terminal and refresh the browser:
+
+```bash
+python3 /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/gui.py restart
+```
+
+Restart preserves the current host, port and access key. Active verification
+workers continue; this command only restarts the dashboard server.
+
 For SSH-only browser access, start without `--host` (localhost only), forward
 port 8765 from your local computer with
 `ssh -N -L 8765:127.0.0.1:8765 kioannou@SERVER_IP`, using the same server IP or
@@ -237,7 +275,7 @@ paths refer to the original execution location and are historical metadata.
 
 The saved TC01 log is a recovered original summary: full matrix/UART blocks for
 53 of its 54 cases are unavailable. The six historical TC10 timeouts are all
-512×512/W8 cases and remain inconclusive. The saved Llama2 run passed 43 W8
+512×512/W8 cases and remain inconclusive. The older 2026-10-10 Llama2 run passed 43 W8
 classifier tiles (22,016 exact outputs), then stopped during tile 44; it has
 no final completion record and does not prove a complete LQ shape passed.
 
@@ -247,3 +285,11 @@ copied while a job is active are partial records; a saved RUNNING status is
 the status at copy time, not proof that a worker is running from this checkout.
 The working generator continues to own and update its original run files.
 GUI access keys, server runtime files, stop markers and lock files are excluded.
+
+The newer [full Llama2 run](logs/llama_shapes/run_20261018_201948_372793.log)
+is now retained through completion on 2026-10-21: **18/18 logical tests PASS,
+204/204 native HW operations PASS**, on b8_rf8 with input16 and W8/W4/W2.
+All six shapes were fully verified, with measured per-operation and summed
+cycle counts. The log confirms unchanged HW/SW sources and restored Config.scala;
+the corresponding GUI run record also reports PASS. These are full verification
+results, separate from the sampled estimates produced by the new fast mode.

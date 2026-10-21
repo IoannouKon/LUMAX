@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const format = value => value == null ? '—' : Number(value).toLocaleString();
-const terminal = new Set(['PASS','FAIL','TIMEOUT','ERROR','BUILD_FAIL','STOPPED','UNVERIFIED','INTERRUPTED']);
+const terminal = new Set(['PASS','FAIL','TIMEOUT','ERROR','BUILD_FAIL','STOPPED','UNVERIFIED','INTERRUPTED','ESTIMATED']);
 const badge = status => `<span class="pill ${esc(status).toLowerCase()}">${esc(status)}</span>`;
 const date = value => value ? new Date(value).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
 const state = {designs:[],suites:[],tests:[],runs:[],history:[],selected:null,view:'builder',suiteId:null,logPath:null,planSequence:0};
@@ -33,7 +33,7 @@ function changeView(view) {
 }
 function selectedDesigns() { return [...document.querySelectorAll('#designs input:checked')].map(el=>el.value); }
 function renderDesigns(selected=selectedDesigns()) {
-  const custom=$('suite-kind').value==='custom';
+  const custom=['custom','llama_fast'].includes($('suite-kind').value);
   if(!selected.length) selected=['b8_rf8'];
   $('designs').innerHTML=state.designs.map(d=>`<label class="design-option"><span class="design-title"><input type="checkbox" value="${esc(d.id)}" ${selected.includes(d.id)?'checked':''} ${!custom&&!d.builtin?'disabled':''}>${esc(d.name)}</span><small>b ${d.b} · RF ${d.rf}<br>Capacity ${format(d.max_k)} × ${format(d.max_m)}</small></label>`).join('');
   $('designs').querySelectorAll('input').forEach(el=>el.addEventListener('change',requestPlan));
@@ -78,9 +78,9 @@ async function updatePlan() {
     $('plan-cases').textContent=format(plan.cases);$('plan-ops').textContent=format(plan.operations);$('plan-builds').textContent=format(plan.builds);
     $('plan-note').textContent=plan.note;
     const tiled=plan.detail.filter(d=>d.tiles>1);
-    $('plan-details').innerHTML=tiled.slice(0,5).map(d=>`<div class="plan-tile"><strong>${esc(d.test)}</strong> · ${esc(d.design)}<br>${format(d.tiles)} HW operations per test${d.reduction?' · partial outputs added in host software':''}</div>`).join('')+(tiled.length>5?`<p class="hint">+ ${tiled.length-5} more tiled shapes</p>`:'');
+    $('plan-details').innerHTML=tiled.slice(0,5).map(d=>`<div class="plan-tile"><strong>${esc(d.test)}</strong> · ${esc(d.design)}<br>${plan.estimated?`Sample ${d.sample_k}×${d.sample_m} · 1 measured tile × ${format(d.tiles)} required tiles`:`${format(d.tiles)} HW operations per test${d.reduction?' · partial outputs added in host software':''}`}</div>`).join('')+(tiled.length>5?`<p class="hint">+ ${tiled.length-5} more tiled shapes</p>`:'');
     $('plan-error').classList.add('hidden');$('run').disabled=false;$('save').disabled=false;
-    if($('reference').value==='none'&&$('suite-kind').value==='custom')$('plan-note').textContent+=' Comparison is disabled: results will be UNVERIFIED, never PASS.';
+    if($('reference').value==='none'&&['custom','llama_fast'].includes($('suite-kind').value))$('plan-note').textContent+=' Comparison is disabled: results will be UNVERIFIED, never PASS.';
   }catch(error){
     if(sequence!==state.planSequence)return;
     ['plan-cases','plan-ops','plan-builds'].forEach(id=>$(id).textContent='—');
@@ -89,12 +89,19 @@ async function updatePlan() {
 }
 function kindChanged() {
   const custom=$('suite-kind').value==='custom';
-  ['matrix-card','custom-options','advanced-custom'].forEach(id=>$(id).classList.toggle('hidden',!custom));
+  const fast=$('suite-kind').value==='llama_fast';
+  $('matrix-card').classList.toggle('hidden',!custom);
+  ['custom-options','advanced-custom'].forEach(id=>$(id).classList.toggle('hidden',!custom&&!fast));
   $('builtin-note').classList.toggle('hidden',custom);
+  $('builtin-note').textContent=fast?'Six Llama2 shapes, input16 and W8/W4/W2. Each runs one largest-fitting tile for the selected design. Full cycle totals are extrapolated; only sampled outputs are verified.':'Runs the original script with its original coverage, Python reference and cycle checks.';
+  $('placement-field').classList.toggle('hidden',fast);
+  $('cycles').disabled=fast;
+  if(fast){$('mode').value='native';$('cycles').checked=true;}
+  toggleTiles();
   $('tc-picker').classList.toggle('hidden',$('suite-kind').value!=='test_cases');
   $('workers-field').classList.toggle('hidden',!['regression','test_cases'].includes($('suite-kind').value));
-  $('t-field').classList.toggle('hidden',$('suite-kind').value!=='llama_shapes');
-  const selected=selectedDesigns().filter(id=>custom||state.designs.find(d=>d.id===id)?.builtin);
+  $('t-field').classList.toggle('hidden',!['llama_shapes','llama_fast'].includes($('suite-kind').value));
+  const selected=selectedDesigns().filter(id=>custom||fast||state.designs.find(d=>d.id===id)?.builtin);
   renderDesigns(selected);requestPlan();
 }
 async function saveSuite() {
@@ -112,6 +119,13 @@ function elapsed(job) {
   const seconds=Math.max(0,Math.round(((job.ended?new Date(job.ended):new Date())-new Date(job.started))/1000));
   return `${Math.floor(seconds/3600)}h ${Math.floor(seconds%3600/60)}m`;
 }
+function resultRow(r, fast) {
+  const full=r.full_k!=null;
+  const dimensions=r.k?`1×${r.k} · ${r.k}×${r.m}`:'Original suite';
+  const sample=full?`<br><span class="hint">Full: 1×${r.full_k} · ${r.full_k}×${r.full_m}<br>${format(r.tiles_needed)} required tiles · sample ${esc(r.sample_status)}</span>`:'';
+  const total=fast?`<td>${r.estimated_cycles!=null?`≈ ${format(r.estimated_cycles)}<br><span class="hint">${format(r.cycles)} × ${format(r.tiles_needed)}</span>`:full&&r.tiles_needed===1?format(r.cycles):'—'}</td>`:'';
+  return `<tr><td>${esc(r.name)}<br><span class="hint">${esc(r.design)}</span></td><td>${dimensions}${sample}</td><td>${r.wb?`16 / ${r.wb}`:'16 / 8,4,2'}</td><td>${badge(r.status)}</td><td>${r.matches!=null&&r.status!=='UNVERIFIED'?`${format(r.matches)}/${format(r.elements)}`:r.counts?esc(JSON.stringify(r.counts)):'—'}</td><td>${format(r.cycles)}</td>${total}</tr>${r.mismatches?.length?`<tr><td colspan="${fast?7:6}"><div class="mismatch">${esc(r.mismatches.map(m=>`Output ${m.index}: HW=${m.hw}, reference=${m.reference}`).join('\n'))}</div></td></tr>`:''}`;
+}
 function renderRuns() {
   const active=state.runs.filter(r=>!terminal.has(r.status)).length;
   $('run-count').textContent=active||state.runs.length;
@@ -126,10 +140,11 @@ async function loadDetail() {
   const scroll=previous?previous.scrollTop:0;
   const atBottom=previous?previous.scrollHeight-previous.clientHeight-previous.scrollTop<35:true;
   const rows=run.results||[];
+  const fast=run.suite?.kind==='llama_fast';
   const counts={};rows.forEach(r=>{if(r.counts)Object.entries(r.counts).forEach(([k,v])=>counts[k]=(counts[k]||0)+v);else counts[r.status]=(counts[r.status]||0)+1;});
   const percent=run.total?Math.min(100,100*run.completed/run.total):0;
   $('run-detail').classList.remove('empty');
-  $('run-detail').innerHTML=`<div class="card-heading"><div><h2 class="run-title">${esc(run.name)}</h2><p class="hint">${esc(run.id)} · ${esc(elapsed(run))}</p></div>${badge(run.status)}</div><div class="progress"><div style="width:${percent}%"></div></div><p class="hint">${format(run.completed)} / ${format(run.total)} logical tests · ${format(run.operations_done)} / ${format(run.operations_total)} HW operations</p><div class="run-phase"><strong>${esc(run.phase)}</strong>${run.current?`<br>${esc(run.current)}`:''}${run.tiles?`<br>Operation ${run.tile} / ${run.tiles} for this test`:''}${run.process?`<br>Simulator / build CPU time: ${format(run.process.cpu_seconds)} seconds · process ${esc(run.process.state)}`:''}</div><div class="result-stats"><div><strong>${counts.PASS||0}</strong><small>PASS</small></div><div><strong>${(counts.FAIL||0)+(counts.ERROR||0)+(counts.BUILD_FAIL||0)}</strong><small>FAIL / ERROR</small></div><div><strong>${counts.TIMEOUT||0}</strong><small>TIMEOUT</small></div><div><strong>${counts.UNVERIFIED||0}</strong><small>UNVERIFIED</small></div></div>${rows.length?`<div class="table-wrap"><table><thead><tr><th>Test / design</th><th>X · W</th><th>Bits</th><th>Result</th><th>Exact matches</th><th>HW cycles</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}<br><span class="hint">${esc(r.design)}</span></td><td>${r.k?`1×${r.k} · ${r.k}×${r.m}`:'Original suite'}</td><td>${r.wb?`16 / ${r.wb}`:'16 / 8,4,2'}</td><td>${badge(r.status)}</td><td>${r.matches!=null&&r.status!=='UNVERIFIED'?`${format(r.matches)}/${format(r.elements)}`:r.counts?esc(JSON.stringify(r.counts)):'—'}</td><td>${format(r.cycles)}</td></tr>${r.mismatches?.length?`<tr><td colspan="6"><div class="mismatch">${esc(r.mismatches.map(m=>`Output ${m.index}: HW=${m.hw}, reference=${m.reference}`).join('\n'))}</div></td></tr>`:''}`).join('')}</tbody></table></div>`:'<p class="hint">Results appear when an operation completes. A live phase is not a correctness result.</p>'}<div class="actions">${!terminal.has(run.status)?'<button class="button secondary danger" id="cancel-run">Stop this run</button>':''}<button class="button secondary" id="reuse-run">Edit a copy</button></div><div class="log-panel"><div class="log-header"><h2>Execution log</h2><a class="text-button" id="download-log" target="_blank" rel="noopener">Open full log ↗</a></div><select id="run-log-select" aria-label="Choose log"></select><pre class="log-output" id="run-log">Loading…</pre></div>`;
+  $('run-detail').innerHTML=`<div class="card-heading"><div><h2 class="run-title">${esc(run.name)}</h2><p class="hint">${esc(run.id)} · ${esc(elapsed(run))}</p></div>${badge(run.status)}</div><div class="progress"><div style="width:${percent}%"></div></div><p class="hint">${format(run.completed)} / ${format(run.total)} logical tests · ${format(run.operations_done)} / ${format(run.operations_total)} HW operations</p><div class="run-phase"><strong>${esc(run.phase)}</strong>${run.current?`<br>${esc(run.current)}`:''}${run.tiles?`<br>Operation ${run.tile} / ${run.tiles} for this test`:''}${run.process?`<br>Simulator / build CPU time: ${format(run.process.cpu_seconds)} seconds · process ${esc(run.process.state)}`:''}</div><div class="result-stats"><div><strong>${counts.PASS||0}</strong><small>PASS</small></div><div><strong>${(counts.FAIL||0)+(counts.ERROR||0)+(counts.BUILD_FAIL||0)}</strong><small>FAIL / ERROR</small></div><div><strong>${counts.TIMEOUT||0}</strong><small>TIMEOUT</small></div><div><strong>${counts.UNVERIFIED||0}</strong><small>UNVERIFIED</small></div>${fast?`<div><strong>${counts.ESTIMATED||0}</strong><small>ESTIMATED</small></div>`:''}</div>${fast?'<p class="notice">≈ totals are measured tile cycles × required tile count. Edge tiles use full-tile cost; only sampled outputs are verified. A PASS with one required tile verifies the full shape.</p>':''}${rows.length?`<div class="table-wrap"><table><thead><tr><th>Test / design</th><th>X · W</th><th>Bits</th><th>Result</th><th>${fast?'Sample matches':'Exact matches'}</th><th>${fast?'Measured tile cycles':'HW cycles'}</th>${fast?'<th>Full HW cycles</th>':''}</tr></thead><tbody>${rows.map(r=>resultRow(r,fast)).join('')}</tbody></table></div>`:'<p class="hint">Results appear when an operation completes. A live phase is not a correctness result.</p>'}<div class="actions">${!terminal.has(run.status)?'<button class="button secondary danger" id="cancel-run">Stop this run</button>':''}<button class="button secondary" id="reuse-run">Edit a copy</button></div><div class="log-panel"><div class="log-header"><h2>Execution log</h2><a class="text-button" id="download-log" target="_blank" rel="noopener">Open full log ↗</a></div><select id="run-log-select" aria-label="Choose log"></select><pre class="log-output" id="run-log">Loading…</pre></div>`;
   if($('cancel-run'))$('cancel-run').onclick=async()=>{try{await api('/api/runs/'+run.id+'/stop',{});toast('Stop requested.');await pollRuns();}catch(e){toast(e.message);}};
   $('reuse-run').onclick=()=>loadSuite({...run.suite,id:null,name:run.name+' copy'});
   let paths=[run.log];
