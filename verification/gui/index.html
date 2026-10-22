@@ -16,6 +16,7 @@
       <button class="nav active" data-view="builder"><span>＋</span> Build a suite</button>
       <button class="nav" data-view="runs"><span>▷</span> Runs <span id="run-count" class="nav-count">0</span></button>
       <button class="nav" data-view="history"><span>▤</span> Saved logs</button>
+      <button class="nav" data-view="model"><span>≈</span> Cycle model</button>
     </nav>
     <div class="sidebar-bottom"><span class="pill engine">VERILATOR</span><p>Real RTL. Exact comparisons.</p><small id="connection">Connecting…</small></div>
   </aside>
@@ -57,6 +58,26 @@
     </section>
     <section id="runs" class="view hidden"><div class="page-heading"><div><p class="eyebrow">EXECUTION</p><h1>Runs</h1><p class="muted">Live phases, exact matches, and measured hardware cycles.</p></div><button class="button secondary" data-go="builder">＋ New suite</button></div><div class="runs-layout"><div id="run-list"></div><section id="run-detail" class="card empty"><span class="empty-icon">▷</span><h2>Select a run</h2><p class="muted">Its progress, results and log appear here.</p></section></div></section>
     <section id="history" class="view hidden"><div class="page-heading"><div><p class="eyebrow">VERIFICATION RECORD</p><h1>Saved logs</h1><p class="muted">Original results stay intact, including timeouts and incomplete runs.</p></div><button class="button secondary" id="refresh-history">Refresh</button></div><div id="history-list" class="history-grid"></div><section id="history-log" class="card hidden"></section></section>
+    <section id="model" class="view hidden">
+      <div class="page-heading"><div><p class="eyebrow">PYTHON / HARDWARE</p><h1>Cycle model</h1><p class="muted">Compare your editable Python model with saved Verilator measurements.</p></div><button class="button secondary" id="refresh-model">Refresh saved runs</button></div>
+      <section class="card model-section">
+        <h2>1. Select saved runs</h2><p class="hint" id="model-source-info">Loading model source…</p>
+        <p class="hint">Each comparison reloads this Python file. Edit it, save, then compare again. No HW build or Verilator run is started.</p>
+        <div class="check-row"><button class="text-button" id="model-select-sources">Select all runs</button><button class="text-button" id="model-clear-sources">Clear</button></div>
+        <div id="model-sources" class="model-sources"></div>
+        <button class="button secondary" id="model-load">Load recorded tests</button>
+      </section>
+      <section class="card model-section hidden" id="model-tests-panel">
+        <h2>2. Select tests</h2><p class="hint">Parameters come from the recorded design and native tile dimensions. Missing or unreliable timing is excluded. Fast Llama2 compares its measured sample only.</p>
+        <div class="field-row"><label class="grow">Design<select id="model-design"><option value="">All designs</option></select></label><label class="grow">Weight bits<select id="model-weight"><option value="">All weights</option><option value="8">8</option><option value="4">4</option><option value="2">2</option></select></label><label class="grow">Test / shape<input id="model-search" placeholder="e.g. TC03, LQ04, 288×512"></label></div>
+        <div class="check-row"><button class="text-button" id="model-select-tests">Select matching only</button><button class="text-button" id="model-clear-tests">Clear selection</button><span class="hint" id="model-selection"></span></div>
+        <div id="model-tests"></div>
+        <div class="check-row"><label><input type="checkbox" id="model-stages" checked> Include cycles and errors per stage</label></div>
+        <button class="button primary" id="model-compare">Run Python model</button>
+        <p class="error-text hidden" id="model-error" role="alert"></p>
+      </section>
+      <section class="card model-section hidden" id="model-results"></section>
+    </section>
     <footer>Local workspace <span>·</span> Every native multiplication executes LUMAX RTL in Verilator.</footer>
   </main>
 </div>

@@ -27,6 +27,7 @@ import uuid
 
 sys.dont_write_bytecode = True
 import run_llama_shapes as hw
+import cycle_compare
 
 ROOT = Path(__file__).resolve().parent
 LOGS = ROOT / 'logs'
@@ -658,6 +659,8 @@ def run_custom(job, temporary, env):
         job.update(status='RUNNING')
         original = hw.CONFIG.read_bytes()
         (temporary / 'original-config.scala').write_bytes(original)
+        cycle_parameters = cycle_compare.physical_parameters(original.decode())
+        job.update(cycle_parameters=cycle_parameters)
         hashes = fingerprint()
         base = (hw.SRC / 'Linear-sw.c').read_text()
         if not re.search(r'(?m)^#define\s+SCALE\s+0\b', base):
@@ -704,6 +707,8 @@ def run_custom(job, temporary, env):
                                 result = run_operation(job, sim, design, base, options, tx, tw, wb,
                                     temporary / 'operation', env, expected)
                                 actual, expected_part = result.pop('actual', None), result.pop('expected', None)
+                                result.update(k=n, m=d, model_parameters=cycle_compare.parameters(
+                                    n, d, wb, design['b'], design['rf'], physical=cycle_parameters))
                                 if actual is not None and len(actual) == d:
                                     for col, value in enumerate(actual): output[c + col] += value
                                 if expected_part is not None and len(expected_part) == d:
@@ -718,7 +723,7 @@ def run_custom(job, temporary, env):
                             if full_ref is not None and any(not -(1 << 31) <= v < (1 << 31) for v in full_ref): raise ValueError('Combined reference exceeds int32')
                             matches = sum(a == b for a, b in zip(output, full_ref)) if full_ref is not None else 0
                             status = ('TIMEOUT' if any(r['status'] == 'TIMEOUT' for r in rows) else 'FAIL') if failed else 'UNVERIFIED' if options['reference'] == 'none' else 'PASS' if matches == m else 'FAIL'
-                            result = dict(name=test['name'], design=design['name'], k=k, m=m, wb=wb, repeat=repeat + 1,
+                            result = dict(name=test['name'], design=design['name'], design_id=design['id'], k=k, m=m, wb=wb, repeat=repeat + 1,
                                 status=status, matches=matches, elements=m, operations=len(rows),
                                 cycles=sum(v for v in measured if v is not None) if all(v is not None for v in measured) else None,
                                 core_cycles=sum(r.get('core_cycles') or 0 for r in rows) if options['cycles'] else None,

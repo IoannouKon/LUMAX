@@ -6,6 +6,8 @@ const terminal = new Set(['PASS','FAIL','TIMEOUT','ERROR','BUILD_FAIL','STOPPED'
 const badge = status => `<span class="pill ${esc(status).toLowerCase()}">${esc(status)}</span>`;
 const date = value => value ? new Date(value).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
 const state = {designs:[],suites:[],tests:[],runs:[],history:[],selected:null,view:'builder',suiteId:null,logPath:null,planSequence:0};
+const cycleState = {sources:[],cases:[],selected:new Set(),loaded:[],page:0,resultPage:0,result:null};
+const plotState = {group:'design_weight',measure:'mape',phase:'total'};
 let token = new URLSearchParams(location.search).get('token') || sessionStorage.getItem('lumax-token') || '';
 if(token) sessionStorage.setItem('lumax-token',token);
 if(location.search) history.replaceState(null,'',location.pathname);
@@ -27,9 +29,10 @@ function changeView(view) {
   state.view=view;
   document.querySelectorAll('.view').forEach(el=>el.classList.toggle('hidden',el.id!==view));
   document.querySelectorAll('.nav').forEach(el=>el.classList.toggle('active',el.dataset.view===view));
-  $('breadcrumb').textContent={builder:'Workspace / Suite builder',runs:'Workspace / Runs',history:'Workspace / Saved logs'}[view];
+  $('breadcrumb').textContent={builder:'Workspace / Suite builder',runs:'Workspace / Runs',history:'Workspace / Saved logs',model:'Workspace / Cycle model'}[view];
   if(view==='history') loadHistory().catch(e=>toast(e.message));
   if(view==='runs') renderRuns();
+  if(view==='model'&&!cycleState.sources.length) refreshModelSources().catch(e=>toast(e.message));
 }
 function selectedDesigns() { return [...document.querySelectorAll('#designs input:checked')].map(el=>el.value); }
 function renderDesigns(selected=selectedDesigns()) {
@@ -144,9 +147,10 @@ async function loadDetail() {
   const counts={};rows.forEach(r=>{if(r.counts)Object.entries(r.counts).forEach(([k,v])=>counts[k]=(counts[k]||0)+v);else counts[r.status]=(counts[r.status]||0)+1;});
   const percent=run.total?Math.min(100,100*run.completed/run.total):0;
   $('run-detail').classList.remove('empty');
-  $('run-detail').innerHTML=`<div class="card-heading"><div><h2 class="run-title">${esc(run.name)}</h2><p class="hint">${esc(run.id)} · ${esc(elapsed(run))}</p></div>${badge(run.status)}</div><div class="progress"><div style="width:${percent}%"></div></div><p class="hint">${format(run.completed)} / ${format(run.total)} logical tests · ${format(run.operations_done)} / ${format(run.operations_total)} HW operations</p><div class="run-phase"><strong>${esc(run.phase)}</strong>${run.current?`<br>${esc(run.current)}`:''}${run.tiles?`<br>Operation ${run.tile} / ${run.tiles} for this test`:''}${run.process?`<br>Simulator / build CPU time: ${format(run.process.cpu_seconds)} seconds · process ${esc(run.process.state)}`:''}</div><div class="result-stats"><div><strong>${counts.PASS||0}</strong><small>PASS</small></div><div><strong>${(counts.FAIL||0)+(counts.ERROR||0)+(counts.BUILD_FAIL||0)}</strong><small>FAIL / ERROR</small></div><div><strong>${counts.TIMEOUT||0}</strong><small>TIMEOUT</small></div><div><strong>${counts.UNVERIFIED||0}</strong><small>UNVERIFIED</small></div>${fast?`<div><strong>${counts.ESTIMATED||0}</strong><small>ESTIMATED</small></div>`:''}</div>${fast?'<p class="notice">≈ totals are measured tile cycles × required tile count. Edge tiles use full-tile cost; only sampled outputs are verified. A PASS with one required tile verifies the full shape.</p>':''}${rows.length?`<div class="table-wrap"><table><thead><tr><th>Test / design</th><th>X · W</th><th>Bits</th><th>Result</th><th>${fast?'Sample matches':'Exact matches'}</th><th>${fast?'Measured tile cycles':'HW cycles'}</th>${fast?'<th>Full HW cycles</th>':''}</tr></thead><tbody>${rows.map(r=>resultRow(r,fast)).join('')}</tbody></table></div>`:'<p class="hint">Results appear when an operation completes. A live phase is not a correctness result.</p>'}<div class="actions">${!terminal.has(run.status)?'<button class="button secondary danger" id="cancel-run">Stop this run</button>':''}<button class="button secondary" id="reuse-run">Edit a copy</button></div><div class="log-panel"><div class="log-header"><h2>Execution log</h2><a class="text-button" id="download-log" target="_blank" rel="noopener">Open full log ↗</a></div><select id="run-log-select" aria-label="Choose log"></select><pre class="log-output" id="run-log">Loading…</pre></div>`;
+  $('run-detail').innerHTML=`<div class="card-heading"><div><h2 class="run-title">${esc(run.name)}</h2><p class="hint">${esc(run.id)} · ${esc(elapsed(run))}</p></div>${badge(run.status)}</div><div class="progress"><div style="width:${percent}%"></div></div><p class="hint">${format(run.completed)} / ${format(run.total)} logical tests · ${format(run.operations_done)} / ${format(run.operations_total)} HW operations</p><div class="run-phase"><strong>${esc(run.phase)}</strong>${run.current?`<br>${esc(run.current)}`:''}${run.tiles?`<br>Operation ${run.tile} / ${run.tiles} for this test`:''}${run.process?`<br>Simulator / build CPU time: ${format(run.process.cpu_seconds)} seconds · process ${esc(run.process.state)}`:''}</div><div class="result-stats"><div><strong>${counts.PASS||0}</strong><small>PASS</small></div><div><strong>${(counts.FAIL||0)+(counts.ERROR||0)+(counts.BUILD_FAIL||0)}</strong><small>FAIL / ERROR</small></div><div><strong>${counts.TIMEOUT||0}</strong><small>TIMEOUT</small></div><div><strong>${counts.UNVERIFIED||0}</strong><small>UNVERIFIED</small></div>${fast?`<div><strong>${counts.ESTIMATED||0}</strong><small>ESTIMATED</small></div>`:''}</div>${fast?'<p class="notice">≈ totals are measured tile cycles × required tile count. Edge tiles use full-tile cost; only sampled outputs are verified. A PASS with one required tile verifies the full shape.</p>':''}${rows.length?`<div class="table-wrap"><table><thead><tr><th>Test / design</th><th>X · W</th><th>Bits</th><th>Result</th><th>${fast?'Sample matches':'Exact matches'}</th><th>${fast?'Measured tile cycles':'HW cycles'}</th>${fast?'<th>Full HW cycles</th>':''}</tr></thead><tbody>${rows.map(r=>resultRow(r,fast)).join('')}</tbody></table></div>`:'<p class="hint">Results appear when an operation completes. A live phase is not a correctness result.</p>'}<div class="actions">${!terminal.has(run.status)?'<button class="button secondary danger" id="cancel-run">Stop this run</button>':''}<button class="button secondary" id="reuse-run">Edit a copy</button><button class="button secondary" id="compare-run">Compare cycle model</button></div><div class="log-panel"><div class="log-header"><h2>Execution log</h2><a class="text-button" id="download-log" target="_blank" rel="noopener">Open full log ↗</a></div><select id="run-log-select" aria-label="Choose log"></select><pre class="log-output" id="run-log">Loading…</pre></div>`;
   if($('cancel-run'))$('cancel-run').onclick=async()=>{try{await api('/api/runs/'+run.id+'/stop',{});toast('Stop requested.');await pollRuns();}catch(e){toast(e.message);}};
   $('reuse-run').onclick=()=>loadSuite({...run.suite,id:null,name:run.name+' copy'});
+  $('compare-run').onclick=()=>openModelSources([`gui/${run.id}/job.json`,...(run.linked_logs||[])]).catch(e=>toast(e.message));
   let paths=[run.log];
   for(const linked of run.linked_logs||[]){
     if(linked.endsWith('.log'))paths.push(linked);
@@ -179,8 +183,9 @@ async function pollRuns() {
 }
 async function loadHistory() {
   state.history=await api('/api/history');
-  $('history-list').innerHTML=state.history.map((h,i)=>`<article class="card history-card"><div class="card-heading"><h2>${esc(h.name)}</h2>${h.active?badge('RUNNING'):badge(h.counts.TIMEOUT?'TIMEOUT':h.completed?'SAVED':'INCOMPLETE')}</div><p class="hint">${esc(h.path)}</p><div class="counts">${Object.entries(h.counts).map(([k,v])=>`<span class="${k==='PASS'?'good':'bad'}"><b>${format(v)}</b> ${esc(k)}</span>`).join('')||'<span>No completed logical tests</span>'}</div>${h.tiles?`<p class="hint">Native HW tiles: ${esc(Object.entries(h.tiles).map(([k,v])=>`${v} ${k}`).join(', '))}. Tile passes do not mean the full logical matrix passed.</p>`:''}<details><summary>Browse ${h.files.length} log files</summary><div class="file-list">${h.files.map(p=>`<button class="file-button" data-path="${esc(p)}">${esc(p.slice(h.path.length+1)||p.split('/').pop())}</button>`).join('')}</div></details></article>`).join('')||'<div class="card empty"><h2>No saved logs yet</h2></div>';
+  $('history-list').innerHTML=state.history.map((h,i)=>`<article class="card history-card"><div class="card-heading"><h2>${esc(h.name)}</h2>${h.active?badge('RUNNING'):badge(h.counts.TIMEOUT?'TIMEOUT':h.completed?'SAVED':'INCOMPLETE')}</div><p class="hint">${esc(h.path)}</p><div class="counts">${Object.entries(h.counts).map(([k,v])=>`<span class="${k==='PASS'?'good':'bad'}"><b>${format(v)}</b> ${esc(k)}</span>`).join('')||'<span>No completed logical tests</span>'}</div>${h.tiles?`<p class="hint">Native HW tiles: ${esc(Object.entries(h.tiles).map(([k,v])=>`${v} ${k}`).join(', '))}. Tile passes do not mean the full logical matrix passed.</p>`:''}<button class="text-button compare-history" data-path="${esc(h.path)}">Compare cycle model →</button><details><summary>Browse ${h.files.length} log files</summary><div class="file-list">${h.files.map(p=>`<button class="file-button" data-path="${esc(p)}">${esc(p.slice(h.path.length+1)||p.split('/').pop())}</button>`).join('')}</div></details></article>`).join('')||'<div class="card empty"><h2>No saved logs yet</h2></div>';
   $('history-list').querySelectorAll('.file-button').forEach(el=>el.onclick=()=>openHistoryLog(el.dataset.path));
+  $('history-list').querySelectorAll('.compare-history').forEach(el=>el.onclick=()=>openModelSources([el.dataset.path]).catch(e=>toast(e.message)));
 }
 async function openHistoryLog(path) {
   try{
@@ -204,7 +209,223 @@ function loadSuite(suite) {
   $('suites-dialog').close();
 }
 function toggleTiles() {$('tile-options').classList.toggle('hidden',$('mode').value!=='tile');requestPlan();}
+const decimal = value => value == null ? '—' : Number(value).toLocaleString(undefined,{maximumFractionDigits:2});
+const pct = value => value == null ? '—' : decimal(value)+'%';
+function modelSourcesSelected() {return [...document.querySelectorAll('#model-sources input:checked')].map(el=>el.value);}
+function modelError(error) {
+  $('model-error').textContent=error.message;$('model-error').classList.remove('hidden');
+  toast(error.message);
+}
+function invalidateModelCases() {
+  cycleState.cases=[];cycleState.selected.clear();cycleState.loaded=[];
+  $('model-tests-panel').classList.add('hidden');$('model-results').classList.add('hidden');
+}
+async function refreshModelSources() {
+  const before=new Set(modelSourcesSelected());
+  const data=await api('/api/model/sources');cycleState.sources=data.sources;
+  $('model-source-info').textContent=`Live source: ${data.model.path} · SHA-256 ${data.model.sha256}`;
+  $('model-sources').innerHTML=data.sources.map(s=>`<label class="model-source"><input type="checkbox" value="${esc(s.id)}" ${before.has(s.id)?'checked':''}><span><strong>${esc(s.name)}</strong><small>${esc(s.id)}</small></span></label>`).join('')||'<p class="hint">No saved runs found.</p>';
+  $('model-sources').querySelectorAll('input').forEach(el=>el.onchange=invalidateModelCases);
+  invalidateModelCases();
+}
+async function openModelSources(paths) {
+  await refreshModelSources();
+  changeView('model');
+  let matched=0;
+  $('model-sources').querySelectorAll('input').forEach(el=>{
+    el.checked=paths.some(p=>el.value===p||el.value.startsWith(p+'/'));if(el.checked)matched++;
+  });
+  if(!matched)throw new Error('No recorded cycle source yet. Wait for a HW operation to finish.');
+  await loadModelCases();
+}
+async function loadModelCases() {
+  const sources=modelSourcesSelected();
+  if(!sources.length)throw new Error('Select at least one saved run.');
+  $('model-load').disabled=true;
+  try {
+    const data=await api('/api/model/cases',{sources});
+    cycleState.cases=data.cases;cycleState.loaded=sources;cycleState.page=0;
+    cycleState.selected=new Set(data.cases.filter(r=>!r.reason).map(r=>r.id));
+    $('model-design').innerHTML='<option value="">All designs</option>'+[...new Set(data.cases.map(r=>r.design))].sort().map(d=>`<option>${esc(d)}</option>`).join('');
+    $('model-weight').value='';$('model-search').value='';
+    $('model-tests-panel').classList.remove('hidden');$('model-results').classList.add('hidden');
+    $('model-error').classList.add('hidden');renderModelCases();
+  }finally{$('model-load').disabled=false;}
+}
+function matchingModelCases() {
+  const design=$('model-design').value,weight=$('model-weight').value,search=$('model-search').value.toLowerCase().trim();
+  return cycleState.cases.filter(r=>(!design||r.design===design)&&(!weight||String(r.wb)===weight)&&(!search||`${r.case} ${r.k}×${r.m} ${r.k}x${r.m} ${r.source}`.toLowerCase().includes(search)));
+}
+function modelPager(page,total,kind) {
+  const pages=Math.max(1,Math.ceil(total/100));
+  return `<div class="model-pager"><button class="button secondary" data-${kind}-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span class="hint">Page ${page+1} / ${pages} · ${format(total)} operations</span><button class="button secondary" data-${kind}-page="${page+1}" ${page+1>=pages?'disabled':''}>Next</button></div>`;
+}
+function renderModelCases() {
+  const rows=matchingModelCases();cycleState.page=Math.min(cycleState.page,Math.max(0,Math.ceil(rows.length/100)-1));
+  const shown=rows.slice(cycleState.page*100,(cycleState.page+1)*100);
+  $('model-selection').textContent=`${format(cycleState.selected.size)} selected · ${format(rows.length)} matching · ${format(cycleState.cases.filter(r=>r.reason).length)} unavailable`;
+  $('model-tests').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Select / test</th><th>Design</th><th>X · W</th><th>Weights</th><th>HW cycles</th><th>Timing</th></tr></thead><tbody>${shown.map(r=>`<tr><td><label><input type="checkbox" data-case="${esc(r.id)}" ${cycleState.selected.has(r.id)?'checked':''} ${r.reason?'disabled':''}>${esc(r.case)}</label></td><td>${esc(r.design)}</td><td>1×${r.k} · ${r.k}×${r.m}</td><td>W${r.wb}</td><td>${format(r.hw)}</td><td>${r.reason?esc(r.reason):esc(r.note||r.status)}</td></tr>`).join('')}</tbody></table></div>${modelPager(cycleState.page,rows.length,'case')}`;
+  $('model-tests').querySelectorAll('[data-case]').forEach(el=>el.onchange=()=>{if(el.checked)cycleState.selected.add(el.dataset.case);else cycleState.selected.delete(el.dataset.case);renderModelCases();});
+  $('model-tests').querySelectorAll('[data-case-page]').forEach(el=>el.onclick=()=>{cycleState.page=Number(el.dataset.casePage);renderModelCases();});
+  $('model-compare').disabled=!cycleState.selected.size;
+}
+async function runCycleModel() {
+  $('model-compare').disabled=true;$('model-compare').textContent='Calculating…';$('model-error').classList.add('hidden');
+  try {
+    cycleState.result=await api('/api/model/compare',{sources:cycleState.loaded,cases:[...cycleState.selected],stages:$('model-stages').checked});
+    cycleState.resultPage=0;renderCycleResult();$('model-results').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(error){$('model-results').classList.add('hidden');modelError(error);}
+  finally{$('model-compare').textContent='Run Python model';$('model-compare').disabled=!cycleState.selected.size;}
+}
+function errorSummaryTable(rows,label) {
+  return `<div class="table-wrap"><table><thead><tr><th>${label}</th><th>N</th><th>HW cycles Σ</th><th>Python cycles Σ</th><th>Mean abs. error (cycles)</th><th>Min / max abs. (cycles)</th><th>Mean abs. error (%)</th><th>Min / max error (%)</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.label)}</td><td>${format(r.n)}</td><td>${decimal(r.hw)}</td><td>${decimal(r.predicted)}</td><td>${decimal(r.mae)}</td><td>${decimal(r.min_absolute_error)} / ${decimal(r.max_absolute_error)}</td><td>${pct(r.mape)}</td><td>${pct(r.min_ape)} / ${pct(r.max_ape)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderCycleResult() {
+  const r=cycleState.result,s=r.summary;
+  const rows=r.results.slice(cycleState.resultPage*100,(cycleState.resultPage+1)*100);
+  $('model-results').classList.remove('hidden');
+  $('model-results').innerHTML=`<div class="card-heading"><h2>Model comparison</h2><button class="text-button" id="model-download">Download results JSON ↓</button></div><p class="hint">Calculated ${esc(new Date().toLocaleString())} · source SHA-256 ${esc(r.model.sha256)}</p><div class="model-metrics"><div><strong>${format(s.n)}</strong><small>Measured operations</small></div><div><strong>${pct(s.within_10_pct)}</strong><small>Accuracy within ±10%</small></div><div><strong>${pct(s.mape)}</strong><small>Mean absolute error</small></div><div><strong>${decimal(s.mae)}</strong><small>Mean error in cycles</small></div></div><p class="hint">Accuracy here means the fraction of selected predictions within ±10% of HW cycles. MAPE and MAE are errors; lower is better. Totals cover only selected native operations.</p>${errorSummaryTable([{...s,label:'Selected operations'}],'Total')}
+    <div id="model-plot-panel" class="model-plot-panel"></div>
+    <h3>By design and weight precision</h3>${errorSummaryTable(r.groups.map(g=>({...g,label:g.design+' / W'+g.wb})),'Design / weights')}
+    ${r.stages.length?`<h3>Per-stage comparison</h3><p class="hint">N counts usable HW counters for that stage. — means unavailable. Load W alone and Select alone overlap; only Load X + Generate + combined W/Select + Store O form total cycles.</p>${errorSummaryTable(r.stages.map(g=>({...g,label:g.name})),'Stage')}`:''}
+    <h3>Each measured operation</h3><div class="table-wrap"><table><thead><tr><th>Test / parameters</th><th>Design / shape</th><th>HW cycles</th><th>Python cycles</th><th>Abs. error (cycles)</th><th>Abs. error (%)</th></tr></thead><tbody>${rows.map(op=>`<tr><td><details><summary>${esc(op.case)}</summary><p class="hint">${esc(op.source)}</p><pre class="model-parameters">${esc(JSON.stringify(op.parameters,null,2))}</pre>${op.note?`<p class="hint">${esc(op.note)}</p>`:''}${op.stages?`<div class="table-wrap"><table><thead><tr><th>Stage</th><th>HW</th><th>Python</th><th>Abs. cycles</th><th>Abs. %</th></tr></thead><tbody>${r.stages.map(st=>{const v=op.stages[st.id];return `<tr><td>${esc(st.name)}</td><td>${decimal(v.hw)}</td><td>${decimal(v.predicted)}</td><td>${decimal(v.absolute_error)}</td><td>${pct(v.ape)}</td></tr>`;}).join('')}</tbody></table></div>`:''}</details></td><td>${esc(op.design)} · W${op.wb}<br><span class="hint">1×${op.k} · ${op.k}×${op.m}</span></td><td>${decimal(op.hw)}</td><td>${decimal(op.predicted)}</td><td>${decimal(op.absolute_error)}</td><td>${pct(op.ape)}</td></tr>`).join('')}</tbody></table></div>${modelPager(cycleState.resultPage,r.results.length,'result')}
+    ${r.excluded.length?`<details><summary>${format(r.excluded.length)} excluded operations</summary><ul>${r.excluded.map(e=>`<li>${esc(e.case)}: ${esc(e.reason)}</li>`).join('')}</ul></details>`:''}<p class="hint">${r.notes.map(esc).join('<br>')}</p>`;
+  renderModelPlotPanel();
+  $('model-results').querySelectorAll('[data-result-page]').forEach(el=>el.onclick=()=>{cycleState.resultPage=Number(el.dataset.resultPage);renderCycleResult();});
+  $('model-download').onclick=()=>{
+    const url=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}));
+    const a=document.createElement('a');a.href=url;a.download='lumax_cycle_comparison.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+}
+const plotMeasures = {
+  mape:{label:'Mean absolute error (%)',unit:'%',key:'mape'},
+  mae:{label:'Mean absolute error (cycles)',unit:'cycles',key:'mae'},
+  max_ape:{label:'Maximum absolute error (%)',unit:'%',key:'max_ape'},
+  min_ape:{label:'Minimum absolute error (%)',unit:'%',key:'min_ape'},
+  max_absolute_error:{label:'Maximum absolute error (cycles)',unit:'cycles',key:'max_absolute_error'},
+  min_absolute_error:{label:'Minimum absolute error (cycles)',unit:'cycles',key:'min_absolute_error'},
+  cycles:{label:'HW vs Python cycles (sum)',unit:'cycles'}
+};
+function plotStats(pairs) {
+  const n=pairs.length;
+  if(!n)return null;
+  const errors=pairs.map(([h,p])=>Math.abs(p-h)),apes=pairs.map(([h,p])=>100*Math.abs(p-h)/h);
+  return {n,hw:pairs.reduce((s,[h])=>s+h,0),predicted:pairs.reduce((s,[,p])=>s+p,0),
+    mae:errors.reduce((a,b)=>a+b,0)/n,mape:apes.reduce((a,b)=>a+b,0)/n,
+    min_ape:apes.reduce((a,b)=>Math.min(a,b),Infinity),max_ape:apes.reduce((a,b)=>Math.max(a,b),0),
+    min_absolute_error:errors.reduce((a,b)=>Math.min(a,b),Infinity),max_absolute_error:errors.reduce((a,b)=>Math.max(a,b),0)};
+}
+function plotGroups(result,group,phase) {
+  const buckets=new Map();
+  for(const row of result.results) {
+    const phases=group==='stage'?result.stages.map(s=>s.id):[phase];
+    for(const key of phases) {
+      const pair=key==='total'?{hw:row.hw,predicted:row.predicted}:row.stages?.[key];
+      if(!pair||!Number.isFinite(pair.hw)||pair.hw<=0||!Number.isFinite(pair.predicted)||pair.predicted<0)continue;
+      const label=group==='stage'?result.stages.find(s=>s.id===key).name:
+        group==='design'?row.design:group==='weight'?`W${row.wb}`:
+        group==='design_weight'?`${row.design} / W${row.wb}`:'All selected operations';
+      if(!buckets.has(label))buckets.set(label,[]);
+      buckets.get(label).push([pair.hw,pair.predicted]);
+    }
+  }
+  const items=[...buckets].map(([label,pairs])=>({label,...plotStats(pairs)}));
+  if(group!=='stage')items.sort((a,b)=>a.label.localeCompare(b.label,undefined,{numeric:true}));
+  return items;
+}
+function modelPlotSVG(result,settings) {
+  const groups=plotGroups(result,settings.group,settings.phase);
+  if(!groups.length)return null;
+  const measure=plotMeasures[settings.measure],dual=settings.measure==='cycles';
+  const phase=settings.group==='stage'?'All recorded stages':settings.phase==='total'?'Total active cycles':result.stages.find(s=>s.id===settings.phase)?.name||settings.phase;
+  const by={total:'Overall',stage:'By stage',design:'By design',weight:'By weight bits',design_weight:'By design / weight bits'}[settings.group];
+  const title=measure.label+' · '+by;
+  const width=1120,left=270,right=190,top=140,rowHeight=dual?60:44,bottom=105,height=top+groups.length*rowHeight+bottom;
+  const series=dual?[{key:'hw',label:'HW',color:'#167264'},{key:'predicted',label:'Python',color:'#5276b5'}]:[{key:measure.key,label:measure.label,color:'#167264'}];
+  const maximum=groups.reduce((m,g)=>Math.max(m,...series.map(s=>g[s.key])),0);
+  const axisMax=maximum>0?maximum*1.15:1,span=width-left-right;
+  const number=v=>decimal(v)+(measure.unit==='%'?'%':'');
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}" font-family="Arial, sans-serif"><title>${esc(title)}</title><desc>Saved Verilator measurements compared with Python. ${esc(phase)}. Each N is the number of measured operations in that group.</desc><rect width="100%" height="100%" fill="white"/><text x="24" y="35" fill="#172c35" font-size="21" font-weight="bold">LUMAX · ${esc(title)}</text><text x="24" y="61" fill="#52666e" font-size="13">${esc(phase)} · ${format(result.summary.n)} selected measurements · ${dual?'sums of measured operations':'absolute error; lower is better'}</text>`;
+  series.forEach((s,i)=>{svg+=`<rect x="${24+i*180}" y="82" width="12" height="12" rx="2" fill="${s.color}"/><text x="${44+i*180}" y="93" fill="#172c35" font-size="12">${esc(s.label)}</text>`;});
+  for(let i=0;i<=4;i++) {
+    const x=left+span*i/4;
+    svg+=`<line x1="${x}" y1="${top-18}" x2="${x}" y2="${top+groups.length*rowHeight}" stroke="#e1e8e8"/><text x="${x}" y="${top+groups.length*rowHeight+24}" text-anchor="middle" font-size="11" fill="#52666e">${esc(number(axisMax*i/4))}</text>`;
+  }
+  groups.forEach((g,i)=>{
+    const y=top+i*rowHeight;
+    const short=g.label.length>32?g.label.slice(0,29)+'…':g.label;
+    svg+=`<text x="24" y="${y+13}" fill="#172c35" font-size="13"><title>${esc(g.label)}</title>${esc(short)}</text><text x="24" y="${y+29}" fill="#6a7b81" font-size="11">N = ${format(g.n)}</text>`;
+    series.forEach((s,j)=>{
+      const value=g[s.key],barY=y+j*22,barWidth=span*value/axisMax;
+      svg+=`<rect x="${left}" y="${barY}" width="${barWidth}" height="16" rx="3" fill="${s.color}"><title>${esc(g.label+' · '+s.label+': '+number(value)+' · N='+g.n)}</title></rect><text x="${left+barWidth+8}" y="${barY+12}" fill="#172c35" font-size="12">${esc(number(value))}</text>`;
+    });
+  });
+  svg+=`<text x="24" y="${height-43}" fill="#52666e" font-size="11">Source SHA-256: ${esc(result.model.sha256)}</text><text x="24" y="${height-23}" fill="#52666e" font-size="11">${settings.group==='stage'?'Stage coverage varies; Load W and Select overlap the combined phase. Do not sum these bars.':'Only selected native operations are included; missing or unreliable counters are excluded.'}</text></svg>`;
+  return svg;
+}
+function downloadPlotBlob(blob,extension,settings) {
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  const phase=settings.group==='stage'?'all_stages':settings.phase;
+  a.href=url;a.download=`lumax_${settings.group}_${phase}_${settings.measure}.${extension}`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function plotPNG(svg) {
+  return new Promise((resolve,reject)=>{
+    const image=new Image(),url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
+    image.onload=()=>{
+      try {
+        const canvas=document.createElement('canvas');canvas.width=image.naturalWidth*2;canvas.height=image.naturalHeight*2;
+        const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0,canvas.width,canvas.height);
+        canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Could not create PNG image.')), 'image/png');
+      }catch(error){reject(error);}finally{URL.revokeObjectURL(url);}
+    };
+    image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Could not create PNG. Restart the updated GUI once, or download SVG.'));};
+    image.src=url;
+  });
+}
+function showPlotCopyPreview(blob,settings) {
+  const dialog=document.createElement('dialog'),url=URL.createObjectURL(blob);
+  dialog.className='model-copy-dialog';
+  dialog.innerHTML='<div class="card-heading"><h2>Copy plot</h2><button class="icon-button" aria-label="Close">×</button></div><p>Right-click the image and choose <strong>Copy image</strong>. On a phone, press and hold the image.</p><p class="hint">Your browser does not allow direct clipboard access on this connection. Nothing has been saved on the server.</p><img alt="LUMAX cycle model comparison plot"><button class="button secondary">Download PNG</button>';
+  dialog.querySelector('img').src=url;
+  dialog.querySelector('.icon-button').onclick=()=>dialog.close();
+  dialog.querySelector('.button').onclick=()=>downloadPlotBlob(blob,'png',settings);
+  dialog.onclose=()=>{URL.revokeObjectURL(url);dialog.remove();};
+  document.body.appendChild(dialog);dialog.showModal();
+}
+function renderModelPlotPanel() {
+  const r=cycleState.result;
+  if(!r.stages.length&&(plotState.group==='stage'||plotState.phase!=='total')){plotState.group='design_weight';plotState.phase='total';}
+  $('model-plot-panel').innerHTML=`<div class="card-heading"><h3>Quick plot</h3><span class="hint">Temporary · save only if you choose</span></div><div class="field-row"><label class="grow">Group by<select id="plot-group">${Object.entries({total:'Total',stage:'Stage',design:'Design',weight:'Weight bits',design_weight:'Design + weight bits'}).map(([key,label])=>`<option value="${key}" ${key===plotState.group?'selected':''} ${key==='stage'&&!r.stages.length?'disabled':''}>${label}</option>`).join('')}</select></label><label class="grow">Show<select id="plot-measure">${Object.entries(plotMeasures).map(([key,m])=>`<option value="${key}" ${key===plotState.measure?'selected':''}>${esc(m.label)}</option>`).join('')}</select></label><label class="grow">Phase<select id="plot-phase" ${plotState.group==='stage'?'disabled':''}><option value="total">Total active cycles</option>${r.stages.map(s=>`<option value="${s.id}" ${s.id===plotState.phase?'selected':''}>${esc(s.name)}</option>`).join('')}</select></label></div><p class="hint">Uses all operations in this comparison, including other result pages. Stage plots use only available positive HW counters. Enable stage comparison before running the model to include stages.</p><div id="model-plot-chart" class="model-plot-chart"></div><div class="actions"><button class="button secondary" id="plot-copy">Copy plot</button><button class="text-button" id="plot-png">Download PNG</button><button class="text-button" id="plot-svg">Download SVG</button></div>`;
+  for(const key of ['group','measure','phase'])$(`plot-${key}`).onchange=()=>{plotState[key]=$(`plot-${key}`).value;renderModelPlotPanel();};
+  const svg=modelPlotSVG(r,plotState);
+  const settings={...plotState};
+  $('model-plot-chart').innerHTML=svg||'<p class="hint">No usable measurements for this phase in the selected tests.</p>';
+  ['plot-copy','plot-png','plot-svg'].forEach(id=>$(id).disabled=!svg);
+  $('plot-svg').onclick=()=>downloadPlotBlob(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),'svg',settings);
+  $('plot-png').onclick=()=>plotPNG(svg).then(blob=>downloadPlotBlob(blob,'png',settings)).catch(e=>toast(e.message));
+  $('plot-copy').onclick=async()=>{
+    const png=plotPNG(svg);
+    try {
+      if(globalThis.isSecureContext&&navigator.clipboard?.write&&globalThis.ClipboardItem) {
+        try {await navigator.clipboard.write([new ClipboardItem({'image/png':png})]);toast('Plot copied as an image.');return;}catch(error){/* Use the manual image-copy preview below. */}
+      }
+      showPlotCopyPreview(await png,settings);
+    }catch(error){toast(error.message);}
+  };
+}
+function wireModel() {
+  $('refresh-model').onclick=()=>refreshModelSources().catch(modelError);
+  $('model-load').onclick=()=>loadModelCases().catch(modelError);
+  $('model-compare').onclick=runCycleModel;
+  $('model-select-sources').onclick=()=>{$('model-sources').querySelectorAll('input').forEach(el=>el.checked=true);invalidateModelCases();};
+  $('model-clear-sources').onclick=()=>{$('model-sources').querySelectorAll('input').forEach(el=>el.checked=false);invalidateModelCases();};
+  ['model-design','model-weight','model-search'].forEach(id=>$(id).oninput=()=>{cycleState.page=0;renderModelCases();});
+  $('model-select-tests').onclick=()=>{cycleState.selected=new Set(matchingModelCases().filter(r=>!r.reason).map(r=>r.id));renderModelCases();};
+  $('model-clear-tests').onclick=()=>{cycleState.selected.clear();renderModelCases();};
+}
 function wire() {
+  wireModel();
   document.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>changeView(el.dataset.view));
   document.querySelectorAll('[data-go]').forEach(el=>el.onclick=()=>changeView(el.dataset.go));
   document.querySelectorAll('[data-close]').forEach(el=>el.onclick=()=>$(el.dataset.close).close());

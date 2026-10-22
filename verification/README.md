@@ -35,7 +35,7 @@ wait until the dashboard starts again. Use **Stop this run** in the Runs view
 to stop a test worker. A machine reboot interrupts workers; interrupted tests
 are not reported as passing and require a new run.
 
-The three views are:
+The dashboard views are:
 
 - **Build a suite:** select one or several existing designs, or create a named
   configuration with b, RF, input capacity K and output capacity M. Add rows
@@ -46,6 +46,84 @@ The three views are:
   execution phases, measured hardware cycles and a downloadable execution log.
 - **Saved logs:** browse the existing suite history, including original total
   reports, timeouts and incomplete runs.
+- **Cycle model:** select saved runs and individual native operations, then
+  compare their recorded hardware cycles with the editable Python model.
+
+### Compare the Python cycle model with saved runs
+
+Open **Cycle model**, or click **Compare cycle model** in a run or saved-log
+entry. Select runs and click **Load recorded tests**. All usable measurements
+start selected. Filter by design, weight precision or test/shape, then click
+**Select matching only** to replace the selection with that subset. Individual
+checkboxes select specific operations. Click **Run Python model**.
+
+Results show measured and predicted cycles, minimum/maximum absolute errors
+in cycles and percent, mean absolute error (MAE), mean absolute percentage
+error (MAPE), and the fraction of predictions within ±10% of hardware cycles.
+This last fraction is explicitly labelled as the accuracy tolerance, rather
+than treating `100 - MAPE` as an accuracy probability. Enable **Include cycles
+and errors per stage** for stage summaries and expandable per-operation
+counters. Missing counters display as unavailable. Overlapping Load W-only
+and Select-only counters are diagnostic and are never added to the total.
+Download the current comparison as JSON directly from your browser; comparison
+does not create extra server logs or modify the original run.
+
+**Quick plot** summarizes the complete selected comparison, including operations
+on other result pages. Group by total, stage, design, weight bits or design plus
+weight bits. Choose mean/minimum/maximum absolute error in percent or cycles,
+or compare summed **HW vs Python cycles**. The Phase selector compares a specific
+stage across designs/precisions; grouping by Stage shows all available stages.
+Each bar shows its measurement count. Stage counters that are unavailable are
+excluded; overlapping Load W-only/Select-only bars must not be summed.
+
+Use **Copy plot** to copy a PNG image. If clipboard access is unavailable (common
+on a remote HTTP dashboard), a preview lets you right-click **Copy image**.
+**Download PNG** exports a high-resolution image; **Download SVG** exports a
+scalable image. Plots are generated only in browser memory. Nothing is saved on
+the server or in Git; closing the page discards the plot unless you explicitly
+copy or download it. No extra Python-model evaluation or HW simulation is needed
+when changing the plot controls.
+
+The single working model source is:
+
+```text
+/home/kioannou/chipyard_1.13.0/generators/LUMAX/Performance Modeling/Model.py
+```
+
+It was initially copied byte-for-byte from the LUMAX Git model. Edit **this
+working file**, save it and click **Run Python model** again: the GUI rereads
+and executes its current source on every comparison without a restart or
+cached module/bytecode. The source SHA-256 accompanies each result. No cycle
+equations or fitted corrections are duplicated in the GUI. The loader skips
+only unused `matplotlib`, `ipywidgets` and `seaborn` notebook imports; all other
+top-level definitions and the original calculation functions execute from the
+source file. Keep its `compute_cycles` interface and returned cycle keys when
+editing formulas. A broken model produces an error, without old predictions
+as a fallback.
+
+Parameters use the saved b/RF, input/weight bits and actual native dimensions.
+For tiles, predictions use the actual tail dimensions and totals sum only the
+selected measured operations. Fast Llama2 comparisons use the measured sample,
+with extrapolated full-shape cycles excluded from accuracy. New custom GUI
+runs snapshot physical settings and per-operation model arguments. Older GUI
+runs reconstruct tile geometry from their saved suite/design; historical logs
+without a physical snapshot use the original runner contract (YS=1, DMA IDs=2,
+64-bit DMA, maximum input/weight bits 16/8, HS=8). Every operation's arguments
+can be inspected in its expandable row. Missing TC01 timing, TC10 timeouts,
+misaligned TC11 counters and incomplete native-1024 results are not invented.
+
+The Python comparison does not start a make build or Verilator simulation.
+HW correctness runs and their independent Python matrix references continue
+through the existing execution path. After installing the GUI code update,
+restart the dashboard once from SSH, then refresh your browser:
+
+```bash
+python3 /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/gui.py restart
+```
+
+Restarting the dashboard preserves its host/port and access key and leaves
+independent verification workers running. Subsequent model-file edits require
+only another comparison click.
 
 **Custom suite options:** Auto uses one complete HW operation when the shape
 fits; Native rejects shapes above the design capacity; Tiles lets you choose

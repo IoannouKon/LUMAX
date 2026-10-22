@@ -23,6 +23,7 @@ from urllib.parse import parse_qs, urlsplit
 
 sys.dont_write_bytecode = True
 import gui_core as core
+import cycle_compare
 
 
 def access_token():
@@ -103,7 +104,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'no-referrer')
         self.send_header('Cache-Control', 'no-store')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'")
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'")
         if cookie:
             self.send_header('Set-Cookie', 'lumax=' + self.server.token + '; HttpOnly; SameSite=Strict; Path=/')
         self.end_headers()
@@ -135,6 +136,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send(200, dict(runs=store.jobs_list(), external=core.external_runs()))
             elif path == '/api/history':
                 self.send(200, core.history())
+            elif path == '/api/model/sources':
+                self.send(200, dict(sources=cycle_compare.sources(core.LOGS), model=cycle_compare.model_info()))
             elif path.startswith('/api/runs/'):
                 identifier = path.split('/')[3]
                 self.send(200, core.read_json(store.folder(identifier) / 'job.json'))
@@ -176,6 +179,10 @@ class Handler(BaseHTTPRequestHandler):
             elif path == '/api/suites': result = store.save_suite(data)
             elif path == '/api/plan': result = core.make_plan(core.normalize_suite(data, store.designs()))
             elif path == '/api/runs': result = store.create_job(data)
+            elif path == '/api/model/cases':
+                result = dict(cases=cycle_compare.cases(core.LOGS, data.get('sources')))
+            elif path == '/api/model/compare':
+                result = cycle_compare.compare(core.LOGS, data)
             elif path.startswith('/api/runs/') and path.endswith('/stop'):
                 result = store.cancel(path.split('/')[3])
             else:
