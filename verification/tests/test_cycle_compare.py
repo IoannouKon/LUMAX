@@ -115,6 +115,17 @@ class CycleComparisonTests(unittest.TestCase):
         row=c.record('x','case','b2_rf4',4,4,8,20,b=8,rf=16)
         self.assertEqual((row['parameters']['XS'],row['parameters']['factor']),(8,16))
 
+    def test_fp16_is_not_mislabeled_as_int16_cycle_model_accuracy(self):
+        folder=self.logs/'gui'/'run_20260101_000000_abcdef12';folder.mkdir(parents=True)
+        design=dict(id='fp',name='FP16 design',b=2,rf=4,max_k=8,max_m=8,activation='fp16')
+        data=dict(suite=dict(kind='custom',designs=[design],options=dict(g.DEFAULT_OPTIONS)),
+                  results=[dict(name='FP',design='FP16 design',activation='fp16',k=4,m=4,wb=4,
+                                operation_results=[dict(status='PASS',cycles=20)])])
+        path=folder/'job.json';path.write_text(json.dumps(data))
+        rows=c.gui_cases(path,str(path.relative_to(self.logs)))
+        self.assertEqual(len(rows),1)
+        self.assertIn('FP16',rows[0]['reason'])
+
     def test_http_comparison_auth_and_validation(self):
         store=g.Store(self.root)
         def request(path, data=None, authenticated=True):

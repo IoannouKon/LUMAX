@@ -131,7 +131,8 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/api/initial':
                 self.send(200, dict(designs=store.designs(), suites=store.suites(), patterns=core.PATTERNS,
                     builtins=core.BUILTINS, defaults=core.DEFAULT_OPTIONS, chipyard=str(core.hw.CY),
-                    input_bits=16, external=core.external_runs()))
+                    input_bits=16, features=dict(activation_formats=['int16', 'fp16'], fp_comparison=True),
+                    external=core.external_runs()))
             elif path == '/api/runs':
                 self.send(200, dict(runs=store.jobs_list(), external=core.external_runs()))
             elif path == '/api/history':

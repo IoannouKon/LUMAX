@@ -28,6 +28,7 @@ import uuid
 sys.dont_write_bytecode = True
 import run_llama_shapes as hw
 import cycle_compare
+import fp_compare
 
 ROOT = Path(__file__).resolve().parent
 LOGS = ROOT / 'logs'
@@ -47,7 +48,8 @@ DEFAULT_OPTIONS = dict(mode='auto', reference='python', cycles=True, guards=True
                        integrity=False, matrices=False, timeout=21600,
                        build_timeout=7200, compile_timeout=1200, jobs=8,
                        workers=6, max_cycles=100000000000, stop_on_fail=False,
-                       tile_k=0, tile_m=0, t=16, tcs=[])
+                       tile_k=0, tile_m=0, t=16, tcs=[],
+                       fp_comparison='exact', atol=0.0, rtol=0.0)
 
 
 def now():
@@ -88,6 +90,22 @@ def config_defaults():
     return dict(max_k=get('Cin'), max_m=get('Cout'))
 
 
+def activation(design):
+    return design.get('activation', 'int16')
+
+
+def nonnegative_float(value, name):
+    if isinstance(value, bool):
+        raise ValueError(name + ' must be a finite nonnegative number')
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        raise ValueError(name + ' must be a finite nonnegative number')
+    if not math.isfinite(result) or result < 0:
+        raise ValueError(name + ' must be a finite nonnegative number')
+    return result
+
+
 def validate_design(value):
     name = str(value.get('name', '')).strip()
     if not 1 <= len(name) <= 64:
@@ -96,9 +114,12 @@ def validate_design(value):
     rf = integer(value.get('rf'), 'RF', 2, 64)
     if b & (b - 1) or rf & (rf - 1):
         raise ValueError('b and RF must be powers of two')
+    if activation(value) not in ('int16', 'fp16'):
+        raise ValueError('Activation format must be INT16 or FP16')
     return dict(id=value.get('id') or 'design_' + uuid.uuid4().hex[:12], name=name,
                 b=b, rf=rf, max_k=integer(value.get('max_k'), 'Maximum input length'),
-                max_m=integer(value.get('max_m'), 'Maximum outputs', 1, 4096), builtin=False)
+                max_m=integer(value.get('max_m'), 'Maximum outputs', 1, 4096),
+                activation=activation(value), builtin=False)
 
 
 class Store:
@@ -111,9 +132,12 @@ class Store:
 
     def designs(self):
         limits = config_defaults()
-        defaults = [dict(id=f'b{b}_rf{rf}', name=f'b{b}_rf{rf}', b=b, rf=rf,
-                         **limits, builtin=True) for b in (2, 4, 8) for rf in (4, 8)]
-        return defaults + read_json(self.data / 'designs.json', [])
+        defaults = [dict(id=f'b{b}_rf{rf}' + ('_fp16' if fmt == 'fp16' else ''),
+                         name=f'b{b}_rf{rf}' + (' FP16' if fmt == 'fp16' else ''), b=b, rf=rf,
+                         **limits, activation=fmt, builtin=True)
+                    for fmt in ('int16', 'fp16') for b in (2, 4, 8) for rf in (4, 8)]
+        saved = [dict(d, activation=activation(d)) for d in read_json(self.data / 'designs.json', [])]
+        return defaults + saved
 
     def save_design(self, value):
         item = validate_design(value)
@@ -196,8 +220,8 @@ def normalize_suite(value, designs):
         if identifier not in lookup:
             raise ValueError('Selected design no longer exists')
         chosen.append(dict(lookup[identifier]))
-    if kind not in LOCAL_SUITES and any(not d['builtin'] for d in chosen):
-        raise ValueError('Original script suites use standard designs; choose Custom for a new design')
+    if kind not in LOCAL_SUITES and any(not d['builtin'] or activation(d) != 'int16' for d in chosen):
+        raise ValueError('Original script suites use standard INT16 designs; choose Custom matrices or Llama2 fast for FP16')
     options = dict(DEFAULT_OPTIONS)
     incoming = value.get('options', {})
     if not isinstance(incoming, dict):
@@ -207,6 +231,10 @@ def normalize_suite(value, designs):
         raise ValueError('Unknown tiling mode')
     if options['reference'] not in ('python', 'riscv', 'none'):
         raise ValueError('Unknown reference method')
+    if options['fp_comparison'] not in ('exact', 'tolerance'):
+        raise ValueError('Unknown FP16 comparison mode')
+    for key in ('atol', 'rtol'):
+        options[key] = nonnegative_float(options[key], key)
     for key in ('cycles', 'guards', 'integrity', 'matrices', 'stop_on_fail'):
         if not isinstance(options[key], bool):
             raise ValueError(key + ' must be true or false')
@@ -430,24 +458,28 @@ class Job:
                 self.proc = None
 
 
-def random_case(test, wb, initial):
+def random_case(test, wb, initial, fmt='int16'):
     xs = int.from_bytes(hashlib.sha256((initial + ':x').encode()).digest()[:8], 'little')
     ws = int.from_bytes(hashlib.sha256((initial + ':w').encode()).digest()[:8], 'little')
     x = hw.input_values(test['k'], xs)
+    if fmt == 'fp16':
+        x = [v & 0xffff for v in x]
+        x = [v ^ 0x400 if v & 0x7c00 == 0x7c00 else v for v in x]
     rng = hw.RandomValues(ws)
     w = [rng.value(wb) for _ in range(test['k'] * test['m'])]
     lo, hi = -(1 << (wb - 1)), (1 << (wb - 1)) - 1
     pattern = test['pattern']
     if pattern in ('zero_x', 'zero_both'): x = [0] * len(x)
     if pattern in ('zero_w', 'zero_both'): w = [0] * len(w)
-    if pattern in ('min_min', 'min_max'): x = [-32768] * len(x)
-    if pattern in ('max_min', 'max_max'): x = [32767] * len(x)
+    minimum, maximum, one = (0xfbff, 0x7bff, 0x3c00) if fmt == 'fp16' else (-32768, 32767, 1)
+    if pattern in ('min_min', 'min_max'): x = [minimum] * len(x)
+    if pattern in ('max_min', 'max_max'): x = [maximum] * len(x)
     if pattern in ('min_min', 'max_min'): w = [lo] * len(w)
     if pattern in ('min_max', 'max_max'): w = [hi] * len(w)
     if pattern == 'alternating':
-        x = [-32768 if j % 2 else 32767 for j in range(len(x))]
+        x = [minimum if j % 2 else maximum for j in range(len(x))]
         w = [lo if (j + c) % 2 else hi for j in range(test['k']) for c in range(test['m'])]
-    if pattern == 'onehot_x': x = [1] + [0] * (len(x) - 1)
+    if pattern == 'onehot_x': x = [one] + [0] * (len(x) - 1)
     if pattern == 'onehot_w': w = [1] + [0] * (len(w) - 1)
     return x, w, str(xs), str(ws)
 
@@ -461,7 +493,9 @@ def pack_weights(w, k, m, wb):
     return packed
 
 
-def reference(x, w, m):
+def reference(x, w, m, fmt='int16'):
+    if fmt == 'fp16':
+        return fp_compare.model.reference(x, w, m, True)
     result = [sum(v * w[j * m + c] for j, v in enumerate(x)) for c in range(m)]
     if any(not -(1 << 31) <= v < (1 << 31) for v in result):
         raise ValueError('Reference exceeds int32; choose less extreme data or a smaller input length')
@@ -483,11 +517,18 @@ def test_source(base, design, x, w, wb, options):
     """Operands are loaded directly by +loadmem; no megabyte CPU memset/copy."""
     k, m = len(x), len(w) // len(x)
     packed = pack_weights(w, k, m, wb)
+    fp16 = activation(design) == 'fp16'
     c = base.split('int main() {', 1)[0]
     for key, value in dict(IN_BITS=16, W_BITS=wb, Debug=0, XS=design['b'],
                            YS=1, Mem_row_factor=design['rf']).items():
         c, count = re.subn(r'(^#define\s+' + key + r'\s+)\d+', lambda mt: mt[1] + str(value), c, flags=re.M)
         if count != 1: raise ValueError('Missing C define ' + key)
+    c = f'''#ifndef LUMAX_FP16_ACTIVATIONS
+#define LUMAX_FP16_ACTIVATIONS {int(fp16)}
+#elif LUMAX_FP16_ACTIVATIONS != {int(fp16)}
+#error GUI software activation format disagrees with design
+#endif
+''' + c
     c += '\n#undef printf\n#include <stddef.h>\n'
     guard8 = ','.join(['165'] * 8)
     guard16 = ','.join(['165'] * 16)
@@ -498,7 +539,7 @@ def test_source(base, design, x, w, wb, options):
         c += '{{' + guard8 + '},{' + ','.join(map(str, values)) + '},{' + guard16 + '}};\n'
         c += f'_Static_assert(offsetof(__typeof__({name}), data)==8, "DMA alignment");\n'
         c += f'_Static_assert(offsetof(__typeof__({name}), post)==8+sizeof({name}.data), "Immediate guard");\n'
-    if options['reference'] == 'riscv':
+    if options['reference'] == 'riscv' and not fp16:
         c += c_array('int8_t', 'reference_w', w)
     c += '''
 static int boundary(const uint8_t *a,const uint8_t *b) {
@@ -513,10 +554,10 @@ static uint32_t checksum(const void *p,size_t n) {
 }
 static void phase(const char *text) { printf("PHASE %s\\n",text); fflush(stdout); }
 '''
-    c += f'''static void values(const char *label,const int32_t *data) {{
+    c += f'''static void values(const char *label,const output_t *data) {{
   char report[{m * 16 + 1}]; int used=0;
   for(int i=0;i<{m};++i) {{
-    int n=snprintf(report+used,sizeof(report)-used,"%d ",data[i]);
+    int n=snprintf(report+used,sizeof(report)-used,"{'%u' if fp16 else '%d'} ",data[i]);
     if(n<0||(unsigned)n>=sizeof(report)-used) return;
     used+=n;
   }}
@@ -542,29 +583,52 @@ int main(void) {
         c += '  safe=boundary(xbuf.pre,xbuf.post)&&boundary(wbuf.pre,wbuf.post)&&boundary(obuf.pre,obuf.post);\n'
     if options['integrity']:
         c += '  phase("Checking input integrity");\n'
-        c += f'  safe &= checksum(xbuf.data,sizeof(xbuf.data))=={fnv(struct.pack("<"+"h"*k,*x))}u;\n'
+        c += f'  safe &= checksum(xbuf.data,sizeof(xbuf.data))=={fnv(struct.pack("<"+("H" if fp16 else "h")*k,*x))}u;\n'
         c += f'  safe &= checksum(wbuf.data,sizeof(wbuf.data))=={fnv(packed)}u;\n'
     c += '  printf("GUARDS %s\\n",safe?"PASS":"FAIL");\n'
     if options['reference'] == 'riscv':
-        c += f'  phase("Computing RISC-V reference");\n  int32_t ref[{m}];\n'
-        c += f'  for(int col=0;col<{m};++col) {{ int64_t sum=0; for(int j=0;j<{k};++j) sum+=(int64_t)xbuf.data[j]*reference_w[j*{m}+col];\n'
-        c += '    if(sum<INT32_MIN||sum>INT32_MAX) { printf("OVERFLOW\\n"); return 2; } ref[col]=(int32_t)sum; }\n  values("C_REFERENCE",ref);\n'
+        c += f'  phase("Computing RISC-V reference");\n  output_t ref[{m}];\n'
+        if fp16:
+            c += f'  matmul_sw_uniform(ref,&tx,&tw,{k},{m},1);\n'
+        else:
+            c += f'  for(int col=0;col<{m};++col) {{ int64_t sum=0; for(int j=0;j<{k};++j) sum+=(int64_t)xbuf.data[j]*reference_w[j*{m}+col];\n'
+            c += '    if(sum<INT32_MIN||sum>INT32_MAX) { printf("OVERFLOW\\n"); return 2; } ref[col]=(int32_t)sum; }\n'
+        c += '  values("C_REFERENCE",ref);\n'
     c += '  values("HW_OUTPUT",actual);\n'
     c += '  printf("TEST_DONE\\n"); fflush(stdout); return safe?0:1;\n}\n'
     return c
 
 
-def parse_result(uart, expected, options, exit_code, count):
+def compare_outputs(actual, expected, options, fmt='int16'):
+    if fmt == 'fp16':
+        return fp_compare.compare(actual, expected, options)
+    matches = sum(a == b for a, b in zip(actual, expected))
+    return dict(matches=matches, exact_matches=matches,
+                numeric_pass=len(actual) == len(expected) and actual == expected,
+                mismatches=[dict(index=i, hw=a, reference=b)
+                            for i, (a, b) in enumerate(zip(actual, expected)) if a != b][:16])
+
+
+def parse_result(uart, expected, options, exit_code, count, fmt='int16'):
     outputs = re.findall(r'^HW_OUTPUT (.*)$', uart, re.M)
-    actual = list(map(int, outputs[0].split())) if len(outputs) == 1 else []
+    try:
+        actual = list(map(int, outputs[0].split())) if len(outputs) == 1 else []
+    except ValueError:
+        actual = []
+    if fmt == 'fp16' and any(not 0 <= word <= 0xffffffff for word in actual):
+        actual = []
     result = dict(status='FAIL', matches=0, elements=count, cycles=None, core_cycles=None,
-                  guards='PASS' if re.findall(r'^GUARDS (PASS|FAIL)$', uart, re.M) == ['PASS'] else 'FAIL', actual=actual)
+                  guards='PASS' if re.findall(r'^GUARDS (PASS|FAIL)$', uart, re.M) == ['PASS'] else 'FAIL',
+                  actual=actual, activation=fmt, output_format='fp32' if fmt == 'fp16' else 'int32')
     if options['reference'] == 'riscv':
         rows = re.findall(r'^C_REFERENCE (.*)$', uart, re.M)
         try: expected = list(map(int, rows[0].split())) if len(rows) == 1 else None
         except ValueError: expected = None
+        if fmt == 'fp16' and expected is not None and any(not 0 <= word <= 0xffffffff for word in expected):
+            expected = None
     result['expected'] = expected
-    if expected is not None: result['matches'] = sum(a == b for a, b in zip(actual, expected))
+    if expected is not None:
+        result.update(compare_outputs(actual, expected, options, fmt))
     cycles = re.findall(r'^CYCLES ((?:\d+ ){5}\d+) CORE (\d+)$', uart, re.M)
     valid_cycles = not options['cycles']
     if len(cycles) == 1:
@@ -573,7 +637,7 @@ def parse_result(uart, expected, options, exit_code, count):
         valid_cycles = result['cycles'] > 0 and result['core_cycles'] > 0
     complete = exit_code == 0 and uart.splitlines().count('TEST_DONE') == 1 and len(actual) == count and result['guards'] == 'PASS' and valid_cycles
     if complete and options['reference'] == 'none': result['status'] = 'UNVERIFIED'
-    elif complete and expected is not None and len(expected) == count and actual == expected: result['status'] = 'PASS'
+    elif complete and expected is not None and len(expected) == count and result['numeric_pass']: result['status'] = 'PASS'
     return result
 
 
@@ -587,8 +651,13 @@ def build_design(job, design, base_config, temporary, env):
     text, count = re.subn(r'(?m)^(\s*DEBUG\s*=\s*)(true|false)',
                           lambda mt: mt[1] + ('true' if options['cycles'] else 'false'), text)
     if count != 1: raise ValueError('Missing HW DEBUG switch')
+    text, count = re.subn(r'(?m)^(\s*FP16_ACTIVATIONS\s*=\s*)(true|false)',
+                         lambda mt: mt[1] + ('true' if activation(design) == 'fp16' else 'false'), text)
+    if count != 1 and activation(design) == 'fp16':
+        raise ValueError('Missing build-time FP16_ACTIVATIONS switch')
     build = temporary / design['id']
     build.mkdir()
+    (build / 'Config.scala').write_text(text)
     sim = build / 'simulator-LUMAXROcketConfig'
     args = ['make', '-j' + str(options['jobs']), 'CONFIG=LUMAXROcketConfig',
             'sim=' + str(sim), 'gen_dir=' + str(build / 'generated-src')]
@@ -615,7 +684,12 @@ def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expect
         (folder / 'Linear-sw.c').write_text(test_source(base, design, x, w, wb, options))
         for name in ('build.sh', 'rocc.h', 'compiler.h'): shutil.copy2(hw.SRC / name, folder / name)
         job.log('TEST C SHA256=' + hw.sha(folder / 'Linear-sw.c'))
-        code = job.command(['bash', './build.sh', 'baremetal'], folder, folder / 'build.log', options['compile_timeout'], env, 'Compiling RISC-V test')
+        case_env = dict(env)
+        snapshot = sim.parent / 'Config.scala'
+        if snapshot.is_file():
+            case_env['LUMAX_CONFIG_PATH'] = str(snapshot)
+        case_env['TEST_CFLAGS'] = env.get('TEST_CFLAGS', '-O2') + f' -DLUMAX_FP16_ACTIVATIONS={int(activation(design) == "fp16")}'
+        code = job.command(['bash', './build.sh', 'baremetal'], folder, folder / 'build.log', options['compile_timeout'], case_env, 'Compiling RISC-V test')
         if code:
             job.log((folder / 'build.log').read_text(errors='replace'))
             return dict(status='BUILD_FAIL', matches=0, elements=len(w) // len(x), cycles=None, core_cycles=None)
@@ -625,17 +699,19 @@ def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expect
         code = job.command(args, folder, folder / 'uart.log', options['timeout'], env, 'Starting Verilator')
         uart = (folder / 'uart.log').read_text(errors='replace').replace('\r\n', '\n')
         job.update(phase='Comparing actual HW output')
-        record = parse_result(uart, expected, options, code, len(w) // len(x))
+        record = parse_result(uart, expected, options, code, len(w) // len(x), activation(design))
         if '*** FAILED ***' in uart and 'timeout' in uart.lower(): record['status'] = 'TIMEOUT'
         job.log('UART STATUS\n' + '\n'.join(line for line in uart.splitlines()
                 if not line.startswith(('HW_OUTPUT ', 'C_REFERENCE '))))
         if options['matrices']:
             job.log('X=' + json.dumps(x) + '\nW (row-major)=' + json.dumps(w))
             job.log('REFERENCE=' + json.dumps(record.get('expected')) + '\nHW_OUTPUT=' + json.dumps(record.get('actual')))
-        if record['status'] == 'FAIL' and record.get('expected') is not None:
-            record['mismatches'] = [dict(index=i, hw=a, reference=b) for i, (a, b) in enumerate(zip(record['actual'], record['expected'])) if a != b][:16]
+            if activation(design) == 'fp16':
+                job.log('X_FP16_VALUES=' + json.dumps([struct.unpack('<e', struct.pack('<H', v))[0] for v in x]))
+                job.log('HW_FP32_VALUES=' + json.dumps([fp_compare.display(v) for v in record.get('actual', [])]))
         if record.get('actual'):
-            record['output_sha256'] = hashlib.sha256(struct.pack('<' + 'i' * len(record['actual']), *record['actual'])).hexdigest()
+            word_type = 'I' if activation(design) == 'fp16' else 'i'
+            record['output_sha256'] = hashlib.sha256(struct.pack('<' + word_type * len(record['actual']), *record['actual'])).hexdigest()
         return record
     except TimeoutError as error:
         job.log(str(error))
@@ -664,16 +740,24 @@ def run_custom(job, temporary, env):
         hashes = fingerprint()
         base = (hw.SRC / 'Linear-sw.c').read_text()
         if not re.search(r'(?m)^#define\s+SCALE\s+0\b', base):
-            raise ValueError('Custom verification requires integer output (SCALE=0)')
+            raise ValueError('Custom verification requires unscaled output (SCALE=0)')
         for key, value in [('y_slice', 1), ('XBitWidth', 16), ('WBitWidth', 8), ('OutBitWidth', 32)]:
             if not re.search(r'(?m)^\s*' + key + r'\s*=\s*' + str(value) + r'\s*,', original.decode()):
                 raise ValueError(f'Custom verification requires {key}={value}')
+        if not re.search(r'(?m)^\s*SCALE\s*=\s*false\s*,', original.decode()):
+            raise ValueError('Custom verification requires hardware SCALE=false')
+        if any(activation(d) == 'fp16' for d in suite['designs']):
+            for module in (fp_compare, fp_compare.model):
+                path = Path(module.__file__)
+                hashes[str(path)] = hw.sha(path)
         job.log('SOURCE SHA256=' + json.dumps(hashes, sort_keys=True))
         fast = suite['kind'] == 'llama_fast'
         if fast:
             job.log('LLAMA2 FAST ESTIMATE: one largest-fitting native tile per shape and W8/W4/W2. Extrapolated cycles are estimates, not full-matrix verification.')
         try:
             for design in suite['designs']:
+                fmt = activation(design)
+                fp16 = fmt == 'fp16'
                 sim = build_design(job, design, original, temporary, env)
                 for index, logical_test in enumerate(suite['tests']):
                     test = dict(logical_test)
@@ -684,34 +768,40 @@ def run_custom(job, temporary, env):
                         for wb in test['weights']:
                             job.cancelled()
                             if any(hw.sha(p) != v for p, v in hashes.items()): raise RuntimeError('Source files changed during run')
-                            label = f'{design["name"]}: {test["name"]}, W{wb}, repeat {repeat + 1}'
+                            label = f'{design["name"]} [{fmt.upper()}]: {test["name"]}, W{wb}, repeat {repeat + 1}'
                             job.update(phase='Preparing random operands', current=label)
                             initial = test['seed'] or str(secrets.randbits(64))
                             initial += f':{design["id"]}:{index}:{repeat}:{wb}'
-                            x, w, xs, ws = random_case(test, wb, initial)
+                            x, w, xs, ws = random_case(test, wb, initial, fmt)
                             k, m = test['k'], test['m']
-                            full_ref = reference(x, w, m) if options['reference'] == 'python' else None
+                            full_ref = reference(x, w, m, fmt) if options['reference'] == 'python' or (fp16 and options['reference'] == 'riscv') else None
                             output, combined_ref = [0] * m, [0] * m
+                            fp_parts = [[] for _ in range(m)]
+                            output_complete = True
                             rows, measured, failed = [], [], False
                             job.log('\nCASE ' + label + f' X=1x{k} W={k}x{m} INPUT_SEED={xs} WEIGHT_SEED={ws} PATTERN={test["pattern"]}')
                             if fast:
                                 job.log(f'FULL SHAPE 1x{logical_test["k"]} @ {logical_test["k"]}x{logical_test["m"]}; SAMPLE 1x{k} @ {k}x{m}; TILES NEEDED={sample_tile["tiles"]} ({sample_tile["k_tiles"]} × {sample_tile["m_tiles"]})')
-                            job.log(f'X_NONZERO={sum(v != 0 for v in x)}/{k}; X_DISTINCT={len(set(x))}; W_DISTRIBUTION=' + json.dumps(dict(collections.Counter(w)), sort_keys=True))
+                            job.log(f'ACTIVATION={fmt}; OUTPUT={"fp32" if fp16 else "int32"}; X_NONZERO={sum(fp_compare.model.half_units(v) != 0 if fp16 else v != 0 for v in x)}/{k}; X_DISTINCT={len(set(x))}; W_DISTRIBUTION=' + json.dumps(dict(collections.Counter(w)), sort_keys=True))
                             ranges = tile_ranges(k, m, design, options)
                             for tile, (a, n, c, d) in enumerate(ranges, 1):
                                 tx = x[a:a + n]
                                 tw = [w[j * m + col] for j in range(a, a + n) for col in range(c, c + d)]
-                                expected = reference(tx, tw, d) if options['reference'] == 'python' else None
+                                expected = reference(tx, tw, d, fmt) if options['reference'] == 'python' else None
                                 job.update(current=label, tile=tile, tiles=len(ranges))
                                 job.log(f'HW OPERATION {tile}/{len(ranges)} input_range={a}:{a+n} output_range={c}:{c+d}; 1x{n} @ {n}x{d}')
                                 result = run_operation(job, sim, design, base, options, tx, tw, wb,
                                     temporary / 'operation', env, expected)
                                 actual, expected_part = result.pop('actual', None), result.pop('expected', None)
-                                result.update(k=n, m=d, model_parameters=cycle_compare.parameters(
+                                result.update(k=n, m=d, activation=fmt, model_parameters=cycle_compare.parameters(
                                     n, d, wb, design['b'], design['rf'], physical=cycle_parameters))
                                 if actual is not None and len(actual) == d:
-                                    for col, value in enumerate(actual): output[c + col] += value
-                                if expected_part is not None and len(expected_part) == d:
+                                    for col, value in enumerate(actual):
+                                        if fp16: fp_parts[c + col].append(value)
+                                        else: output[c + col] += value
+                                else:
+                                    output_complete = False
+                                if not fp16 and expected_part is not None and len(expected_part) == d:
                                     for col, value in enumerate(expected_part): combined_ref[c + col] += value
                                 failed |= result['status'] not in ('PASS', 'UNVERIFIED')
                                 measured.append(result['cycles'])
@@ -719,16 +809,24 @@ def run_custom(job, temporary, env):
                                 job.log('HW RESULT ' + json.dumps(result, sort_keys=True))
                                 job.update(operations_done=job.data['operations_done'] + 1)
                                 if failed and options['stop_on_fail']: break
-                            if options['reference'] == 'riscv': full_ref = combined_ref
-                            if full_ref is not None and any(not -(1 << 31) <= v < (1 << 31) for v in full_ref): raise ValueError('Combined reference exceeds int32')
-                            matches = sum(a == b for a, b in zip(output, full_ref)) if full_ref is not None else 0
-                            status = ('TIMEOUT' if any(r['status'] == 'TIMEOUT' for r in rows) else 'FAIL') if failed else 'UNVERIFIED' if options['reference'] == 'none' else 'PASS' if matches == m else 'FAIL'
+                            output_complete &= len(rows) == len(ranges)
+                            if fp16:
+                                output = [fp_compare.sum_words(parts) for parts in fp_parts]
+                            elif options['reference'] == 'riscv': full_ref = combined_ref
+                            if not fp16 and full_ref is not None and any(not -(1 << 31) <= v < (1 << 31) for v in full_ref): raise ValueError('Combined reference exceeds int32')
+                            comparison = compare_outputs(output if output_complete else [], full_ref, options, fmt) if full_ref is not None else dict(matches=0, mismatches=[])
+                            status = ('TIMEOUT' if any(r['status'] == 'TIMEOUT' for r in rows) else 'FAIL') if failed else 'UNVERIFIED' if options['reference'] == 'none' else 'PASS' if comparison['numeric_pass'] else 'FAIL'
                             result = dict(name=test['name'], design=design['name'], design_id=design['id'], k=k, m=m, wb=wb, repeat=repeat + 1,
-                                status=status, matches=matches, elements=m, operations=len(rows),
+                                status=status, elements=m, operations=len(rows), activation=fmt,
+                                output_format='fp32' if fp16 else 'int32',
                                 cycles=sum(v for v in measured if v is not None) if all(v is not None for v in measured) else None,
                                 core_cycles=sum(r.get('core_cycles') or 0 for r in rows) if options['cycles'] else None,
-                                mismatches=[dict(index=i, hw=v, reference=full_ref[i]) for i, v in enumerate(output) if full_ref is not None and v != full_ref[i]][:16],
-                                operation_results=rows)
+                                operation_results=rows, **comparison)
+                            if fp16:
+                                result['reference_contract'] = 'Exact full Python dot, rounded once to FP32' if full_ref is not None else 'Comparison skipped'
+                                result['assembly'] = 'Exact host sum of FP32 HW partials, rounded once to FP32; K tiling can differ from a full native dot' if any(a != 0 for a, _, _, _ in ranges) else 'Native result or concatenated output columns'
+                                if options['reference'] == 'riscv':
+                                    result['reference_contract'] += '; independent C reference also checked for each HW operation'
                             if fast:
                                 add_cycle_estimate(result, logical_test, design)
                                 job.log('CYCLE ESTIMATE: ' + json.dumps(dict(measured_tile_cycles=result['cycles'],

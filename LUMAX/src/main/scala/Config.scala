@@ -20,6 +20,7 @@ case class LUMAXParams(
   W_BUFFS:        Int,
   DMA_bits:       Int,
   Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
 )
 
 // Create an object to hold your configuration
@@ -35,6 +36,7 @@ object LUMAX_Config {
     XBitWidth   = 16,  // max Number of bits on input elemetns 
     WBitWidth   = 8,   // max  Number of bits on weights elemetns 
     OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
     //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
 
     //new

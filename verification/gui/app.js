@@ -5,7 +5,7 @@ const format = value => value == null ? '—' : Number(value).toLocaleString();
 const terminal = new Set(['PASS','FAIL','TIMEOUT','ERROR','BUILD_FAIL','STOPPED','UNVERIFIED','INTERRUPTED','ESTIMATED']);
 const badge = status => `<span class="pill ${esc(status).toLowerCase()}">${esc(status)}</span>`;
 const date = value => value ? new Date(value).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-const state = {designs:[],suites:[],tests:[],runs:[],history:[],selected:null,view:'builder',suiteId:null,logPath:null,planSequence:0};
+const state = {designs:[],suites:[],tests:[],runs:[],history:[],selected:null,view:'builder',suiteId:null,logPath:null,planSequence:0,fpBackend:false};
 const cycleState = {sources:[],cases:[],selected:new Set(),loaded:[],page:0,resultPage:0,result:null};
 const plotState = {group:'design_weight',measure:'mape',phase:'total'};
 let token = new URLSearchParams(location.search).get('token') || sessionStorage.getItem('lumax-token') || '';
@@ -38,8 +38,9 @@ function selectedDesigns() { return [...document.querySelectorAll('#designs inpu
 function renderDesigns(selected=selectedDesigns()) {
   const custom=['custom','llama_fast'].includes($('suite-kind').value);
   if(!selected.length) selected=['b8_rf8'];
-  $('designs').innerHTML=state.designs.map(d=>`<label class="design-option"><span class="design-title"><input type="checkbox" value="${esc(d.id)}" ${selected.includes(d.id)?'checked':''} ${!custom&&!d.builtin?'disabled':''}>${esc(d.name)}</span><small>b ${d.b} · RF ${d.rf}<br>Capacity ${format(d.max_k)} × ${format(d.max_m)}</small></label>`).join('');
-  $('designs').querySelectorAll('input').forEach(el=>el.addEventListener('change',requestPlan));
+  $('designs').innerHTML=state.designs.map(d=>`<label class="design-option"><span class="design-title"><input type="checkbox" value="${esc(d.id)}" ${selected.includes(d.id)?'checked':''} ${!custom&&(!d.builtin||(d.activation||'int16')!=='int16')?'disabled':''}>${esc(d.name)}</span><small><strong>${esc((d.activation||'int16').toUpperCase())}</strong> · b ${d.b} · RF ${d.rf}<br>Capacity ${format(d.max_k)} × ${format(d.max_m)}</small></label>`).join('');
+  $('designs').querySelectorAll('input').forEach(el=>el.addEventListener('change',()=>{updateFPControls();requestPlan();}));
+  updateFPControls();
 }
 const patternNames={random:'Random signed',zero_x:'Zero input',zero_w:'Zero weights',zero_both:'Both zero',min_min:'Minimum × minimum',max_max:'Maximum × maximum',min_max:'Minimum × maximum',max_min:'Maximum × minimum',alternating:'Alternating signs',onehot_x:'One input active',onehot_w:'One weight active'};
 function syncTests() {
@@ -48,6 +49,14 @@ function syncTests() {
     m:el.querySelector('[data-field=m]').value,pattern:el.querySelector('[data-field=pattern]').value,
     weights:[...el.querySelectorAll('[data-weight]:checked')].map(x=>Number(x.value)),
     repeats:el.querySelector('[data-field=repeats]').value,seed:el.querySelector('[data-field=seed]').value}));
+}
+function updateFPControls() {
+  const formats=[...new Set(state.designs.filter(d=>selectedDesigns().includes(d.id)).map(d=>d.activation||'int16'))];
+  const fp=formats.includes('fp16');
+  $('plan-activation').textContent=formats.map(v=>v.toUpperCase()).join(' / ')||'—';
+  $('fp-options').classList.toggle('hidden',!fp);
+  const tolerance=fp&&$('fp-comparison').value==='tolerance';
+  $('fp-atol').disabled=!tolerance;$('fp-rtol').disabled=!tolerance;
 }
 function renderTests() {
   $('tests').innerHTML=state.tests.map((t,i)=>`<div class="matrix-test" data-index="${i}"><div class="test-top"><span class="test-index">${String(i+1).padStart(2,'0')}</span><input data-field="name" aria-label="Test name" value="${esc(t.name)}" placeholder="Test name"><span class="multiply">K</span><input data-field="k" class="dimension" type="number" min="1" aria-label="Input length K" value="${esc(t.k)}"><span class="multiply">M</span><input data-field="m" class="dimension" type="number" min="1" aria-label="Output length M" value="${esc(t.m)}"><button class="icon-button remove-test" aria-label="Remove test ${i+1}">×</button></div><div class="test-bottom"><select data-field="pattern" aria-label="Data pattern">${Object.entries(patternNames).map(([v,n])=>`<option value="${v}" ${v===t.pattern?'selected':''}>${n}</option>`).join('')}</select><div class="weights">W ${[8,4,2].map(w=>`<label><input data-weight type="checkbox" value="${w}" ${t.weights.includes(w)?'checked':''}>${w}</label>`).join('')}</div><label>Runs <input data-field="repeats" type="number" min="1" max="100" value="${esc(t.repeats||1)}" aria-label="Repeats"></label><label>Seed <input class="seed" data-field="seed" placeholder="Random" value="${esc(t.seed||'')}" inputmode="numeric" aria-label="Optional reproducible seed"></label></div></div>`).join('');
@@ -64,6 +73,7 @@ function suitePayload() {
   return {id:state.suiteId,name:$('suite-name').value,kind,design_ids:selectedDesigns(),tests:state.tests,
     options:{mode:$('mode').value,reference:$('reference').value,cycles:$('cycles').checked,
       guards:$('guards').checked,matrices:$('matrices').checked,integrity:$('integrity').checked,
+      fp_comparison:$('fp-comparison').value,atol:$('fp-atol').disabled?0:Number($('fp-atol').value||0),rtol:$('fp-rtol').disabled?0:Number($('fp-rtol').value||0),
       stop_on_fail:$('stop-on-fail').checked,timeout:Math.round(Number($('timeout-hours').value)*3600),
       build_timeout:Math.round(Number($('build-hours').value)*3600),jobs:Number($('build-jobs').value),
       workers:Number($('workers').value),tile_k:$('mode').value==='tile'?Number($('tile-k').value||0):0,tile_m:$('mode').value==='tile'?Number($('tile-m').value||0):0,
@@ -76,6 +86,7 @@ function requestPlan() {
 async function updatePlan() {
   const sequence=++state.planSequence;
   try {
+    if(!state.fpBackend&&state.designs.some(d=>selectedDesigns().includes(d.id)&&d.activation==='fp16'))throw new Error('Restart the dashboard backend to enable FP16.');
     const plan=await api('/api/plan',suitePayload());
     if(sequence!==state.planSequence)return;
     $('plan-cases').textContent=format(plan.cases);$('plan-ops').textContent=format(plan.operations);$('plan-builds').textContent=format(plan.builds);
@@ -104,7 +115,7 @@ function kindChanged() {
   $('tc-picker').classList.toggle('hidden',$('suite-kind').value!=='test_cases');
   $('workers-field').classList.toggle('hidden',!['regression','test_cases'].includes($('suite-kind').value));
   $('t-field').classList.toggle('hidden',!['llama_shapes','llama_fast'].includes($('suite-kind').value));
-  const selected=selectedDesigns().filter(id=>custom||fast||state.designs.find(d=>d.id===id)?.builtin);
+  const selected=selectedDesigns().filter(id=>custom||fast||(state.designs.find(d=>d.id===id)?.builtin&&(state.designs.find(d=>d.id===id)?.activation||'int16')==='int16'));
   renderDesigns(selected);requestPlan();
 }
 async function saveSuite() {
@@ -122,12 +133,27 @@ function elapsed(job) {
   const seconds=Math.max(0,Math.round(((job.ended?new Date(job.ended):new Date())-new Date(job.started))/1000));
   return `${Math.floor(seconds/3600)}h ${Math.floor(seconds%3600/60)}m`;
 }
+function fpComparisonDetails(r) {
+  const c=r.comparison;if(!c)return '';
+  const short=n=>n==null?'Unavailable':n===0?'0':Number(n).toPrecision(6);
+  let needed='';
+  if(r.status==='FAIL') {
+    if(!c.outputs_complete)needed='<p>Incomplete output; a tolerance cannot establish a pass.</p>';
+    else if(r.numeric_pass)needed='<p>Final numeric values pass; inspect failed HW operations, memory guards or timing checks.</p>';
+    else if(c.nonfinite_mismatches)needed='<p>No finite tolerance fixes these NaN/infinity mismatches.</p>';
+    else needed=`<p>To pass the numeric comparison in <strong>tolerant mode</strong>: minimum <code>atol = ${esc(c.required_atol)}</code> at rtol ${esc(c.rtol)}; minimum rtol at atol ${esc(c.atol)}: <code>${c.required_rtol==null?'No finite value (zero reference)':esc(c.required_rtol)}</code>. The saved result and thresholds stay unchanged.</p>`;
+  }
+  return `<details><summary>FP32 comparison · exact ${format(c.exact_matches)}/${format(r.elements)} · max abs error ${esc(short(c.max_absolute_error))}</summary><p>Mode: ${c.mode==='exact'?'exact FP32 bits':`tolerance · atol ${esc(c.atol)}, rtol ${esc(c.rtol)}`}<br>Within tolerance: ${format(c.tolerance_matches)}/${format(r.elements)}<br>Max relative error: ${c.relative_error_unbounded?'Unbounded (nonzero HW against zero reference)':esc(short(c.max_relative_error))}</p>${needed}<p class="hint">${esc(r.reference_contract||'Exact Python / C dot product, rounded once to FP32')}${r.assembly?`<br>${esc(r.assembly)}`:''}</p></details>`;
+}
 function resultRow(r, fast) {
   const full=r.full_k!=null;
   const dimensions=r.k?`1×${r.k} · ${r.k}×${r.m}`:'Original suite';
   const sample=full?`<br><span class="hint">Full: 1×${r.full_k} · ${r.full_k}×${r.full_m}<br>${format(r.tiles_needed)} required tiles · sample ${esc(r.sample_status)}</span>`:'';
   const total=fast?`<td>${r.estimated_cycles!=null?`≈ ${format(r.estimated_cycles)}<br><span class="hint">${format(r.cycles)} × ${format(r.tiles_needed)}</span>`:full&&r.tiles_needed===1?format(r.cycles):'—'}</td>`:'';
-  return `<tr><td>${esc(r.name)}<br><span class="hint">${esc(r.design)}</span></td><td>${dimensions}${sample}</td><td>${r.wb?`16 / ${r.wb}`:'16 / 8,4,2'}</td><td>${badge(r.status)}</td><td>${r.matches!=null&&r.status!=='UNVERIFIED'?`${format(r.matches)}/${format(r.elements)}`:r.counts?esc(JSON.stringify(r.counts)):'—'}</td><td>${format(r.cycles)}</td>${total}</tr>${r.mismatches?.length?`<tr><td colspan="${fast?7:6}"><div class="mismatch">${esc(r.mismatches.map(m=>`Output ${m.index}: HW=${m.hw}, reference=${m.reference}`).join('\n'))}</div></td></tr>`:''}`;
+  const precision=`${esc((r.activation||'int16').toUpperCase())} / ${r.wb?`W${r.wb}`:'W8,4,2'}`;
+  const mismatch=r.mismatches?.length?`<div class="mismatch">${esc(r.mismatches.map(m=>`Output ${m.index}: HW=${m.hw}${m.hw_bits?' ['+m.hw_bits+']':''}, reference=${m.reference}${m.reference_bits?' ['+m.reference_bits+']':''}`).join('\n'))}</div>`:'';
+  const comparison=fpComparisonDetails(r);
+  return `<tr><td>${esc(r.name)}<br><span class="hint">${esc(r.design)}</span></td><td>${dimensions}${sample}</td><td>${precision}</td><td>${badge(r.status)}</td><td>${r.matches!=null&&r.status!=='UNVERIFIED'?`${format(r.matches)}/${format(r.elements)}`:r.counts?esc(JSON.stringify(r.counts)):'—'}</td><td>${format(r.cycles)}</td>${total}</tr>${mismatch||comparison?`<tr><td colspan="${fast?7:6}">${comparison}${mismatch}</td></tr>`:''}`;
 }
 function renderRuns() {
   const active=state.runs.filter(r=>!terminal.has(r.status)).length;
@@ -147,7 +173,7 @@ async function loadDetail() {
   const counts={};rows.forEach(r=>{if(r.counts)Object.entries(r.counts).forEach(([k,v])=>counts[k]=(counts[k]||0)+v);else counts[r.status]=(counts[r.status]||0)+1;});
   const percent=run.total?Math.min(100,100*run.completed/run.total):0;
   $('run-detail').classList.remove('empty');
-  $('run-detail').innerHTML=`<div class="card-heading"><div><h2 class="run-title">${esc(run.name)}</h2><p class="hint">${esc(run.id)} · ${esc(elapsed(run))}</p></div>${badge(run.status)}</div><div class="progress"><div style="width:${percent}%"></div></div><p class="hint">${format(run.completed)} / ${format(run.total)} logical tests · ${format(run.operations_done)} / ${format(run.operations_total)} HW operations</p><div class="run-phase"><strong>${esc(run.phase)}</strong>${run.current?`<br>${esc(run.current)}`:''}${run.tiles?`<br>Operation ${run.tile} / ${run.tiles} for this test`:''}${run.process?`<br>Simulator / build CPU time: ${format(run.process.cpu_seconds)} seconds · process ${esc(run.process.state)}`:''}</div><div class="result-stats"><div><strong>${counts.PASS||0}</strong><small>PASS</small></div><div><strong>${(counts.FAIL||0)+(counts.ERROR||0)+(counts.BUILD_FAIL||0)}</strong><small>FAIL / ERROR</small></div><div><strong>${counts.TIMEOUT||0}</strong><small>TIMEOUT</small></div><div><strong>${counts.UNVERIFIED||0}</strong><small>UNVERIFIED</small></div>${fast?`<div><strong>${counts.ESTIMATED||0}</strong><small>ESTIMATED</small></div>`:''}</div>${fast?'<p class="notice">≈ totals are measured tile cycles × required tile count. Edge tiles use full-tile cost; only sampled outputs are verified. A PASS with one required tile verifies the full shape.</p>':''}${rows.length?`<div class="table-wrap"><table><thead><tr><th>Test / design</th><th>X · W</th><th>Bits</th><th>Result</th><th>${fast?'Sample matches':'Exact matches'}</th><th>${fast?'Measured tile cycles':'HW cycles'}</th>${fast?'<th>Full HW cycles</th>':''}</tr></thead><tbody>${rows.map(r=>resultRow(r,fast)).join('')}</tbody></table></div>`:'<p class="hint">Results appear when an operation completes. A live phase is not a correctness result.</p>'}<div class="actions">${!terminal.has(run.status)?'<button class="button secondary danger" id="cancel-run">Stop this run</button>':''}<button class="button secondary" id="reuse-run">Edit a copy</button><button class="button secondary" id="compare-run">Compare cycle model</button></div><div class="log-panel"><div class="log-header"><h2>Execution log</h2><a class="text-button" id="download-log" target="_blank" rel="noopener">Open full log ↗</a></div><select id="run-log-select" aria-label="Choose log"></select><pre class="log-output" id="run-log">Loading…</pre></div>`;
+  $('run-detail').innerHTML=`<div class="card-heading"><div><h2 class="run-title">${esc(run.name)}</h2><p class="hint">${esc(run.id)} · ${esc(elapsed(run))}</p></div>${badge(run.status)}</div><div class="progress"><div style="width:${percent}%"></div></div><p class="hint">${format(run.completed)} / ${format(run.total)} logical tests · ${format(run.operations_done)} / ${format(run.operations_total)} HW operations</p><div class="run-phase"><strong>${esc(run.phase)}</strong>${run.current?`<br>${esc(run.current)}`:''}${run.tiles?`<br>Operation ${run.tile} / ${run.tiles} for this test`:''}${run.process?`<br>Simulator / build CPU time: ${format(run.process.cpu_seconds)} seconds · process ${esc(run.process.state)}`:''}</div><div class="result-stats"><div><strong>${counts.PASS||0}</strong><small>PASS</small></div><div><strong>${(counts.FAIL||0)+(counts.ERROR||0)+(counts.BUILD_FAIL||0)}</strong><small>FAIL / ERROR</small></div><div><strong>${counts.TIMEOUT||0}</strong><small>TIMEOUT</small></div><div><strong>${counts.UNVERIFIED||0}</strong><small>UNVERIFIED</small></div>${fast?`<div><strong>${counts.ESTIMATED||0}</strong><small>ESTIMATED</small></div>`:''}</div>${fast?'<p class="notice">≈ totals are measured tile cycles × required tile count. Edge tiles use full-tile cost; only sampled outputs are verified. A PASS with one required tile verifies the full shape.</p>':''}${rows.length?`<div class="table-wrap"><table><thead><tr><th>Test / design</th><th>X · W</th><th>Bits</th><th>Result</th><th>${fast?'Sample matches':'Matched outputs'}</th><th>${fast?'Measured tile cycles':'HW cycles'}</th>${fast?'<th>Full HW cycles</th>':''}</tr></thead><tbody>${rows.map(r=>resultRow(r,fast)).join('')}</tbody></table></div>`:'<p class="hint">Results appear when an operation completes. A live phase is not a correctness result.</p>'}<div class="actions">${!terminal.has(run.status)?'<button class="button secondary danger" id="cancel-run">Stop this run</button>':''}<button class="button secondary" id="reuse-run">Edit a copy</button><button class="button secondary" id="compare-run">Compare cycle model</button></div><div class="log-panel"><div class="log-header"><h2>Execution log</h2><a class="text-button" id="download-log" target="_blank" rel="noopener">Open full log ↗</a></div><select id="run-log-select" aria-label="Choose log"></select><pre class="log-output" id="run-log">Loading…</pre></div>`;
   if($('cancel-run'))$('cancel-run').onclick=async()=>{try{await api('/api/runs/'+run.id+'/stop',{});toast('Stop requested.');await pollRuns();}catch(e){toast(e.message);}};
   $('reuse-run').onclick=()=>loadSuite({...run.suite,id:null,name:run.name+' copy'});
   $('compare-run').onclick=()=>openModelSources([`gui/${run.id}/job.json`,...(run.linked_logs||[])]).catch(e=>toast(e.message));
@@ -201,6 +227,7 @@ function loadSuite(suite) {
   state.tests=suite.tests?.length?JSON.parse(JSON.stringify(suite.tests)):[{name:'16×8',k:16,m:8,weights:[8,4,2],pattern:'random',repeats:1}];
   const o=suite.options||{};
   $('mode').value=o.mode||'auto';$('reference').value=o.reference||'python';
+  $('fp-comparison').value=o.fp_comparison||'exact';$('fp-atol').value=o.atol??0;$('fp-rtol').value=o.rtol??0;
   for(const [id,key,def] of [['cycles','cycles',true],['guards','guards',true],['matrices','matrices',false],['integrity','integrity',false],['stop-on-fail','stop_on_fail',false]])$(id).checked=o[key]??def;
   $('timeout-hours').value=(o.timeout||21600)/3600;$('build-hours').value=(o.build_timeout||7200)/3600;
   $('build-jobs').value=o.jobs||8;$('workers').value=o.workers||6;$('tile-k').value=o.tile_k||'';$('tile-m').value=o.tile_m||'';$('context-t').value=o.t||16;
@@ -434,14 +461,19 @@ function wire() {
   $('suite-kind').onchange=kindChanged;$('mode').onchange=toggleTiles;
   document.querySelectorAll('#builder input,#builder select').forEach(el=>el.addEventListener('input',requestPlan));
   $('save').onclick=saveSuite;$('run').onclick=runSuite;
-  $('new-design').onclick=()=>{const d=state.designs.find(d=>selectedDesigns().includes(d.id))||state.designs[0];$('design-b').value=d.b;$('design-rf').value=d.rf;$('design-k').value=d.max_k;$('design-m').value=d.max_m;$('design-name').value='';$('design-dialog').showModal();};
-  $('design-form').onsubmit=async event=>{event.preventDefault();try{const d=await api('/api/designs',{name:$('design-name').value,b:Number($('design-b').value),rf:Number($('design-rf').value),max_k:Number($('design-k').value),max_m:Number($('design-m').value)});state.designs.push(d);renderDesigns([d.id]);$('design-dialog').close();requestPlan();toast('Design saved. It will be built when you run a suite.');}catch(e){toast(e.message);}};
+  $('fp-comparison').onchange=()=>{updateFPControls();requestPlan();};
+  ['fp-atol','fp-rtol'].forEach(id=>$(id).oninput=requestPlan);
+  $('new-design').onclick=()=>{const d=state.designs.find(d=>selectedDesigns().includes(d.id))||state.designs[0];$('design-b').value=d.b;$('design-rf').value=d.rf;$('design-k').value=d.max_k;$('design-m').value=d.max_m;$('design-activation').value=d.activation||'int16';$('design-name').value='';$('design-dialog').showModal();};
+  $('design-form').onsubmit=async event=>{event.preventDefault();try{const d=await api('/api/designs',{name:$('design-name').value,b:Number($('design-b').value),rf:Number($('design-rf').value),max_k:Number($('design-k').value),max_m:Number($('design-m').value),activation:$('design-activation').value});state.designs.push(d);if(!['custom','llama_fast'].includes($('suite-kind').value))$('suite-kind').value='custom';renderDesigns([d.id]);kindChanged();$('design-dialog').close();requestPlan();toast('Design saved. It will be built when you run a suite.');}catch(e){toast(e.message);}};
   $('load-suite').onclick=()=>{$('saved-suites').innerHTML=state.suites.length?state.suites.map(s=>`<div class="saved-suite"><div><strong>${esc(s.name)}</strong><p class="hint">${esc(s.kind)} · ${s.design_ids.length} designs</p></div><button class="button secondary open-suite" data-id="${esc(s.id)}">Open</button></div>`).join(''):'<p class="muted">Save a suite to find it here next time.</p>';$('saved-suites').querySelectorAll('.open-suite').forEach(el=>el.onclick=()=>loadSuite(state.suites.find(s=>s.id===el.dataset.id)));$('suites-dialog').showModal();};
   $('refresh-history').onclick=()=>loadHistory().catch(e=>toast(e.message));
 }
 async function initialize() {
   try{
     const data=await api('/api/initial');state.designs=data.designs;state.suites=data.suites;
+    state.fpBackend=!!data.features?.fp_comparison;
+    $('backend-update').classList.toggle('hidden',state.fpBackend);
+    $('design-activation').querySelector('option[value=fp16]').disabled=!state.fpBackend;
     $('tc-picker').innerHTML=Array.from({length:11},(_,i)=>`<label><input type="checkbox" value="TC${String(i+1).padStart(2,'0')}">TC${String(i+1).padStart(2,'0')}</label>`).join('')+'<p class="hint">Leave unchecked to run all TC01–TC11.</p>';
     state.tests=[{name:'Small random',k:16,m:8,weights:[8,4,2],pattern:'random',repeats:1,seed:''}];
     wire();renderTests();renderDesigns(['b8_rf8']);kindChanged();await updatePlan();await pollRuns();

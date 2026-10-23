@@ -12,6 +12,72 @@ checks actual hardware outputs. Input precision is 16 bits; weights are
 | Detailed test cases | `run_test_cases.py` | TC01–TC11, six designs, 3,798 runs; TC11 performs six matmuls per run | [3,792 PASS, six TIMEOUT](logs/test_cases/run_20261009/) |
 | Llama2 dimensions | `run_llama_shapes.py` | Six unique shapes × three weight precisions = 18 logical tests / 204 hardware operations | [Interrupted after 43 passing tiles](logs/llama_shapes/run_20261010_131036_621307.log) |
 
+## Build-time FP16 activation variant
+
+`src/main/scala/Config.scala` adds `FP16_ACTIVATIONS = false` to
+`LUMAX_Config`. False elaborates the original signed-integer datapath. True
+elaborates an FP16 activation datapath with signed W8/W4/W2 weights and FP32
+outputs. Changing this Boolean requires rebuilding the Verilator simulator;
+there is no runtime activation-format switch. FP16 requires input16, output32,
+maximum weight precision 8 (runtime W8/W4/W2), `Cin<=65536` and `SCALE=false`.
+
+The FP16 variant keeps the even-product lookup tables, weight lookup and odd
+weight correction. It decodes the half significand, aligns selected products
+into an exact fixed-point accumulator and rounds once to FP32, nearest with
+ties to even. This is an exact dot product followed by one FP32 rounding;
+it can differ from rounding every addition in an FP32 software loop. Subnormal
+inputs are supported. NaNs produce canonical `0x7fc00000`; infinity times
+zero and opposite infinities produce NaN. Exact cancellation returns +0.
+The wider accumulator, alignment and output conversion add hardware; this
+variant's synthesis area and timing have not been measured.
+With the current `Cin=1024`, each output accumulator is 58 bits instead of
+32, plus three special-value flag bits. None of this logic is elaborated in
+the false variant.
+
+`software/tests/src/Linear-sw.c` uses raw IEEE half bits in `uint16_t` inputs
+and raw FP32 bits in `uint32_t` outputs for this build. Its integer-only C
+reference needs no CPU floating-point unit. `build.sh` reads the Boolean from
+the same Config file and sets `LUMAX_FP16_ACTIVATIONS` automatically. Temporary
+builds can select their matching snapshot through `LUMAX_CONFIG_PATH`.
+The existing CPU-FPU option is separate from the activation format.
+
+Run the dedicated verifier from this directory:
+
+```bash
+python3 run_fp16.py --design b2_rf8 --mode both --sizes 32 128
+```
+
+Omit `--design` to verify all six existing b/RF designs. Each mode/design is
+built once with make and reused for W8/W4/W2. For each design and weight width,
+the 1×32 × 32×32 test must pass before the 1×128 × 128×128 test starts.
+Each RISC-V ELF calls the original hardware helpers and checks the actual DMA
+outputs against the C reference; every output is also compared with an exact
+Python reference on the host. Python answers are not embedded in the ELF.
+Logs retain simulator/ELF commands, source hashes, seeds, actual outputs,
+matches and hardware cycle counters under `logs/fp16/run_<date>.log`.
+Temporary builds and vectors are removed on success. This foreground runner
+uses the shared configuration lock and restores the starting configuration.
+`--quick` instead runs the small random and directed special-value smoke suite.
+
+The original script suites use integer references. Keep
+`FP16_ACTIVATIONS=false` for those standalone runners. The GUI custom matrix
+and Llama2 fast suites support both formats and explicitly select this Boolean
+for each design build. `run_fp16.py` remains the dedicated format regression.
+
+Verified on 2026-10-23 in actual Verilator: all six designs × W8/W4/W2 ×
+32×32/128×128 passed (**36 FP16 matmuls; 2,880 exact output matches**).
+The [small directed smoke run](logs/fp16/run_20261023_020521_613279.log)
+also passed all 39 cases, including subnormals, rounding and NaN/infinity
+handling. The original `Linear-sw.c` entry point passed three additional
+32×32 runs, one per weight precision, with automatic software format selection.
+The FP32 conversion RTL passed 101,133 standalone checks. For the false build,
+all 1,378 FIRRTL modules match the pre-change design exactly after removing
+source-location annotations, and the preprocessed C tokens are unchanged.
+The mirrored INT16 regression also passed all 36 matmuls: **72 PASS, 0 FAIL**
+across both modes, with 5,760 exact output matches. The
+[matrix verification log](logs/fp16/run_20261023_021731_113115.log) retains
+the numerical comparisons, hardware cycle counts and supplementary evidence.
+
 ## Local GUI — one command
 
 Run this from your normal SSH terminal, from any directory:
@@ -48,6 +114,68 @@ The dashboard views are:
   reports, timeouts and incomplete runs.
 - **Cycle model:** select saved runs and individual native operations, then
   compare their recorded hardware cycles with the editable Python model.
+
+### INT16 and FP16 activations
+
+The Designs panel contains six INT16 and six FP16 presets. Select either or
+both formats in a custom suite. **Create design → Activation format** also
+saves INT16 or FP16 with a custom b/RF/capacity. This controls the Scala Boolean
+at build time; each selected design gets its own make-built Verilator binary.
+The C operand datatype and compiler flags are checked against that design's
+saved configuration, even after the working Config.scala has been restored.
+Old saved designs and jobs without a format field continue to mean INT16.
+
+FP16 inputs use genuinely varying finite IEEE half values, including both
+signs and different exponents; the signed weight ranges remain W8/W4/W2.
+Minimum/maximum input patterns mean −65504/+65504; a one-hot input uses 1.0.
+Python decodes these half bits and calculates the exact dot before one FP32
+rounding. It never supplies the reference outputs to the RISC-V test. The
+program calls the original preload/matmul helpers and returns actual LUMAX DMA
+outputs, hardware cycles and guard results. With the RISC-V reference option,
+the FP16 C helper independently checks each operation; the assembled full
+result is still checked against the full Python dot.
+
+**FP16 output comparison** offers exact FP32 bits (default) or numeric
+tolerance. Tolerant mode requires, for every finite output:
+
+```text
+abs(HW - reference) <= atol + rtol * abs(reference)
+```
+
+INT16 always requires exact equality. Expand an FP32 comparison in Runs to
+see exact matches, matches within tolerance, maximum absolute/relative error,
+the selected thresholds and mismatched values with their FP32 bits. Failed
+numeric comparisons show the minimum atol with rtol fixed and the minimum
+rtol with atol fixed. A nonzero error against a zero reference may require
+atol; NaN/infinity mismatches cannot be repaired by a finite tolerance.
+Identical NaN bits and same-signed infinities match. Tolerant mode treats
++0/−0 as numerically equal; exact mode compares their bits. Suggested values
+are never applied automatically or used to rewrite a saved FAIL. Execution,
+guard and cycle-check failures remain failures regardless of tolerance.
+
+Output-column tiling concatenates FP32 words. Splitting K rounds each partial
+in hardware, then sums the actual FP32 partials exactly in host software and
+rounds once to FP32. The full reference still uses one exact dot followed by
+one rounding, so K tiling can create a small rounding difference. The GUI
+reports that error and the tolerance needed. Fast Llama2 verifies only its
+sample tile; extrapolated cycles retain their ESTIMATED label.
+
+Original regression/TC/full-Llama2/native-1024 script presets remain INT16;
+choose Custom matrices or Llama2 fast for FP16. The current Python cycle model
+was written for INT16, so FP16 measurements are excluded from its accuracy
+comparison with an explicit reason. The model source and equations are unchanged.
+
+After installing this GUI update, run `python3 verification/gui.py restart`
+from your normal SSH terminal and refresh the browser. If new frontend files
+are served by an older running backend, the GUI shows this restart instruction
+and keeps FP16 creation disabled until the backend supports it.
+
+The [GUI format integration check](logs/gui_fp16/run_20261023_090447_601412.log)
+passed 12 logical INT16/FP16 cases using 33 actual Verilator invocations,
+including native and K/output tiling with W8/W4/W2, the FP16 C reference and
+a directed rounding case with a verified required tolerance. Every native
+operation matched its reference bits exactly. The software/API checks passed
+42 tests; frontend syntax and format/tolerance rendering were also checked.
 
 ### Compare the Python cycle model with saved runs
 

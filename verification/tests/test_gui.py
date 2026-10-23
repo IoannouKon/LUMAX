@@ -314,6 +314,23 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(job['value']['operations_total'],18)
         self.assertEqual(job['value']['status'],'QUEUED')
 
+    def test_fp16_api_format_and_tolerance_contract(self):
+        initial=self.request('/api/initial')['value']
+        self.assertTrue(initial['features']['fp_comparison'])
+        created=self.request('/api/designs','POST',dict(name='FP API',b=2,rf=4,max_k=8,max_m=8,activation='fp16'))
+        self.assertEqual(created['code'],200)
+        self.assertEqual(created['value']['activation'],'fp16')
+        payload=dict(name='FP API suite',kind='custom',design_ids=[created['value']['id']],
+                     tests=[dict(k=4,m=4,weights=[8,4,2])],
+                     options=dict(fp_comparison='tolerance',atol=1e-6,rtol=1e-5))
+        saved=self.request('/api/suites','POST',payload)
+        self.assertEqual(saved['code'],200)
+        self.assertEqual(saved['value']['options']['rtol'],1e-5)
+        job=self.request('/api/runs','POST',payload)
+        self.assertEqual(job['value']['suite']['designs'][0]['activation'],'fp16')
+        payload['options']['atol']=-1
+        self.assertEqual(self.request('/api/plan','POST',payload)['code'],400)
+
     def test_log_reads_stay_inside_logs_root(self):
         logs=self.root/'logs';logs.mkdir(exist_ok=True)
         (logs/'example.log').write_text('Actual test log')

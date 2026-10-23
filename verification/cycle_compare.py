@@ -254,6 +254,8 @@ def gui_cases(path, source):
                          case['design'], k, m, case['wb'], op.get('cycles'), pc_stages(op.get('pc')),
                          op.get('status', 'INCOMPLETE'), b=design['b'], rf=design['rf'],
                          physical=data.get('cycle_parameters'))
+            if case.get('activation', design.get('activation', 'int16')) == 'fp16':
+                row['reason'] = 'FP16 measurements are not covered by the current INT16 Python cycle model'
             if params:
                 row['parameters'] = params
             row['logical_case'] = case['name']

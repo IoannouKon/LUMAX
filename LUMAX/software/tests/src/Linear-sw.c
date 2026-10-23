@@ -38,6 +38,14 @@ static int lumax_test_printf(const char *fmt, ...) {
 #define IN_BITS 16
 #define W_BITS 4
 
+// Compile-time format, matched to Config.scala by build.sh. No runtime mode bit.
+#ifndef LUMAX_FP16_ACTIVATIONS
+#define LUMAX_FP16_ACTIVATIONS 0
+#endif
+#if LUMAX_FP16_ACTIVATIONS && (IN_BITS != 16 || (W_BITS != 8 && W_BITS != 4 && W_BITS != 2))
+#error "FP16 activations require IN_BITS=16 and integer W_BITS=8, 4 or 2"
+#endif
+
 #define Debug 0       // print input and output matrices 
 #define PC_COUNTERS  1   // print Perforamce Counters of every stage of Accelerator 
 #define FPU  0           // Rocekt Core it used support FPU or not 
@@ -81,6 +89,9 @@ int RF = Mem_row_factor;
 
 bool cahce4_8 = false; // true false 
 #define SCALE    0 // 0 1 
+#if LUMAX_FP16_ACTIVATIONS && SCALE
+#error "FP16 mode already returns FP32; the integer SCALE path must be disabled"
+#endif
 
 //Matrix Dimensions 
 int Rin_max  = RIN_MAX;
@@ -100,7 +111,9 @@ int Cout_max = COUT_MAX;
 #endif
 
 // Calculate max weight size based on W_BITS
-#if W_BITS == 8
+#if LUMAX_FP16_ACTIVATIONS
+    #define MAX_WEIGHT_SIZE ((CIN_MAX * COUT_MAX * W_BITS + 7) / 8)
+#elif W_BITS == 8
     #define MAX_WEIGHT_SIZE (CIN_MAX * COUT_MAX)
 #elif W_BITS == 4
     #define MAX_WEIGHT_SIZE ((CIN_MAX * COUT_MAX) / 2)
@@ -111,7 +124,11 @@ int Cout_max = COUT_MAX;
 
 ////////////////////////////////////////////////////////////////////////////
 
-#if IN_BITS == 16
+#if LUMAX_FP16_ACTIVATIONS
+    typedef uint16_t input_t; // Raw IEEE binary16 bits, never cast to int16_t.
+    static const int max_in = 65535;
+    static const int min_in = 0;
+#elif IN_BITS == 16
     typedef int16_t input_t;
     static const int max_in = 32767;
     static const int min_in = -32768;
@@ -143,11 +160,66 @@ int Cout_max = COUT_MAX;
     static const int min_w = -2; 
 #endif    
 
-#if SCALE == 1
+#if LUMAX_FP16_ACTIVATIONS
+    typedef uint32_t output_t; // Raw IEEE binary32 bits; works without a CPU FPU.
+#elif SCALE == 1
     typedef float output_t; 
 #elif SCALE == 0  
     typedef int32_t output_t;  
 #endif    
+
+#if LUMAX_FP16_ACTIVATIONS
+// Exact sum in units of 2^-24, rounded once to binary32, nearest/ties-to-even.
+// Cin <= 65536 and signed W8/W4/W2 fit this signed 64-bit software reference.
+static uint32_t lumax_fixed24_to_fp32(int64_t value) {
+    if (value == 0) return 0;
+    uint32_t sign = value < 0 ? 0x80000000u : 0;
+    uint64_t mag = value < 0 ? (uint64_t)(-(value + 1)) + 1 : (uint64_t)value;
+    int top = 63 - __builtin_clzll(mag);
+    uint64_t significand;
+    if (top > 23) {
+        int drop = top - 23;
+        significand = mag >> drop;
+        uint64_t remainder = mag & ((UINT64_C(1) << drop) - 1);
+        uint64_t midpoint = UINT64_C(1) << (drop - 1);
+        if (remainder > midpoint || (remainder == midpoint && (significand & 1)))
+            ++significand;
+    } else {
+        significand = mag << (23 - top);
+    }
+    uint32_t exponent = (uint32_t)(top + 103); // top - 24 + binary32 bias 127
+    if (significand == (UINT64_C(1) << 24)) {
+        significand >>= 1;
+        ++exponent;
+    }
+    return sign | (exponent << 23) | ((uint32_t)significand & 0x7fffffu);
+}
+
+static uint32_t lumax_fp16_dot(const input_t *x, const weight_t *w, int n, int column) {
+    int64_t exact = 0;
+    unsigned nan = 0, pos_inf = 0, neg_inf = 0;
+    for (int j = 0; j < n; ++j) {
+        int index = column * n + j;
+        unsigned code = ((uint8_t)w[index * W_BITS / 8] >> ((index % (8 / W_BITS)) * W_BITS)) & ((1u << W_BITS) - 1);
+        int weight = (code & (1u << (W_BITS - 1))) ? (int)code - (1 << W_BITS) : (int)code;
+        unsigned raw = x[j], exponent = (raw >> 10) & 31u, fraction = raw & 1023u;
+        if (exponent == 31) {
+            unsigned negative = ((raw >> 15) != 0) ^ (weight < 0);
+            if (fraction || weight == 0) nan = 1;
+            else if (negative) neg_inf = 1;
+            else pos_inf = 1;
+        } else {
+            uint64_t magnitude = exponent ? (uint64_t)(1024u | fraction) << (exponent - 1) : fraction;
+            int64_t activation = (raw & 0x8000u) ? -(int64_t)magnitude : (int64_t)magnitude;
+            exact += activation * weight;
+        }
+    }
+    if (nan || (pos_inf && neg_inf)) return 0x7fc00000u;
+    if (pos_inf) return 0x7f800000u;
+    if (neg_inf) return 0xff800000u;
+    return lumax_fixed24_to_fp32(exact);
+}
+#endif
 
 
 #ifdef LUMAX_PREGENERATED_TEST
@@ -385,7 +457,9 @@ void printMatrices_out(LUMAXParams p, output_t *outputMatrix_SW, output_t *outpu
         for (int r = 0; r < p.Rin; r++) {
             for (int c = 0; c < p.Cout; c++) {
                 int index = f * p.Rin * p.Cout + r * p.Cout + c; 
-                #if SCALE == 1
+                #if LUMAX_FP16_ACTIVATIONS
+                    printf("0x%08x ", outputMatrix_SW[index]);
+                #elif SCALE == 1
                     printf("%.6f ", outputMatrix_SW[index]);
                 #elif SCALE == 0  
                     printf("%d ", outputMatrix_SW[index]);
@@ -403,7 +477,9 @@ void printMatrices_out(LUMAXParams p, output_t *outputMatrix_SW, output_t *outpu
         for (int r = 0; r < p.Rin; r++) {
             for (int c = 0; c < p.Cout; c++) {
                 int index = f * p.Rin * p.Cout + r * p.Cout + c;
-                #if SCALE == 1
+                #if LUMAX_FP16_ACTIVATIONS
+                    printf("0x%08x ", outputMatrix_HW[index]);
+                #elif SCALE == 1
                     printf("%.6f ", outputMatrix_HW[index]);
                 #elif SCALE == 0  
                     printf("%d ", outputMatrix_HW[index]);
@@ -420,7 +496,13 @@ void generate_random_matrix_in(input_t *matrix, int size) {
     // Seed the random number generator to get different values on each run
     srand(LUMAX_TEST_SEED); 
     
-    #if IN_BITS == 16 || IN_BITS == 8
+    #if LUMAX_FP16_ACTIVATIONS
+        for (int i = 0; i < size; ++i) {
+            uint16_t bits = (uint16_t)rand();
+            if ((bits & 0x7c00u) == 0x7c00u) bits ^= 0x0400u; // Random finite FP16.
+            matrix[i] = LUMAX_TEST_PATTERN == 1 ? 0xfbffu : bits;
+        }
+    #elif IN_BITS == 16 || IN_BITS == 8
         for (int i = 0; i < size; ++i) { 
             matrix[i] = LUMAX_TEST_PATTERN == 1 ? min_in : min_in + rand() % (max_in - min_in + 1);
         }
@@ -536,7 +618,9 @@ int compare_matrices(output_t* outputMatrix_HW, output_t* outputMatrix_SW,
                 }
                 
                 if (mismatch_count++ < 8) {
-                    #if SCALE == 1
+                    #if LUMAX_FP16_ACTIVATIONS
+                    printf("Mismatch [%d,%d]: HW=0x%08x SW=0x%08x (FP32 bits)\n", r, c, hw, sw);
+                    #elif SCALE == 1
                     printf("Mismatch [%d,%d]: HW=%.9g SW=%.9g\n", r, c, (double)hw, (double)sw);
                     #else
                     printf("Mismatch [%d,%d]: HW=%d SW=%d\n", r, c, hw, sw);
@@ -779,8 +863,18 @@ void SW_Mat_Mul(
     int Cin,              // Channels in input matrix (k)
     input_t *inputMatrix, // Input matrix
     weight_t *weightMatrix, // Transposed weight matrix
-    int32_t *outputMatrix_SW // Output matrix
+    #if LUMAX_FP16_ACTIVATIONS
+    output_t *outputMatrix_SW // Raw FP32 output bits
+    #else
+    int32_t *outputMatrix_SW // Original integer output matrix
+    #endif
 ) {
+#if LUMAX_FP16_ACTIVATIONS
+    for (int f = 0; f < num_filters; ++f)
+        for (int i = 0; i < Rin; ++i)
+            for (int j = 0; j < Cout; ++j)
+                outputMatrix_SW[f * Rin * Cout + i * Cout + j] = lumax_fp16_dot(inputMatrix + i * Cin, weightMatrix, Cin, j);
+#else
     for (int f = 0; f < num_filters; f++) {
         for (int i = 0; i < Rin; i++) {
             for (int j = 0; j < Cout; j++) {
@@ -799,6 +893,7 @@ void SW_Mat_Mul(
             }
         }
     }
+#endif
 }
 
 void matmul_sw_uniform(
@@ -809,6 +904,11 @@ void matmul_sw_uniform(
     int d,                        // output vector length
     int m                         // number of input vectors
 ) {
+#if LUMAX_FP16_ACTIVATIONS
+    for (int row = 0; row < m; ++row)
+        for (int column = 0; column < d; ++column)
+            xout[row * d + column] = lumax_fp16_dot(x->q + row * n, w->q, n, column);
+#else
     int32_t sum;
 
     #if SCALE == 1  
@@ -878,6 +978,7 @@ void matmul_sw_uniform(
             #endif  
         }
     }
+#endif
 }
 
 

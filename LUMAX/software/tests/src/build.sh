@@ -27,6 +27,27 @@ fi
 MODE="$1"
 read -r -a TEST_FLAGS <<< "${TEST_CFLAGS:--O2}"
 
+# Match the software datatype to the elaboration-time hardware format. A copied
+# test harness can select explicitly with -DLUMAX_FP16_ACTIVATIONS=0 or 1.
+CONFIG_SOURCE="${LUMAX_CONFIG_PATH:-$(dirname -- "${BASH_SOURCE[0]}")/../../../src/main/scala/Config.scala}"
+if [ -f "$CONFIG_SOURCE" ]; then
+  fp16_mode=$(sed -n 's/^[[:space:]]*FP16_ACTIVATIONS[[:space:]]*=[[:space:]]*\(true\|false\).*/\1/p' "$CONFIG_SOURCE")
+  case "$fp16_mode" in
+    true) fp16_define=1 ;;
+    false) fp16_define=0 ;;
+    *) echo "Missing or ambiguous FP16_ACTIVATIONS in $CONFIG_SOURCE" >&2; exit 1 ;;
+  esac
+  for flag in "${TEST_FLAGS[@]}"; do
+    case "$flag" in
+      -DLUMAX_FP16_ACTIVATIONS=*)
+        if [ "$flag" != "-DLUMAX_FP16_ACTIVATIONS=$fp16_define" ]; then
+          echo "Software FP16_ACTIVATIONS disagrees with Config.scala" >&2; exit 1
+        fi ;;
+    esac
+  done
+  TEST_FLAGS+=("-DLUMAX_FP16_ACTIVATIONS=$fp16_define")
+fi
+
 if [ "$MODE" = "baremetal" ]; then
   echo "🔧 Building bare-metal version..."
   riscv64-unknown-elf-gcc "${TEST_FLAGS[@]}" -fno-common -fno-builtin-printf -specs=htif_nano.specs -c "$SRC" -o Linear-sw.o
@@ -35,7 +56,7 @@ if [ "$MODE" = "baremetal" ]; then
 
 elif [ "$MODE" = "linux" ]; then
   echo "🐧 Building Linux version..."
-  riscv64-unknown-linux-gnu-gcc -c "$SRC" -o executable.o
+  riscv64-unknown-linux-gnu-gcc "${TEST_FLAGS[@]}" -c "$SRC" -o executable.o
   riscv64-unknown-linux-gnu-gcc -static executable.o -o "$OUT"
   echo "✅ Linux build complete: $OUT"
 

@@ -41,6 +41,14 @@ class LUMAXExample(opcodes: OpcodeSet, val params: LUMAXParams)
 class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) with HasCoreParameters {
 
   val params: LUMAXParams = outer.params
+  if (params.FP16_ACTIVATIONS) {
+    require(params.XBitWidth == 16 && params.OutBitWidth == 32 && !params.SCALE,
+      "FP16 activations require XBitWidth=16, OutBitWidth=32 and SCALE=false")
+    require(params.Cin >= 1 && params.Cin <= 65536 && params.WBitWidth == 8,
+      "FP16 supports Cin<=65536 and signed W8/W4/W2")
+  }
+  // Maximum finite FP16 * signed W8 in units of 2^-24 is strictly below 2^47.
+  val accumulatorWidth = if (params.FP16_ACTIVATIONS) 48 + log2Ceil(params.Cin) else params.OutBitWidth
   val dma = outer.dma.module
 
   // ROCC interface
@@ -88,7 +96,9 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val max_blocks_in_sync_mem = regs_per_mem
 
   // Create Scratchpad Memory 
-  val O_reg     = RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.S(params.OutBitWidth.W))))))))  // Register for Output results
+  val O_reg     = RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.S(accumulatorWidth.W))))))))  // Register for Output results
+  val fp16Meta = if (params.FP16_ACTIVATIONS) Some(Reg(Vec(totalSyncMems, new FP16ProductMeta))) else None
+  val fp16Flags = if (params.FP16_ACTIVATIONS) Some(RegInit(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.U(3.W))))))) else None
   val I_MEM = Seq.fill(totalSyncMems)(SyncReadMem(regs_per_mem/4, UInt(params.DMA_bits.W)))
   val W_MEM = Seq.fill(buffers, totalSyncMems) { SyncReadMem(regs_per_mem_w/8, UInt(params.DMA_bits.W))}
 
@@ -490,7 +500,8 @@ private def dmaResponce(
       RowsPerBlock,
       params.DMA_bits,
       product_bitwidth,
-      params.minInputBits
+      params.minInputBits,
+      params.FP16_ACTIVATIONS
     ))
   }
   
@@ -670,7 +681,7 @@ for (i <- 0 until totalSyncMems) {
      }
 
       when(cmd.fire && (mode_8)) {
-        input_bits   := rs1(5,0)
+        input_bits   := (if (params.FP16_ACTIVATIONS) 16.U else rs1(5,0))
         weight_bits  := rs1(11,6)
         output_bits  := rs1(17,12)
 
@@ -1183,7 +1194,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
             // 4. Extract Activation and Compute Product Sign
             // ---------------------------------------------
 
-            val w_reg_valid_temp =  (abs_weight_uint =/= 0.U)  &&  Valid_In_Vec(sync_mem_idx)
+            val w_reg_valid_temp = if (params.FP16_ACTIVATIONS) Valid_In_Vec(sync_mem_idx)
+              else (abs_weight_uint =/= 0.U) && Valid_In_Vec(sync_mem_idx)
 
             //Stage 2  Outputs  (all used in next satge as input )
             weight_Sint_part_Reg(sync_mem_idx) := weight_Sint_part
@@ -1245,17 +1257,29 @@ is(sLoadW_and_sSelectAndAccumulate) {
             DATA_Y(sync_mem_idx) := RegNext(y_th_x_reg)
 
             val extended_activation = sign_X_reg_part.pad(params.XBitWidth + 1)
-            val abs_val_new = Mux(extended_activation < 0.S, -extended_activation, extended_activation)
+            val abs_val_new = if (params.FP16_ACTIVATIONS) FP16Activation.significand(data).zext
+              else Mux(extended_activation < 0.S, -extended_activation, extended_activation)
             val signed_val  = Mux(product_sign === 1.U, -abs_val_new, abs_val_new)
 
             val disable = (abs_weight_uint(0) === 0.U) || (abs_weight_uint === 0.U)  || !w_reg_valid_temp
             sum(sync_mem_idx) := RegNext(Mux(disable, 0.S, signed_val))
+            if (params.FP16_ACTIVATIONS) {
+              val special = data(14, 10).andR
+              val infinity = special && !data(9, 0).orR
+              val nan = w_reg_valid_temp && special && (data(9, 0).orR || abs_weight_uint === 0.U)
+              val infProduct = w_reg_valid_temp && infinity && abs_weight_uint =/= 0.U
+              val meta = fp16Meta.get(sync_mem_idx)
+              meta.shift := RegNext(FP16Activation.shift(data))
+              meta.nonZeroWeight := RegNext(w_reg_valid_temp && abs_weight_uint =/= 0.U)
+              meta.flags := RegNext(Cat(infProduct && product_sign, infProduct && !product_sign, nan))
+            }
 
             // ---------------------------------------------
             // 6. Read Partial Product from Temp Memory
             // ---------------------------------------------
 
-            val enable_read        = READ_ON && w_reg_valid_temp
+            val enable_read        = if (params.FP16_ACTIVATIONS) READ_ON && w_reg_valid_temp && abs_weight_uint =/= 0.U
+              else READ_ON && w_reg_valid_temp
             val finalAddressInBRAM = row_idx
 
             Products(sync_mem_idx) := temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read) 
@@ -1331,15 +1355,23 @@ is(sLoadW_and_sSelectAndAccumulate) {
                                       -readDataVec_part_sign - sum(product_idx))
 
 
-                signedValue
+                if (params.FP16_ACTIVATIONS) {
+                  val meta = fp16Meta.get(product_idx)
+                  val aligned = (signedValue.pad(accumulatorWidth) << meta.shift)(accumulatorWidth - 1, 0).asSInt
+                  Mux(meta.nonZeroWeight, aligned, 0.S(accumulatorWidth.W))
+                } else signedValue
               }
 
               // Reduce with known SInt type
-              signedValues.map(_.pad(params.OutBitWidth)).reduce(_ + _)
+              signedValues.map(_.pad(accumulatorWidth)).reduce(_ + _)
             }) 
      
             for (y <- 0 until params.y_slice) {
               O_reg(0)(y)(w_idx - 0.U) :=  (O_reg(0)(y)(w_idx - 0.U) +  accum(y))
+              if (params.FP16_ACTIVATIONS) {
+                val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+                fp16Flags.get(y)(w_idx) := fp16Flags.get(y)(w_idx) | flags
+              }
             }
             
            Done_acc := RegNext(RegNext(RegNext(Done))) 
@@ -1476,7 +1508,18 @@ is(sStoreOutput) {
         dma.io.mode := true.B   
       
 
-      if(params.SCALE) { 
+      if (params.FP16_ACTIVATIONS) {
+        val words = (0 until elems_per_chunk).map { i =>
+          val index = dma_counter_a + i.U
+          val convert = Module(new Fixed24ToFP32(accumulatorWidth))
+          convert.io.value := O_reg(0)(Rin_cnt)(index)
+          convert.io.flags := fp16Flags.get(Rin_cnt)(index)
+          Mux(i.U < R_elems_per_chunk, convert.io.bits, 0.U(32.W))
+        }
+        dma.io.writeData := words.zipWithIndex.foldLeft(0.U(params.DMA_bits.W)) { case (packed, (word, i)) =>
+          packed | (word << ((i.U + done_elems_in_block) * params.OutBitWidth.U))
+        }
+      } else if(params.SCALE) {
 
        val scaleModule = Module(new Scale_Vector) 
        val dataVector = VecInit((0 until elems_per_chunk).map(i => Mux(i.U < R_elems_per_chunk, O_reg(0)(Rin_cnt)(dma_counter_a + i.U), 0.S(params.DMA_bits.W))))
@@ -1514,6 +1557,7 @@ is(sStoreOutput) {
         for (i <- 0 until elems_per_chunk) {
           when(i.U < R_elems_per_chunk) {
               O_reg(0)(Rin_cnt)(dma_counter_a + i.U) := 0.S 
+              if (params.FP16_ACTIVATIONS) fp16Flags.get(Rin_cnt)(dma_counter_a + i.U) := 0.U
           }
         }
 

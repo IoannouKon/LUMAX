@@ -13,7 +13,8 @@ class Product_Generator(
     val RowsPerBlock:Int,
     val DMA_bits:Int,
     val product_bitwidth:Int, 
-    val minInputBits:Int
+    val minInputBits:Int,
+    val FP16_ACTIVATIONS: Boolean = false
 ) extends Module {
 
   val io = IO(new Bundle {
@@ -93,7 +94,13 @@ class Product_Generator(
 
           val absVal_new = Mux(signedChunk < 0.S, (-signedChunk), signedChunk)
           val valid_x = io.valid_inputs + io.dirty_elems_x > elem_start + i.U 
-          val absVal = Mux(valid_x ,absVal_new.asUInt,0.U) 
+          val absVal = if (FP16_ACTIVATIONS) {
+            // One FP16 per 16-bit lane. The table contains exact integer significands.
+            if (i == 0) Mux(valid_x, FP16Activation.significand(data), 0.U(11.W))
+            else 0.U(11.W)
+          } else {
+            Mux(valid_x ,absVal_new.asUInt,0.U)
+          }
 
           val chunk_p   = (P_data >> (i.U * io.chunks_per_Product_bits)) & io.mask_p  // UInt(input_bits.W)
           val scaled    = (absVal << 1) 
