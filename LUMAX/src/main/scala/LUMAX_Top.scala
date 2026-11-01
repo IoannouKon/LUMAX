@@ -25,7 +25,6 @@ import chisel3.experimental._
 // my imports
 import LUMAX_PACKAGE.ChunkUtils._   // import your function from the object
 import LUMAX_PACKAGE.LUMAX_Config 
-import LUMAX_PACKAGE.MappingUtils._
 
 class LUMAXExample(opcodes: OpcodeSet, val params: LUMAXParams)
   (implicit p: Parameters) extends LazyRoCC(opcodes = opcodes) {
@@ -276,7 +275,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   //----------------------------->  Pipeline Stages in Select Phase  Registers 
 
     // stage 1 Output Registers 
-    val xThXRegVec = Reg(Vec(totalSyncMems, UInt(max_val.W)))           
+    // Activation selection previously used two registers of global indices.
+    // Keep that latency, but carry one shared cell and bank rotation instead.
+    val activationCellS3 = RegInit(0.U(math.max(1, log2Ceil(params.DMA_bits / params.XBitWidth)).W))
+    val activationBankShiftS3 = RegInit(0.U(math.max(1, log2Ceil(totalSyncMems)).W))
     val yThXRegVec = Reg(Vec(totalSyncMems, UInt(log2Ceil(params.y_slice).W)))
     val shiftedVec = Reg(Vec(totalSyncMems, UInt(params.WBitWidth.W)))
 
@@ -292,7 +294,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
     val buffIdxW     = log2Ceil(buffers)
     val chunkPartIdx = if (maxParts > 1) 1 else 0
 
-    val WRegIdxdVec  = Reg(Vec(weightBanks, UInt(log2Ceil(max_blocks_in_sync_mem*weightBanks).W))) // Shared weight positions.
+    val weightCellS2 = RegInit(0.U(math.max(1, wCellIdxW).W))
+    val weightOffsetS2 = RegInit(0.U(math.max(1, log2Ceil(params.WBitWidth / params.minWeightBits)).W))
     val Valid_In_Vec = Reg(Vec(totalSyncMems, Bool()))
 
     // stage 2 Output Registers 
@@ -306,11 +309,33 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
     val offsetWidth = log2Ceil(params.WBitWidth / params.minWeightBits)
     val cellWidth   = log2Ceil(params.DMA_bits / params.WBitWidth)
 
-    val offset_counter_1 = RegInit(0.U(offsetWidth.W))
-    val cell_counter   = RegInit(0.U(cellWidth.W))
+    // All weight banks consume the same local K position together. Count the
+    // packed element first (W8: 0; W4: 0..1; W2: 0..3), then the byte (0..7).
+    // These counters hold during stalls/drain and restart for every column.
+    val offset_counter_1 = RegInit(0.U(math.max(1, offsetWidth).W))
+    val cell_counter = RegInit(0.U(math.max(1, cellWidth).W))
+    val lastWeightOffset = Mux(weight_bits === 8.U, 0.U,
+      Mux(weight_bits === 4.U, 1.U, 3.U))
 
-    offset_counter_1 := 0.U
-    cell_counter   := 0.U
+    // One activation cursor serves both mutually exclusive phases: generate
+    // LUT products, then replay activations for every output column. Its bank
+    // rotation also preserves legacy dirty offsets across short bank blocks.
+    val activationAddress = Module(new ActivationAddressCounter(
+      totalSyncMems, bankSize_in, max_blocks_in_sync_mem,
+      params.XBitWidth / params.minInputBits,
+      params.DMA_bits / params.minInputBits - 1))
+    activationAddress.io.restart := false.B
+    activationAddress.io.advance := false.B
+    activationAddress.io.blocks := blocks_in_Sync_mem
+    activationAddress.io.elementsPerCell := x_elems_per_reg
+    activationAddress.io.startOffset := dirty_elems_x
+
+    // Each lane's starting bank is known at elaboration. Only a bank crossing
+    // from the shared cursor can rotate it; a compare/subtract handles wrap.
+    def rotatedActivationBank(lane: Int, shift: UInt): UInt = {
+      val bank = lane.U +& shift
+      Mux(bank >= totalSyncMems.U, bank - totalSyncMems.U, bank)
+    }
 
 //////////////////////////////////////////////////////////////// Help Functions //////////////////////////////////////////////////////// 
  
@@ -519,6 +544,8 @@ for (i <- 0 until totalSyncMems) {
   gen.io.blocks_in_Sync_mem := blocks_in_Sync_mem
   gen.io.counter := counter_1
   gen.io.dirty_elems_x := dirty_elems_x
+  gen.io.activation_bank := rotatedActivationBank(i, activationAddress.io.bankShift)
+  gen.io.activation_cell := activationAddress.io.cell
   gen.io.X_vals := I_vals
   gen.io.inputs_per_reg := x_elems_per_reg
   gen.io.input_bits := input_bits
@@ -589,6 +616,8 @@ for (i <- 0 until totalSyncMems) {
         j_x_temp  := 0.U 
 
         valid_inputs := 0.U
+        offset_counter_1 := 0.U
+        cell_counter := 0.U
         if (params.y_slice > 1) dirty_elems_x := 0.U
         valid_weights := VecInit(Seq.fill(buffers)(0.U((totalSyncMems*params.DMA_bits/params.WBitWidth).W)))
         
@@ -914,6 +943,8 @@ when(dma.io.d_valid) {
       i_w_temp      := i_w
 
       state      := sGenerateRegFiles 
+      // Seed selection once after X is loaded, before producing its LUT rows.
+      activationAddress.io.restart := true.B
       Products.foreach(_ := 0.U)
     
     // ------------- Sync Read Memory System ------------------ // 
@@ -953,6 +984,7 @@ is(sGenerateRegFiles) {
     cycleCount_1 := cycleCount_1 + 1.U      
 
     when(cycleCount_1 === block_rows) { 
+        activationAddress.io.advance := true.B
         counter_1    := counter_1 + 1.U
         cycleCount_1 := 0.U
         Products.foreach(_ := 0.U)
@@ -1002,6 +1034,8 @@ is(sGenerateRegFiles) {
         offset_counter := 0.U   
         offset_counter_1 := 0.U
         cell_counter   := 0.U
+        // Rewind X after generation so column zero reuses its first activation.
+        activationAddress.io.restart := true.B
         // ------------- Sync Read Memory System ------------------ // 
 
         state            := sLoadW_and_sSelectAndAccumulate
@@ -1017,6 +1051,13 @@ is(sLoadW_and_sSelectAndAccumulate) {
   when(buffers_mode.reduce(_ || _)) { // Select and accumualte Phase 
 
   val buff_index = select_buff_idx 
+
+  // Match the old one-cycle weight / two-cycle activation address pipelines.
+  // Capture every active selection cycle, including the final pipeline drain.
+  weightCellS2 := cell_counter
+  weightOffsetS2 := offset_counter_1
+  activationCellS3 := RegNext(activationAddress.io.cell, 0.U)
+  activationBankShiftS3 := RegNext(activationAddress.io.bankShift, 0.U)
 
   if(params.DEBUG) {  
       PC_Select := PC_Select + 1.U 
@@ -1096,7 +1137,6 @@ is(sLoadW_and_sSelectAndAccumulate) {
               else
                 0.U
              
-            val x_th_real = x_th_x_reg + dirty_elems_x
             val valid_x = if (params.y_slice == 1) valid_inputs > x_th_x_reg * x_elems_per_reg
               else ((sync_mem_idx / weightBanks).U < YS) &&
                 (valid_inputs > (((sync_mem_idx % weightBanks).U * blocks_in_Sync_mem + counter_2) * x_elems_per_reg))
@@ -1134,12 +1174,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
             W_reg_Index := linear_w
             
             //Stage 1  Outputs 
-            xThXRegVec(sync_mem_idx) := RegNext(x_th_real) 
             yThXRegVec(sync_mem_idx) := RegNext(y_th_x_reg)
             shiftedVec(sync_mem_idx) := shifted
-            if (sync_mem_idx < weightBanks) {
-              WRegIdxdVec(sync_mem_idx) := global_block_idx // One weight index per K lane, not per activation row.
-            }
           } 
           cycleCount_2_reg := cycleCount_2 
 
@@ -1149,46 +1185,15 @@ is(sLoadW_and_sSelectAndAccumulate) {
   
           for (sync_mem_idx <- 0 until weightBanks) {
 
-              val W_reg_Index =  WRegIdxdVec(sync_mem_idx) // global element index
-
-              val (bank_w, row_in_bank, byte_index_w, offset_new) =
-                mapIndex(
-                idx = W_reg_Index,
-                weight_bits = weight_bits,
-                blocks_in_Sync_mem = blocks_in_Sync_mem,  
-                bankSize = bankSize.U, //.min(blocks_in_Sync_mem), // TODO blocks_in_Sync_mem check for weight precision smaller 
-                totalBanks = weightBanks.U,
-                WBitWidth = params.WBitWidth
-                )
-                
-               
-
-                // when (offset_counter_1 === params.WBitWidth.U/weight_bits - 1.U) {
-                //   offset_counter_1 := 0.U
-
-                //   when (cell_counter === (params.DMA_bits/params.WBitWidth).U) {
-                //     cell_counter := 0.U
-                //   }.otherwise {
-                //     cell_counter := cell_counter + 1.U
-                //   }
-
-                // }.otherwise {
-                //   offset_counter_1 := 1.U
-                // }
-                
-                // val byte_index_w = offset_counter_1 
-                // val offset_new = offset_counter_1
-
-
-
-
-              val bank_w_idx = bank_w(log2Ceil(weightBanks) - 1, 0)
-              val byte_w_idx = byte_index_w(wCellIdxW - 1, 0)
+              // Each parallel lane owns this bank; no global-index division.
+              val byte_w_idx = weightCellS2
               val buff_idx   = buff_index(buffIdxW - 1, 0)
-              val data_64 =  W_wire(buff_idx)(bank_w_idx) 
+              val data_64 =  W_wire(buff_idx)(sync_mem_idx)
               val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
               val W_value = bytes_8(byte_w_idx)  
-              val shift_amt   = offset_new * weight_bits 
+              // Constant shifts replace offset * runtime weight_bits.
+              val shift_amt = Mux(weight_bits === 8.U, 0.U,
+                Mux(weight_bits === 4.U, weightOffsetS2 << 2, weightOffsetS2 << 1))
 
             // ------------- Sync Read Memory System ------------------ // 
 
@@ -1239,7 +1244,6 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
             //---------------- Input from previues stages  
              //From Stage 1 
-            val  x_th_x_reg =  xThXRegVec(sync_mem_idx)
             val  y_th_x_reg =  yThXRegVec(sync_mem_idx)
           
             //From Stage 2 
@@ -1252,19 +1256,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
               else w_reg_valid_temp_Reg(weightLane) && RegNext(Valid_In_Vec(sync_mem_idx))
 
 
-            val (bank_in, row_in_bank, byte_index, offset_new) =
-                mapIndex(
-                idx = x_th_x_reg,
-                weight_bits = input_bits,
-                blocks_in_Sync_mem = blocks_in_Sync_mem,
-                bankSize = bankSize_in.U,
-                totalBanks = totalSyncMems.U,
-                WBitWidth = params.XBitWidth
-            )
-
-
-            val bank_in_idx = bank_in(bankIdxW - 1, 0)
-            val byte_in_idx = byte_index(xCellIdxW - 1, 0)
+            val bank_in_idx = rotatedActivationBank(sync_mem_idx, activationBankShiftS3)
+            val byte_in_idx = activationCellS3
             val data_64 =  I_vals(bank_in_idx)
             val bytes = VecInit(Seq.tabulate(params.DMA_bits / params.XBitWidth)(i => data_64((i + 1) *  params.XBitWidth - 1, i *  params.XBitWidth)))
             val data  = bytes(byte_in_idx)    
@@ -1326,6 +1319,16 @@ is(sLoadW_and_sSelectAndAccumulate) {
           }  
 
           when(READ_ON && !Done)  { 
+            when(cycleCount_2 === x_elems_per_reg - 1.U) {
+              activationAddress.io.advance := true.B
+              when(offset_counter_1 === lastWeightOffset) {
+                offset_counter_1 := 0.U
+                cell_counter := Mux(cell_counter === (bankSize - 1).U,
+                  0.U, cell_counter + 1.U)
+              }.otherwise {
+                offset_counter_1 := offset_counter_1 + 1.U
+              }
+            }
             cycleCount_2 := Mux(cycleCount_2 === x_elems_per_reg - 1.U , 0.U ,cycleCount_2 + 1.U) 
             counter_2    := Mux(cycleCount_2 === x_elems_per_reg - 1.U ,counter_2 + 1.U,counter_2)
             Done         := Done || (cycleCount_2 === x_elems_per_reg - 1.U  && counter_2 === blocks_in_Sync_mem - 1.U)
@@ -1425,6 +1428,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
           offset_counter_1 := 0.U
           cell_counter   := 0.U
+          // Every output column replays X from the same initial bank/cell.
+          activationAddress.io.restart := true.B
          
           Products.foreach(_ := 0.U) 
           cycleCount_2 := 0.U
@@ -1528,6 +1533,8 @@ is(sLoadW_and_sSelectAndAccumulate) {
           w_idx            := 0.U
           cycleCount_2       := 0.U
           counter_2        := 0.U
+          offset_counter_1 := 0.U
+          cell_counter := 0.U
           Done             := false.B
           Done_acc         := false.B
           // buff_elems.foreach(_ := 0.U)

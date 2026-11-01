@@ -1,3 +1,5 @@
+// Legacy code: unused by the current design. Activation selection now uses
+// ActivationAddressCounter.scala; weight selection uses counters in LUMAX_Top.scala.
 package LUMAX_PACKAGE
 
 import chisel3._
@@ -14,8 +16,6 @@ object MappingUtils {
     WBitWidth: Int
   ): (UInt, UInt, UInt, UInt) = {
    
-
-    //--- New version 
     // 1. BANK
     val bank = (idx / blocks_in_Sync_mem) % totalBanks
 
@@ -32,22 +32,6 @@ object MappingUtils {
     val cell = inRow / elementsPerCell
     val offset = wrapped_index % elementsPerCell
    
-    // val cell   = inRow / elementsPerCell
-    // val offset = inRow % elementsPerCell
-    
-    // //--- Old version 
-    // val S = bankSize
-    // val B = totalBanks
-    // val rows_used_per_bank =  (blocks_in_Sync_mem + S - 1.U) / S // ceil(blocks_in_Sync_mem / S)
-    
-    // // x_th_x_reg is your linear element index
-    // val chunkIdx    = idx / S
-    // val bank     = (chunkIdx / rows_used_per_bank) % B
-    // val row = chunkIdx % rows_used_per_bank
-    // val cell  = idx % S
-    // val offset = 0.U
-
- 
     (bank, row, cell, offset)
   }
 }

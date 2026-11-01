@@ -2,7 +2,6 @@ package LUMAX_PACKAGE
 
 import chisel3._
 import chisel3.util._
-import LUMAX_PACKAGE.MappingUtils._
 
 class Product_Generator(
     val totalSyncMems: Int,
@@ -24,6 +23,10 @@ class Product_Generator(
     val blocks_in_Sync_mem      = Input(UInt(log2Ceil(RowsPerBlock + 1).W))
     val counter                 = Input(UInt(log2Ceil(RowsPerBlock + 2).W))
     val dirty_elems_x           = Input(UInt(log2Ceil(DMA_bits / minInputBits).W))
+    // The shared address counter holds these throughout one activation's LUT
+    // generation; it advances only after all product rows have been written.
+    val activation_bank        = Input(UInt(math.max(1, log2Ceil(totalSyncMems)).W))
+    val activation_cell        = Input(UInt(math.max(1, log2Ceil(DMA_bits / XBitWidth)).W))
     val X_vals                  = Input(Vec(totalSyncMems, UInt(DMA_bits.W)))
     val inputs_per_reg          = Input(UInt(2.W))
     val input_bits              = Input(UInt(6.W))
@@ -61,19 +64,9 @@ class Product_Generator(
   //       else
    //         0.U
   
-        val (bank_in, row_in_bank, byte_index_raw, offset_new) =
-            mapIndex(
-            idx = x_th_x_reg,
-            weight_bits = io.input_bits,
-            blocks_in_Sync_mem = io.blocks_in_Sync_mem,
-            bankSize = (DMA_bits/XBitWidth).U ,
-            totalBanks = totalSyncMems.U,
-            WBitWidth = XBitWidth
-        )
-
   //--------------------------------- new code 
 
-        val data_64 =  io.X_vals(bank_in(log2Ceil(totalSyncMems)-1, 0))
+        val data_64 = io.X_vals(io.activation_bank)
         val bytes = VecInit(Seq.tabulate(DMA_bits / XBitWidth)(i => data_64((i + 1) *  XBitWidth - 1, i *  XBitWidth)))
         val elem_start = if (banksPerRow > 0) {
           // The table's bank includes its activation row; validity is per row.
@@ -83,7 +76,7 @@ class Product_Generator(
 
         // Create a properly-sized wire for the index
         val byte_index = Wire(UInt(log2Ceil(math.max(DMA_bits / XBitWidth, 2)).W))
-        byte_index := byte_index_raw
+        byte_index := io.activation_cell
         val data = bytes(byte_index)
         val P_data    =   io.Product_in
         val P_slices  =   Wire(Vec(maxParts, UInt((product_bitwidth).W)))

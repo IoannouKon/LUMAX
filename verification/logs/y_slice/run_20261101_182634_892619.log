@@ -1,0 +1,939 @@
+ROW PARALLEL VERIFICATION — actual make-built Verilator / original Linear-sw.c helpers
+LOG: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/y_slice/run_20261101_182634_892619.log
+WORK: /tmp/lumax-y-slice-test-o302besd
+CONSECUTIVE MODE: 8 matmuls per ELF in one simulator boot, without reset. No printf, reference calculation or counter reads between hardware calls; outputs checked after the entire sequence. Per-operation core cycles only; FINAL_COUNTERS mix last-operation stages with cumulative combined counter.
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-o302besd/int16_ys1/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-o302besd/int16_ys1/generated-src
+MAKE PASS int16_ys1 SIMULATOR_SHA256=43e21a779db47d8fa6141ccf4d5f690277df59db92b9694af386320e3308e79f
+BOOT int16_ys1 W8: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=9db1ffaac251ceffe9e21d81d9e3860da50f668d7a90144f7a48089921778fa0
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=ede6338b40ac10b0627eee358c4f53163ddce78ebeaa94d9b4aed99ec1995f10; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/int16_ys1/w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/int16_ys1/w8_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 41 195 54 36 10 572
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 346 PC 0 0 0 0 0 0
+HW 0 0000005b 00000058 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 424 PC 0 0 0 0 0 0
+HW 1 ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 317 PC 0 0 0 0 0 0
+HW 2 0000005b 00000058 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 867 PC 0 0 0 0 0 0
+HW 3 00000a17 00000a02 000009ed fffff350 fffff36c fffff388 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 238 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 208 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 862 PC 0 0 0 0 0 0
+HW 6 00000a17 00000a02 000009ed fffff350 fffff36c fffff388 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 343 PC 0 0 0 0 0 0
+HW 7 0000005b 00000058 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 346, "cycles": null, "hw": [91, 88], "mode": "INT16", "pc": null, "python": [91, 88], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 424, "cycles": null, "hw": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "mode": "INT16", "pc": null, "python": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "rf": 4, "shape": [1, 8, 8], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 317, "cycles": null, "hw": [91, 88], "mode": "INT16", "pc": null, "python": [91, 88], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 867, "cycles": null, "hw": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104], "mode": "INT16", "pc": null, "python": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 238, "cycles": null, "hw": [4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 208, "cycles": null, "hw": [0, 0], "mode": "INT16", "pc": null, "python": [0, 0], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 862, "cycles": null, "hw": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104], "mode": "INT16", "pc": null, "python": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 343, "cycles": null, "hw": [91, 88], "mode": "INT16", "pc": null, "python": [91, 88], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+BOOT int16_ys1 W4: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=7657f8e4632d1dfe00a3cb7feb3e273b231c8d97266df7e446012bf27ac44f0f
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=d27ab238359155f6485587aa4914cfeabdf93601d96ebc863f0182fa92fab0d8; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/int16_ys1/w4_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/int16_ys1/w4_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 41 15 54 36 10 760
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 183 PC 0 0 0 0 0 0
+HW 0 0000005b 00000058 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 184 PC 0 0 0 0 0 0
+HW 1 00000018 fffffff4 00000010 fffffffc 00000018 ffffffe4 fffffff0 fffffffc 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 158 PC 0 0 0 0 0 0
+HW 2 0000005b 00000058 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 443 PC 0 0 0 0 0 0
+HW 3 0000003f 0000003a 00000025 00000000 ffffffbc ffffffd8 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 119 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 88 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 441 PC 0 0 0 0 0 0
+HW 6 0000003f 0000003a 00000025 00000000 ffffffbc ffffffd8 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 184 PC 0 0 0 0 0 0
+HW 7 0000005b 00000058 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 183, "cycles": null, "hw": [91, 88], "mode": "INT16", "pc": null, "python": [91, 88], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4], "W": [-8, -5, -2, 1, 4, 7, -6, -3, -3, 0, 3, 6, -7, -4, -1, 2, 2, 5, -8, -5, -2, 1, 4, 7, 7, -6, -3, 0, 3, 6, -7, -4, -4, -1, 2, 5, -8, -5, -2, 1, 1, 4, 7, -6, -3, 0, 3, 6, 6, -7, -4, -1, 2, 5, -8, -5, -5, -2, 1, 4, 7, -6, -3, 0]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 184, "cycles": null, "hw": [24, 4294967284, 16, 4294967292, 24, 4294967268, 4294967280, 4294967292], "mode": "INT16", "pc": null, "python": [24, 4294967284, 16, 4294967292, 24, 4294967268, 4294967280, 4294967292], "rf": 4, "shape": [1, 8, 8], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 158, "cycles": null, "hw": [91, 88], "mode": "INT16", "pc": null, "python": [91, 88], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 443, "cycles": null, "hw": [63, 58, 37, 0, 4294967228, 4294967256], "mode": "INT16", "pc": null, "python": [63, 58, 37, 0, 4294967228, 4294967256], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 119, "cycles": null, "hw": [4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 88, "cycles": null, "hw": [0, 0], "mode": "INT16", "pc": null, "python": [0, 0], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 441, "cycles": null, "hw": [63, 58, 37, 0, 4294967228, 4294967256], "mode": "INT16", "pc": null, "python": [63, 58, 37, 0, 4294967228, 4294967256], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 184, "cycles": null, "hw": [91, 88], "mode": "INT16", "pc": null, "python": [91, 88], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+BOOT int16_ys1 W2: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=173da403b8182b1c46383d4a02816999c5ea9503549d82f5a70a6d935c800242
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=10e318f88544dab641388e6925572d2b927f4af2a118b4e0937d9495c777d74c; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/int16_ys1/w2_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/int16_ys1/w2_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 31 6 36 26 10 501
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 153 PC 0 0 0 0 0 0
+HW 0 ffffffff fffffffc 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 173 PC 0 0 0 0 0 0
+HW 1 00000008 fffffffc fffffff8 fffffffc 00000008 fffffffc fffffff8 fffffffc 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 124 PC 0 0 0 0 0 0
+HW 2 ffffffff fffffffc 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 271 PC 0 0 0 0 0 0
+HW 3 0000000d 00000010 0000000b fffffff8 fffffff4 ffffffe8 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 119 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 88 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 269 PC 0 0 0 0 0 0
+HW 6 0000000d 00000010 0000000b fffffff8 fffffff4 ffffffe8 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 150 PC 0 0 0 0 0 0
+HW 7 ffffffff fffffffc 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 4, "case": "1_A", "consecutive": true, "core": 153, "cycles": null, "hw": [4294967295, 4294967292], "mode": "INT16", "pc": null, "python": [4294967295, 4294967292], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4], "W": [-2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2, -2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 173, "cycles": null, "hw": [8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292], "mode": "INT16", "pc": null, "python": [8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292], "rf": 4, "shape": [1, 8, 8], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 4, "case": "3_A_repeat", "consecutive": true, "core": 124, "cycles": null, "hw": [4294967295, 4294967292], "mode": "INT16", "pc": null, "python": [4294967295, 4294967292], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 4, "case": "4_C_multirow", "consecutive": true, "core": 271, "cycles": null, "hw": [13, 16, 11, 4294967288, 4294967284, 4294967272], "mode": "INT16", "pc": null, "python": [13, 16, 11, 4294967288, 4294967284, 4294967272], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 119, "cycles": null, "hw": [4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 88, "cycles": null, "hw": [0, 0], "mode": "INT16", "pc": null, "python": [0, 0], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 4, "case": "7_C_repeat", "consecutive": true, "core": 269, "cycles": null, "hw": [13, 16, 11, 4294967288, 4294967284, 4294967272], "mode": "INT16", "pc": null, "python": [13, 16, 11, 4294967288, 4294967284, 4294967272], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 4, "case": "8_A_final", "consecutive": true, "core": 150, "cycles": null, "hw": [4294967295, 4294967292], "mode": "INT16", "pc": null, "python": [4294967295, 4294967292], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-o302besd/int16_ys2/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-o302besd/int16_ys2/generated-src
+MAKE PASS int16_ys2 SIMULATOR_SHA256=cc64dabbb6bf007947b15d4085baf7e654f9f5339963538eb3c70f770f5e8fd3
+BOOT int16_ys2 W8: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=5844ba566f6adcc3a2d581ffefe27da2901b9d70bd6507ea5f0b2fa37efe0a92
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=996ae543f23b92448f24215f45b09aa4cf258adc33487d9c42d192fe234e53d5; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/int16_ys2/w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/int16_ys2/w8_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 68 195 54 36 19 577
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 377 PC 0 0 0 0 0 0
+HW 0 0000005b 00000058 0000005b 00000058 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 495 PC 0 0 0 0 0 0
+HW 1 ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 363 PC 0 0 0 0 0 0
+HW 2 0000005b 00000058 0000005b 00000058 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 966 PC 0 0 0 0 0 0
+HW 3 00000a17 00000a02 000009ed fffff350 fffff36c fffff388 ffffdc89 ffffdcd6 ffffdd23 ffffc5c2 ffffc640 ffffc6be 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 239 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 216 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 982 PC 0 0 0 0 0 0
+HW 6 00000a17 00000a02 000009ed fffff350 fffff36c fffff388 ffffdc89 ffffdcd6 ffffdd23 ffffc5c2 ffffc640 ffffc6be 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 387 PC 0 0 0 0 0 0
+HW 7 0000005b 00000058 0000005b 00000058 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 377, "cycles": null, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4, -3, -2, -1, 0, 1, 2, 3, 4], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 495, "cycles": null, "hw": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148, 4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "mode": "INT16", "pc": null, "python": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148, 4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "rf": 4, "shape": [2, 8, 8], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 363, "cycles": null, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 966, "cycles": null, "hw": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "mode": "INT16", "pc": null, "python": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767, -32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 239, "cycles": null, "hw": [4294967294, 2, 4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2, 4294967294, 2], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 216, "cycles": null, "hw": [0, 0, 0, 0], "mode": "INT16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 982, "cycles": null, "hw": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "mode": "INT16", "pc": null, "python": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 387, "cycles": null, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+BOOT int16_ys2 W4: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=f4ec707f036c52f6edad3a172a6d761bea098282b0ce456f0499c5fef7912bed
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=1bd34e063e730617d562b38bd83fc165dde30fb754eb9a1519c34e27fb12fe48; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/int16_ys2/w4_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/int16_ys2/w4_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 60 15 54 36 19 749
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 291 PC 0 0 0 0 0 0
+HW 0 0000005b 00000058 0000005b 00000058 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 251 PC 0 0 0 0 0 0
+HW 1 00000018 fffffff4 00000010 fffffffc 00000018 ffffffe4 fffffff0 fffffffc 00000018 fffffff4 00000010 fffffffc 00000018 ffffffe4 fffffff0 fffffffc 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 207 PC 0 0 0 0 0 0
+HW 2 0000005b 00000058 0000005b 00000058 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 542 PC 0 0 0 0 0 0
+HW 3 0000003f 0000003a 00000025 00000000 ffffffbc ffffffd8 ffffffc1 ffffff3e ffffff8b ffffff82 fffffec0 ffffff3e 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 120 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 97 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 557 PC 0 0 0 0 0 0
+HW 6 0000003f 0000003a 00000025 00000000 ffffffbc ffffffd8 ffffffc1 ffffff3e ffffff8b ffffff82 fffffec0 ffffff3e 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 185 PC 0 0 0 0 0 0
+HW 7 0000005b 00000058 0000005b 00000058 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 291, "cycles": null, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4, -3, -2, -1, 0, 1, 2, 3, 4], "W": [-8, -5, -2, 1, 4, 7, -6, -3, -3, 0, 3, 6, -7, -4, -1, 2, 2, 5, -8, -5, -2, 1, 4, 7, 7, -6, -3, 0, 3, 6, -7, -4, -4, -1, 2, 5, -8, -5, -2, 1, 1, 4, 7, -6, -3, 0, 3, 6, 6, -7, -4, -1, 2, 5, -8, -5, -5, -2, 1, 4, 7, -6, -3, 0]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 251, "cycles": null, "hw": [24, 4294967284, 16, 4294967292, 24, 4294967268, 4294967280, 4294967292, 24, 4294967284, 16, 4294967292, 24, 4294967268, 4294967280, 4294967292], "mode": "INT16", "pc": null, "python": [24, 4294967284, 16, 4294967292, 24, 4294967268, 4294967280, 4294967292, 24, 4294967284, 16, 4294967292, 24, 4294967268, 4294967280, 4294967292], "rf": 4, "shape": [2, 8, 8], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 207, "cycles": null, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 542, "cycles": null, "hw": [63, 58, 37, 0, 4294967228, 4294967256, 4294967233, 4294967102, 4294967179, 4294967170, 4294966976, 4294967102], "mode": "INT16", "pc": null, "python": [63, 58, 37, 0, 4294967228, 4294967256, 4294967233, 4294967102, 4294967179, 4294967170, 4294966976, 4294967102], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767, -32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 120, "cycles": null, "hw": [4294967294, 2, 4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2, 4294967294, 2], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 97, "cycles": null, "hw": [0, 0, 0, 0], "mode": "INT16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 557, "cycles": null, "hw": [63, 58, 37, 0, 4294967228, 4294967256, 4294967233, 4294967102, 4294967179, 4294967170, 4294966976, 4294967102], "mode": "INT16", "pc": null, "python": [63, 58, 37, 0, 4294967228, 4294967256, 4294967233, 4294967102, 4294967179, 4294967170, 4294966976, 4294967102], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 185, "cycles": null, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+BOOT int16_ys2 W2: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=8e0186a3a464d3e431f2fbf45d46c143d116a270a06d3d3aec0b18104c889f68
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=71740deb03f7c99a3da69c495ef2c20171511d277c20f94320646ca32092889e; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/int16_ys2/w2_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/int16_ys2/w2_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 72 6 54 36 19 848
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 264 PC 0 0 0 0 0 0
+HW 0 ffffffff fffffffc ffffffff fffffffc 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 240 PC 0 0 0 0 0 0
+HW 1 00000008 fffffffc fffffff8 fffffffc 00000008 fffffffc fffffff8 fffffffc 00000008 fffffffc fffffff8 fffffffc 00000008 fffffffc fffffff8 fffffffc 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 207 PC 0 0 0 0 0 0
+HW 2 ffffffff fffffffc ffffffff fffffffc 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 534 PC 0 0 0 0 0 0
+HW 3 0000000d 00000010 0000000b fffffff8 fffffff4 ffffffe8 ffffffe3 ffffffd8 ffffffc5 ffffffce ffffffbc ffffffa2 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 117 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 109 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 545 PC 0 0 0 0 0 0
+HW 6 0000000d 00000010 0000000b fffffff8 fffffff4 ffffffe8 ffffffe3 ffffffd8 ffffffc5 ffffffce ffffffbc ffffffa2 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 197 PC 0 0 0 0 0 0
+HW 7 ffffffff fffffffc ffffffff fffffffc 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 264, "cycles": null, "hw": [4294967295, 4294967292, 4294967295, 4294967292], "mode": "INT16", "pc": null, "python": [4294967295, 4294967292, 4294967295, 4294967292], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4, -3, -2, -1, 0, 1, 2, 3, 4], "W": [-2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2, -2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 240, "cycles": null, "hw": [8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292], "mode": "INT16", "pc": null, "python": [8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292, 8, 4294967292, 4294967288, 4294967292], "rf": 4, "shape": [2, 8, 8], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 207, "cycles": null, "hw": [4294967295, 4294967292, 4294967295, 4294967292], "mode": "INT16", "pc": null, "python": [4294967295, 4294967292, 4294967295, 4294967292], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 534, "cycles": null, "hw": [13, 16, 11, 4294967288, 4294967284, 4294967272, 4294967267, 4294967256, 4294967237, 4294967246, 4294967228, 4294967202], "mode": "INT16", "pc": null, "python": [13, 16, 11, 4294967288, 4294967284, 4294967272, 4294967267, 4294967256, 4294967237, 4294967246, 4294967228, 4294967202], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767, -32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 117, "cycles": null, "hw": [4294967294, 2, 4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2, 4294967294, 2], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 109, "cycles": null, "hw": [0, 0, 0, 0], "mode": "INT16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 545, "cycles": null, "hw": [13, 16, 11, 4294967288, 4294967284, 4294967272, 4294967267, 4294967256, 4294967237, 4294967246, 4294967228, 4294967202], "mode": "INT16", "pc": null, "python": [13, 16, 11, 4294967288, 4294967284, 4294967272, 4294967267, 4294967256, 4294967237, 4294967246, 4294967228, 4294967202], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 197, "cycles": null, "hw": [4294967295, 4294967292, 4294967295, 4294967292], "mode": "INT16", "pc": null, "python": [4294967295, 4294967292, 4294967295, 4294967292], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-o302besd/fp16_ys1/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-o302besd/fp16_ys1/generated-src
+MAKE PASS fp16_ys1 SIMULATOR_SHA256=c31fbbf5a1fcd33f255fad894aae96737b12ad06e18c68a8c72c6f54507c45ae
+BOOT fp16_ys1 W8: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=a955e2d9e8051dc90565dbde40887fd9ae37c4ddce3ff17163ae603459575be8
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=a43dbe918c55dc448c80ea1b0fa6fa31407f944eecc0c82ecb1bc485ad8dfac7; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/fp16_ys1/w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/fp16_ys1/w8_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 41 195 54 36 10 572
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 360 PC 0 0 0 0 0 0
+HW 0 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 423 PC 0 0 0 0 0 0
+HW 1 c36cff48 c365ff4c c35eff50 c357ff54 c350ff58 c349ff5c c342ff60 c33bff64 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 316 PC 0 0 0 0 0 0
+HW 2 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 866 PC 0 0 0 0 0 0
+HW 3 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 237 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 206 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 864 PC 0 0 0 0 0 0
+HW 6 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 342 PC 0 0 0 0 0 0
+HW 7 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 360, "cycles": null, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 423, "cycles": null, "hw": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "mode": "FP16", "pc": null, "python": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "rf": 4, "shape": [1, 8, 8], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 316, "cycles": null, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 866, "cycles": null, "hw": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "mode": "FP16", "pc": null, "python": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 237, "cycles": null, "hw": [2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 206, "cycles": null, "hw": [0, 0], "mode": "FP16", "pc": null, "python": [0, 0], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 864, "cycles": null, "hw": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "mode": "FP16", "pc": null, "python": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 342, "cycles": null, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+BOOT fp16_ys1 W4: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=234530bac779eb6dd2dd308af4ffee32e6a857edcfd9ef21620917de26268686
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=f3841464e18d30b9d8e0098895e11e0592a2181d3ab29ea5f094f8aa93242273; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/fp16_ys1/w4_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/fp16_ys1/w4_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 41 15 54 36 10 760
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 187 PC 0 0 0 0 0 0
+HW 0 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 184 PC 0 0 0 0 0 0
+HW 1 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 158 PC 0 0 0 0 0 0
+HW 2 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 447 PC 0 0 0 0 0 0
+HW 3 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 119 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 88 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 437 PC 0 0 0 0 0 0
+HW 6 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 186 PC 0 0 0 0 0 0
+HW 7 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 187, "cycles": null, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-8, -5, -2, 1, 4, 7, -6, -3, -3, 0, 3, 6, -7, -4, -1, 2, 2, 5, -8, -5, -2, 1, 4, 7, 7, -6, -3, 0, 3, 6, -7, -4, -4, -1, 2, 5, -8, -5, -2, 1, 1, 4, 7, -6, -3, 0, 3, 6, 6, -7, -4, -1, 2, 5, -8, -5, -5, -2, 1, 4, 7, -6, -3, 0]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 184, "cycles": null, "hw": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "mode": "FP16", "pc": null, "python": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "rf": 4, "shape": [1, 8, 8], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 158, "cycles": null, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 447, "cycles": null, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": null, "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 119, "cycles": null, "hw": [2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 88, "cycles": null, "hw": [0, 0], "mode": "FP16", "pc": null, "python": [0, 0], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 437, "cycles": null, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": null, "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 4, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 186, "cycles": null, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 4, "y_slice": 1}
+BOOT fp16_ys1 W2: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=990f40b057e0c3ce1af961e02bddf727817659ba448eb91ddbb13043f417b7c2
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=02c57aab34c0513983513ba986203a21b75cfa272bebd34c9ba5b0bc69bb1df1; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/fp16_ys1/w2_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/fp16_ys1/w2_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 31 6 36 26 10 512
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 160 PC 0 0 0 0 0 0
+HW 0 477fe255 c7ffe0d5 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 173 PC 0 0 0 0 0 0
+HW 1 c0b55400 c02aad00 403ffe00 3f2ab403 c0b55400 c02aad00 403ffe00 3f2ab403 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 124 PC 0 0 0 0 0 0
+HW 2 477fe255 c7ffe0d5 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 275 PC 0 0 0 0 0 0
+HW 3 c06aa700 40b55500 c1100040 406aa700 c0b55500 41100040 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 119 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 88 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 265 PC 0 0 0 0 0 0
+HW 6 c06aa700 40b55500 c1100040 406aa700 c0b55500 41100040 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 150 PC 0 0 0 0 0 0
+HW 7 477fe255 c7ffe0d5 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 4, "case": "1_A", "consecutive": true, "core": 160, "cycles": null, "hw": [1199563349, 3355435221], "mode": "FP16", "pc": null, "python": [1199563349, 3355435221], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2, -2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 173, "cycles": null, "hw": [3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203], "mode": "FP16", "pc": null, "python": [3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203], "rf": 4, "shape": [1, 8, 8], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 4, "case": "3_A_repeat", "consecutive": true, "core": 124, "cycles": null, "hw": [1199563349, 3355435221], "mode": "FP16", "pc": null, "python": [1199563349, 3355435221], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 4, "case": "4_C_multirow", "consecutive": true, "core": 275, "cycles": null, "hw": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "mode": "FP16", "pc": null, "python": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 119, "cycles": null, "hw": [2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 88, "cycles": null, "hw": [0, 0], "mode": "FP16", "pc": null, "python": [0, 0], "rf": 4, "shape": [1, 4, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 4, "case": "7_C_repeat", "consecutive": true, "core": 265, "cycles": null, "hw": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "mode": "FP16", "pc": null, "python": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "rf": 4, "shape": [2, 7, 3], "status": "PASS", "wb": 2, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 4, "case": "8_A_final", "consecutive": true, "core": 150, "cycles": null, "hw": [1199563349, 3355435221], "mode": "FP16", "pc": null, "python": [1199563349, 3355435221], "rf": 4, "shape": [1, 6, 2], "status": "PASS", "wb": 2, "y_slice": 1}
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-o302besd/fp16_ys2/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-o302besd/fp16_ys2/generated-src
+MAKE PASS fp16_ys2 SIMULATOR_SHA256=1382a7c2f6a01f636cbad0ee9a9f5314a8ad9e9c122ded4b96bdbdd6555c4b7d
+BOOT fp16_ys2 W8: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=bb8c5a1c4ce0755b43c370cdd4868067e72f101a7e0b0abbd83874e48a2086b7
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=23d162021223c033de2b5311b2c7f900fdf23405e262c8b1811a3193a1f81fcd; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/fp16_ys2/w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/fp16_ys2/w8_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 72 195 54 36 19 572
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 402 PC 0 0 0 0 0 0
+HW 0 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 503 PC 0 0 0 0 0 0
+HW 1 c36cff48 c365ff4c c35eff50 c357ff54 c350ff58 c349ff5c c342ff60 c33bff64 c36cff48 c365ff4c c35eff50 c357ff54 c350ff58 c349ff5c c342ff60 c33bff64 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 363 PC 0 0 0 0 0 0
+HW 2 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 971 PC 0 0 0 0 0 0
+HW 3 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 236 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 225 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 970 PC 0 0 0 0 0 0
+HW 6 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 357 PC 0 0 0 0 0 0
+HW 7 487fdfab 483fe880 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 402, "cycles": null, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128, 15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 503, "cycles": null, "hw": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124, 3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "mode": "FP16", "pc": null, "python": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124, 3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "rf": 4, "shape": [2, 8, 8], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 363, "cycles": null, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 971, "cycles": null, "hw": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359, 3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "mode": "FP16", "pc": null, "python": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359, 3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [32256, 15360, 48128, 0, 32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 236, "cycles": null, "hw": [2143289344, 2143289344, 2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344, 2143289344, 2143289344], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 225, "cycles": null, "hw": [0, 0, 0, 0], "mode": "FP16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 970, "cycles": null, "hw": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359, 3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "mode": "FP16", "pc": null, "python": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359, 3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 357, "cycles": null, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+BOOT fp16_ys2 W4: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=eecb820c5f9e17b21152726cc8645902886ab4411aa1a53bd6b0e67892ff24e1
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=c4aeefa1d76dbe64ff63a77d761e069f20c7368f1643eacf36c3f29e032a5636; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/fp16_ys2/w4_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/fp16_ys2/w4_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 68 15 54 36 19 760
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 254 PC 0 0 0 0 0 0
+HW 0 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 262 PC 0 0 0 0 0 0
+HW 1 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 203 PC 0 0 0 0 0 0
+HW 2 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 553 PC 0 0 0 0 0 0
+HW 3 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 116 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 105 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 557 PC 0 0 0 0 0 0
+HW 6 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 193 PC 0 0 0 0 0 0
+HW 7 487fdfab 483fe880 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 254, "cycles": null, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128, 15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-8, -5, -2, 1, 4, 7, -6, -3, -3, 0, 3, 6, -7, -4, -1, 2, 2, 5, -8, -5, -2, 1, 4, 7, 7, -6, -3, 0, 3, 6, -7, -4, -4, -1, 2, 5, -8, -5, -2, 1, 1, 4, 7, -6, -3, 0, 3, 6, 6, -7, -4, -1, 2, 5, -8, -5, -5, -2, 1, 4, 7, -6, -3, 0]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 262, "cycles": null, "hw": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496, 1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "mode": "FP16", "pc": null, "python": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496, 1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "rf": 4, "shape": [2, 8, 8], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 203, "cycles": null, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 553, "cycles": null, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": null, "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [32256, 15360, 48128, 0, 32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 116, "cycles": null, "hw": [2143289344, 2143289344, 2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344, 2143289344, 2143289344], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 105, "cycles": null, "hw": [0, 0, 0, 0], "mode": "FP16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 557, "cycles": null, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": null, "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 193, "cycles": null, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+BOOT fp16_ys2 W2: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=6b4f3f116f8335f3756fd319b20b2d089916381331e3f7bd5b13dfb973ff9f3e
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=59b5e58967e7bf98b00c64333805651b89bdc5283559dc224df28d7f28aecf77; no Python answers embedded
+COMMAND: /tmp/lumax-y-slice-test-o302besd/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-o302besd/fp16_ys2/w2_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-o302besd/fp16_ys2/w2_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 68 6 54 36 19 849
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 254 PC 0 0 0 0 0 0
+HW 0 477fe255 c7ffe0d5 477fe255 c7ffe0d5 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 252 PC 0 0 0 0 0 0
+HW 1 c0b55400 c02aad00 403ffe00 3f2ab403 c0b55400 c02aad00 403ffe00 3f2ab403 c0b55400 c02aad00 403ffe00 3f2ab403 c0b55400 c02aad00 403ffe00 3f2ab403 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 203 PC 0 0 0 0 0 0
+HW 2 477fe255 c7ffe0d5 477fe255 c7ffe0d5 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 546 PC 0 0 0 0 0 0
+HW 3 c06aa700 40b55500 c1100040 406aa700 c0b55500 41100040 c06aa700 40b55500 c1100040 406aa700 c0b55500 41100040 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 116 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 105 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 558 PC 0 0 0 0 0 0
+HW 6 c06aa700 40b55500 c1100040 406aa700 c0b55500 41100040 c06aa700 40b55500 c1100040 406aa700 c0b55500 41100040 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 193 PC 0 0 0 0 0 0
+HW 7 477fe255 c7ffe0d5 477fe255 c7ffe0d5 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-o302besd/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 2, "case": "1_A", "consecutive": true, "core": 254, "cycles": null, "hw": [1199563349, 3355435221, 1199563349, 3355435221], "mode": "FP16", "pc": null, "python": [1199563349, 3355435221, 1199563349, 3355435221], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128, 15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2, -2, 1, 0, -1, -2, 1, 0, -1, -1, -2, 1, 0, -1, -2, 1, 0, 0, -1, -2, 1, 0, -1, -2, 1, 1, 0, -1, -2, 1, 0, -1, -2]}
+CASE RESULT: {"b": 2, "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 252, "cycles": null, "hw": [3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203], "mode": "FP16", "pc": null, "python": [3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203, 3233108992, 3224022272, 1077935616, 1059763203], "rf": 4, "shape": [2, 8, 8], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 203, "cycles": null, "hw": [1199563349, 3355435221, 1199563349, 3355435221], "mode": "FP16", "pc": null, "python": [1199563349, 3355435221, 1199563349, 3355435221], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 546, "cycles": null, "hw": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680, 3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "mode": "FP16", "pc": null, "python": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680, 3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [32256, 15360, 48128, 0, 32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "5_poison", "consecutive": true, "core": 116, "cycles": null, "hw": [2143289344, 2143289344, 2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344, 2143289344, 2143289344], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 105, "cycles": null, "hw": [0, 0, 0, 0], "mode": "FP16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "shape": [2, 4, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2, -1, 0, 1, -2]}
+CASE RESULT: {"b": 2, "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 558, "cycles": null, "hw": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680, 3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "mode": "FP16", "pc": null, "python": [3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680, 3228215040, 1085625600, 3239051328, 1080731392, 3233109248, 1091567680], "rf": 4, "shape": [4, 7, 3], "status": "PASS", "wb": 2, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 0, -1, 1, 0, -1, 1, -2, -2, 1, 1, 0]}
+CASE RESULT: {"b": 2, "block": 2, "case": "8_A_final", "consecutive": true, "core": 193, "cycles": null, "hw": [1199563349, 3355435221, 1199563349, 3355435221], "mode": "FP16", "pc": null, "python": [1199563349, 3355435221, 1199563349, 3355435221], "rf": 4, "shape": [2, 6, 2], "status": "PASS", "wb": 2, "y_slice": 2}
+TOTAL: {"PASS": 96, "FAIL": 0}
+RUN COMPLETE. Config restored; temporary builds, vectors and executables removed.
+
+COUNTER IMPLEMENTATION VERIFICATION NOTES
+All three production mapIndex calls removed: LUT generation, packed weight selection, and activation selection during accumulation. MappingUtils.scala remains an unused legacy utility; it is not called by the design.
+SOURCE SHA256: {"/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ActivationAddressCounter.scala": "96455715df262e38e9a6f0da17aa57ee73fcb90ac13a79a450493bc9b4d774b4", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ChunkInfoModules.scala": "82aca247c111b08b40076319bd5acd3409f7864338797987fb95265d921c077f", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala": "2f51e2c44ea42326f5a16ae3d8cb7062ef4c8da70eda92a5c19b70e86fec9abc", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/FP16.scala": "302c65579d55bf4d85e2339442bc66c3f385d946c22afef06be381b0fb1f07b5", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala": "796c2e4205a3c757e84eadc07f1a0614c1e7b654dc81fd6eb5ec021c9b3a9ddc", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/MappingUtils.scala": "ba4b474dd75572916fa34f95383a36fc8bcc815b09bac05edf9c1df59f80dda8", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Product_Generator.scala": "ae831e45b6e71e7363deea044b76b3fa3dcf85b26bf2e72fcff6b1cf65b317d4", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Scale.scala": "005263d0fd829b5c8a87754feceba8e67d0bbfd360366b4dd9041d2be25b3c0c", "/home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/SignExtractor.scala": "ca3f88160ca905f89615aba66f9eae93927e8c6a82e569d0f2e46dd9835e0ad6"}
+SOFTWARE/GUI UNIT TESTS: python3 -m unittest discover -s verification/tests -v: 49 tests PASS, 7.123 seconds.
+DIRECT RTL PASS banks=2 checks=1597456; blocks 1..256, offsets 0..7, packing 1/2, stalls, restart priority, repeated bank/word wraps
+GENERATED RTL SHA256 direct_banks2: e0a7179dcf9a98965450faf4e2135899157d883435b19d258f65940df4d49b8f
+DIRECT RTL PASS banks=4 checks=1597456; blocks 1..256, offsets 0..7, packing 1/2, stalls, restart priority, repeated bank/word wraps
+GENERATED RTL SHA256 direct_banks4: 54304058086e7247480c43ddfa0f1e52e176e9e97b454235ccecc4644c1e5cdb
+Mathematical activation-address equivalence (additional non-RTL check): 2,154,496 checks PASS for banks 2/4/8/16, bank lengths 1..256, startup offsets 0..7 and packing 1/2.
+HISTORICAL CYCLE COMPARISON: saved ID2 consecutive tests in run_20261101_140546_883039.log, matching mode, Y_SLICE, precision, shape, block and case. All 24 matched cases have identical output words AND identical core cycles.
+[
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "1_A",
+    "old_core": 377,
+    "new_core": 377,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "2_B_changed_shape_and_block",
+    "old_core": 495,
+    "new_core": 495,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "3_A_repeat",
+    "old_core": 363,
+    "new_core": 363,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "4_C_multirow",
+    "old_core": 966,
+    "new_core": 966,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "5_poison",
+    "old_core": 239,
+    "new_core": 239,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "6_zero_after_poison",
+    "old_core": 216,
+    "new_core": 216,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "7_C_repeat",
+    "old_core": 982,
+    "new_core": 982,
+    "outputs_equal": true
+  },
+  {
+    "mode": "INT16",
+    "ys": 2,
+    "wb": 8,
+    "case": "8_A_final",
+    "old_core": 387,
+    "new_core": 387,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "1_A",
+    "old_core": 360,
+    "new_core": 360,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "2_B_changed_shape_and_block",
+    "old_core": 423,
+    "new_core": 423,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "3_A_repeat",
+    "old_core": 316,
+    "new_core": 316,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "4_C_multirow",
+    "old_core": 866,
+    "new_core": 866,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "5_poison",
+    "old_core": 237,
+    "new_core": 237,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "6_zero_after_poison",
+    "old_core": 206,
+    "new_core": 206,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "7_C_repeat",
+    "old_core": 864,
+    "new_core": 864,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 1,
+    "wb": 8,
+    "case": "8_A_final",
+    "old_core": 342,
+    "new_core": 342,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "1_A",
+    "old_core": 254,
+    "new_core": 254,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "2_B_changed_shape_and_block",
+    "old_core": 262,
+    "new_core": 262,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "3_A_repeat",
+    "old_core": 203,
+    "new_core": 203,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "4_C_multirow",
+    "old_core": 553,
+    "new_core": 553,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "5_poison",
+    "old_core": 116,
+    "new_core": 116,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "6_zero_after_poison",
+    "old_core": 105,
+    "new_core": 105,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "7_C_repeat",
+    "old_core": 557,
+    "new_core": 557,
+    "outputs_equal": true
+  },
+  {
+    "mode": "FP16",
+    "ys": 2,
+    "wb": 4,
+    "case": "8_A_final",
+    "old_core": 193,
+    "new_core": 193,
+    "outputs_equal": true
+  }
+]
+No synthesis or static timing analysis performed; area/Fmax improvements are not measured. No extra FSM cycles or pipeline stages added.
+Additional b8_rf8, Y_SLICE=2, DMA IDs=6 boundary verification: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/y_slice/run_20261101_183943_693375.log
+
+FINAL COMBINED COUNTER VERIFICATION SUMMARY
+{"config_restored": true, "direct_rtl_address_checks": 9536567, "exact_output_words": 996, "failed": 0, "historical_identical_outputs_and_core_cycles": 24, "matmuls": 138, "passed": 138, "software_gui_unit_tests_passed": 49}
+Design | RF | Y_SLICE | Activation format | PASS | FAIL
+b2 | 4 | 1 | FP16 | 24 | 0
+b2 | 4 | 1 | INT16 | 24 | 0
+b2 | 4 | 2 | FP16 | 24 | 0
+b2 | 4 | 2 | INT16 | 24 | 0
+b8 | 8 | 2 | FP16 | 21 | 0
+b8 | 8 | 2 | INT16 | 21 | 0
+{"checks": 1597456, "result": "DIRECT RTL PASS banks=2 checks=1597456; blocks 1..256, offsets 0..7, packing 1/2, stalls, restart priority, repeated bank/word wraps", "rtl_sha256": "e0a7179dcf9a98965450faf4e2135899157d883435b19d258f65940df4d49b8f"}
+{"checks": 1597456, "result": "DIRECT RTL PASS banks=4 checks=1597456; blocks 1..256, offsets 0..7, packing 1/2, stalls, restart priority, repeated bank/word wraps", "rtl_sha256": "54304058086e7247480c43ddfa0f1e52e176e9e97b454235ccecc4644c1e5cdb"}
+{"checks": 6341655, "result": "DIRECT RTL PASS banks=16 checks=6341655; blocks 1..512, offsets 0..7, packing 1/2, stalls, restart priority, repeated bank/word wraps", "rtl_sha256": "4a1d08f901ab38533b33965df02c0e5bed3b5518de5c0991674d40492524a7c2"}
+Every matmul executes a make-built Chipyard Verilator simulator and a real RISC-V ELF that calls the unchanged Linear-sw.c hardware/RoCC helpers. Python reference results are compared against actual UART output words and are not embedded as answers in the ELF. C software reference and canary guards must also pass.
+Consecutive calls have no reference calculation, output print or stage-counter reads between hardware matmuls. Per-call core cycles are saved; per-call stage-cycle fields are intentionally null in consecutive mode.
+Startup activation offset normalization uses bounded comparisons/subtractions and shifts; steady sequential selection uses counters, wrap comparisons and known lane bank numbers. No extra FSM cycles or pipeline stages added. No synthesis/STA area or Fmax claim.
+Config.scala restored byte-for-byte: 291d7246a2dc99beb71b09f8650ecdc91757bad654a4ca6f2cd5c4da99f0fbbb
+Production Scala source hashes remain identical to both recorded test runs. MappingUtils.scala is retained as unused source; all three selection call sites now use counters.
+
+REPRODUCIBLE DIRECT RTL TESTBENCH (C++ reference arithmetic is testbench-only)
+#include "VActivationAddressCounter.h"
+#include "verilated.h"
+#include <cstdint>
+#include <iostream>
+#include <stdexcept>
+
+int main(int argc, char **argv) {
+  Verilated::commandArgs(argc, argv);
+  const unsigned banks = argc > 1 ? std::stoul(argv[1]) : 2;
+  const unsigned maxBlocks = argc > 2 ? std::stoul(argv[2]) : 256;
+  VActivationAddressCounter d;
+  auto tick = [&]() { d.clock=0;d.eval();d.clock=1;d.eval();d.clock=0;d.eval(); };
+  d.reset=1;d.io_restart=0;d.io_advance=0;tick();d.reset=0;
+  uint64_t checked=0;
+  uint32_t random=1729381;
+  for (unsigned packed : {1u,2u}) {
+    for (unsigned blocks=1;blocks<=maxBlocks;blocks++) {
+      for (unsigned dirty=0;dirty<8;dirty++) {
+        d.io_blocks=blocks;d.io_elementsPerCell=packed;d.io_startOffset=dirty;
+        // Restart must win even when advance is also asserted.
+        d.io_restart=1;d.io_advance=1;tick();d.io_restart=0;
+        for (unsigned step=0;step<blocks*2+3;step++) {
+          auto check = [&]() {
+            const unsigned index=step+dirty,local=index%blocks;
+            if (d.io_bankShift!=(index/blocks)%banks || d.io_cell!=(local/packed)%4) {
+              std::cerr<<"FAIL blocks="<<blocks<<" dirty="<<dirty<<" packed="<<packed
+                       <<" step="<<step<<" bank="<<unsigned(d.io_bankShift)
+                       <<" cell="<<unsigned(d.io_cell)<<"\n";
+              throw std::runtime_error("RTL address differs from original mapping");
+            }
+            checked++;
+          };
+          check();
+          random^=random<<13;random^=random>>17;random^=random<<5;
+          if (random&1) { d.io_advance=0;tick();check(); }
+          d.io_advance=1;tick();
+        }
+      }
+    }
+  }
+  d.final();
+  std::cout<<"DIRECT RTL PASS banks="<<banks<<" checks="<<checked
+           <<"; blocks 1.."<<maxBlocks<<", offsets 0..7, packing 1/2, stalls, restart priority, repeated bank/word wraps\n";
+}
+
+DIRECT RTL BUILD/RUN DRIVER
+from pathlib import Path
+import sys, subprocess, shutil
+root=Path('/home/kioannou/chipyard_1.13.0/generators/LUMAX')
+sys.path.insert(0,str(root/'verification'))
+import run_llama_shapes as hw
+work=Path(__file__).resolve().parent
+src=Path(sys.argv[1])
+label=sys.argv[2]
+banks=sys.argv[3]
+case=work/label;case.mkdir(exist_ok=True)
+sv=case/'ActivationAddressCounter.sv';shutil.copy2(src,sv)
+env=hw.environment()
+cmd=['verilator','--cc','--exe','--build','-j','4','--assert','-Wno-fatal','--top-module','ActivationAddressCounter','--Mdir',str(case/'obj'),str(sv),str(work/'address_test.cpp')]
+with (case/'build.log').open('w') as out:
+    result=subprocess.run(cmd,env=env,stdout=out,stderr=subprocess.STDOUT)
+if result.returncode:
+    print((case/'build.log').read_text()[-4000:]);raise SystemExit(result.returncode)
+result=subprocess.run([str(case/'obj/VActivationAddressCounter'),banks]+sys.argv[4:],env=env,capture_output=True,text=True)
+(case/'result.log').write_text(result.stdout+result.stderr)
+print(result.stdout+result.stderr)
+raise SystemExit(result.returncode)
+
+TEMPORARY FULL-HW BOUNDARY HARNESS (original permanent run_y_slice.py source generator is reused)
+"""Temporary real-HW counter boundary tests; no production scripts modified."""
+import fcntl, hashlib, json, os, re, secrets, shlex, shutil, signal, subprocess, sys, time
+from datetime import datetime
+from pathlib import Path
+root=Path('/home/kioannou/chipyard_1.13.0/generators/LUMAX')
+sys.dont_write_bytecode=True
+sys.path.insert(0,str(root/'verification'))
+import run_y_slice as y
+hw=y.hw
+work=Path(__file__).resolve().parent/'edges'
+work.mkdir(exist_ok=True)
+logfile=root/'verification/logs/y_slice'/('run_'+datetime.now().strftime('%Y%m%d_%H%M%S_%f')+'.log')
+def log(value):
+    with logfile.open('a') as f:f.write(str(value)+'\n')
+    print(value,flush=True)
+def command(cmd,cwd,output,env,timeout=3600):
+    log('COMMAND: '+shlex.join(list(map(str,cmd))))
+    with output.open('w') as f:
+        p=subprocess.Popen(cmd,cwd=cwd,env=env,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
+        try:code=p.wait(timeout)
+        except BaseException:
+            os.killpg(p.pid,signal.SIGTERM)
+            try:p.wait(5)
+            except subprocess.TimeoutExpired:os.killpg(p.pid,signal.SIGKILL);p.wait()
+            raise
+    if code:raise RuntimeError(str(output)+'\n'+output.read_text(errors='replace')[-5000:])
+def cases(wb,floating):
+    rng=hw.RandomValues(secrets.randbits(64))
+    result=[]
+    for name,r,k,m in [('tiny_K1',3,1,3),('short_K3',4,3,3),('activation_word_and_tail',4,17,3),('multiple_words',2,65,5),('weight_word_wrap',4,264,3),('zero_after_large',4,33,3)]:
+        x=([0]*(r*k) if name.startswith('zero') else
+           [([0x3c00,0xbc00,0x3555,0x0400,1,0x8001,0x7bff,0][rng.value(16)&7] if floating else rng.value(16)) for _ in range(r*k)])
+        w=[rng.value(wb) for _ in range(k*m)]
+        expected=sum((y.fp.reference(x[row*k:(row+1)*k],w,m,floating) for row in range(r)),[])
+        result.append(dict(name=name,r=r,k=k,m=m,x=x,w=w,block=min(k,8*8*(1<<(8-wb))),expected=expected))
+    result.append(dict(result[0],name='tiny_repeat_after_large'))
+    return result
+
+log('COUNTER BOUNDARY VERIFICATION: actual make-built b8_rf8 Y_SLICE=2 DMA IDs=6, INT16/FP16, W8/W4/W2. Consecutive calls use the original Linear-sw.c RoCC helpers; no reference outputs embedded in ELF.')
+log('LOG: '+str(logfile))
+log('SOURCE SHA256: '+json.dumps({str(p):hw.sha(p) for p in sorted((root/'src/main/scala').glob('*.scala')) if p!=hw.CONFIG},sort_keys=True))
+env=hw.environment()
+runtime=work/'runtime';runtime.mkdir(exist_ok=True);env['XDG_RUNTIME_DIR']=str(runtime)
+env['SBT_OPTS']=(env.get('SBT_OPTS') or f'-Dsbt.ivy.home={hw.CY}/.ivy2 -Dsbt.global.base={hw.CY}/.sbt -Dsbt.boot.directory={hw.CY}/.sbt/boot/')+' -Dsbt.server.forcestart=true -Dsbt.server.autostart=false -Dsbt.supershell=false'
+base=(hw.SRC/'Linear-sw.c').read_text();results=[]
+with hw.CONFIG.open('rb') as lock:
+    log('Waiting for the existing row-regression configuration lock before any build.')
+    fcntl.flock(lock,fcntl.LOCK_EX)
+    original=hw.CONFIG.read_bytes()
+    for floating in [False,True]:
+        label='fp16' if floating else 'int16';folder=work/label;folder.mkdir(exist_ok=True)
+        text=original.decode()
+        for key,value in dict(Rin=8,Cin=512,Cout=16,x_slice=8,Mem_row_factor=8,y_slice=2,Dma_Ids=6,FP16_ACTIVATIONS=str(floating).lower()).items():
+            text,count=re.subn(r'(?m)^(\s*'+key+r'\s*=\s*)(?:\d+|true|false)',lambda m:m[1]+str(value),text)
+            assert count==1,key
+        snapshot=folder/'Config.scala';snapshot.write_text(text)
+        log('CONFIG: '+text)
+        sim=folder/'simulator-LUMAXROcketConfig'
+        try:
+            hw.CONFIG.write_text(text)
+            command(['make','-j8','CONFIG=LUMAXROcketConfig','sim='+str(sim),'gen_dir='+str(folder/'generated-src')],hw.CY/'sims/verilator',folder/'make.log',env,7200)
+        finally:
+            if hw.CONFIG.read_bytes()==text.encode():hw.CONFIG.write_bytes(original)
+            elif hw.CONFIG.read_bytes()!=original:raise RuntimeError('External Config edit; not overwritten')
+        log('MAKE PASS '+label+' SIMULATOR_SHA256='+hw.sha(sim))
+        for wb in (8,4,2):
+            tests=cases(wb,floating);case=folder/f'w{wb}';case.mkdir(exist_ok=True)
+            (case/'Linear-sw.c').write_text(y.source(base,tests,wb,floating,2,8,8,True))
+            for name in ['build.sh','rocc.h','compiler.h']:shutil.copy2(hw.SRC/name,case/name)
+            caseenv=dict(env,LUMAX_CONFIG_PATH=str(snapshot),TEST_CFLAGS=f'-O2 -DLUMAX_FP16_ACTIVATIONS={int(floating)}')
+            command(['bash','./build.sh','baremetal'],case,case/'build.log',caseenv,600)
+            elf=case/'Linear-sw.riscv';log('ELF_SHA256='+hw.sha(elf)+'; no Python reference outputs embedded')
+            command([str(sim),'+permissive','+max-cycles=1000000000','+loadmem='+str(elf),'+permissive-off',str(elf)],case,case/'uart.log',caseenv,1800)
+            uart=(case/'uart.log').read_text(errors='replace');log('UART\n'+uart)
+            outputs={int(i):[int(v,16) for v in data.split()] for i,data in re.findall(r'^HW (\d+) (.*)$',uart,re.M)}
+            flags={int(i):(int(g),int(c),int(core)) for i,g,c,core in re.findall(r'^RESULT (\d+) GUARDS (\d) C_MATCH (\d) CORE (\d+)',uart,re.M)}
+            assert uart.splitlines().count('TEST_DONE 0')==1 and len(outputs)==len(flags)==len(tests)
+            for i,t in enumerate(tests):
+                guards,match,core=flags[i];actual=outputs[i]
+                record=dict(mode=label.upper(),y_slice=2,b=8,rf=8,dma_ids=6,wb=wb,case=t['name'],shape=[t['r'],t['k'],t['m']],block=t['block'],status='PASS' if actual==t['expected'] and guards==match==1 and core>0 else 'FAIL',core=core,hw=actual,python=t['expected'])
+                log('OPERANDS: '+json.dumps(dict(X=t['x'],W=t['w'])))
+                log('CASE RESULT: '+json.dumps(record,sort_keys=True));results.append(record)
+                assert record['status']=='PASS',record
+    assert hw.CONFIG.read_bytes()==original
+log('TOTAL: '+json.dumps(dict(tests=len(results),passed=sum(r['status']=='PASS' for r in results),failed=sum(r['status']!='PASS' for r in results),matched_outputs=sum(len(r['hw']) for r in results))))
+log('Config restored. Temporary test sources, generated RTL and executables will be removed after direct counter RTL checks.')
+FINAL FILE CHECK: edited LUMAX_Top.scala and Product_Generator.scala; added ActivationAddressCounter.scala. Config.scala and MappingUtils.scala unchanged.
+Temporary verification scripts, backups, generated RTL, vector sources, RISC-V ELFs, simulator binaries and object directories removed after all checks passed.
+POST-VERIFICATION NONFUNCTIONAL EDITS: added the unused-legacy header to MappingUtils.scala and removed two trailing spaces from LUMAX_Top.scala. Active hardware logic unchanged; no new RTL simulation required for these comment/whitespace-only edits. Final file SHA256: {"LUMAX_Top.scala": "aaa54d1daf659959bf0fc5f80e9159ab717fbd7de2dbac2ed489042962a7b649", "MappingUtils.scala": "6b67339da9843024fd4613503a6070592fe426ea6fd0326c915130ee99522fe4"}
