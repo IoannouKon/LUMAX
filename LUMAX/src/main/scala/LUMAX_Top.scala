@@ -41,6 +41,8 @@ class LUMAXExample(opcodes: OpcodeSet, val params: LUMAXParams)
 class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) with HasCoreParameters {
 
   val params: LUMAXParams = outer.params
+  require(params.y_slice >= 1 && params.Rin >= params.y_slice,
+    "Rin row capacity must be at least y_slice")
   if (params.FP16_ACTIVATIONS) {
     require(params.XBitWidth == 16 && params.OutBitWidth == 32 && !params.SCALE,
       "FP16 activations require XBitWidth=16, OutBitWidth=32 and SCALE=false")
@@ -73,6 +75,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   //SyncMem compile parameters  
   val RowsPerBlock      = (1 << (params.WBitWidth - params.minWeightBits)) * params.Mem_row_factor // How many Rows have one SynMem 
   val totalSyncMems     =  (params.x_slice * params.y_slice)      //How  many SyncMem the design need to worst case 
+  val weightBanks = params.x_slice // Shared by all activation-row groups.
   val maxParts          = params.XBitWidth / params.minInputBits   // at Worst case one X_reg / SynMem have splitted have maxPart differentt elemtns 
   val product_bitwidth  = (params.XBitWidth/params.minInputBits)*(params.WBitWidth + params.minInputBits) 
 
@@ -100,7 +103,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val fp16Meta = if (params.FP16_ACTIVATIONS) Some(Reg(Vec(totalSyncMems, new FP16ProductMeta))) else None
   val fp16Flags = if (params.FP16_ACTIVATIONS) Some(RegInit(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.U(3.W))))))) else None
   val I_MEM = Seq.fill(totalSyncMems)(SyncReadMem(regs_per_mem/4, UInt(params.DMA_bits.W)))
-  val W_MEM = Seq.fill(buffers, totalSyncMems) { SyncReadMem(regs_per_mem_w/8, UInt(params.DMA_bits.W))}
+  val W_MEM = Seq.fill(buffers, weightBanks) { SyncReadMem(regs_per_mem_w/8, UInt(params.DMA_bits.W))}
 
   // ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
   val dataResponse = RegInit(0.U(params.DMA_bits.W))
@@ -160,11 +163,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   //Indexer for Matrices 
   val i_w           = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
   val j_w           = RegInit(0.U(log2Ceil(params.Cout + 1).W)) 
-  val i_x           = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
+  val i_x           = RegInit(0.U(log2Ceil(params.Cin.max(params.Rin) + 1).W))
   val j_x           = RegInit(0.U(log2Ceil(params.Cin + 1).W)) 
   val i_w_start     = RegInit(0.U((log2Ceil(params.Cin + 1).W))) 
-  val i_x_start     = RegInit(0.U(log2Ceil(params.Cin + 1).W))  
-  val j_x_start     = RegInit(0.U(log2Ceil(params.Cout + 1).W)) 
+  val i_x_start     = RegInit(0.U(log2Ceil(params.Cin.max(params.Rin) + 1).W))
+  val j_x_start     = RegInit(0.U(log2Ceil(params.Cin + 1).W)) // Activation K-block offset.
   val LOOPS         = RegInit(0.U(64.W)) 
   val i_o           = RegInit(0.U(log2Ceil(params.Rin + 1).W)) 
   val j_o           = RegInit(0.U(log2Ceil(params.Cout + 1).W)) 
@@ -205,7 +208,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   //Register to save dimension values 
   val dma_limit             = RegInit(0.U(log2Ceil(params.Cin + 1).W)) //Cin/X_slice
   val cout_reg              = RegInit(params.Cout.U(log2Ceil(params.Cout + 1).W))
-  val cin_reg               = RegInit(params.Cout.U(log2Ceil(params.Cin + 1).W))
+  val cin_reg               = RegInit(params.Cin.U(log2Ceil(params.Cin + 1).W))
   val rin_reg               = RegInit(params.Rin.U(log2Ceil(params.Rin + 1).W))
   val x_slice_Reg           = RegInit(params.x_slice.U(log2Ceil(params.x_slice + 1).W))
   val y_slice_Reg           = RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
@@ -230,7 +233,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val elemOffVec            = Reg(Vec(totalSyncMems, UInt(log2Ceil(maxParts).W)))             // Keep in what offset ot row is located the element weight want to read 
   val w_reg_valid           = Reg(Vec(totalSyncMems, Bool()))                                 // true -> selected value from BRAM is valid   
   val dirty_elems_x         = RegInit(0.U(log2Ceil(params.DMA_bits/params.minInputBits).W))   // How many dirty elements we have in current X_reg (dirty -> the element is already used and we need to bring new one to replace it)
-  val all_available_elems_x = RegInit(0.U(log2Ceil(params.Cout + 1).W))                       // How many elements are available to read in current block for X (for W we have w_reg_valid vector)
+  // Counts activation elements along K; output-column capacity must not truncate it.
+  val all_available_elems_x = RegInit(0.U(log2Ceil(params.Cin + 1).W))
   val x_elems_per_reg       = RegInit((params.XBitWidth / params.minInputBits).U)             //How many input elements fit  in one input register 
   val readDataVec_part            = Reg(Vec(totalSyncMems, UInt(log2Ceil(maxParts).W)))       // Keep in what offset ot row is located the element weight want to read 
   val w_elems_per_reg = RegInit((params.WBitWidth / params.minWeightBits).U(3.W) )            //How many weight elements fit  in one weight register
@@ -288,15 +292,15 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
     val buffIdxW     = log2Ceil(buffers)
     val chunkPartIdx = if (maxParts > 1) 1 else 0
 
-    val WRegIdxdVec  = Reg(Vec(totalSyncMems, UInt(log2Ceil(max_blocks_in_sync_mem*totalSyncMems).W))) // make WBitWidth ≥ log2Ceil(N)
+    val WRegIdxdVec  = Reg(Vec(weightBanks, UInt(log2Ceil(max_blocks_in_sync_mem*weightBanks).W))) // Shared weight positions.
     val Valid_In_Vec = Reg(Vec(totalSyncMems, Bool()))
 
     // stage 2 Output Registers 
-    val weight_Sint_part_Reg = Reg(Vec(totalSyncMems, SInt(params.WBitWidth.W)))
-    val abs_weight_uint_Reg  = Reg(Vec(totalSyncMems, UInt(params.WBitWidth.W)))
-    val row_idx_Reg          = Reg(Vec(totalSyncMems, UInt(log2Ceil(RowsPerBlock + 1).W)))
-    val elemOffset_Reg       = Reg(Vec(totalSyncMems, UInt(4.W)))
-    val w_reg_valid_temp_Reg = Reg(Vec(totalSyncMems, Bool()))
+    val weight_Sint_part_Reg = Reg(Vec(weightBanks, SInt(params.WBitWidth.W)))
+    val abs_weight_uint_Reg  = Reg(Vec(weightBanks, UInt(params.WBitWidth.W)))
+    val row_idx_Reg          = Reg(Vec(weightBanks, UInt(log2Ceil(RowsPerBlock + 1).W)))
+    val elemOffset_Reg       = Reg(Vec(weightBanks, UInt(4.W)))
+    val w_reg_valid_temp_Reg = Reg(Vec(weightBanks, Bool()))
 
 
     val offsetWidth = log2Ceil(params.WBitWidth / params.minWeightBits)
@@ -316,7 +320,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 private def packedReadCount(count: UInt, firstElement: UInt, elementsPerWord: UInt): UInt = {
   val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
   val limited = WireDefault(count)
-  for (bank <- 0 until totalSyncMems) {
+  for (bank <- 0 until weightBanks) {
     val bankStart = bank.U * elementsPerBank
     val bankEnd = bankStart + elementsPerBank
     val local = firstElement - bankStart
@@ -344,7 +348,7 @@ private def storePackedResponse(
   val elementsPerWord = params.DMA_bits.U / precision
   val beatOffset = (linearElement * precision) & (params.DMA_bits - 1).U
   val responseEnd = firstElement + elementCount
-  for (bank <- 0 until totalSyncMems) {
+  for (bank <- memories.indices) {
     val bankStart = bank.U * elementsPerBank
     val first = firstElement.max(bankStart)
     val end = responseEnd.min(bankStart + elementsPerBank)
@@ -501,7 +505,8 @@ private def dmaResponce(
       params.DMA_bits,
       product_bitwidth,
       params.minInputBits,
-      params.FP16_ACTIVATIONS
+      params.FP16_ACTIVATIONS,
+      if (params.y_slice > 1) weightBanks else 0
     ))
   }
   
@@ -584,6 +589,7 @@ for (i <- 0 until totalSyncMems) {
         j_x_temp  := 0.U 
 
         valid_inputs := 0.U
+        if (params.y_slice > 1) dirty_elems_x := 0.U
         valid_weights := VecInit(Seq.fill(buffers)(0.U((totalSyncMems*params.DMA_bits/params.WBitWidth).W)))
         
         // XS YS Registers Init 
@@ -740,9 +746,22 @@ for (i <- 0 until totalSyncMems) {
 // ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
 
 when(dma.io.d_valid) {
-  storePackedResponse(I_MEM, input_bits, dma_counter_d,
-    packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_in),
-    mul1 + j_x_temp, dataResponse)
+  if (params.y_slice == 1) {
+    storePackedResponse(I_MEM, input_bits, dma_counter_d,
+      packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_in),
+      mul1 + j_x_temp, dataResponse)
+  } else {
+    // Each row has b input banks. Repack a row into its own banks while keeping
+    // the source address/beat offset specific to that row and K block.
+    for (y <- 0 until params.y_slice) {
+      when(Rin_cnt === y.U) {
+        storePackedResponse(I_MEM.slice(y * weightBanks, (y + 1) * weightBanks),
+          input_bits, dma_counter_d,
+          packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_in),
+          mul1 + j_x_temp, dataResponse)
+      }
+    }
+  }
 }
 // ------------- Sync Read Memory System ----- VERSION 2 ------------- // 
 
@@ -782,6 +801,10 @@ when(dma.io.d_valid) {
       dma_counter_a := 0.U 
       dma_counter_d := 0.U 
       Rin_cnt       := Rin_cnt + 1.U 
+      if (params.y_slice > 1) {
+        // All active rows have the same K extent; keep one per-row count.
+        when(Rin_cnt < YS - 1.U) { valid_inputs := 0.U }
+      }
       j_x           := Mux(Rin_cnt < YS -1.U,j_x_start,j_x)
       i_x           := Mux(Rin_cnt < YS -1.U,i_x + 1.U,i_x)
       mul1          := Mux(Rin_cnt < YS -1.U,cin_reg*(i_x + 1.U),mul1)
@@ -846,7 +869,8 @@ when(dma.io.d_valid) {
 
       //before load W
       val temp_mul1 = j_w * cin_reg 
-      val temp_mul2  = XS_W_temp * w_elems_per_reg 
+      val temp_mul2 = if (params.y_slice == 1) XS_W_temp * w_elems_per_reg
+        else (XS_W_temp * w_elems_per_reg).min(valid_inputs)
       mul1 := temp_mul1 
       mul2 := temp_mul2
       val bit_offset_in_byte = (((temp_mul1)) * weight_bits) & (params.WBitWidth.U - 1.U)
@@ -1028,20 +1052,20 @@ is(sLoadW_and_sSelectAndAccumulate) {
       // ------------- Sync Read Memory System ------------------ // 
       val enable_read_w = READ_ON && (elements_counter === 0.U ) 
 
-      val W_wire = Wire(Vec(buffers, Vec(totalSyncMems, UInt(params.DMA_bits.W))))
+      val W_wire = Wire(Vec(buffers, Vec(weightBanks, UInt(params.DMA_bits.W))))
 
       for (b <- 0 until buffers) { 
         val valid_read = (buff_index === b.U) && enable_read_w
-        for (i <- 0 until totalSyncMems) {
+        for (i <- 0 until weightBanks) {
            W_wire(b)(i) :=  W_MEM(b)(i).read(row_weight,valid_read) 
         }
       } 
       
-      when(elements_counter === elemsPerChunk_w *totalSyncMems.U - totalSyncMems.U ){ 
+      when(elements_counter === elemsPerChunk_w * weightBanks.U - weightBanks.U ){
         elements_counter := 0.U 
         row_weight := row_weight + 1.U 
       }.otherwise { 
-        elements_counter := elements_counter + totalSyncMems.U 
+        elements_counter := elements_counter + weightBanks.U
       }
        
       // ------------- Sync Read Memory System ------------------ // 
@@ -1068,12 +1092,14 @@ is(sLoadW_and_sSelectAndAccumulate) {
             val x_th_x_reg = global_block_idx  // & (total_blocks_per_y - 1.U) // TODO
             val y_th_x_reg =
               if (params.y_slice > 1)
-                global_block_idx >> shift_y
+                (sync_mem_idx / weightBanks).U
               else
                 0.U
              
             val x_th_real = x_th_x_reg + dirty_elems_x
-            val valid_x = valid_inputs > x_th_x_reg * x_elems_per_reg   
+            val valid_x = if (params.y_slice == 1) valid_inputs > x_th_x_reg * x_elems_per_reg
+              else ((sync_mem_idx / weightBanks).U < YS) &&
+                (valid_inputs > (((sync_mem_idx % weightBanks).U * blocks_in_Sync_mem + counter_2) * x_elems_per_reg))
    
             Valid_In_Vec(sync_mem_idx)  := valid_x 
 
@@ -1111,7 +1137,9 @@ is(sLoadW_and_sSelectAndAccumulate) {
             xThXRegVec(sync_mem_idx) := RegNext(x_th_real) 
             yThXRegVec(sync_mem_idx) := RegNext(y_th_x_reg)
             shiftedVec(sync_mem_idx) := shifted
-            WRegIdxdVec(sync_mem_idx) := global_block_idx //W_reg_Index
+            if (sync_mem_idx < weightBanks) {
+              WRegIdxdVec(sync_mem_idx) := global_block_idx // One weight index per K lane, not per activation row.
+            }
           } 
           cycleCount_2_reg := cycleCount_2 
 
@@ -1119,7 +1147,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
           // ------------------------------------------------------------------------------------------------> stage - 2  
   
-          for (sync_mem_idx <- 0 until totalSyncMems) {
+          for (sync_mem_idx <- 0 until weightBanks) {
 
               val W_reg_Index =  WRegIdxdVec(sync_mem_idx) // global element index
 
@@ -1129,7 +1157,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 weight_bits = weight_bits,
                 blocks_in_Sync_mem = blocks_in_Sync_mem,  
                 bankSize = bankSize.U, //.min(blocks_in_Sync_mem), // TODO blocks_in_Sync_mem check for weight precision smaller 
-                totalBanks = totalSyncMems.U,
+                totalBanks = weightBanks.U,
                 WBitWidth = params.WBitWidth
                 )
                 
@@ -1154,7 +1182,7 @@ is(sLoadW_and_sSelectAndAccumulate) {
 
 
 
-              val bank_w_idx = bank_w(bankIdxW - 1, 0)
+              val bank_w_idx = bank_w(log2Ceil(weightBanks) - 1, 0)
               val byte_w_idx = byte_index_w(wCellIdxW - 1, 0)
               val buff_idx   = buff_index(buffIdxW - 1, 0)
               val data_64 =  W_wire(buff_idx)(bank_w_idx) 
@@ -1215,11 +1243,13 @@ is(sLoadW_and_sSelectAndAccumulate) {
             val  y_th_x_reg =  yThXRegVec(sync_mem_idx)
           
             //From Stage 2 
-            val weight_Sint_part = weight_Sint_part_Reg(sync_mem_idx) 
-            val abs_weight_uint  = abs_weight_uint_Reg(sync_mem_idx)
-            val row_idx          = row_idx_Reg(sync_mem_idx)   
-            val elemOffset       = elemOffset_Reg(sync_mem_idx)  
-            val w_reg_valid_temp = w_reg_valid_temp_Reg(sync_mem_idx) 
+            val weightLane = sync_mem_idx % weightBanks
+            val weight_Sint_part = weight_Sint_part_Reg(weightLane)
+            val abs_weight_uint  = abs_weight_uint_Reg(weightLane)
+            val row_idx          = row_idx_Reg(weightLane)
+            val elemOffset       = elemOffset_Reg(weightLane)
+            val w_reg_valid_temp = if (params.y_slice == 1) w_reg_valid_temp_Reg(weightLane)
+              else w_reg_valid_temp_Reg(weightLane) && RegNext(Valid_In_Vec(sync_mem_idx))
 
 
             val (bank_in, row_in_bank, byte_index, offset_new) =
@@ -1367,10 +1397,20 @@ is(sLoadW_and_sSelectAndAccumulate) {
             }) 
      
             for (y <- 0 until params.y_slice) {
-              O_reg(0)(y)(w_idx - 0.U) :=  (O_reg(0)(y)(w_idx - 0.U) +  accum(y))
-              if (params.FP16_ACTIVATIONS) {
-                val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
-                fp16Flags.get(y)(w_idx) := fp16Flags.get(y)(w_idx) | flags
+              if (params.y_slice == 1) {
+                O_reg(0)(y)(w_idx - 0.U) :=  (O_reg(0)(y)(w_idx - 0.U) +  accum(y))
+                if (params.FP16_ACTIVATIONS) {
+                  val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+                  fp16Flags.get(y)(w_idx) := fp16Flags.get(y)(w_idx) | flags
+                }
+              } else {
+                when(y.U < YS) {
+                  O_reg(0)(y)(w_idx) := O_reg(0)(y)(w_idx) + accum(y)
+                  if (params.FP16_ACTIVATIONS) {
+                    val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+                    fp16Flags.get(y)(w_idx) := fp16Flags.get(y)(w_idx) | flags
+                  }
+                }
               }
             }
             
@@ -1472,8 +1512,12 @@ is(sLoadW_and_sSelectAndAccumulate) {
                 offset_in_chunk_1     :=  chunkInfoModule_D.io.offset_in_chunk_1
                 elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
 
-                val remain_in_line = cin_reg - blocks_in_Sync_mem * totalSyncMems.U
-                blocks_in_Sync_mem := ((remain_in_line + totalSyncMems.U - 1.U) / totalSyncMems.U) .min(blocks_in_Sync_mem) 
+                if (params.y_slice == 1) {
+                  val remain_in_line = cin_reg - blocks_in_Sync_mem * totalSyncMems.U
+                  blocks_in_Sync_mem := ((remain_in_line + totalSyncMems.U - 1.U) / totalSyncMems.U) .min(blocks_in_Sync_mem)
+                } else {
+                  blocks_in_Sync_mem := ((XS_temp + weightBanks.U - 1.U) / weightBanks.U).min(blocks_in_Sync_mem)
+                }
 
                 state := sLoadX
                 valid_inputs :=0.U
@@ -1585,7 +1629,9 @@ is(sStoreOutput) {
         dma_resp      := true.B && (Rin_cnt < YS -1.U)
       } 
 
-      when(Rin_cnt === YS) {
+      // Drain accepted DMA requests and buffered responses before completion
+      // or before reinitializing the counters for another activation-row group.
+      when(Rin_cnt === YS && dma.io.empty) {
          when(loops_cnt === LOOPS -1.U){
             Rin_cnt             := 0.U
             state               := sDELAY
@@ -1622,6 +1668,9 @@ is(sStoreOutput) {
             // new YS clamping
             val remain_in_column =  rin_reg - (i_x + 1.U)
             // YS :=  Mux(remain_in_column >= y_slice_Reg,y_slice_Reg,remain_in_column)
+            if (params.y_slice > 1) {
+              YS := (rin_reg - i_x).min(y_slice_Reg)
+            }
 
             // recompute chunk parameters for next X load
             val elems_per_word = params.XBitWidth.U / input_bits
@@ -1634,6 +1683,13 @@ is(sStoreOutput) {
             state := sLoadX
             valid_inputs := 0.U 
             val clamped        = Mux(cin_reg >= clmp, clmp, cin_reg) 
+            if (params.Rin > 1) {
+              // A short final K block can shrink the bank span. Restore the
+              // full span before loading the first block of the next row group.
+              val initialBlocks = (clamped + weightBanks.U - 1.U) / weightBanks.U
+              val capacity = (1.U << (params.WBitWidth.U - weight_bits)) * params.Mem_row_factor.U
+              blocks_in_Sync_mem := initialBlocks.min(capacity)
+            }
             val mul1_temp = i_x * cin_reg
             val mul2_temp = XS_temp * x_elems_per_reg 
 
@@ -1669,7 +1725,9 @@ is(sStoreOutput) {
                 // Calculate dirty bits in the last chunk
                 val dirty_bits = row_bits % params.DMA_bits.U
                 val dirty_elements = dirty_bits / input_bits
-                dirty_elems_x := dirty_elements
+                // storePackedResponse repacks each new row from bank offset 0.
+                // Keeping the old source-beat offset here shifts later rows.
+                dirty_elems_x := (if (params.y_slice == 1 && params.Rin == 1) dirty_elements else 0.U)
 
 
                 // val i = i_w - dma_counter_d 
@@ -1685,8 +1743,8 @@ is(sStoreOutput) {
         }
       }
       is(sDELAY) {
-          io.busy     := false.B  
-          cmd.ready   := true.B 
+          io.busy     := !dma.io.empty
+          cmd.ready   := dma.io.empty
         when(cmd.fire && (mode_6)) {
           state := sIdle 
         }
@@ -1837,7 +1895,8 @@ is(sStoreOutput) {
       
               //before load W
               val temp_mul1 = (j_w + 1.U) * cin_reg 
-              val temp_mul2  = XS_W_temp * w_elems_per_reg 
+              val temp_mul2 = if (params.y_slice == 1) XS_W_temp * w_elems_per_reg
+                else (XS_W_temp * w_elems_per_reg).min(valid_inputs)
 
               mul1 := temp_mul1 
               mul2 := temp_mul2

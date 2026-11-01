@@ -94,6 +94,10 @@ def activation(design):
     return design.get('activation', 'int16')
 
 
+def y_slices(design):
+    return design.get('y_slice', 1)
+
+
 def nonnegative_float(value, name):
     if isinstance(value, bool):
         raise ValueError(name + ' must be a finite nonnegative number')
@@ -116,9 +120,12 @@ def validate_design(value):
         raise ValueError('b and RF must be powers of two')
     if activation(value) not in ('int16', 'fp16'):
         raise ValueError('Activation format must be INT16 or FP16')
+    ys = integer(value.get('y_slice', 1), 'Y_SLICE', 1, 2)
+    max_r = integer(value.get('max_r', ys), 'Maximum activation rows', ys, 4096)
     return dict(id=value.get('id') or 'design_' + uuid.uuid4().hex[:12], name=name,
                 b=b, rf=rf, max_k=integer(value.get('max_k'), 'Maximum input length'),
                 max_m=integer(value.get('max_m'), 'Maximum outputs', 1, 4096),
+                y_slice=ys, max_r=max_r,
                 activation=activation(value), builtin=False)
 
 
@@ -134,9 +141,10 @@ class Store:
         limits = config_defaults()
         defaults = [dict(id=f'b{b}_rf{rf}' + ('_fp16' if fmt == 'fp16' else ''),
                          name=f'b{b}_rf{rf}' + (' FP16' if fmt == 'fp16' else ''), b=b, rf=rf,
-                         **limits, activation=fmt, builtin=True)
+                         **limits, y_slice=1, max_r=1, activation=fmt, builtin=True)
                     for fmt in ('int16', 'fp16') for b in (2, 4, 8) for rf in (4, 8)]
-        saved = [dict(d, activation=activation(d)) for d in read_json(self.data / 'designs.json', [])]
+        saved = [dict(d, activation=activation(d), y_slice=y_slices(d), max_r=d.get('max_r', 1))
+                 for d in read_json(self.data / 'designs.json', [])]
         return defaults + saved
 
     def save_design(self, value):
@@ -249,7 +257,7 @@ def normalize_suite(value, designs):
     if kind == 'llama_fast':
         # One largest-fitting native tile for each shape and precision.
         options.update(mode='native', tile_k=0, tile_m=0, cycles=True)
-        tests = [dict(name=name, k=k, m=m, weights=[8, 4, 2], pattern='random', repeats=1, seed='')
+        tests = [dict(name=name, r=1, k=k, m=m, weights=[8, 4, 2], pattern='random', repeats=1, seed='')
                  for name, k, m, wb in hw.plans(options['t']) if wb == 8]
     if kind == 'custom':
         rows = value.get('tests', [])
@@ -259,8 +267,11 @@ def normalize_suite(value, designs):
             if not isinstance(row, dict):
                 raise ValueError('Each test must be an object')
             k, m = integer(row.get('k'), 'K'), integer(row.get('m'), 'M', 1, 65536)
+            r = integer(row.get('r', 1), 'Activation rows R', 1, 4096)
             if k * m > 8 * 1024 * 1024:
                 raise ValueError('Each logical matrix may contain at most 8 million weights')
+            if r * k > 8 * 1024 * 1024 or r * m > 8 * 1024 * 1024:
+                raise ValueError('Each activation/output matrix may contain at most 8 million elements')
             weights = row.get('weights', [8, 4, 2])
             if not isinstance(weights, list) or not weights or any(w not in (8, 4, 2) for w in weights):
                 raise ValueError('Select weight precision 8, 4 and/or 2')
@@ -270,7 +281,7 @@ def normalize_suite(value, designs):
             initial = str(row.get('seed', '')).strip()
             if initial:
                 integer(initial, 'Seed', 0, 2**64 - 1)
-            tests.append(dict(name=str(row.get('name') or f'{k}×{m}')[:64], k=k, m=m,
+            tests.append(dict(name=str(row.get('name') or f'{r}×{k}×{m}')[:64], r=r, k=k, m=m,
                               weights=list(dict.fromkeys(weights)), pattern=pattern,
                               repeats=integer(row.get('repeats', 1), 'Repeats', 1, 100), seed=initial))
     suite = dict(name=name, kind=kind, design_ids=[d['id'] for d in chosen], designs=chosen,
@@ -350,11 +361,14 @@ def make_plan(suite):
     cases, operations, details = 0, 0, []
     for design in suite['designs']:
         for test in suite['tests']:
+            r = test.get('r', 1)
+            if r > design.get('max_r', 1):
+                raise ValueError(f'{r} activation rows exceed {design["name"]} row capacity ({design.get("max_r", 1)}); create a design with larger Maximum activation rows')
             chunks = tile_ranges(test['k'], test['m'], design, suite['options'])
             count = len(test['weights']) * test['repeats']
             cases += count
             operations += count * len(chunks)
-            details.append(dict(design=design['name'], test=test['name'], k=test['k'], m=test['m'],
+            details.append(dict(design=design['name'], test=test['name'], r=r, y_slice=y_slices(design), k=test['k'], m=test['m'],
                                 cases=count, operations=count * len(chunks), tiles=len(chunks),
                                 reduction=any(a != 0 or n != test['k'] for a, n, c, d in chunks)))
     if cases > 2000 or operations > 20000:
@@ -461,7 +475,7 @@ class Job:
 def random_case(test, wb, initial, fmt='int16'):
     xs = int.from_bytes(hashlib.sha256((initial + ':x').encode()).digest()[:8], 'little')
     ws = int.from_bytes(hashlib.sha256((initial + ':w').encode()).digest()[:8], 'little')
-    x = hw.input_values(test['k'], xs)
+    x = hw.input_values(test.get('r', 1) * test['k'], xs)
     if fmt == 'fp16':
         x = [v & 0xffff for v in x]
         x = [v ^ 0x400 if v & 0x7c00 == 0x7c00 else v for v in x]
@@ -502,6 +516,11 @@ def reference(x, w, m, fmt='int16'):
     return result
 
 
+def matrix_reference(x, w, k, m, fmt='int16'):
+    return [value for start in range(0, len(x), k)
+            for value in reference(x[start:start+k], w, m, fmt)]
+
+
 def fnv(data):
     value = 2166136261
     for byte in data:
@@ -515,12 +534,14 @@ def c_array(ctype, name, values):
 
 def test_source(base, design, x, w, wb, options):
     """Operands are loaded directly by +loadmem; no megabyte CPU memset/copy."""
-    k, m = len(x), len(w) // len(x)
+    r = options.get('rows', 1)
+    k = len(x) // r
+    m = len(w) // k
     packed = pack_weights(w, k, m, wb)
     fp16 = activation(design) == 'fp16'
     c = base.split('int main() {', 1)[0]
     for key, value in dict(IN_BITS=16, W_BITS=wb, Debug=0, XS=design['b'],
-                           YS=1, Mem_row_factor=design['rf']).items():
+                           YS=y_slices(design), Mem_row_factor=design['rf']).items():
         c, count = re.subn(r'(^#define\s+' + key + r'\s+)\d+', lambda mt: mt[1] + str(value), c, flags=re.M)
         if count != 1: raise ValueError('Missing C define ' + key)
     c = f'''#ifndef LUMAX_FP16_ACTIVATIONS
@@ -533,7 +554,7 @@ def test_source(base, design, x, w, wb, options):
     guard8 = ','.join(['165'] * 8)
     guard16 = ','.join(['165'] * 16)
     for name, ctype, values in [('xbuf', 'input_t', x), ('wbuf', 'uint8_t', packed),
-                                ('obuf', 'output_t', [0x5a5a5a5a] * m)]:
+                                ('obuf', 'output_t', [0x5a5a5a5a] * (r*m))]:
         const = '' if name == 'obuf' else 'const '
         c += f'static {const}struct __attribute__((packed, aligned(8))) {{ uint8_t pre[8]; {ctype} data[{len(values)}]; uint8_t post[16]; }} {name} = '
         c += '{{' + guard8 + '},{' + ','.join(map(str, values)) + '},{' + guard16 + '}};\n'
@@ -555,13 +576,15 @@ static uint32_t checksum(const void *p,size_t n) {
 static void phase(const char *text) { printf("PHASE %s\\n",text); fflush(stdout); }
 '''
     c += f'''static void values(const char *label,const output_t *data) {{
-  char report[{m * 16 + 1}]; int used=0;
-  for(int i=0;i<{m};++i) {{
+  char report[1024]; int used=0;
+  printf("%s ",label);
+  for(int i=0;i<{r*m};++i) {{
+    if(sizeof(report)-used<16) {{ report[used]=0; printf("%s",report); used=0; }}
     int n=snprintf(report+used,sizeof(report)-used,"{'%u' if fp16 else '%d'} ",data[i]);
     if(n<0||(unsigned)n>=sizeof(report)-used) return;
     used+=n;
   }}
-  printf("%s %s\\n",label,report); fflush(stdout);
+  report[used]=0; printf("%s\\n",report); fflush(stdout);
 }}
 '''
     c += '''
@@ -571,9 +594,9 @@ int main(void) {
   QuantizedTensor_weight tw={.q=(weight_t*)wbuf.data};
   output_t *actual=obuf.data;
 '''
-    c += f'  preload_hw({k},1,{m},x_slice_max*RF,y_slice,tx.q,tw.q,actual);\n'
+    c += f'  preload_hw({k},{r},{m},x_slice_max*RF,y_slice,tx.q,tw.q,actual);\n'
     c += '  phase("Computing in LUMAX hardware");\n  unsigned long begin=(unsigned long)rdcycle();\n'
-    c += f'  matmul_hw_uniform(actual,&tx,&tw,{k},{m},x_slice_max*RF,y_slice,1);\n'
+    c += f'  matmul_hw_uniform(actual,&tx,&tw,{k},{m},x_slice_max*RF,y_slice,{r});\n'
     c += '  unsigned long end=(unsigned long)rdcycle();\n  phase("LUMAX hardware completed");\n'
     if options['cycles']:
         c += '  unsigned long pc[6]; for(int i=0;i<6;++i) pc[i]=read_rd();\n'
@@ -583,16 +606,16 @@ int main(void) {
         c += '  safe=boundary(xbuf.pre,xbuf.post)&&boundary(wbuf.pre,wbuf.post)&&boundary(obuf.pre,obuf.post);\n'
     if options['integrity']:
         c += '  phase("Checking input integrity");\n'
-        c += f'  safe &= checksum(xbuf.data,sizeof(xbuf.data))=={fnv(struct.pack("<"+("H" if fp16 else "h")*k,*x))}u;\n'
+        c += f'  safe &= checksum(xbuf.data,sizeof(xbuf.data))=={fnv(struct.pack("<"+("H" if fp16 else "h")*len(x),*x))}u;\n'
         c += f'  safe &= checksum(wbuf.data,sizeof(wbuf.data))=={fnv(packed)}u;\n'
     c += '  printf("GUARDS %s\\n",safe?"PASS":"FAIL");\n'
     if options['reference'] == 'riscv':
-        c += f'  phase("Computing RISC-V reference");\n  output_t ref[{m}];\n'
+        c += f'  phase("Computing RISC-V reference");\n  static output_t ref[{r*m}];\n'
         if fp16:
-            c += f'  matmul_sw_uniform(ref,&tx,&tw,{k},{m},1);\n'
+            c += f'  matmul_sw_uniform(ref,&tx,&tw,{k},{m},{r});\n'
         else:
-            c += f'  for(int col=0;col<{m};++col) {{ int64_t sum=0; for(int j=0;j<{k};++j) sum+=(int64_t)xbuf.data[j]*reference_w[j*{m}+col];\n'
-            c += '    if(sum<INT32_MIN||sum>INT32_MAX) { printf("OVERFLOW\\n"); return 2; } ref[col]=(int32_t)sum; }\n'
+            c += f'  for(int row=0;row<{r};++row) for(int col=0;col<{m};++col) {{ int64_t sum=0; for(int j=0;j<{k};++j) sum+=(int64_t)xbuf.data[row*{k}+j]*reference_w[j*{m}+col];\n'
+            c += f'    if(sum<INT32_MIN||sum>INT32_MAX) {{ printf("OVERFLOW\\n"); return 2; }} ref[row*{m}+col]=(int32_t)sum; }}\n'
         c += '  values("C_REFERENCE",ref);\n'
     c += '  values("HW_OUTPUT",actual);\n'
     c += '  printf("TEST_DONE\\n"); fflush(stdout); return safe?0:1;\n}\n'
@@ -645,6 +668,7 @@ def build_design(job, design, base_config, temporary, env):
     options = job.data['suite']['options']
     text = base_config.decode()
     for key, value in [('x_slice', design['b']), ('Mem_row_factor', design['rf']),
+                       ('y_slice', y_slices(design)), ('Rin', design.get('max_r', 1)),
                        ('Cin', design['max_k']), ('Cout', design['max_m'])]:
         text, count = re.subn(r'(?m)^(\s*' + key + r'\s*=\s*)\d+', lambda m: m[1] + str(value), text)
         if count != 1: raise ValueError('Missing HW parameter ' + key)
@@ -679,6 +703,8 @@ def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expect
     folder.mkdir()
     record = None
     started = time.monotonic()
+    r = options.get('rows', 1)
+    count = r * (len(w) // (len(x) // r))
     try:
         job.cancelled()
         (folder / 'Linear-sw.c').write_text(test_source(base, design, x, w, wb, options))
@@ -692,14 +718,14 @@ def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expect
         code = job.command(['bash', './build.sh', 'baremetal'], folder, folder / 'build.log', options['compile_timeout'], case_env, 'Compiling RISC-V test')
         if code:
             job.log((folder / 'build.log').read_text(errors='replace'))
-            return dict(status='BUILD_FAIL', matches=0, elements=len(w) // len(x), cycles=None, core_cycles=None)
+            return dict(status='BUILD_FAIL', matches=0, elements=count, cycles=None, core_cycles=None)
         elf = folder / 'Linear-sw.riscv'
         job.log('ELF SHA256=' + hw.sha(elf))
         args = [str(sim), '+permissive', '+max-cycles=' + str(options['max_cycles']), '+loadmem=' + str(elf), '+permissive-off', str(elf)]
         code = job.command(args, folder, folder / 'uart.log', options['timeout'], env, 'Starting Verilator')
         uart = (folder / 'uart.log').read_text(errors='replace').replace('\r\n', '\n')
         job.update(phase='Comparing actual HW output')
-        record = parse_result(uart, expected, options, code, len(w) // len(x), activation(design))
+        record = parse_result(uart, expected, options, code, count, activation(design))
         if '*** FAILED ***' in uart and 'timeout' in uart.lower(): record['status'] = 'TIMEOUT'
         job.log('UART STATUS\n' + '\n'.join(line for line in uart.splitlines()
                 if not line.startswith(('HW_OUTPUT ', 'C_REFERENCE '))))
@@ -715,7 +741,7 @@ def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expect
         return record
     except TimeoutError as error:
         job.log(str(error))
-        return dict(status='TIMEOUT', matches=0, elements=len(w) // len(x), cycles=None, core_cycles=None)
+        return dict(status='TIMEOUT', matches=0, elements=count, cycles=None, core_cycles=None)
     finally:
         job.log(f'OPERATION WALL SECONDS={time.monotonic() - started:.3f}')
         shutil.rmtree(folder)
@@ -741,7 +767,7 @@ def run_custom(job, temporary, env):
         base = (hw.SRC / 'Linear-sw.c').read_text()
         if not re.search(r'(?m)^#define\s+SCALE\s+0\b', base):
             raise ValueError('Custom verification requires unscaled output (SCALE=0)')
-        for key, value in [('y_slice', 1), ('XBitWidth', 16), ('WBitWidth', 8), ('OutBitWidth', 32)]:
+        for key, value in [('XBitWidth', 16), ('WBitWidth', 8), ('OutBitWidth', 32)]:
             if not re.search(r'(?m)^\s*' + key + r'\s*=\s*' + str(value) + r'\s*,', original.decode()):
                 raise ValueError(f'Custom verification requires {key}={value}')
         if not re.search(r'(?m)^\s*SCALE\s*=\s*false\s*,', original.decode()):
@@ -758,6 +784,7 @@ def run_custom(job, temporary, env):
             for design in suite['designs']:
                 fmt = activation(design)
                 fp16 = fmt == 'fp16'
+                physical = dict(cycle_parameters, YS=y_slices(design))
                 sim = build_design(job, design, original, temporary, env)
                 for index, logical_test in enumerate(suite['tests']):
                     test = dict(logical_test)
@@ -773,36 +800,37 @@ def run_custom(job, temporary, env):
                             initial = test['seed'] or str(secrets.randbits(64))
                             initial += f':{design["id"]}:{index}:{repeat}:{wb}'
                             x, w, xs, ws = random_case(test, wb, initial, fmt)
-                            k, m = test['k'], test['m']
-                            full_ref = reference(x, w, m, fmt) if options['reference'] == 'python' or (fp16 and options['reference'] == 'riscv') else None
-                            output, combined_ref = [0] * m, [0] * m
-                            fp_parts = [[] for _ in range(m)]
+                            r, k, m = test.get('r', 1), test['k'], test['m']
+                            full_ref = matrix_reference(x, w, k, m, fmt) if options['reference'] == 'python' or (fp16 and options['reference'] == 'riscv') else None
+                            output, combined_ref = [0] * (r*m), [0] * (r*m)
+                            fp_parts = [[] for _ in range(r*m)]
                             output_complete = True
                             rows, measured, failed = [], [], False
-                            job.log('\nCASE ' + label + f' X=1x{k} W={k}x{m} INPUT_SEED={xs} WEIGHT_SEED={ws} PATTERN={test["pattern"]}')
+                            job.log('\nCASE ' + label + f' X={r}x{k} W={k}x{m} Y_SLICE={y_slices(design)} INPUT_SEED={xs} WEIGHT_SEED={ws} PATTERN={test["pattern"]}')
                             if fast:
                                 job.log(f'FULL SHAPE 1x{logical_test["k"]} @ {logical_test["k"]}x{logical_test["m"]}; SAMPLE 1x{k} @ {k}x{m}; TILES NEEDED={sample_tile["tiles"]} ({sample_tile["k_tiles"]} × {sample_tile["m_tiles"]})')
-                            job.log(f'ACTIVATION={fmt}; OUTPUT={"fp32" if fp16 else "int32"}; X_NONZERO={sum(fp_compare.model.half_units(v) != 0 if fp16 else v != 0 for v in x)}/{k}; X_DISTINCT={len(set(x))}; W_DISTRIBUTION=' + json.dumps(dict(collections.Counter(w)), sort_keys=True))
+                            job.log(f'ACTIVATION={fmt}; OUTPUT={"fp32" if fp16 else "int32"}; X_NONZERO={sum(fp_compare.model.half_units(v) != 0 if fp16 else v != 0 for v in x)}/{len(x)}; X_DISTINCT={len(set(x))}; W_DISTRIBUTION=' + json.dumps(dict(collections.Counter(w)), sort_keys=True))
                             ranges = tile_ranges(k, m, design, options)
                             for tile, (a, n, c, d) in enumerate(ranges, 1):
-                                tx = x[a:a + n]
+                                tx = [v for row in range(r) for v in x[row*k+a:row*k+a+n]]
                                 tw = [w[j * m + col] for j in range(a, a + n) for col in range(c, c + d)]
-                                expected = reference(tx, tw, d, fmt) if options['reference'] == 'python' else None
+                                expected = matrix_reference(tx, tw, n, d, fmt) if options['reference'] == 'python' else None
                                 job.update(current=label, tile=tile, tiles=len(ranges))
-                                job.log(f'HW OPERATION {tile}/{len(ranges)} input_range={a}:{a+n} output_range={c}:{c+d}; 1x{n} @ {n}x{d}')
-                                result = run_operation(job, sim, design, base, options, tx, tw, wb,
+                                job.log(f'HW OPERATION {tile}/{len(ranges)} input_range={a}:{a+n} output_range={c}:{c+d}; {r}x{n} @ {n}x{d}')
+                                result = run_operation(job, sim, design, base, dict(options, rows=r), tx, tw, wb,
                                     temporary / 'operation', env, expected)
                                 actual, expected_part = result.pop('actual', None), result.pop('expected', None)
-                                result.update(k=n, m=d, activation=fmt, model_parameters=cycle_compare.parameters(
-                                    n, d, wb, design['b'], design['rf'], physical=cycle_parameters))
-                                if actual is not None and len(actual) == d:
+                                result.update(r=r, y_slice=y_slices(design), k=n, m=d, activation=fmt, model_parameters=cycle_compare.parameters(
+                                    n, d, wb, design['b'], design['rf'], physical=physical, rows=r))
+                                if actual is not None and len(actual) == r*d:
                                     for col, value in enumerate(actual):
-                                        if fp16: fp_parts[c + col].append(value)
-                                        else: output[c + col] += value
+                                        index_out = (col // d)*m + c + col % d
+                                        if fp16: fp_parts[index_out].append(value)
+                                        else: output[index_out] += value
                                 else:
                                     output_complete = False
-                                if not fp16 and expected_part is not None and len(expected_part) == d:
-                                    for col, value in enumerate(expected_part): combined_ref[c + col] += value
+                                if not fp16 and expected_part is not None and len(expected_part) == r*d:
+                                    for col, value in enumerate(expected_part): combined_ref[(col // d)*m+c+col % d] += value
                                 failed |= result['status'] not in ('PASS', 'UNVERIFIED')
                                 measured.append(result['cycles'])
                                 rows.append(result)
@@ -816,8 +844,8 @@ def run_custom(job, temporary, env):
                             if not fp16 and full_ref is not None and any(not -(1 << 31) <= v < (1 << 31) for v in full_ref): raise ValueError('Combined reference exceeds int32')
                             comparison = compare_outputs(output if output_complete else [], full_ref, options, fmt) if full_ref is not None else dict(matches=0, mismatches=[])
                             status = ('TIMEOUT' if any(r['status'] == 'TIMEOUT' for r in rows) else 'FAIL') if failed else 'UNVERIFIED' if options['reference'] == 'none' else 'PASS' if comparison['numeric_pass'] else 'FAIL'
-                            result = dict(name=test['name'], design=design['name'], design_id=design['id'], k=k, m=m, wb=wb, repeat=repeat + 1,
-                                status=status, elements=m, operations=len(rows), activation=fmt,
+                            result = dict(name=test['name'], design=design['name'], design_id=design['id'], r=r, y_slice=y_slices(design), k=k, m=m, wb=wb, repeat=repeat + 1,
+                                status=status, elements=r*m, operations=len(rows), activation=fmt,
                                 output_format='fp32' if fp16 else 'int32',
                                 cycles=sum(v for v in measured if v is not None) if all(v is not None for v in measured) else None,
                                 core_cycles=sum(r.get('core_cycles') or 0 for r in rows) if options['cycles'] else None,

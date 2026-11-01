@@ -207,7 +207,7 @@ class DashboardTests(unittest.TestCase):
 
     def test_make_failure_restores_configuration(self):
         config=self.root/'Config.scala'
-        original=b' x_slice = 2,\n Mem_row_factor = 4,\n Cin = 1024,\n Cout = 1024,\n DEBUG = true,\n'
+        original=b' x_slice = 2,\n Mem_row_factor = 4,\n y_slice = 1,\n Rin = 1,\n Cin = 1024,\n Cout = 1024,\n DEBUG = true,\n'
         config.write_bytes(original)
         job=SimpleNamespace(data=dict(suite=dict(options=dict(g.DEFAULT_OPTIONS))),log=lambda *_:None)
         def failed_command(args,cwd,output,*rest):
@@ -339,6 +339,20 @@ class DashboardTests(unittest.TestCase):
             self.assertEqual(self.request('/api/log?path=example.log')['code'],200)
             self.assertEqual(self.request('/api/log?path=../secret')['code'],404)
             self.assertEqual(self.request('/api/download?path=../secret')['code'],404)
+
+    def test_row_parameters_survive_api_suite_and_job(self):
+        self.assertTrue(self.request('/api/initial')['value']['features']['row_parallelism'])
+        created=self.request('/api/designs','POST',dict(name='Y2 API',b=2,rf=4,
+            y_slice=2,max_r=4,max_k=8,max_m=8))
+        self.assertEqual(created['code'],200)
+        payload=dict(name='Four row API suite',kind='custom',design_ids=[created['value']['id']],
+            tests=[dict(r=4,k=7,m=3,weights=[8])])
+        saved=self.request('/api/suites','POST',payload)
+        self.assertEqual(saved['value']['tests'][0]['r'],4)
+        job=self.request('/api/runs','POST',payload)['value']
+        self.assertEqual(job['suite']['designs'][0]['y_slice'],2)
+        self.assertEqual(job['suite']['designs'][0]['max_r'],4)
+        self.assertEqual(job['suite']['tests'][0]['r'],4)
 
 
 if __name__=='__main__':

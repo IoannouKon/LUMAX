@@ -1,0 +1,470 @@
+ROW PARALLEL VERIFICATION — actual make-built Verilator / original Linear-sw.c helpers
+LOG: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/y_slice/run_20261101_140546_883039.log
+WORK: /tmp/lumax-y-slice-test-hoi2qspl
+DMA ORDER FIX, Dma_Ids=2. Baseline: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/y_slice/run_20261101_125509_053026.log
+DMA.scala SHA256=646fec9f830e3521bce134c9c5dc31699ded20e1349025b893543037c83fb853
+LUMAX_Top.scala SHA256=e4c7ea4987836e3d306661dea533b04e77eeb697582540a59a6f94f56444b394
+INTERLEAVED CHECKS: 8 matmuls per ELF in one simulator boot without reset; C reference, output checks, printing and counter reads after each call.
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/generated-src
+MAKE PASS int16_ys2 SIMULATOR_SHA256=ff51ec0b4d37091bdef1339d22c8ffd8bda7493671936bbbacaf6119fbca8ecf
+SCENARIO: original_failing_sequence; Dma_Ids=2 with ordered response buffering. Original C and ELF hashes enforced.
+BOOT int16_ys2 W8: 1_A,2_B_changed_shape_and_block
+TEST SOURCE SHA256=27acbdf8698f4eaa0373ccacdd1a9ee0dc9f710f0b640972f00a3a591546be2c
+BASELINE IDENTICAL Linear-sw.c: SHA256=27acbdf8698f4eaa0373ccacdd1a9ee0dc9f710f0b640972f00a3a591546be2c
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=05072129167329b7968bae972d8213700865d3add862fc411131e7e2480a474d; no Python answers embedded
+BASELINE IDENTICAL Linear-sw.riscv: SHA256=05072129167329b7968bae972d8213700865d3add862fc411131e7e2480a474d
+COMMAND: /tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/original_failing_sequence_w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/original_failing_sequence_w8_boot0/Linear-sw.riscv
+UART
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 438 PC 68 195 65 36 19 39
+HW 0 0000005b 00000058 0000005b 00000058 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 545 PC 27 260 75 72 71 77
+HW 1 ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 430, "baseline_cycles": 313, "baseline_status": "PASS", "block": 2, "case": "1_A", "checks_between_calls": true, "consecutive": true, "core": 438, "cycles": 321, "dma_ids": 2, "dma_order_fix": true, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": [68, 195, 65, 36, 19, 39], "python": [91, 88, 91, 88], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4, -3, -2, -1, 0, 1, 2, 3, 4], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "baseline_core": 533, "baseline_cycles": 423, "baseline_status": "FAIL", "block": 8, "case": "2_B_changed_shape_and_block", "checks_between_calls": true, "consecutive": true, "core": 545, "cycles": 435, "dma_ids": 2, "dma_order_fix": true, "hw": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148, 4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "mode": "INT16", "pc": [27, 260, 75, 72, 71, 77], "python": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148, 4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 8, 8], "status": "PASS", "wb": 8, "y_slice": 2}
+SCENARIO: tight_eight; Dma_Ids=2 with ordered response buffering. Original C and ELF hashes enforced.
+BOOT int16_ys2 W8: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=5844ba566f6adcc3a2d581ffefe27da2901b9d70bd6507ea5f0b2fa37efe0a92
+BASELINE IDENTICAL Linear-sw.c: SHA256=5844ba566f6adcc3a2d581ffefe27da2901b9d70bd6507ea5f0b2fa37efe0a92
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=996ae543f23b92448f24215f45b09aa4cf258adc33487d9c42d192fe234e53d5; no Python answers embedded
+BASELINE IDENTICAL Linear-sw.riscv: SHA256=996ae543f23b92448f24215f45b09aa4cf258adc33487d9c42d192fe234e53d5
+COMMAND: /tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/tight_eight_w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/tight_eight_w8_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 68 195 54 36 19 577
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 377 PC 0 0 0 0 0 0
+HW 0 0000005b 00000058 0000005b 00000058 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 495 PC 0 0 0 0 0 0
+HW 1 ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c ffffff18 ffffff24 ffffff30 ffffff3c ffffff48 ffffff54 ffffff60 ffffff6c 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 363 PC 0 0 0 0 0 0
+HW 2 0000005b 00000058 0000005b 00000058 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 966 PC 0 0 0 0 0 0
+HW 3 00000a17 00000a02 000009ed fffff350 fffff36c fffff388 ffffdc89 ffffdcd6 ffffdd23 ffffc5c2 ffffc640 ffffc6be 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 239 PC 0 0 0 0 0 0
+HW 4 fffffffe 00000002 fffffffe 00000002 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 216 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 982 PC 0 0 0 0 0 0
+HW 6 00000a17 00000a02 000009ed fffff350 fffff36c fffff388 ffffdc89 ffffdcd6 ffffdd23 ffffc5c2 ffffc640 ffffc6be 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 387 PC 0 0 0 0 0 0
+HW 7 0000005b 00000058 0000005b 00000058 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-hoi2qspl/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 370, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "1_A", "consecutive": true, "core": 377, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "schedule": "tight_eight", "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-3, -2, -1, 0, 1, 2, 3, 4, -3, -2, -1, 0, 1, 2, 3, 4], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "baseline_core": 485, "baseline_cycles": null, "baseline_status": "PASS", "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 495, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148, 4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "mode": "INT16", "pc": null, "python": [4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148, 4294967064, 4294967076, 4294967088, 4294967100, 4294967112, 4294967124, 4294967136, 4294967148], "rf": 4, "schedule": "tight_eight", "shape": [2, 8, 8], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 354, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 363, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "schedule": "tight_eight", "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "baseline_core": 935, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 966, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "mode": "INT16", "pc": null, "python": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "rf": 4, "schedule": "tight_eight", "shape": [4, 7, 3], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-32768, 32767, -32768, 32767, -32768, 32767, -32768, 32767], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 235, "baseline_cycles": null, "baseline_status": "PASS", "block": 4, "case": "5_poison", "consecutive": true, "core": 239, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [4294967294, 2, 4294967294, 2], "mode": "INT16", "pc": null, "python": [4294967294, 2, 4294967294, 2], "rf": 4, "schedule": "tight_eight", "shape": [2, 4, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 213, "baseline_cycles": null, "baseline_status": "PASS", "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 216, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [0, 0, 0, 0], "mode": "INT16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "schedule": "tight_eight", "shape": [2, 4, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "baseline_core": 949, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 982, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "mode": "INT16", "pc": null, "python": [2583, 2562, 2541, 4294964048, 4294964076, 4294964104, 4294958217, 4294958294, 4294958371, 4294952386, 4294952512, 4294952638], "rf": 4, "schedule": "tight_eight", "shape": [4, 7, 3], "status": "PASS", "wb": 8, "y_slice": 2}
+OPERANDS: {"X": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 379, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "8_A_final", "consecutive": true, "core": 387, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [91, 88, 91, 88], "mode": "INT16", "pc": null, "python": [91, 88, 91, 88], "rf": 4, "schedule": "tight_eight", "shape": [2, 6, 2], "status": "PASS", "wb": 8, "y_slice": 2}
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/generated-src
+MAKE PASS fp16_ys1 SIMULATOR_SHA256=ae6ab0b1e669513e57848a8a1d81495fecdb8685840952ae1aa0db71afff6e78
+SCENARIO: original_failing_sequence; Dma_Ids=2 with ordered response buffering. Original C and ELF hashes enforced.
+BOOT fp16_ys1 W8: 1_A,2_B_changed_shape_and_block
+TEST SOURCE SHA256=b24692d42766c6323d4c96a47e91905a59b236e1c17701fbf632bc4a809c03f1
+BASELINE IDENTICAL Linear-sw.c: SHA256=b24692d42766c6323d4c96a47e91905a59b236e1c17701fbf632bc4a809c03f1
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=e508ce2beb3cb953482b3b0d6243282e0316c27879f386b90b11f8133db70467; no Python answers embedded
+BASELINE IDENTICAL Linear-sw.riscv: SHA256=e508ce2beb3cb953482b3b0d6243282e0316c27879f386b90b11f8133db70467
+COMMAND: /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/original_failing_sequence_w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/original_failing_sequence_w8_boot0/Linear-sw.riscv
+UART
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 404 PC 41 195 65 36 10 39
+HW 0 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 511 PC 17 260 78 72 44 79
+HW 1 c36cff48 c365ff4c c35eff50 c357ff54 c350ff58 c349ff5c c342ff60 c33bff64 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 400, "baseline_cycles": 281, "baseline_status": "PASS", "block": 2, "case": "1_A", "checks_between_calls": true, "consecutive": true, "core": 404, "cycles": 285, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": [41, 195, 65, 36, 10, 39], "python": [1216339883, 1212147840], "rf": 4, "schedule": "original_failing_sequence", "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "baseline_core": 505, "baseline_cycles": 394, "baseline_status": "FAIL", "block": 8, "case": "2_B_changed_shape_and_block", "checks_between_calls": true, "consecutive": true, "core": 511, "cycles": 400, "dma_ids": 2, "dma_order_fix": true, "hw": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "mode": "FP16", "pc": [17, 260, 78, 72, 44, 79], "python": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "rf": 4, "schedule": "original_failing_sequence", "shape": [1, 8, 8], "status": "PASS", "wb": 8, "y_slice": 1}
+SCENARIO: tight_eight; Dma_Ids=2 with ordered response buffering. Original C and ELF hashes enforced.
+BOOT fp16_ys1 W8: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=a955e2d9e8051dc90565dbde40887fd9ae37c4ddce3ff17163ae603459575be8
+BASELINE IDENTICAL Linear-sw.c: SHA256=a955e2d9e8051dc90565dbde40887fd9ae37c4ddce3ff17163ae603459575be8
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=a43dbe918c55dc448c80ea1b0fa6fa31407f944eecc0c82ecb1bc485ad8dfac7; no Python answers embedded
+BASELINE IDENTICAL Linear-sw.riscv: SHA256=a43dbe918c55dc448c80ea1b0fa6fa31407f944eecc0c82ecb1bc485ad8dfac7
+COMMAND: /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/tight_eight_w8_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/tight_eight_w8_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 41 195 54 36 10 572
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 360 PC 0 0 0 0 0 0
+HW 0 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 423 PC 0 0 0 0 0 0
+HW 1 c36cff48 c365ff4c c35eff50 c357ff54 c350ff58 c349ff5c c342ff60 c33bff64 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 316 PC 0 0 0 0 0 0
+HW 2 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 866 PC 0 0 0 0 0 0
+HW 3 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 237 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 206 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 864 PC 0 0 0 0 0 0
+HW 6 c419ea81 c418952c c4173fd7 4419ea81 4418952c 44173fd7 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 342 PC 0 0 0 0 0 0
+HW 7 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 356, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "1_A", "consecutive": true, "core": 360, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "schedule": "tight_eight", "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-128, -125, -122, -119, -116, -113, -110, -107, -123, -120, -117, -114, -111, -108, -105, -102, -118, -115, -112, -109, -106, -103, -100, -97, -113, -110, -107, -104, -101, -98, -95, -92, -108, -105, -102, -99, -96, -93, -90, -87, -103, -100, -97, -94, -91, -88, -85, -82, -98, -95, -92, -89, -86, -83, -80, -77, -93, -90, -87, -84, -81, -78, -75, -72]}
+CASE RESULT: {"b": 2, "baseline_core": 419, "baseline_cycles": null, "baseline_status": "PASS", "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 423, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "mode": "FP16", "pc": null, "python": [3278700360, 3278241612, 3277782864, 3277324116, 3276865368, 3276406620, 3275947872, 3275489124], "rf": 4, "schedule": "tight_eight", "shape": [1, 8, 8], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 312, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 316, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "schedule": "tight_eight", "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "baseline_core": 846, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 866, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "mode": "FP16", "pc": null, "python": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "rf": 4, "schedule": "tight_eight", "shape": [2, 7, 3], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 235, "baseline_cycles": null, "baseline_status": "PASS", "block": 4, "case": "5_poison", "consecutive": true, "core": 237, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344], "rf": 4, "schedule": "tight_eight", "shape": [1, 4, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 204, "baseline_cycles": null, "baseline_status": "PASS", "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 206, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [0, 0], "mode": "FP16", "pc": null, "python": [0, 0], "rf": 4, "schedule": "tight_eight", "shape": [1, 4, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108]}
+CASE RESULT: {"b": 2, "baseline_core": 845, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 864, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "mode": "FP16", "pc": null, "python": [3290032769, 3289945388, 3289858007, 1142549121, 1142461740, 1142374359], "rf": 4, "schedule": "tight_eight", "shape": [2, 7, 3], "status": "PASS", "wb": 8, "y_slice": 1}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 338, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "8_A_final", "consecutive": true, "core": 342, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840], "rf": 4, "schedule": "tight_eight", "shape": [1, 6, 2], "status": "PASS", "wb": 8, "y_slice": 1}
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/generated-src
+MAKE PASS fp16_ys2 SIMULATOR_SHA256=90f041a790a91b46fbb5727a685180c0b07708b428805870e98f6313efbe0ba8
+SCENARIO: original_failing_sequence; Dma_Ids=2 with ordered response buffering. Original C and ELF hashes enforced.
+BOOT fp16_ys2 W4: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=145f0751ef3041af2226035307d55241f41b96407a65a8b62819ea26e97a6ee9
+BASELINE IDENTICAL Linear-sw.c: SHA256=145f0751ef3041af2226035307d55241f41b96407a65a8b62819ea26e97a6ee9
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=469085bec3ca095a35314c088e5465d64c1723b2b1d0278e504db858d0233f2d; no Python answers embedded
+BASELINE IDENTICAL Linear-sw.riscv: SHA256=469085bec3ca095a35314c088e5465d64c1723b2b1d0278e504db858d0233f2d
+COMMAND: /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/original_failing_sequence_w4_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/original_failing_sequence_w4_boot0/Linear-sw.riscv
+UART
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 255 PC 68 15 65 36 19 71
+HW 0 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 270 PC 27 20 77 72 71 78
+HW 1 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 205 PC 63 15 65 36 25 71
+HW 2 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 560 PC 172 40 227 144 74 243
+HW 3 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 124 PC 25 10 29 14 30 27
+HW 4 7fc00000 7fc00000 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 112 PC 29 10 18 14 25 16
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 553 PC 158 40 227 144 80 243
+HW 6 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 199 PC 67 15 54 36 25 60
+HW 7 487fdfab 483fe880 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 241, "baseline_cycles": 159, "baseline_status": "PASS", "block": 2, "case": "1_A", "checks_between_calls": true, "consecutive": true, "core": 255, "cycles": 173, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": [68, 15, 65, 36, 19, 71], "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128, 15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-8, -5, -2, 1, 4, 7, -6, -3, -3, 0, 3, 6, -7, -4, -1, 2, 2, 5, -8, -5, -2, 1, 4, 7, 7, -6, -3, 0, 3, 6, -7, -4, -4, -1, 2, 5, -8, -5, -2, 1, 1, 4, 7, -6, -3, 0, 3, 6, 6, -7, -4, -1, 2, 5, -8, -5, -5, -2, 1, 4, 7, -6, -3, 0]}
+CASE RESULT: {"b": 2, "baseline_core": 257, "baseline_cycles": 183, "baseline_status": "FAIL", "block": 8, "case": "2_B_changed_shape_and_block", "checks_between_calls": true, "consecutive": true, "core": 270, "cycles": 196, "dma_ids": 2, "dma_order_fix": true, "hw": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496, 1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "mode": "FP16", "pc": [27, 20, 77, 72, 71, 78], "python": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496, 1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 8, 8], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 191, "baseline_cycles": 160, "baseline_status": "PASS", "block": 2, "case": "3_A_repeat", "checks_between_calls": true, "consecutive": true, "core": 205, "cycles": 174, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": [63, 15, 65, 36, 25, 71], "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "baseline_core": 513, "baseline_cycles": 482, "baseline_status": "PASS", "block": 2, "case": "4_C_multirow", "checks_between_calls": true, "consecutive": true, "core": 560, "cycles": 529, "dma_ids": 2, "dma_order_fix": true, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": [172, 40, 227, 144, 74, 243], "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "schedule": "original_failing_sequence", "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [32256, 15360, 48128, 0, 32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 118, "baseline_cycles": 86, "baseline_status": "PASS", "block": 4, "case": "5_poison", "checks_between_calls": true, "consecutive": true, "core": 124, "cycles": 92, "dma_ids": 2, "dma_order_fix": true, "hw": [2143289344, 2143289344, 2143289344, 2143289344], "mode": "FP16", "pc": [25, 10, 29, 14, 30, 27], "python": [2143289344, 2143289344, 2143289344, 2143289344], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 107, "baseline_cycles": 75, "baseline_status": "PASS", "block": 4, "case": "6_zero_after_poison", "checks_between_calls": true, "consecutive": true, "core": 112, "cycles": 80, "dma_ids": 2, "dma_order_fix": true, "hw": [0, 0, 0, 0], "mode": "FP16", "pc": [29, 10, 18, 14, 25, 16], "python": [0, 0, 0, 0], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "baseline_core": 506, "baseline_cycles": 474, "baseline_status": "PASS", "block": 2, "case": "7_C_repeat", "checks_between_calls": true, "consecutive": true, "core": 553, "cycles": 521, "dma_ids": 2, "dma_order_fix": true, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": [158, 40, 227, 144, 80, 243], "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "schedule": "original_failing_sequence", "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 184, "baseline_cycles": 152, "baseline_status": "PASS", "block": 2, "case": "8_A_final", "checks_between_calls": true, "consecutive": true, "core": 199, "cycles": 167, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": [67, 15, 54, 36, 25, 60], "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "schedule": "original_failing_sequence", "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+SCENARIO: tight_eight; Dma_Ids=2 with ordered response buffering. Original C and ELF hashes enforced.
+BOOT fp16_ys2 W4: 1_A,2_B_changed_shape_and_block,3_A_repeat,4_C_multirow,5_poison,6_zero_after_poison,7_C_repeat,8_A_final
+TEST SOURCE SHA256=eecb820c5f9e17b21152726cc8645902886ab4411aa1a53bd6b0e67892ff24e1
+BASELINE IDENTICAL Linear-sw.c: SHA256=eecb820c5f9e17b21152726cc8645902886ab4411aa1a53bd6b0e67892ff24e1
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=c4aeefa1d76dbe64ff63a77d761e069f20c7368f1643eacf36c3f29e032a5636; no Python answers embedded
+BASELINE IDENTICAL Linear-sw.riscv: SHA256=c4aeefa1d76dbe64ff63a77d761e069f20c7368f1643eacf36c3f29e032a5636
+COMMAND: /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=1000000000 +loadmem=/tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/tight_eight_w4_boot0/Linear-sw.riscv +permissive-off /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/tight_eight_w4_boot0/Linear-sw.riscv
+UART
+FINAL_COUNTERS 68 15 54 36 19 760
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 254 PC 0 0 0 0 0 0
+HW 0 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 1 GUARDS 1 C_MATCH 1 CORE 262 PC 0 0 0 0 0 0
+HW 1 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 40b55aff 414aa941 419d5480 c21555d0 c06a9e01 419aac20 41255401 418aa9e0 
+RESULT 2 GUARDS 1 C_MATCH 1 CORE 203 PC 0 0 0 0 0 0
+HW 2 487fdfab 483fe880 487fdfab 483fe880 
+RESULT 3 GUARDS 1 C_MATCH 1 CORE 553 PC 0 0 0 0 0 0
+HW 3 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 4 GUARDS 1 C_MATCH 1 CORE 116 PC 0 0 0 0 0 0
+HW 4 7fc00000 7fc00000 7fc00000 7fc00000 
+RESULT 5 GUARDS 1 C_MATCH 1 CORE 105 PC 0 0 0 0 0 0
+HW 5 00000000 00000000 00000000 00000000 
+RESULT 6 GUARDS 1 C_MATCH 1 CORE 557 PC 0 0 0 0 0 0
+HW 6 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 c1bd5520 c192ac80 c15003c0 41bd5520 4192ac80 415003c0 
+RESULT 7 GUARDS 1 C_MATCH 1 CORE 193 PC 0 0 0 0 0 0
+HW 7 487fdfab 483fe880 487fdfab 483fe880 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-hoi2qspl/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 240, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "1_A", "consecutive": true, "core": 254, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "schedule": "tight_eight", "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 32769, 13653, 17408, 1024, 48128, 15360, 49152, 1, 32769, 13653, 17408, 1024, 48128], "W": [-8, -5, -2, 1, 4, 7, -6, -3, -3, 0, 3, 6, -7, -4, -1, 2, 2, 5, -8, -5, -2, 1, 4, 7, 7, -6, -3, 0, 3, 6, -7, -4, -4, -1, 2, 5, -8, -5, -2, 1, 1, 4, 7, -6, -3, 0, 3, 6, 6, -7, -4, -1, 2, 5, -8, -5, -5, -2, 1, 4, 7, -6, -3, 0]}
+CASE RESULT: {"b": 2, "baseline_core": 253, "baseline_cycles": null, "baseline_status": "PASS", "block": 8, "case": "2_B_changed_shape_and_block", "consecutive": true, "core": 262, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496, 1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "mode": "FP16", "pc": null, "python": [1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496, 1085627135, 1095412033, 1100829824, 3256178128, 3228212737, 1100655648, 1092965377, 1099606496], "rf": 4, "schedule": "tight_eight", "shape": [2, 8, 8], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 189, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "3_A_repeat", "consecutive": true, "core": 203, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "schedule": "tight_eight", "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "baseline_core": 506, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "4_C_multirow", "consecutive": true, "core": 553, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": null, "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "schedule": "tight_eight", "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [32256, 15360, 48128, 0, 32256, 15360, 48128, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 111, "baseline_cycles": null, "baseline_status": "PASS", "block": 4, "case": "5_poison", "consecutive": true, "core": 116, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [2143289344, 2143289344, 2143289344, 2143289344], "mode": "FP16", "pc": null, "python": [2143289344, 2143289344, 2143289344, 2143289344], "rf": 4, "schedule": "tight_eight", "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [0, 0, 0, 0, 0, 0, 0, 0], "W": [1, -1, 1, -1, 1, -1, 1, -1]}
+CASE RESULT: {"b": 2, "baseline_core": 100, "baseline_cycles": null, "baseline_status": "PASS", "block": 4, "case": "6_zero_after_poison", "consecutive": true, "core": 105, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [0, 0, 0, 0], "mode": "FP16", "pc": null, "python": [0, 0, 0, 0], "rf": 4, "schedule": "tight_eight", "shape": [2, 4, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664, 15360, 48128, 16384, 1, 13653, 1024, 16896, 48128, 15360, 49152, 32769, 46421, 33792, 49664], "W": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4]}
+CASE RESULT: {"b": 2, "baseline_core": 510, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "7_C_repeat", "consecutive": true, "core": 557, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "mode": "FP16", "pc": null, "python": [3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880, 3250410784, 3247615104, 3243246528, 1102927136, 1100131456, 1095762880], "rf": 4, "schedule": "tight_eight", "shape": [4, 7, 3], "status": "PASS", "wb": 4, "y_slice": 2}
+OPERANDS: {"X": [15360, 49152, 1, 31743, 13653, 1024, 15360, 49152, 1, 31743, 13653, 1024], "W": [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5]}
+CASE RESULT: {"b": 2, "baseline_core": 179, "baseline_cycles": null, "baseline_status": "PASS", "block": 2, "case": "8_A_final", "consecutive": true, "core": 193, "cycles": null, "dma_ids": 2, "dma_order_fix": true, "hw": [1216339883, 1212147840, 1216339883, 1212147840], "mode": "FP16", "pc": null, "python": [1216339883, 1212147840, 1216339883, 1212147840], "rf": 4, "schedule": "tight_eight", "shape": [2, 6, 2], "status": "PASS", "wb": 4, "y_slice": 2}
+TOTAL: {"PASS": 36, "FAIL": 0}
+RUN COMPLETE. Config restored; temporary builds, vectors and executables removed.
+
+FINAL DMA ORDERING FIX VERIFICATION
+Completed: 2026-11-01T14:18:22.178530+02:00
+Hardware: b2_rf4; Rin capacity 8, Cin 32, Cout 16. Dma_Ids=2 throughout. Three rebuilt physical variants: INT16/YS2, FP16/YS1, FP16/YS2.
+36 actual HW matmuls: 36 PASS / 0 FAIL; 240 output words exactly match independent Python. Original C reference checks and memory guards passed.
+Original failing sequences: 12/12 PASS. Additional tight eight-call regressions: 24/24 PASS. No accelerator reset between matmuls within each ELF.
+All six generated C files and full .riscv binaries have identical SHA256 to their pre-fix equivalents. Arithmetic, original SW helper functions and operands unchanged.
+PREVIOUSLY FAILED B: INT16 Y_SLICE=2 W8: FAIL -> PASS. Core cycles before(failed)/after(correct)=533/545; active cycles=423/435; current pc=[27, 260, 75, 72, 71, 77]
+PREVIOUSLY FAILED B: FP16 Y_SLICE=1 W8: FAIL -> PASS. Core cycles before(failed)/after(correct)=505/511; active cycles=394/400; current pc=[17, 260, 78, 72, 44, 79]
+PREVIOUSLY FAILED B: FP16 Y_SLICE=2 W4: FAIL -> PASS. Core cycles before(failed)/after(correct)=257/270; active cycles=183/196; current pc=[27, 20, 77, 72, 71, 78]
+Previously passing tight-sequence core-cycle sum ('FP16', 1, 8): 3555 -> 3614 (1.660% increase). This is a measured small-matrix test, not a general overhead estimate.
+Previously passing tight-sequence core-cycle sum ('FP16', 2, 4): 2088 -> 2243 (7.423% increase). This is a measured small-matrix test, not a general overhead estimate.
+Previously passing tight-sequence core-cycle sum ('INT16', 2, 8): 3920 -> 4025 (2.679% increase). This is a measured small-matrix test, not a general overhead estimate.
+Software/GUI unit checks: python3 -m unittest discover -s verification/tests -v; 49 PASS in 6.836s. No persistent test-script changes.
+DMA direct test uses the actual emitted DmaModule, Queue2_UInt1 and ram_2x1 RTL in standalone Verilator with assertions. Separate from CPU matmul tests, not a Python cycle model.
+DIRECT GENERATED DMA RTL PASS: transactions=1005 peak_occupied=2 out_of_order_returns=356 simultaneous_issue_delivery=368; reversed pairs, source reuse, mixed Get/Put, request stalls and drain verified.
+Direct test compilation command: /home/kioannou/chipyard_1.13.0/.conda-env/bin/verilator --cc --exe --build --assert -Wno-fatal -j 2 --top-module DmaModule --Mdir /tmp/lumax-dma-order-fix-wmd1gm4k/dma_obj /tmp/lumax-dma-order-fix-wmd1gm4k/DmaModule.sv /tmp/lumax-dma-order-fix-wmd1gm4k/Queue2_UInt1.sv /tmp/lumax-dma-order-fix-wmd1gm4k/ram_2x1.sv /tmp/lumax-dma-order-fix-wmd1gm4k/dma_test.cpp
+Direct test initial opcode expectation was corrected to match the existing masked PutPartial opcode 1; no hardware change was made for that harness correction.
+Emitted RTL structure: DMA holds 128 response-data bits, 2 response-valid bits and the existing 2 occupied bits. Request-order queue adds 3 pointer/full bits plus 2 memory bits. Increment relative to original two occupied bits: 135 storage bits in this emitted configuration. Unused corrupt/denied outputs/registers were optimized away by firtool. This is RTL storage accounting, not FPGA synthesis utilization or timing.
+Only two source files changed: src/main/scala/DMA.scala and src/main/scala/LUMAX_Top.scala. Config.scala restored byte-for-byte, including Dma_Ids=2. Other Chisel files, Linear-sw.c and permanent verification runner unchanged.
+Targeted tests do not replace the full historical regression across all b/RF designs, matrix sizes and weight widths.
+SOURCE PATCH:
+--- DMA.scala before
++++ DMA.scala after
+@@ -50,9 +50,17 @@
+ 
+   val params = outer.params
+   val ID = params.Dma_Ids
++  require(ID >= 1, "DMA needs at least one request slot")
+ 
+   val (mem, edge) = outer.node.out(0)
++  // A source remains occupied until its response is delivered to LUMAX, not
++  // merely until TileLink returns it. This also reserves early-response storage.
+   val outstanding = RegInit(VecInit(Seq.fill(ID)(false.B)))
++  val requestOrder = Module(new Queue(UInt(log2Ceil(ID).max(1).W), ID))
++  val responseData = Reg(Vec(ID, UInt(params.DMA_bits.W)))
++  val responseCorrupt = Reg(Vec(ID, Bool()))
++  val responseDenied = Reg(Vec(ID, Bool()))
++  val responseValid = RegInit(VecInit(Seq.fill(ID)(false.B)))
+   val available = VecInit(outstanding.map(!_)).asUInt
+   val nextSource = PriorityEncoder(available)
+   val hasFree = available.orR
+@@ -64,27 +72,53 @@
+   )
+ 
+   mem.a.bits := a_bits
+-  mem.a.valid := io.valid && hasFree
++  mem.a.valid := io.valid && hasFree && requestOrder.io.enq.ready
+   io.a_fire := mem.a.fire //()
+   io.a_cor := mem.a.bits.corrupt
+ 
++  requestOrder.io.enq.valid := mem.a.fire
++  requestOrder.io.enq.bits := nextSource
++
++  // LUMAX consumes every d_valid pulse (the legacy d_ready input is unused).
++  // Capture both Get data and Put acknowledgements, then retire in issue order.
+   mem.d.ready := true.B
+-  io.readData := mem.d.bits.data
+-  io.d_valid := mem.d.valid //    mem.d.fire()
+-  io.d_cor := mem.d.bits.corrupt
+-  io.d_den := mem.d.bits.denied
+-  io.tag := mem.d.bits.source
++  when(mem.d.fire) {
++    val source = mem.d.bits.source
++    assert(outstanding(source) || (mem.a.fire && nextSource === source),
++      "DMA received a response without an accepted request")
++    assert(!responseValid(source), "DMA response slot overwritten")
++    responseData(source) := mem.d.bits.data
++    responseCorrupt(source) := mem.d.bits.corrupt
++    responseDenied(source) := mem.d.bits.denied
++    responseValid(source) := true.B
++  }
++
++  val oldest = requestOrder.io.deq.bits
++  val deliver = requestOrder.io.deq.valid && responseValid(oldest)
++  io.readData := responseData(oldest)
++  io.d_valid := deliver
++  io.d_cor := responseCorrupt(oldest)
++  io.d_den := responseDenied(oldest)
++  io.tag := oldest
++  requestOrder.io.deq.ready := deliver
+ 
+   when(mem.a.fire) {
+     outstanding(nextSource) := true.B
+   }
+- 
+-  when(mem.d.fire) {
+-    outstanding(mem.d.bits.source) := false.B
++  when(requestOrder.io.deq.fire) {
++    responseValid(oldest) := false.B
++    outstanding(oldest) := false.B
++  }
++
++  assert(PopCount(outstanding) === requestOrder.io.count,
++    "DMA request queue and occupied slots disagree")
++  for (source <- 0 until ID) {
++    assert(!responseValid(source) || outstanding(source),
++      "DMA buffered response lost its request slot")
+   }
+ 
+   io.SourceOut := nextSource
+-  io.busy := outstanding.reduce(_ && _)
++  io.busy := !hasFree || !requestOrder.io.enq.ready
+   io.empty := !outstanding.asUInt.orR
+   io.err := false.B // Optional error logic can go here
+ }
+
+--- LUMAX_Top.scala before
++++ LUMAX_Top.scala after
+@@ -1628,7 +1628,9 @@
+         dma_resp      := true.B && (Rin_cnt < YS -1.U)
+       } 
+ 
+-      when(Rin_cnt === YS) {
++      // Drain accepted DMA requests and buffered responses before completion
++      // or before reinitializing the counters for another activation-row group.
++      when(Rin_cnt === YS && dma.io.empty) {
+          when(loops_cnt === LOOPS -1.U){
+             Rin_cnt             := 0.U
+             state               := sDELAY
+@@ -1740,8 +1742,8 @@
+         }
+       }
+       is(sDELAY) {
+-          io.busy     := false.B  
+-          cmd.ready   := true.B 
++          io.busy     := !dma.io.empty
++          cmd.ready   := dma.io.empty
+         when(cmd.fire && (mode_6)) {
+           state := sIdle 
+         }
+
+DIRECT DMA RTL TEST SOURCE (temporary file removed after this log was saved):
+#include "VDmaModule.h"
+#include "verilated.h"
+#include <algorithm>
+#include <cstdint>
+#include <cstdlib>
+#include <deque>
+#include <iostream>
+#include <map>
+#include <random>
+#include <stdexcept>
+struct Entry { uint64_t data; bool responded=false; };
+VDmaModule dut;
+std::map<unsigned,Entry> live;
+std::deque<unsigned> order;
+unsigned sent=0,received=0,peak=0,reversed=0,simultaneous=0;
+uint64_t payload(unsigned n) {return 0x1234000000000000ULL | (uint64_t(n)<<8) | (n%3==0);}
+void need(bool ok,const char *why){if(!ok)throw std::runtime_error(why);}
+bool tick(){
+ dut.clock=0;dut.eval();
+ bool accepted=dut.io_a_fire,delivered=dut.io_d_valid;
+ if(!dut.reset){
+  if(dut.auto_out_d_valid){
+   unsigned id=dut.auto_out_d_bits_source;
+   need(live.count(id) && !live.at(id).responded,"invalid generated response");
+   need(dut.auto_out_d_bits_data==live.at(id).data,"test response data mismatch");
+   if(order.front()!=id)++reversed;
+   live.at(id).responded=true;
+  }
+  if(delivered){
+   need(!order.empty(),"unexpected delivery");unsigned id=order.front();
+   need(live.at(id).responded,"response delivered before memory returned it");
+   need(dut.io_readData==live.at(id).data,"DMA delivered a response out of order");
+   order.pop_front();live.erase(id);++received;
+  }
+  if(accepted){
+   unsigned id=dut.auto_out_a_bits_source;
+   need(!live.count(id),"source reused before ordered delivery");
+   need(dut.auto_out_a_bits_address==dut.io_addr,"wrong address");
+   need(dut.auto_out_a_bits_opcode==(dut.io_mode==0?4:1),"wrong Get/Put opcode");
+   live[id]={payload(sent),false};order.push_back(id);++sent;
+  }
+  if(accepted&&delivered)++simultaneous;
+  peak=std::max(peak,unsigned(live.size()));
+  need(live.size()<=2,"more than two occupied slots");
+ }
+ dut.clock=1;dut.eval();Verilated::timeInc(1);
+ return accepted;
+}
+void idle(unsigned n=1){dut.io_valid=0;dut.auto_out_d_valid=0;while(n--)tick();}
+void submit(){
+ dut.io_valid=1;dut.io_addr=0x80000000ULL+sent*8;dut.io_mode=(sent%3==0);dut.io_writeData=payload(sent);
+ unsigned tries=0;while(!tick())need(++tries<50,"request never accepted");dut.io_valid=0;
+}
+void respond(unsigned id){
+ dut.auto_out_d_valid=1;dut.auto_out_d_bits_source=id;dut.auto_out_d_bits_data=live.at(id).data;tick();dut.auto_out_d_valid=0;
+}
+int main(int argc,char**argv){
+ Verilated::commandArgs(argc,argv);
+ try{
+  dut.reset=1;dut.io_valid=0;dut.auto_out_d_valid=0;dut.auto_out_a_ready=1;dut.io_mask=255;tick();tick();dut.reset=0;idle();
+  // Two requests accepted BEFORE any response: prove concurrency is retained.
+  submit();submit();need(live.size()==2,"two concurrent requests unavailable");
+  dut.clock=0;dut.eval();need(dut.io_busy&&!dut.io_empty,"full DMA flags wrong");
+  unsigned a=order[0],b=order[1],before=received;
+  respond(b);idle(3);need(received==before,"younger response escaped before oldest");
+  respond(a);idle(3);need(live.empty(),"reverse pair did not drain");
+  // Reuse source 0 while source 1 is older. Request order must not be ID order.
+  submit();submit();a=order[0];b=order[1];respond(a);idle();
+  need(order.size()==1,"first response did not retire");submit();
+  need(order[0]==b && order[1]==a,"source reuse test setup failed");before=received;
+  respond(a);idle(2);need(received==before,"numeric source order used instead of request order");
+  respond(b);idle(3);need(live.empty(),"reused-ID pair did not drain");
+  std::mt19937 rng(0x1a2b3c4d);
+  for(unsigned cycle=0;received<1005 && cycle<30000;++cycle){
+   dut.io_valid=sent<1005 && rng()%5!=0;
+   dut.io_addr=0x80000000ULL+sent*8;dut.io_mode=(sent%3==0);dut.io_writeData=payload(sent);
+   dut.auto_out_a_ready=rng()%5!=0;dut.auto_out_d_valid=0;
+   if(!order.empty() && rng()%4!=0){
+    int chosen=-1;
+    if(rng()%4!=0){for(auto it=order.rbegin();it!=order.rend();++it)if(!live.at(*it).responded){chosen=*it;break;}}
+    else{for(unsigned id:order)if(!live.at(id).responded){chosen=id;break;}}
+    if(chosen>=0){dut.auto_out_d_valid=1;dut.auto_out_d_bits_source=chosen;dut.auto_out_d_bits_data=live.at(chosen).data;}
+   }
+   tick();
+  }
+  idle(3);dut.clock=0;dut.eval();
+  need(sent==1005&&received==1005&&live.empty()&&dut.io_empty&&!dut.io_busy,"random stress did not drain");
+  need(reversed>0&&peak==2&&simultaneous>0,"required scenarios not exercised");
+  std::cout<<"DIRECT GENERATED DMA RTL PASS: transactions="<<received<<" peak_occupied="<<peak<<" out_of_order_returns="<<reversed<<" simultaneous_issue_delivery="<<simultaneous<<"; reversed pairs, source reuse, mixed Get/Put, request stalls and drain verified.\n";
+  dut.final();return 0;
+ }catch(const std::exception&e){std::cerr<<"DIRECT DMA RTL FAIL: "<<e.what()<<"\n";return 1;}
+}
+
+DmaModule.sv SHA256=afeb60d0b928f5b56b26703e5e733259b36b44274936ac3b42e30f1c3de3c190
+Queue2_UInt1.sv SHA256=b6d7fad6cc0e5459e1d197cd48109bf304c77cc98d00b4744cc772390d959980
+ram_2x1.sv SHA256=64e56780429a5bea36f9443975b13f9a999520374dc01fc2ed2627da18cd506a
+Temporary backups, batching helper, direct-test C++, generated RTL, objects, ELFs and simulators removed; only the two HW edits and this final verification log retained. No commit or push performed.

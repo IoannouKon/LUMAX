@@ -1,0 +1,953 @@
+GUI NATIVE MULTIROW CHECKS — actual gui_core.test_source/run_operation, compiled RISC-V ELF and Verilator. Python and C references; no expected output in ELF.
+SAVED BUILD CONFIGURATION
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int, 
+  WBitWidth:      Int, 
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int, 
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Create an object to hold your configuration
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    //Μax Matrix Dimesnions 
+    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 32, // Used only for OuputBitwidth
+    Cout        = 16, // Used only to a a counter Registers  and how many output stationary outputs we have
+  
+    // Element Bidwidths  
+    XBitWidth   = 16,  // max Number of bits on input elemetns 
+    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
+    OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
+
+    //new
+    minInputBits  = 8,  //2 4
+    minWeightBits = 2,  // 4 
+    
+    //Max Parallelism Paramters 
+    y_slice     =  1,    // IMPORTANT Design parameter  MAX value
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
+    
+    //NOT USED (TODO)
+    w_slice     = 1,
+    num_filters = 1,
+
+    //DMA 
+    Dma_Ids     = 2,  // How many DMA Requests in flight 
+    DMA_Bytes   = 8,  // How many bytes send in one request 
+    DMA_bits    = 8*8,
+
+    //scale 
+    SCALE   = false, //1 or 0  (elaboration-time)
+
+    //Debug from performance counters 
+    DEBUG =  true, // 1 or  0
+
+    // How many Load Buffer 
+    W_BUFFS =  2,
+
+  )
+
+}
+
+
+SIMULATOR SHA256=c9e0db3a14ac260162dc9bd2a661fe2d222d970e17d5790e348f1e5a4309a2b3
+TEST C SHA256=987b4b24b6cef918df353565a35d81976cee7dcad983ca3b95bae87916d2bc72
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=8090812ce37eb0d9aeb688c2b7d3a4b847c700568b7d83210bf052d12760d0a1
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 45 520 63 54 38 56 CORE 727
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-rpwggm46/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-27811, -32036, -6949, -8600, 20857, -24297, 21957, 25225, 6578, 14895, 9753, 1583, -21378, 27696]
+W (row-major)=[73, -11, 127, 121, 73, 57, 7, 125, -54, -27, 84, 28, 64, -68, -27, -53, 31, -110, -3, 98, -8]
+REFERENCE=[-3166284, -3643429, -3289728, 3629555, 4827692, 5134546]
+HW_OUTPUT=[-3166284, -3643429, -3289728, 3629555, 4827692, 5134546]
+OPERATION WALL SECONDS=16.805
+GUI CASE RESULT: {"activation": "int16", "actual": [-3166284, -3643429, -3289728, 3629555, 4827692, 5134546], "core_cycles": 727, "cycles": 659, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [-3166284, -3643429, -3289728, 3629555, 4827692, 5134546], "guards": "PASS", "k": 7, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "5fe33f8607dcdbe4ce1df87eab47f63185f4fe2a1345ac98332514b9649b9ae2", "pc": [45, 520, 63, 54, 38, 56], "python": [-3166284, -3643429, -3289728, 3629555, 4827692, 5134546], "r": 2, "status": "PASS", "wb": 8, "y_slice": 1}
+TEST C SHA256=9cdb7b805a86ec48cbd2751ad45fe0ab2d770659ad65002950e04370ef8f3930
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=517b7d39c7d729a49a0f81df5f14b4ba9159b807e1bb990ed94a9764af0d2043
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 37 40 61 54 38 56 CORE 264
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-rpwggm46/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[5960, 20672, 2710, -18566, 29995, 18786, 30758, 19283, 23630, -23044, 21713, 8843, -8720, 9122]
+W (row-major)=[1, 7, -3, -2, 4, 2, 6, 4, 3, 7, 1, 0, -5, -8, -5, 3, 4, 4, 5, -5, -1]
+REFERENCE=[-88913, -201924, -73995, -39015, 7804, -167938]
+HW_OUTPUT=[-88913, -201924, -73995, -39015, 7804, -167938]
+OPERATION WALL SECONDS=16.054
+GUI CASE RESULT: {"activation": "int16", "actual": [-88913, -201924, -73995, -39015, 7804, -167938], "core_cycles": 264, "cycles": 171, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [-88913, -201924, -73995, -39015, 7804, -167938], "guards": "PASS", "k": 7, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "e2513de931ebe32d21e84ff8c20db72aa9a16d1afbc8aa95b9e2f3cd00853883", "pc": [37, 40, 61, 54, 38, 56], "python": [-88913, -201924, -73995, -39015, 7804, -167938], "r": 2, "status": "PASS", "wb": 4, "y_slice": 1}
+TEST C SHA256=65783327fbd204d93cb4a66d4e9079ece234e72b7adca1d22a1a9b5c15ef735b
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=ef067aa93a879ce3e9d78573265e388b7edf6bcc08bf924cd320567784863b0e
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 37 16 59 54 38 67 CORE 250
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-rpwggm46/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-12864, -23714, -29464, 1032, 18986, -16638, -12970, 29615, 22230, -31709, -28493, -27273, 29840, -16558]
+W (row-major)=[1, -1, 0, -2, -2, -2, 0, 1, 0, 0, -1, 0, 1, 0, 0, -2, -2, -1, 1, 0, -2]
+REFERENCE=[73856, 63072, 90006, -118356, -136971, -41184]
+HW_OUTPUT=[73856, 63072, 90006, -118356, -136971, -41184]
+OPERATION WALL SECONDS=16.455
+GUI CASE RESULT: {"activation": "int16", "actual": [73856, 63072, 90006, -118356, -136971, -41184], "core_cycles": 250, "cycles": 158, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [73856, 63072, 90006, -118356, -136971, -41184], "guards": "PASS", "k": 7, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "b1ff029548da3ff828158a0b8b28a7584fb595107409ef4de85582bc5b72a0b3", "pc": [37, 16, 59, 54, 38, 67], "python": [73856, 63072, 90006, -118356, -136971, -41184], "r": 2, "status": "PASS", "wb": 2, "y_slice": 1}
+SAVED BUILD CONFIGURATION
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int, 
+  WBitWidth:      Int, 
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int, 
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Create an object to hold your configuration
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    //Μax Matrix Dimesnions 
+    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 32, // Used only for OuputBitwidth
+    Cout        = 16, // Used only to a a counter Registers  and how many output stationary outputs we have
+  
+    // Element Bidwidths  
+    XBitWidth   = 16,  // max Number of bits on input elemetns 
+    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
+    OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
+
+    //new
+    minInputBits  = 8,  //2 4
+    minWeightBits = 2,  // 4 
+    
+    //Max Parallelism Paramters 
+    y_slice     =  2,    // IMPORTANT Design parameter  MAX value
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
+    
+    //NOT USED (TODO)
+    w_slice     = 1,
+    num_filters = 1,
+
+    //DMA 
+    Dma_Ids     = 2,  // How many DMA Requests in flight 
+    DMA_Bytes   = 8,  // How many bytes send in one request 
+    DMA_bits    = 8*8,
+
+    //scale 
+    SCALE   = false, //1 or 0  (elaboration-time)
+
+    //Debug from performance counters 
+    DEBUG =  true, // 1 or  0
+
+    // How many Load Buffer 
+    W_BUFFS =  2,
+
+  )
+
+}
+
+
+SIMULATOR SHA256=9b6e0fc4e324a7c9b083ab5f8e8e6f5bd86509ea08e6c9521e8615231e60a1d9
+TEST C SHA256=8c988a84ca8c793229063638c12476d3bd6b5231fa6890b1488894a10ce140e7
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=721dd593f4beea5e29f9ce8f95fd6066b67ae3fd9f95e450076dfa437550f0e9
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 69 520 63 54 78 56 CORE 792
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-10089, 29097, -28172, -28646, -2214, 785, 707, -9286, 18756, -15086, -4758, -16949, -21098, -4120, -18350, -24689, -29605, -2053, -16516, 9698, -13596, 27103, -28050, -23360, 14161, -14557, 17268, 14428]
+W (row-major)=[113, 24, 124, 3, -111, 109, 20, 88, 17, -70, -55, 94, -51, 78, -29, -24, -105, 41, -73, 92, 8]
+REFERENCE=[431477, -4565582, -1149064, 709801, -2856430, -217231, -993935, -3749616, -4894954, 794750, -691723, 2482901]
+HW_OUTPUT=[431477, -4565582, -1149064, 709801, -2856430, -217231, -993935, -3749616, -4894954, 794750, -691723, 2482901]
+OPERATION WALL SECONDS=21.505
+GUI CASE RESULT: {"activation": "int16", "actual": [431477, -4565582, -1149064, 709801, -2856430, -217231, -993935, -3749616, -4894954, 794750, -691723, 2482901], "core_cycles": 792, "cycles": 723, "design": "int16_ys2", "elements": 12, "exact_matches": 12, "expected": [431477, -4565582, -1149064, 709801, -2856430, -217231, -993935, -3749616, -4894954, 794750, -691723, 2482901], "guards": "PASS", "k": 7, "m": 3, "matches": 12, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "004e61123adbbab328869972cbee1d1bc061bd00a848bb7afd2811af4326e7f3", "pc": [69, 520, 63, 54, 78, 56], "python": [431477, -4565582, -1149064, 709801, -2856430, -217231, -993935, -3749616, -4894954, 794750, -691723, 2482901], "r": 4, "status": "PASS", "wb": 8, "y_slice": 2}
+TEST C SHA256=42d3812683f4c04cab1416a69d560e565f9cb5f820813df472aefd6e3c6b9cb1
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=a14e0cfa042e5f0711e868768c9ec88345dd01624a1051cc0fc961b2da7977ee
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 61 40 61 54 78 56 CORE 328
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-5911, -5654, -4754, 20926, -4450, -521, -1244, -17306, -28201, -3740, 25369, 29564, -1005, 18757, -16933, 31747, -25619, -15212, -29053, -18143, -17450, 15223, 22509, 9687, 16120, -9322, 16851, -14891]
+W (row-major)=[4, -7, 7, 0, -1, 7, -3, 3, 6, 7, 3, -7, 7, -2, -3, 0, -8, -8, -3, 3, 7]
+REFERENCE=[109682, 104883, -247151, 270256, 219413, -467925, -248380, 115191, 166621, 124090, -212486, -1673]
+HW_OUTPUT=[109682, 104883, -247151, 270256, 219413, -467925, -248380, 115191, 166621, 124090, -212486, -1673]
+OPERATION WALL SECONDS=20.762
+GUI CASE RESULT: {"activation": "int16", "actual": [109682, 104883, -247151, 270256, 219413, -467925, -248380, 115191, 166621, 124090, -212486, -1673], "core_cycles": 328, "cycles": 235, "design": "int16_ys2", "elements": 12, "exact_matches": 12, "expected": [109682, 104883, -247151, 270256, 219413, -467925, -248380, 115191, 166621, 124090, -212486, -1673], "guards": "PASS", "k": 7, "m": 3, "matches": 12, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "84160cd9b108b56a31a23d9b5ec97b60a4dfc42b08c15c33dc0d1c2398a9f341", "pc": [61, 40, 61, 54, 78, 56], "python": [109682, 104883, -247151, 270256, 219413, -467925, -248380, 115191, 166621, 124090, -212486, -1673], "r": 4, "status": "PASS", "wb": 4, "y_slice": 2}
+TEST C SHA256=ac314900f8ef3d25b3ab85d655e63aff946988b57dcb59f6fb94942d6657b40a
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=c8d57424c4aa96447546fb5e48d04de31ee1135256edaee17853da374f8555f9
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 62 16 59 54 78 67 CORE 316
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-28300, -29320, -30613, 32670, 28038, -31469, 5127, -31577, -11356, 6992, 23392, -22473, -15160, 29494, -17281, -8582, -10805, 13347, 24885, 7453, -26922, 28282, -9376, -20591, -15606, 18167, -21683, 3937]
+W (row-major)=[0, -1, 1, 1, 1, -1, -2, -1, -2, -2, 1, 0, 1, -1, 0, -1, 1, -2, -1, -1, 1]
+REFERENCE=[20946, -2371, 130311, -108931, 14440, 25609, 30688, 42341, -28917, 98931, -76460, 126143]
+HW_OUTPUT=[20946, -2371, 130311, -108931, 14440, 25609, 30688, 42341, -28917, 98931, -76460, 126143]
+OPERATION WALL SECONDS=20.209
+GUI CASE RESULT: {"activation": "int16", "actual": [20946, -2371, 130311, -108931, 14440, 25609, 30688, 42341, -28917, 98931, -76460, 126143], "core_cycles": 316, "cycles": 223, "design": "int16_ys2", "elements": 12, "exact_matches": 12, "expected": [20946, -2371, 130311, -108931, 14440, 25609, 30688, 42341, -28917, 98931, -76460, 126143], "guards": "PASS", "k": 7, "m": 3, "matches": 12, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "7e5da395208c0c62a69eacb91f82c841de944b1c76d27aa3bfae391ccc5953e4", "pc": [62, 16, 59, 54, 78, 67], "python": [20946, -2371, 130311, -108931, 14440, 25609, 30688, 42341, -28917, 98931, -76460, 126143], "r": 4, "status": "PASS", "wb": 2, "y_slice": 2}
+SAVED BUILD CONFIGURATION
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int, 
+  WBitWidth:      Int, 
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int, 
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Create an object to hold your configuration
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    //Μax Matrix Dimesnions 
+    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 32, // Used only for OuputBitwidth
+    Cout        = 16, // Used only to a a counter Registers  and how many output stationary outputs we have
+  
+    // Element Bidwidths  
+    XBitWidth   = 16,  // max Number of bits on input elemetns 
+    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
+    OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
+
+    //new
+    minInputBits  = 8,  //2 4
+    minWeightBits = 2,  // 4 
+    
+    //Max Parallelism Paramters 
+    y_slice     =  1,    // IMPORTANT Design parameter  MAX value
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
+    
+    //NOT USED (TODO)
+    w_slice     = 1,
+    num_filters = 1,
+
+    //DMA 
+    Dma_Ids     = 2,  // How many DMA Requests in flight 
+    DMA_Bytes   = 8,  // How many bytes send in one request 
+    DMA_bits    = 8*8,
+
+    //scale 
+    SCALE   = false, //1 or 0  (elaboration-time)
+
+    //Debug from performance counters 
+    DEBUG =  true, // 1 or  0
+
+    // How many Load Buffer 
+    W_BUFFS =  2,
+
+  )
+
+}
+
+
+SIMULATOR SHA256=1a7ef4f173af571204071cf7774e5d40ac2d1b830e864574cb4796769f97555a
+TEST C SHA256=537b972f8d4242dd30c8807d32fc545459c9a7c154e0aa84ecccf859707ab3fe
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=5008612279c3a1036c8591be39d510a15191c8d636bb528f43a2b880e0ad864b
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 37 520 63 54 38 56 CORE 718
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[24471, 55320, 42020, 58779, 53093, 16956, 39584, 6958, 2089, 6128, 35099, 3415, 36002, 2232]
+W (row-major)=[1, 39, -17, -103, 81, 127, 4, 97, 26, -110, 62, 91, -3, -108, 16, -92, -95, -53, -125, -75, 104]
+REFERENCE=[1210555331, 3348616675, 3357046206, 1018634816, 1050461164, 1021617280]
+HW_OUTPUT=[1210555331, 3348616675, 3357046206, 1018634816, 1050461164, 1021617280]
+X_FP16_VALUES=[485.75, -131.0, -0.01617431640625, -1435.0, -29.578125, 3.1171875, -0.00323486328125, 0.003505706787109375, 0.00012695789337158203, 0.0019378662109375, -0.0001558065414428711, 0.00032591819763183594, -0.0002827644348144531, 0.00014400482177734375]
+HW_FP32_VALUES=[171631.046875, -77739.7734375, -156118.96875, 0.022355198860168457, 0.30618226528167725, 0.027910470962524414]
+OPERATION WALL SECONDS=17.955
+GUI CASE RESULT: {"activation": "fp16", "actual": [1210555331, 3348616675, 3357046206, 1018634816, 1050461164, 1021617280], "comparison": {"atol": 0.0, "exact_matches": 6, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 6, "tolerance_pass": true}, "core_cycles": 718, "cycles": 651, "design": "fp16_ys1", "elements": 6, "exact_matches": 6, "expected": [1210555331, 3348616675, 3357046206, 1018634816, 1050461164, 1021617280], "guards": "PASS", "k": 7, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "e5e1c8e35ac0e664bbbb3e2235ac808144786646d9023a21c6298503ca5489ac", "pc": [37, 520, 63, 54, 38, 56], "python": [1210555331, 3348616675, 3357046206, 1018634816, 1050461164, 1021617280], "r": 2, "status": "PASS", "wb": 8, "y_slice": 1}
+TEST C SHA256=0391920b0de1aed0000d74cb0072b2435c72ce1a1f8bc963085b7c682a0a5468
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=dcc90216aeddd9f332dd7fc705431b32ce384f3e64c7eaa67afa2174b0fb972b
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 37 40 49 54 38 56 CORE 264
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[42278, 51965, 60127, 30956, 59473, 5556, 59523, 30037, 17883, 7792, 58637, 31528, 35917, 2175]
+W (row-major)=[6, 4, 5, 3, -1, 6, -3, -4, 0, 2, 3, -7, 1, -8, 4, 4, 3, -2, 4, -1, -3]
+REFERENCE=[1201384186, 1209493242, 3364538687, 1211545059, 3367779740, 1219248580]
+HW_OUTPUT=[1201384186, 1209493242, 3364538687, 1211545059, 3367779740, 1219248580]
+X_FP16_VALUES=[-0.020111083984375, -13.9765625, -3518.0, 40320.0, -2210.0, 0.001392364501953125, -2310.0, 21840.0, 5.85546875, 0.00628662109375, -1293.0, 58624.0, -0.0002624988555908203, 0.00013720989227294922]
+HW_FP32_VALUES=[79701.953125, 155035.90625, -284233.96875, 187095.546875, -385516.875, 352782.125]
+OPERATION WALL SECONDS=18.258
+GUI CASE RESULT: {"activation": "fp16", "actual": [1201384186, 1209493242, 3364538687, 1211545059, 3367779740, 1219248580], "comparison": {"atol": 0.0, "exact_matches": 6, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 6, "tolerance_pass": true}, "core_cycles": 264, "cycles": 171, "design": "fp16_ys1", "elements": 6, "exact_matches": 6, "expected": [1201384186, 1209493242, 3364538687, 1211545059, 3367779740, 1219248580], "guards": "PASS", "k": 7, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "5cd50eb08219a16314de21bbe59b18f339d8ec4ff875377f08599e42ff913211", "pc": [37, 40, 49, 54, 38, 56], "python": [1201384186, 1209493242, 3364538687, 1211545059, 3367779740, 1219248580], "r": 2, "status": "PASS", "wb": 4, "y_slice": 1}
+TEST C SHA256=72daee129f6433bfd50f4d763278201cd81ec0e952f1a53164ce9abfb407b21c
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=19fdd93c31b1a1d61a10b36a7548b742a5aaf30fb32a36565dc788b02114859f
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 37 16 52 54 38 60 CORE 218
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[33288, 52044, 7724, 14247, 2665, 33569, 42094, 3287, 45046, 36975, 27409, 5055, 28509, 63722]
+W (row-major)=[0, 1, -1, 1, 1, 1, -2, 0, 0, 1, 1, 1, 1, 1, 1, -1, -2, -1, -1, -2, 0]
+REFERENCE=[3244409473, 3244378671, 3244414944, 1192095201, 1200020720, 3312787963]
+HW_OUTPUT=[3244409473, 3244378671, 3244414944, 1192095201, 1200020720, 3312787963]
+X_FP16_VALUES=[-3.0994415283203125e-05, -14.59375, 0.0060272216796875, 0.478271484375, 0.00019562244415283203, -4.774332046508789e-05, -0.017303466796875, 0.00029540061950683594, -0.1243896484375, -0.0005412101745605469, 3618.0, 0.0009455680847167969, 7540.0, -40256.0]
+HW_FP32_VALUES=[-14.109986305236816, -14.080611228942871, -14.115203857421875, 36333.87890625, 69049.875, -3922.123779296875]
+OPERATION WALL SECONDS=17.655
+GUI CASE RESULT: {"activation": "fp16", "actual": [3244409473, 3244378671, 3244414944, 1192095201, 1200020720, 3312787963], "comparison": {"atol": 0.0, "exact_matches": 6, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 6, "tolerance_pass": true}, "core_cycles": 218, "cycles": 151, "design": "fp16_ys1", "elements": 6, "exact_matches": 6, "expected": [3244409473, 3244378671, 3244414944, 1192095201, 1200020720, 3312787963], "guards": "PASS", "k": 7, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "928d15a38357d0658afe285723a6453c8707b510757991b1f084cba7d4fc9777", "pc": [37, 16, 52, 54, 38, 60], "python": [3244409473, 3244378671, 3244414944, 1192095201, 1200020720, 3312787963], "r": 2, "status": "PASS", "wb": 2, "y_slice": 1}
+SAVED BUILD CONFIGURATION
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int, 
+  WBitWidth:      Int, 
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int, 
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Create an object to hold your configuration
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    //Μax Matrix Dimesnions 
+    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 32, // Used only for OuputBitwidth
+    Cout        = 16, // Used only to a a counter Registers  and how many output stationary outputs we have
+  
+    // Element Bidwidths  
+    XBitWidth   = 16,  // max Number of bits on input elemetns 
+    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
+    OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
+
+    //new
+    minInputBits  = 8,  //2 4
+    minWeightBits = 2,  // 4 
+    
+    //Max Parallelism Paramters 
+    y_slice     =  2,    // IMPORTANT Design parameter  MAX value
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
+    
+    //NOT USED (TODO)
+    w_slice     = 1,
+    num_filters = 1,
+
+    //DMA 
+    Dma_Ids     = 2,  // How many DMA Requests in flight 
+    DMA_Bytes   = 8,  // How many bytes send in one request 
+    DMA_bits    = 8*8,
+
+    //scale 
+    SCALE   = false, //1 or 0  (elaboration-time)
+
+    //Debug from performance counters 
+    DEBUG =  true, // 1 or  0
+
+    // How many Load Buffer 
+    W_BUFFS =  2,
+
+  )
+
+}
+
+
+SIMULATOR SHA256=0db6af71b542a241122314eb902f7d8300bf95f9e9ff5da9ceee0438d8de72ba
+TEST C SHA256=6002475e6039d69304e417d67f2b7e0171adcccaf59771d3abf2b2a607955105
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=76a4285219ac5379740e4f64d6957d6f6fe7a12350ff55f36617de3413e50234
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 61 520 63 54 78 56 CORE 809
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[27727, 23565, 22464, 1082, 52968, 28890, 17461, 19378, 22620, 16577, 39780, 27564, 55951, 51455, 6510, 53621, 33801, 62544, 14805, 4237, 61526, 38634, 38280, 53445, 43362, 3768, 31589, 35445]
+W (row-major)=[118, 63, 61, -50, -99, 4, -36, 67, 94, -13, 84, -19, 103, 36, -83, 111, 78, -118, 76, 68, -53]
+REFERENCE=[1237565247, 1232906525, 3378048658, 1219968641, 1205476908, 3365011483, 3369618871, 3388886557, 1229244495, 1254964604, 1250958720, 3403300740]
+HW_OUTPUT=[1237565247, 1232906525, 3378048658, 1219968641, 1205476908, 3365011483, 3369618871, 3388886557, 1229244495, 1254964604, 1250958720, 3403300740]
+X_FP16_VALUES=[4412.0, 259.25, 124.0, 6.449222564697266e-05, -27.625, 9936.0, 4.20703125, 15.390625, 139.5, 2.376953125, -0.00360870361328125, 3928.0, -209.875, -9.9921875, 0.002651214599609375, -43.65625, -6.157159805297852e-05, -17664.0, 0.72900390625, 0.0005555152893066406, -8880.0, -0.0016880035400390625, -0.00135040283203125, -38.15625, -0.04205322265625, 0.0004100799560546875, 60576.0, -0.0001970529556274414]
+HW_FP32_VALUES=[1603559.875, 1034897.8125, -888553.125, 375284.03125, 111676.34375, -299008.84375, -442989.71875, -2083267.625, 806020.9375, 6725310.0, 4722368.0, -7151554.0]
+OPERATION WALL SECONDS=23.607
+GUI CASE RESULT: {"activation": "fp16", "actual": [1237565247, 1232906525, 3378048658, 1219968641, 1205476908, 3365011483, 3369618871, 3388886557, 1229244495, 1254964604, 1250958720, 3403300740], "comparison": {"atol": 0.0, "exact_matches": 12, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 12, "tolerance_pass": true}, "core_cycles": 809, "cycles": 715, "design": "fp16_ys2", "elements": 12, "exact_matches": 12, "expected": [1237565247, 1232906525, 3378048658, 1219968641, 1205476908, 3365011483, 3369618871, 3388886557, 1229244495, 1254964604, 1250958720, 3403300740], "guards": "PASS", "k": 7, "m": 3, "matches": 12, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "fb2103f54635be3980512b750e831a3cded8ea699ec7b3e713c2989641f78c17", "pc": [61, 520, 63, 54, 78, 56], "python": [1237565247, 1232906525, 3378048658, 1219968641, 1205476908, 3365011483, 3369618871, 3388886557, 1229244495, 1254964604, 1250958720, 3403300740], "r": 4, "status": "PASS", "wb": 8, "y_slice": 2}
+TEST C SHA256=99510362cf2529d9a3566ece0801439f01428dba103012e4dd16a4515b9203d8
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=454fbc4b9eb280a03d17117c0ace97be31ec0c5614dbfdbae00e3773b763835d
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 61 40 61 54 78 56 CORE 328
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[56154, 27430, 7494, 26310, 39851, 56122, 4684, 40756, 60718, 1845, 35935, 51474, 23884, 43429, 51735, 35050, 9143, 18418, 15328, 36521, 11973, 41523, 54386, 36017, 17329, 8747, 36626, 36633]
+W (row-major)=[-4, 5, -2, 7, 1, -8, 7, -3, -7, 1, 3, 4, -3, 1, 6, 5, -8, 7, -1, 4, -6]
+REFERENCE=[1188300184, 1175781103, 3333916832, 3339340417, 3321549524, 1194248303, 1112986762, 3255749085, 1114978415, 3287745191, 3262023940, 1142038215]
+HW_OUTPUT=[1188300184, 1175781103, 3333916832, 3339340417, 3321549524, 1194248303, 1112986762, 3255749085, 1114978415, 3287745191, 3262023940, 1142038215]
+X_FP16_VALUES=[-235.25, 3660.0, 0.00514984130859375, 1734.0, -0.0037441253662109375, -231.25, 0.0007686614990234375, -0.0070343017578125, -5304.0, 0.0001099705696105957, -0.00026679039001464844, -10.140625, 339.0, -0.044097900390625, -12.1796875, -0.0001499652862548828, 0.01506805419921875, 7.9453125, 0.984375, -0.00040650367736816406, 0.10577392578125, -0.01210784912109375, -71.125, -0.00028634071350097656, 3.845703125, 0.01204681396484375, -0.0004315376281738281, -0.00043320655822753906]
+HW_FP32_VALUES=[27138.796875, 9535.7333984375, -23492.3125, -35402.50390625, -8026.353515625, 44744.43359375, 53.707557678222656, -35.6971321105957, 61.305110931396484, -494.0207214355469, -59.63380432128906, 584.4808959960938]
+OPERATION WALL SECONDS=24.859
+GUI CASE RESULT: {"activation": "fp16", "actual": [1188300184, 1175781103, 3333916832, 3339340417, 3321549524, 1194248303, 1112986762, 3255749085, 1114978415, 3287745191, 3262023940, 1142038215], "comparison": {"atol": 0.0, "exact_matches": 12, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 12, "tolerance_pass": true}, "core_cycles": 328, "cycles": 235, "design": "fp16_ys2", "elements": 12, "exact_matches": 12, "expected": [1188300184, 1175781103, 3333916832, 3339340417, 3321549524, 1194248303, 1112986762, 3255749085, 1114978415, 3287745191, 3262023940, 1142038215], "guards": "PASS", "k": 7, "m": 3, "matches": 12, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "7ea01fc4d13b45338752883b0e808775b29fdbdbe1faa4c3968623b3762a107a", "pc": [61, 40, 61, 54, 78, 56], "python": [1188300184, 1175781103, 3333916832, 3339340417, 3321549524, 1194248303, 1112986762, 3255749085, 1114978415, 3287745191, 3262023940, 1142038215], "r": 4, "status": "PASS", "wb": 4, "y_slice": 2}
+TEST C SHA256=bf4cbe8a356affb24cce022bac1477530486827d54a0e969809ce22507ec5713
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=d34b58f71bd7a2905af89df3343bfd783e0d4e9a068eab863071876875db0992
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-checks/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 61 16 59 54 78 67 CORE 291
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[38116, 51136, 4171, 43224, 15166, 63204, 13354, 62251, 18712, 20455, 49946, 60579, 40230, 48369, 42688, 19078, 42049, 12834, 27262, 60787, 25362, 12332, 48787, 31023, 48171, 43042, 28573, 28144]
+W (row-major)=[1, -2, 1, -2, 1, 0, 1, 0, 0, -1, -2, -1, -1, 1, -1, 0, -2, -2, 1, -2, -2]
+REFERENCE=[1097745986, 1197242550, 1197244060, 3323656653, 1187016586, 3323664352, 3306739009, 1179007710, 1169968706, 1195222142, 3336097717, 3336097175]
+HW_OUTPUT=[1097745986, 1197242550, 1197244060, 3323656653, 1187016586, 3323664352, 3306739009, 1179007710, 1169968706, 1195222142, 3336097717, 3336097175]
+X_FP16_VALUES=[-0.001194000244140625, -7.75, 0.0005240440368652344, -0.037841796875, 0.9052734375, -28224.0, 0.26025390625, -14680.0, 10.1875, 31.609375, -3.55078125, -4748.0, -0.00502777099609375, -1.2353515625, -0.0263671875, 13.046875, -0.0166168212890625, 0.191650390625, 3324.0, -5580.0, 905.0, 0.13037109375, -1.6435546875, 42464.0, -1.0419921875, -0.03228759765625, 7796.0, 6080.0]
+HW_FP32_VALUES=[14.892152786254883, 56440.7109375, 56446.609375, -9918.4501953125, 24631.76953125, -9925.96875, -2445.328369140625, 12686.716796875, 6025.7822265625, 48548.4921875, -27751.853515625, -27750.794921875]
+OPERATION WALL SECONDS=23.961
+GUI CASE RESULT: {"activation": "fp16", "actual": [1097745986, 1197242550, 1197244060, 3323656653, 1187016586, 3323664352, 3306739009, 1179007710, 1169968706, 1195222142, 3336097717, 3336097175], "comparison": {"atol": 0.0, "exact_matches": 12, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 12, "tolerance_pass": true}, "core_cycles": 291, "cycles": 222, "design": "fp16_ys2", "elements": 12, "exact_matches": 12, "expected": [1097745986, 1197242550, 1197244060, 3323656653, 1187016586, 3323664352, 3306739009, 1179007710, 1169968706, 1195222142, 3336097717, 3336097175], "guards": "PASS", "k": 7, "m": 3, "matches": 12, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "07ff01770ef3d69eec6bd5cc7d733070a1e36fe134df8de0da1efe7127b9b0d2", "pc": [61, 16, 59, 54, 78, 67], "python": [1097745986, 1197242550, 1197244060, 3323656653, 1187016586, 3323664352, 3306739009, 1179007710, 1169968706, 1195222142, 3336097717, 3336097175], "r": 4, "status": "PASS", "wb": 2, "y_slice": 2}
+TOTAL: {"PASS": 12, "FAIL": 0}
+
+ADDITIONAL GUI VERIFICATION: gui-final-int
+FINAL INT16 Y_SLICE=1 GUI RECHECK AFTER BANK-SPAN FIX; X2x17 W17x3. W8 requires multiple internal K blocks per row.
+SIMULATOR SHA256=9b4de2a53e54e5f2b2223dcf0a69ecf5e388490a926656667eb11e6abc5fb1a7
+SAVED BUILD CONFIGURATION
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int, 
+  WBitWidth:      Int, 
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int, 
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Create an object to hold your configuration
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    //Μax Matrix Dimesnions 
+    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 32, // Used only for OuputBitwidth
+    Cout        = 16, // Used only to a a counter Registers  and how many output stationary outputs we have
+  
+    // Element Bidwidths  
+    XBitWidth   = 16,  // max Number of bits on input elemetns 
+    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
+    OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
+
+    //new
+    minInputBits  = 8,  //2 4
+    minWeightBits = 2,  // 4 
+    
+    //Max Parallelism Paramters 
+    y_slice     =  1,    // IMPORTANT Design parameter  MAX value
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
+    
+    //NOT USED (TODO)
+    w_slice     = 1,
+    num_filters = 1,
+
+    //DMA 
+    Dma_Ids     = 2,  // How many DMA Requests in flight 
+    DMA_Bytes   = 8,  // How many bytes send in one request 
+    DMA_bits    = 8*8,
+
+    //scale 
+    SCALE   = false, //1 or 0  (elaboration-time)
+
+    //Debug from performance counters 
+    DEBUG =  true, // 1 or  0
+
+    // How many Load Buffer 
+    W_BUFFS =  2,
+
+  )
+
+}
+
+
+TEST C SHA256=458c7a150b237c182370c5762bf3fe6d18bc55a75d3aea18d76c00f56eb1a0a6
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=8727a509d24d6c6aa1e37274a8ed063b4f692fe295d22ba26f5fb16299a88e5c
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-final-int/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-final-int/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 89 1560 174 162 38 168 CORE 1950
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-27835, 19327, -25735, -9492, -29627, 23770, 31527, -31486, 187, 1893, 6157, -30853, 2298, 11217, 8733, -17945, 7577, 810, 10759, -18797, -17919, -6614, -25206, 3187, 24995, 17545, -9355, 26767, 5542, -24264, -8115, -30779, -13405, 13934]
+W (row-major)=[-20, 119, -66, 123, 104, -114, -25, 1, -15, -126, -8, 89, -14, 59, 109, -104, -80, -116, 49, -88, -53, 15, 79, -62, -73, 16, 14, 68, 108, -78, 36, -1, 18, -101, 81, 58, -57, -107, -19, 86, 66, 12, 112, 29, 9, 89, -19, -92, 121, 107, 58]
+REFERENCE=[8372881, -10561946, -6094132, 3497808, 7266499, 1798166]
+HW_OUTPUT=[8372881, -10561946, -6094132, 3497808, 7266499, 1798166]
+OPERATION WALL SECONDS=19.310
+GUI CASE RESULT: {"activation": "int16", "actual": [8372881, -10561946, -6094132, 3497808, 7266499, 1798166], "core_cycles": 1950, "cycles": 1855, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [8372881, -10561946, -6094132, 3497808, 7266499, 1798166], "guards": "PASS", "k": 17, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "bd05e37cc79540a806397e1a1e6d6d2179de4b6d38b1594c80db6970af66b77e", "pc": [89, 1560, 174, 162, 38, 168], "python": [8372881, -10561946, -6094132, 3497808, 7266499, 1798166], "r": 2, "status": "PASS", "wb": 8, "y_slice": 1}
+TEST C SHA256=bd56b1b136c6e1cc3fbbda3cc53c49a65f8dde9767ab86d871b2a749b1a3da68
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=2beb7ea1dfb87e70b428ccfa52e90a4bedbbbbbcf1d04878c4e759b47d7948cb
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-final-int/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-final-int/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 74 90 65 84 38 86 CORE 382
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[24357, 20547, 14880, 24402, 7945, -3149, -1138, -20926, -11568, -5914, -27694, -17050, -3312, -7508, 21431, -505, 18221, 6049, 13823, -3113, -27393, 30305, 16329, -10827, 7678, -9961, -5975, 25504, 17846, -25640, -27871, -23696, 25545, 30789]
+W (row-major)=[-6, 4, -3, -1, 6, -3, 0, 2, 7, 0, 7, 6, 5, 0, 7, -5, -6, 7, -1, 3, -6, -3, 5, 4, 1, 1, 6, 2, -2, -5, 4, 5, -3, -6, -1, 2, -7, 2, 1, 7, -1, -2, -7, -2, -6, 3, 5, 5, 7, -8, 6]
+REFERENCE=[-132532, 20703, 71619, 422998, -165849, 590373]
+HW_OUTPUT=[-132532, 20703, 71619, 422998, -165849, 590373]
+OPERATION WALL SECONDS=16.606
+GUI CASE RESULT: {"activation": "int16", "actual": [-132532, 20703, 71619, 422998, -165849, 590373], "core_cycles": 382, "cycles": 288, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [-132532, 20703, 71619, 422998, -165849, 590373], "guards": "PASS", "k": 17, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "b0133be246cb1937957055ed6333f30ba6f2269dd919fc4abd59b96b3b126cca", "pc": [74, 90, 65, 84, 38, 86], "python": [-132532, 20703, 71619, 422998, -165849, 590373], "r": 2, "status": "PASS", "wb": 4, "y_slice": 1}
+TEST C SHA256=44694ca38cc78fc4a573c89be5297e2342c0c91732df180d53e124b3c97287ca
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=4560f761777081eb53af215ef891593971155c50831c47f637c6cab0b3be27fc
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-final-int/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-final-int/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 72 36 61 84 39 87 CORE 353
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[26584, -9009, 32054, -27782, 2847, 18468, 21978, 15387, 4326, 5935, 23031, 4780, -5, -14256, 27339, -15455, -145, 31341, 32068, -10652, 4836, -2020, 17647, -18089, -16805, 27, -4959, -31765, 19977, 6334, 30914, 7020, -17798, -16527]
+W (row-major)=[-2, 1, 0, 1, 1, -2, 1, 0, -2, -1, -2, 1, -2, 0, 0, -1, 0, -2, -2, 0, -1, -1, -2, 1, 1, 1, -1, -2, 1, -1, 0, 0, 0, 1, -1, 1, -2, -1, -1, -2, 1, 0, -1, 0, -1, -2, -1, -2, -2, 0, -1]
+REFERENCE=[-56227, 49050, -119159, 10330, 104816, -8328]
+HW_OUTPUT=[-56227, 49050, -119159, 10330, 104816, -8328]
+OPERATION WALL SECONDS=16.007
+GUI CASE RESULT: {"activation": "int16", "actual": [-56227, 49050, -119159, 10330, 104816, -8328], "core_cycles": 353, "cycles": 234, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [-56227, 49050, -119159, 10330, 104816, -8328], "guards": "PASS", "k": 17, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "9d5ca6bf23eeb8086849f72c627178771aa3c624fe28b4982ebadbf4415ace1a", "pc": [72, 36, 61, 84, 39, 87], "python": [-56227, 49050, -119159, 10330, 104816, -8328], "r": 2, "status": "PASS", "wb": 2, "y_slice": 1}
+FINAL INT16 GUI RECHECK: 3 PASS / 0 FAIL
+
+ADDITIONAL GUI VERIFICATION: gui-final-tail
+FINAL INT16 Y_SLICE=1 GUI RECHECK AFTER BANK-SPAN FIX; X2x11 W11x3. W8 requires multiple internal K blocks per row.
+SIMULATOR SHA256=9b4de2a53e54e5f2b2223dcf0a69ecf5e388490a926656667eb11e6abc5fb1a7
+SAVED BUILD CONFIGURATION
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int, 
+  WBitWidth:      Int, 
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int, 
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Create an object to hold your configuration
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    //Μax Matrix Dimesnions 
+    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)
+    Cin         = 32, // Used only for OuputBitwidth
+    Cout        = 16, // Used only to a a counter Registers  and how many output stationary outputs we have
+  
+    // Element Bidwidths  
+    XBitWidth   = 16,  // max Number of bits on input elemetns 
+    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
+    OutBitWidth = 32,  // max  Number of bits on output elements  
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
+
+    //new
+    minInputBits  = 8,  //2 4
+    minWeightBits = 2,  // 4 
+    
+    //Max Parallelism Paramters 
+    y_slice     =  1,    // IMPORTANT Design parameter  MAX value
+    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
+    Mem_row_factor = 4,
+    
+    //NOT USED (TODO)
+    w_slice     = 1,
+    num_filters = 1,
+
+    //DMA 
+    Dma_Ids     = 2,  // How many DMA Requests in flight 
+    DMA_Bytes   = 8,  // How many bytes send in one request 
+    DMA_bits    = 8*8,
+
+    //scale 
+    SCALE   = false, //1 or 0  (elaboration-time)
+
+    //Debug from performance counters 
+    DEBUG =  true, // 1 or  0
+
+    // How many Load Buffer 
+    W_BUFFS =  2,
+
+  )
+
+}
+
+
+TEST C SHA256=61a0b4dad2a49b439dbc52d9af160a57d49e81872c3343eeb9b952c100d1b43f
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=a3f283aeb097609bcd2209b6a2d4c8030a83b959a0a4a988fdb5f3e44701e7ce
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-final-tail/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-final-tail/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 56 780 117 96 38 108 CORE 1101
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-27835, 19327, -25735, -9492, -29627, 23770, 31527, -31486, 187, 1893, 6157, -30853, 2298, 11217, 8733, -17945, 7577, 810, 10759, -18797, -17919, -6614]
+W (row-major)=[-20, 119, -66, 123, 104, -114, -25, 1, -15, -126, -8, 89, -14, 59, 109, -104, -80, -116, 49, -88, -53, 15, 79, -62, -73, 16, 14, 68, 108, -78, 36, -1, 18]
+REFERENCE=[4125244, -9962240, -6564603, -901187, -6606786, -146145]
+HW_OUTPUT=[4125244, -9962240, -6564603, -901187, -6606786, -146145]
+OPERATION WALL SECONDS=17.217
+GUI CASE RESULT: {"activation": "int16", "actual": [4125244, -9962240, -6564603, -901187, -6606786, -146145], "core_cycles": 1101, "cycles": 982, "design": "int16_ys1", "elements": 6, "exact_matches": 6, "expected": [4125244, -9962240, -6564603, -901187, -6606786, -146145], "guards": "PASS", "k": 11, "m": 3, "matches": 6, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "23904d68dea2b04bdac1356b578a944c6d52cda18d5de364775145416b27012f", "pc": [56, 780, 117, 96, 38, 108], "python": [4125244, -9962240, -6564603, -901187, -6606786, -146145], "r": 2, "status": "PASS", "wb": 8, "y_slice": 1}
+FINAL INT16 GUI RECHECK: 1 PASS / 0 FAIL
+
+ADDITIONAL GUI VERIFICATION: gui-emitter
+FINAL GUI EMITTER CHECK: bounded 1024-byte report buffer, 128 outputs per matmul, static C reference. Actual RISC-V and Verilator; independent Python/C comparisons.
+SIMULATOR SHA256=9b4de2a53e54e5f2b2223dcf0a69ecf5e388490a926656667eb11e6abc5fb1a7
+TEST C SHA256=e23e8e35b87c3caa1c20a26f6bdc9513df40d00c79924bf0393af90afa6dfc9f
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=42d7583a7c1dbbf6b2fafbeca420da94a0a927496c8bdde45cfb6481933abca3
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/int16_ys1/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-emitter/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-emitter/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 121 2080 1139 1152 510 1168 CORE 3971
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/int16_ys1/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[-4717, -19151, -13738, -436, -1444, -31386, -25003, 28216, 27397, -31398, -18435, -1289, -221, 29677, 30117, -13070, 21783, 6203, -1698, -29214, 3413, -27038, -27479, -15700, -23323, -19896, -29237, -13004, -14562, 27675, 3647, 14631, -29945, 32632, -21877, -2957, 27894, 7942, -7972, 32132, -17128, 9755, 5933, 8992, 21521, -1100, 8302, -16534, 20624, -27552, -31796, -17145, -21245, -22120, 14315, -19288]
+W (row-major)=[97, -41, 105, 71, -116, 86, -72, 72, -59, 4, 120, -126, 106, 10, 100, 88, 85, 61, 57, 60, 121, -40, -119, 29, -6, -6, -118, -109, -21, 7, -38, -79, 12, -66, -70, -46, 100, 63, 108, -82, 117, -120, -18, 15, -75, -76, 102, 114, -87, -39, -76, -6, 51, 70, -29, -38, 89, -124, 87, -97, -28, -126, 38, -118, -42, -64, 85, 38, -78, -56, -4, 99, -41, 67, -4, 71, 60, 59, -37, -27, -55, -39, -100, -75, 27, 94, -89, -13, -108, 16, 59, -68, -93, 65, 112, 69, 67, -87, 44, -55, 41, -8, 20, -114, 32, -14, -112, -74, 83, 14, 10, -47]
+REFERENCE=[-2100631, 3440629, 1323632, 2824840, -4926048, -3205032, 3446603, 3363485, 1395855, 1549780, 2857468, 6399969, 1701736, -1557531, -4873640, -1368356, 8347418, 814810, 9341552, 3537432, -2726672, -2123834, -7529799, 2593315, -6117026, 5496805, -4217314, -7496853, 7692993, 5508059, -1802901, -2460662, 3438891, -2760575, 3348299, 2253682, -3096790, 2241069, 4234681, -409928, 4736141, -3813216, 3204777, -1031626, 4557764, -4178716, 2790928, 3303803, -1545301, 4923071, -873381, -554353, -2718699, -5377888, 6619101, -677120, 1404673, 3214006, -1937490, 9966626, -12476, 412840, -6815704, -115162, -2292101, 4021037, -8089894, -2011025, 8468565, 3813943, -5497292, -1995714, -574609, -3654107, 689453, -5272438, -9455207, -2024526, 2964101, -690139, 3119110, -627634, 6202645, 3115284, 1537017, -4915220, -426594, 2539376, 1071377, 1598522, -6714492, 948756, 3058839, 1485606, -3858194, -3125639, 3636267, -2753017, 2979165, 398603, 2247414, -754719, 2709742, -2349274, 4121316, -2473386, -4150776, -1110593, 2604365, -1670878, 452204, 60602, -4883210, 3685652, -6050934, -3801157, -2128222, -926283, 2960598, -869771, -3336742, 3789380, 1999304, 7624278, -4631460, 2837161, -1874212, 3131199]
+HW_OUTPUT=[-2100631, 3440629, 1323632, 2824840, -4926048, -3205032, 3446603, 3363485, 1395855, 1549780, 2857468, 6399969, 1701736, -1557531, -4873640, -1368356, 8347418, 814810, 9341552, 3537432, -2726672, -2123834, -7529799, 2593315, -6117026, 5496805, -4217314, -7496853, 7692993, 5508059, -1802901, -2460662, 3438891, -2760575, 3348299, 2253682, -3096790, 2241069, 4234681, -409928, 4736141, -3813216, 3204777, -1031626, 4557764, -4178716, 2790928, 3303803, -1545301, 4923071, -873381, -554353, -2718699, -5377888, 6619101, -677120, 1404673, 3214006, -1937490, 9966626, -12476, 412840, -6815704, -115162, -2292101, 4021037, -8089894, -2011025, 8468565, 3813943, -5497292, -1995714, -574609, -3654107, 689453, -5272438, -9455207, -2024526, 2964101, -690139, 3119110, -627634, 6202645, 3115284, 1537017, -4915220, -426594, 2539376, 1071377, 1598522, -6714492, 948756, 3058839, 1485606, -3858194, -3125639, 3636267, -2753017, 2979165, 398603, 2247414, -754719, 2709742, -2349274, 4121316, -2473386, -4150776, -1110593, 2604365, -1670878, 452204, 60602, -4883210, 3685652, -6050934, -3801157, -2128222, -926283, 2960598, -869771, -3336742, 3789380, 1999304, 7624278, -4631460, 2837161, -1874212, 3131199]
+OPERATION WALL SECONDS=109.050
+GUI CASE RESULT: {"activation": "int16", "actual": [-2100631, 3440629, 1323632, 2824840, -4926048, -3205032, 3446603, 3363485, 1395855, 1549780, 2857468, 6399969, 1701736, -1557531, -4873640, -1368356, 8347418, 814810, 9341552, 3537432, -2726672, -2123834, -7529799, 2593315, -6117026, 5496805, -4217314, -7496853, 7692993, 5508059, -1802901, -2460662, 3438891, -2760575, 3348299, 2253682, -3096790, 2241069, 4234681, -409928, 4736141, -3813216, 3204777, -1031626, 4557764, -4178716, 2790928, 3303803, -1545301, 4923071, -873381, -554353, -2718699, -5377888, 6619101, -677120, 1404673, 3214006, -1937490, 9966626, -12476, 412840, -6815704, -115162, -2292101, 4021037, -8089894, -2011025, 8468565, 3813943, -5497292, -1995714, -574609, -3654107, 689453, -5272438, -9455207, -2024526, 2964101, -690139, 3119110, -627634, 6202645, 3115284, 1537017, -4915220, -426594, 2539376, 1071377, 1598522, -6714492, 948756, 3058839, 1485606, -3858194, -3125639, 3636267, -2753017, 2979165, 398603, 2247414, -754719, 2709742, -2349274, 4121316, -2473386, -4150776, -1110593, 2604365, -1670878, 452204, 60602, -4883210, 3685652, -6050934, -3801157, -2128222, -926283, 2960598, -869771, -3336742, 3789380, 1999304, 7624278, -4631460, 2837161, -1874212, 3131199], "core_cycles": 3971, "cycles": 3879, "design": "int16_ys1", "elements": 128, "exact_matches": 128, "expected": [-2100631, 3440629, 1323632, 2824840, -4926048, -3205032, 3446603, 3363485, 1395855, 1549780, 2857468, 6399969, 1701736, -1557531, -4873640, -1368356, 8347418, 814810, 9341552, 3537432, -2726672, -2123834, -7529799, 2593315, -6117026, 5496805, -4217314, -7496853, 7692993, 5508059, -1802901, -2460662, 3438891, -2760575, 3348299, 2253682, -3096790, 2241069, 4234681, -409928, 4736141, -3813216, 3204777, -1031626, 4557764, -4178716, 2790928, 3303803, -1545301, 4923071, -873381, -554353, -2718699, -5377888, 6619101, -677120, 1404673, 3214006, -1937490, 9966626, -12476, 412840, -6815704, -115162, -2292101, 4021037, -8089894, -2011025, 8468565, 3813943, -5497292, -1995714, -574609, -3654107, 689453, -5272438, -9455207, -2024526, 2964101, -690139, 3119110, -627634, 6202645, 3115284, 1537017, -4915220, -426594, 2539376, 1071377, 1598522, -6714492, 948756, 3058839, 1485606, -3858194, -3125639, 3636267, -2753017, 2979165, 398603, 2247414, -754719, 2709742, -2349274, 4121316, -2473386, -4150776, -1110593, 2604365, -1670878, 452204, 60602, -4883210, 3685652, -6050934, -3801157, -2128222, -926283, 2960598, -869771, -3336742, 3789380, 1999304, 7624278, -4631460, 2837161, -1874212, 3131199], "guards": "PASS", "k": 7, "m": 16, "matches": 128, "mismatches": [], "numeric_pass": true, "output_format": "int32", "output_sha256": "3973e7f8bba6ea49b58ba484c5abc5528c40e2d01c23fc3338b72d27ab4d1ae9", "pc": [121, 2080, 1139, 1152, 510, 1168], "python": [-2100631, 3440629, 1323632, 2824840, -4926048, -3205032, 3446603, 3363485, 1395855, 1549780, 2857468, 6399969, 1701736, -1557531, -4873640, -1368356, 8347418, 814810, 9341552, 3537432, -2726672, -2123834, -7529799, 2593315, -6117026, 5496805, -4217314, -7496853, 7692993, 5508059, -1802901, -2460662, 3438891, -2760575, 3348299, 2253682, -3096790, 2241069, 4234681, -409928, 4736141, -3813216, 3204777, -1031626, 4557764, -4178716, 2790928, 3303803, -1545301, 4923071, -873381, -554353, -2718699, -5377888, 6619101, -677120, 1404673, 3214006, -1937490, 9966626, -12476, 412840, -6815704, -115162, -2292101, 4021037, -8089894, -2011025, 8468565, 3813943, -5497292, -1995714, -574609, -3654107, 689453, -5272438, -9455207, -2024526, 2964101, -690139, 3119110, -627634, 6202645, 3115284, 1537017, -4915220, -426594, 2539376, 1071377, 1598522, -6714492, 948756, 3058839, 1485606, -3858194, -3125639, 3636267, -2753017, 2979165, 398603, 2247414, -754719, 2709742, -2349274, 4121316, -2473386, -4150776, -1110593, 2604365, -1670878, 452204, 60602, -4883210, 3685652, -6050934, -3801157, -2128222, -926283, 2960598, -869771, -3336742, 3789380, 1999304, 7624278, -4631460, 2837161, -1874212, 3131199], "r": 8, "status": "PASS", "wb": 8, "y_slice": 1}
+SIMULATOR SHA256=0db6af71b542a241122314eb902f7d8300bf95f9e9ff5da9ceee0438d8de72ba
+TEST C SHA256=bad3295e4a856723a28f7f1162deceeb3bc4e17ef43c6bbb307a93c8f59f0c18
+COMMAND: bash ./build.sh baremetal
+ELF SHA256=239a46ba9b9fec7226c0fa671376854a452d727a37f5789e6bb4abbf63a9bb69
+COMMAND: /tmp/lumax-multirow-yl156rut/gui-sims/fp16_ys2/simulator-LUMAXROcketConfig +permissive +max-cycles=100000000000 +loadmem=/tmp/lumax-multirow-yl156rut/gui-emitter/operation/Linear-sw.riscv +permissive-off /tmp/lumax-multirow-yl156rut/gui-emitter/operation/Linear-sw.riscv
+TARGET PHASE Program started; operands already loaded
+TARGET PHASE Computing in LUMAX hardware
+TARGET PHASE LUMAX hardware completed
+TARGET PHASE Checking input integrity
+TARGET PHASE Computing RISC-V reference
+UART STATUS
+PHASE Program started; operands already loaded
+PHASE Computing in LUMAX hardware
+PHASE LUMAX hardware completed
+CYCLES 115 1040 580 576 506 588 CORE 2342
+PHASE Checking input integrity
+GUARDS PASS
+PHASE Computing RISC-V reference
+TEST_DONE
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-y-slice-test-zx79xvgf/fp16_ys2/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+X=[21307, 17751, 21291, 37607, 18856, 30687, 47343, 50224, 37619, 3757, 63786, 63288, 46825, 62726, 13, 54106, 24834, 59387, 57878, 63860, 31400, 62943, 42491, 4632, 12965, 43588, 45685, 49834, 51528, 53789, 46716, 23600, 9825, 12804, 25851, 62923, 20326, 51922, 56960, 7665, 52587, 14529, 169, 56613, 30755, 5624, 50834, 24142, 25615, 25366, 24603, 147, 21981, 9750, 4085, 46880]
+W (row-major)=[25, 43, -14, -103, -4, 37, 102, -55, -28, 86, -3, 15, 92, -118, 21, -106, 20, -115, 55, -23, 13, -61, -33, 15, 69, 9, 61, 100, 121, -80, -38, -52, -59, 75, -22, 78, -57, -68, 50, 102, -126, 53, -33, -7, -67, -21, -45, 28, 123, -10, 104, -91, 40, 101, -117, 55, 92, 21, -32, -19, 112, -47, 15, 127, 124, 119, -36, 119, 124, -110, -18, -40, 42, 80, -116, 34, 115, -123, 74, 122, -35, -98, 62, 49, -29, -120, -62, -76, 15, -85, -71, 120, 99, 64, -116, 29, 113, 122, 9, 95, -38, 110, 19, -48, -102, -20, 51, -34, -97, 24, -95, 84]
+REFERENCE=[3381251595, 3393217324, 1240710283, 1237372286, 3378823238, 3396097813, 3388144450, 3390400685, 1223180719, 3391534707, 3389777519, 1248606199, 1245906362, 1241164743, 3395571076, 1231251916, 3408581242, 3400209555, 3394690305, 3385206318, 3398150982, 3393743772, 1251694879, 3357044277, 3392748869, 3391979534, 1248062509, 1223893417, 3401283480, 1251777573, 3377718365, 3408094097, 1256190592, 1260915431, 3390531731, 1245668555, 3379706905, 1261100659, 1249496335, 1228524525, 3402072500, 1243664499, 1253681263, 3403422890, 3407466448, 3383158448, 3353143952, 1244930861, 3373456616, 3380383102, 1218732402, 1243031750, 1203512110, 3378073257, 3390420902, 1235319395, 1227127299, 3388764767, 1200396541, 3366983644, 3389457416, 1244475653, 3371592567, 1243320672, 1210823247, 1209682571, 1192220853, 1203845420, 3340082891, 1210445359, 3318683313, 3342224711, 3352543469, 3332771838, 1196488331, 3343964370, 3351529955, 1186273460, 3353446157, 1208837881, 3374106127, 3380125781, 1217224103, 1243041738, 1201427566, 3378522437, 3390096575, 1234999415, 1226419956, 3388604175, 1202487257, 3366565817, 3389518127, 1244389382, 3371525786, 1242964725, 3387448472, 1243788963, 3375496449, 1244199501, 3388123571, 3389479851, 1238337627, 1246610825, 3397783247, 1238636749, 3381126701, 3363519899, 3390096733, 3373971647, 3385487981, 1233250057, 1194230924, 3333368408, 1187694677, 3353268722, 1171914455, 1177205662, 1199225733, 3339703917, 1184409946, 1202025514, 1187874302, 1199277202, 1209656223, 3356877873, 1141132406, 3352949287]
+HW_OUTPUT=[3381251595, 3393217324, 1240710283, 1237372286, 3378823238, 3396097813, 3388144450, 3390400685, 1223180719, 3391534707, 3389777519, 1248606199, 1245906362, 1241164743, 3395571076, 1231251916, 3408581242, 3400209555, 3394690305, 3385206318, 3398150982, 3393743772, 1251694879, 3357044277, 3392748869, 3391979534, 1248062509, 1223893417, 3401283480, 1251777573, 3377718365, 3408094097, 1256190592, 1260915431, 3390531731, 1245668555, 3379706905, 1261100659, 1249496335, 1228524525, 3402072500, 1243664499, 1253681263, 3403422890, 3407466448, 3383158448, 3353143952, 1244930861, 3373456616, 3380383102, 1218732402, 1243031750, 1203512110, 3378073257, 3390420902, 1235319395, 1227127299, 3388764767, 1200396541, 3366983644, 3389457416, 1244475653, 3371592567, 1243320672, 1210823247, 1209682571, 1192220853, 1203845420, 3340082891, 1210445359, 3318683313, 3342224711, 3352543469, 3332771838, 1196488331, 3343964370, 3351529955, 1186273460, 3353446157, 1208837881, 3374106127, 3380125781, 1217224103, 1243041738, 1201427566, 3378522437, 3390096575, 1234999415, 1226419956, 3388604175, 1202487257, 3366565817, 3389518127, 1244389382, 3371525786, 1242964725, 3387448472, 1243788963, 3375496449, 1244199501, 3388123571, 3389479851, 1238337627, 1246610825, 3397783247, 1238636749, 3381126701, 3363519899, 3390096733, 3373971647, 3385487981, 1233250057, 1194230924, 3333368408, 1187694677, 3353268722, 1171914455, 1177205662, 1199225733, 3339703917, 1184409946, 1202025514, 1187874302, 1199277202, 1209656223, 3356877873, 1141132406, 3352949287]
+X_FP16_VALUES=[57.84375, 5.33984375, 57.34375, -0.0008425712585449219, 11.3125, 32240.0, -0.61669921875, -4.1875, -0.0008482933044433594, 0.0004074573516845703, -42304.0, -29568.0, -0.431884765625, -20576.0, 7.748603820800781e-07, -58.8125, 641.0, -2043.0, -779.0, -44672.0, 54528.0, -24048.0, -0.0233612060546875, 0.000743865966796875, 0.2076416015625, -0.0489501953125, -0.2017822265625, -3.33203125, -10.5625, -48.90625, -0.4052734375, 268.0, 0.0249176025390625, 0.18798828125, 1275.0, -23728.0, 29.59375, -13.640625, -416.0, 0.005802154541015625, -21.671875, 0.59423828125, 1.0073184967041016e-05, -329.25, 33888.0, 0.00145721435546875, -6.5703125, 403.5, 1039.0, 907.0, 525.5, 8.761882781982422e-06, 93.8125, 0.023773193359375, 0.0004856586456298828, -0.4453125]
+HW_FP32_VALUES=[-1128897.375, -3152075.0, 1996689.375, 1579439.75, -936964.375, -3872197.25, -1990504.25, -2447915.25, 475661.46875, -2731420.75, -2292123.75, 3870205.75, 3195246.5, 2053496.875, -3740513.0, 931484.75, -11195002.0, -5605961.5, -3520320.25, -1623237.75, -4576675.0, -3283687.0, 5090447.5, -156088.828125, -3034961.25, -2842627.5, 3734283.25, 497933.28125, -6142924.0, 5131794.5, -867909.8125, -10707857.0, 7338304.0, 11012839.0, -2480676.75, 3135794.75, -992193.5625, 11198067.0, 4092739.75, 761022.8125, -6537434.0, 2634780.75, 6083639.5, -7212629.0, -10080208.0, -1367254.0, -113109.125, 2951371.25, -601550.5, -1034455.875, 336651.5625, 2476593.5, 96326.359375, -890090.5625, -2452969.5, 1322828.375, 673696.1875, -2068043.875, 71985.9765625, -360638.875, -2212098.0, 2837569.25, -504667.71875, 2548824.0, 175817.234375, 157994.171875, 36824.70703125, 98930.34375, -38302.79296875, 169912.734375, -6626.83642578125, -46669.27734375, -108417.8515625, -21255.99609375, 53494.54296875, -53464.8203125, -100499.7734375, 23180.3515625, -115470.1015625, 144795.890625, -642144.9375, -1018373.3125, 289517.21875, 2479090.5, 80040.859375, -918164.3125, -2371887.75, 1282830.875, 629487.25, -2047969.875, 88319.6953125, -347581.78125, -2227275.75, 2816001.5, -502580.8125, 2459837.25, -1903507.0, 2665896.75, -729040.0625, 2768531.25, -1987894.375, -2217706.75, 1700107.375, 3371362.25, -4392807.5, 1737497.625, -1113285.625, -257270.421875, -2371927.25, -633739.9375, -1658445.625, 1064161.125, 44676.546875, -22421.171875, 25956.166015625, -114083.890625, 6975.85498046875, 10926.904296875, 64187.51953125, -36822.42578125, 19540.67578125, 84712.328125, 26306.99609375, 64388.5703125, 157582.484375, -153488.765625, 529.1947021484375, -111588.3046875]
+OPERATION WALL SECONDS=134.556
+GUI CASE RESULT: {"activation": "fp16", "actual": [3381251595, 3393217324, 1240710283, 1237372286, 3378823238, 3396097813, 3388144450, 3390400685, 1223180719, 3391534707, 3389777519, 1248606199, 1245906362, 1241164743, 3395571076, 1231251916, 3408581242, 3400209555, 3394690305, 3385206318, 3398150982, 3393743772, 1251694879, 3357044277, 3392748869, 3391979534, 1248062509, 1223893417, 3401283480, 1251777573, 3377718365, 3408094097, 1256190592, 1260915431, 3390531731, 1245668555, 3379706905, 1261100659, 1249496335, 1228524525, 3402072500, 1243664499, 1253681263, 3403422890, 3407466448, 3383158448, 3353143952, 1244930861, 3373456616, 3380383102, 1218732402, 1243031750, 1203512110, 3378073257, 3390420902, 1235319395, 1227127299, 3388764767, 1200396541, 3366983644, 3389457416, 1244475653, 3371592567, 1243320672, 1210823247, 1209682571, 1192220853, 1203845420, 3340082891, 1210445359, 3318683313, 3342224711, 3352543469, 3332771838, 1196488331, 3343964370, 3351529955, 1186273460, 3353446157, 1208837881, 3374106127, 3380125781, 1217224103, 1243041738, 1201427566, 3378522437, 3390096575, 1234999415, 1226419956, 3388604175, 1202487257, 3366565817, 3389518127, 1244389382, 3371525786, 1242964725, 3387448472, 1243788963, 3375496449, 1244199501, 3388123571, 3389479851, 1238337627, 1246610825, 3397783247, 1238636749, 3381126701, 3363519899, 3390096733, 3373971647, 3385487981, 1233250057, 1194230924, 3333368408, 1187694677, 3353268722, 1171914455, 1177205662, 1199225733, 3339703917, 1184409946, 1202025514, 1187874302, 1199277202, 1209656223, 3356877873, 1141132406, 3352949287], "comparison": {"atol": 0.0, "exact_matches": 128, "max_absolute_error": 0.0, "max_relative_error": 0.0, "mode": "exact", "nonfinite_mismatches": 0, "note": "Required atol holds rtol fixed; required rtol holds atol fixed. These apply to numeric comparison only.", "outputs_complete": true, "relative_error_unbounded": false, "required_atol": 0.0, "required_rtol": 0.0, "rtol": 0.0, "tolerance_matches": 128, "tolerance_pass": true}, "core_cycles": 2342, "cycles": 2249, "design": "fp16_ys2", "elements": 128, "exact_matches": 128, "expected": [3381251595, 3393217324, 1240710283, 1237372286, 3378823238, 3396097813, 3388144450, 3390400685, 1223180719, 3391534707, 3389777519, 1248606199, 1245906362, 1241164743, 3395571076, 1231251916, 3408581242, 3400209555, 3394690305, 3385206318, 3398150982, 3393743772, 1251694879, 3357044277, 3392748869, 3391979534, 1248062509, 1223893417, 3401283480, 1251777573, 3377718365, 3408094097, 1256190592, 1260915431, 3390531731, 1245668555, 3379706905, 1261100659, 1249496335, 1228524525, 3402072500, 1243664499, 1253681263, 3403422890, 3407466448, 3383158448, 3353143952, 1244930861, 3373456616, 3380383102, 1218732402, 1243031750, 1203512110, 3378073257, 3390420902, 1235319395, 1227127299, 3388764767, 1200396541, 3366983644, 3389457416, 1244475653, 3371592567, 1243320672, 1210823247, 1209682571, 1192220853, 1203845420, 3340082891, 1210445359, 3318683313, 3342224711, 3352543469, 3332771838, 1196488331, 3343964370, 3351529955, 1186273460, 3353446157, 1208837881, 3374106127, 3380125781, 1217224103, 1243041738, 1201427566, 3378522437, 3390096575, 1234999415, 1226419956, 3388604175, 1202487257, 3366565817, 3389518127, 1244389382, 3371525786, 1242964725, 3387448472, 1243788963, 3375496449, 1244199501, 3388123571, 3389479851, 1238337627, 1246610825, 3397783247, 1238636749, 3381126701, 3363519899, 3390096733, 3373971647, 3385487981, 1233250057, 1194230924, 3333368408, 1187694677, 3353268722, 1171914455, 1177205662, 1199225733, 3339703917, 1184409946, 1202025514, 1187874302, 1199277202, 1209656223, 3356877873, 1141132406, 3352949287], "guards": "PASS", "k": 7, "m": 16, "matches": 128, "mismatches": [], "numeric_pass": true, "output_format": "fp32", "output_sha256": "1d36a31d0db5bbfb440732ba535d87992493ac7a0aa8ffdd216ceff3f89b4c23", "pc": [115, 1040, 580, 576, 506, 588], "python": [3381251595, 3393217324, 1240710283, 1237372286, 3378823238, 3396097813, 3388144450, 3390400685, 1223180719, 3391534707, 3389777519, 1248606199, 1245906362, 1241164743, 3395571076, 1231251916, 3408581242, 3400209555, 3394690305, 3385206318, 3398150982, 3393743772, 1251694879, 3357044277, 3392748869, 3391979534, 1248062509, 1223893417, 3401283480, 1251777573, 3377718365, 3408094097, 1256190592, 1260915431, 3390531731, 1245668555, 3379706905, 1261100659, 1249496335, 1228524525, 3402072500, 1243664499, 1253681263, 3403422890, 3407466448, 3383158448, 3353143952, 1244930861, 3373456616, 3380383102, 1218732402, 1243031750, 1203512110, 3378073257, 3390420902, 1235319395, 1227127299, 3388764767, 1200396541, 3366983644, 3389457416, 1244475653, 3371592567, 1243320672, 1210823247, 1209682571, 1192220853, 1203845420, 3340082891, 1210445359, 3318683313, 3342224711, 3352543469, 3332771838, 1196488331, 3343964370, 3351529955, 1186273460, 3353446157, 1208837881, 3374106127, 3380125781, 1217224103, 1243041738, 1201427566, 3378522437, 3390096575, 1234999415, 1226419956, 3388604175, 1202487257, 3366565817, 3389518127, 1244389382, 3371525786, 1242964725, 3387448472, 1243788963, 3375496449, 1244199501, 3388123571, 3389479851, 1238337627, 1246610825, 3397783247, 1238636749, 3381126701, 3363519899, 3390096733, 3373971647, 3385487981, 1233250057, 1194230924, 3333368408, 1187694677, 3353268722, 1171914455, 1177205662, 1199225733, 3339703917, 1184409946, 1202025514, 1187874302, 1199277202, 1209656223, 3356877873, 1141132406, 3352949287], "r": 8, "status": "PASS", "wb": 8, "y_slice": 2}
+FINAL GUI EMITTER CHECK: 2 PASS / 0 FAIL
+
+FINAL GUI SUMMARY: 18 PASS / 0 FAIL; 388 exact output comparisons.
+The first three INT16 y_slice=1 native checks preceded the final bank-span reset; the final build was subsequently checked at K17 (all widths) and K11 (W8 internal tail).
+The final bounded report-buffer emitter was separately compiled and checked in INT16 and FP16, each with eight rows and 128 outputs, including chunk flushes.
+Every check invoked make-built LUMAX Verilator with a freshly compiled RISC-V ELF and compared actual DMA outputs independently to Python and C.

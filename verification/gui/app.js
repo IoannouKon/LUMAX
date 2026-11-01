@@ -5,7 +5,7 @@ const format = value => value == null ? '—' : Number(value).toLocaleString();
 const terminal = new Set(['PASS','FAIL','TIMEOUT','ERROR','BUILD_FAIL','STOPPED','UNVERIFIED','INTERRUPTED','ESTIMATED']);
 const badge = status => `<span class="pill ${esc(status).toLowerCase()}">${esc(status)}</span>`;
 const date = value => value ? new Date(value).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-const state = {designs:[],suites:[],tests:[],runs:[],history:[],selected:null,view:'builder',suiteId:null,logPath:null,planSequence:0,fpBackend:false};
+const state = {designs:[],suites:[],tests:[],runs:[],history:[],selected:null,view:'builder',suiteId:null,logPath:null,planSequence:0,fpBackend:false,rowBackend:false};
 const cycleState = {sources:[],cases:[],selected:new Set(),loaded:[],page:0,resultPage:0,result:null};
 const plotState = {group:'design_weight',measure:'mape',phase:'total'};
 let token = new URLSearchParams(location.search).get('token') || sessionStorage.getItem('lumax-token') || '';
@@ -38,14 +38,14 @@ function selectedDesigns() { return [...document.querySelectorAll('#designs inpu
 function renderDesigns(selected=selectedDesigns()) {
   const custom=['custom','llama_fast'].includes($('suite-kind').value);
   if(!selected.length) selected=['b8_rf8'];
-  $('designs').innerHTML=state.designs.map(d=>`<label class="design-option"><span class="design-title"><input type="checkbox" value="${esc(d.id)}" ${selected.includes(d.id)?'checked':''} ${!custom&&(!d.builtin||(d.activation||'int16')!=='int16')?'disabled':''}>${esc(d.name)}</span><small><strong>${esc((d.activation||'int16').toUpperCase())}</strong> · b ${d.b} · RF ${d.rf}<br>Capacity ${format(d.max_k)} × ${format(d.max_m)}</small></label>`).join('');
+  $('designs').innerHTML=state.designs.map(d=>`<label class="design-option"><span class="design-title"><input type="checkbox" value="${esc(d.id)}" ${selected.includes(d.id)?'checked':''} ${!custom&&(!d.builtin||(d.activation||'int16')!=='int16')?'disabled':''}>${esc(d.name)}</span><small><strong>${esc((d.activation||'int16').toUpperCase())}</strong> · b ${d.b} · RF ${d.rf} · Y_SLICE ${d.y_slice||1}<br>Rows ≤ ${d.max_r||1} · Capacity ${format(d.max_k)} × ${format(d.max_m)}</small></label>`).join('');
   $('designs').querySelectorAll('input').forEach(el=>el.addEventListener('change',()=>{updateFPControls();requestPlan();}));
   updateFPControls();
 }
 const patternNames={random:'Random signed',zero_x:'Zero input',zero_w:'Zero weights',zero_both:'Both zero',min_min:'Minimum × minimum',max_max:'Maximum × maximum',min_max:'Minimum × maximum',max_min:'Maximum × minimum',alternating:'Alternating signs',onehot_x:'One input active',onehot_w:'One weight active'};
 function syncTests() {
   state.tests=[...document.querySelectorAll('.matrix-test')].map(el=>({
-    name:el.querySelector('[data-field=name]').value,k:el.querySelector('[data-field=k]').value,
+    name:el.querySelector('[data-field=name]').value,r:el.querySelector('[data-field=r]').value,k:el.querySelector('[data-field=k]').value,
     m:el.querySelector('[data-field=m]').value,pattern:el.querySelector('[data-field=pattern]').value,
     weights:[...el.querySelectorAll('[data-weight]:checked')].map(x=>Number(x.value)),
     repeats:el.querySelector('[data-field=repeats]').value,seed:el.querySelector('[data-field=seed]').value}));
@@ -59,12 +59,12 @@ function updateFPControls() {
   $('fp-atol').disabled=!tolerance;$('fp-rtol').disabled=!tolerance;
 }
 function renderTests() {
-  $('tests').innerHTML=state.tests.map((t,i)=>`<div class="matrix-test" data-index="${i}"><div class="test-top"><span class="test-index">${String(i+1).padStart(2,'0')}</span><input data-field="name" aria-label="Test name" value="${esc(t.name)}" placeholder="Test name"><span class="multiply">K</span><input data-field="k" class="dimension" type="number" min="1" aria-label="Input length K" value="${esc(t.k)}"><span class="multiply">M</span><input data-field="m" class="dimension" type="number" min="1" aria-label="Output length M" value="${esc(t.m)}"><button class="icon-button remove-test" aria-label="Remove test ${i+1}">×</button></div><div class="test-bottom"><select data-field="pattern" aria-label="Data pattern">${Object.entries(patternNames).map(([v,n])=>`<option value="${v}" ${v===t.pattern?'selected':''}>${n}</option>`).join('')}</select><div class="weights">W ${[8,4,2].map(w=>`<label><input data-weight type="checkbox" value="${w}" ${t.weights.includes(w)?'checked':''}>${w}</label>`).join('')}</div><label>Runs <input data-field="repeats" type="number" min="1" max="100" value="${esc(t.repeats||1)}" aria-label="Repeats"></label><label>Seed <input class="seed" data-field="seed" placeholder="Random" value="${esc(t.seed||'')}" inputmode="numeric" aria-label="Optional reproducible seed"></label></div></div>`).join('');
+  $('tests').innerHTML=state.tests.map((t,i)=>`<div class="matrix-test" data-index="${i}"><div class="test-top"><span class="test-index">${String(i+1).padStart(2,'0')}</span><input data-field="name" aria-label="Test name" value="${esc(t.name)}" placeholder="Test name"><span class="multiply">R</span><input data-field="r" class="dimension" type="number" min="1" max="4096" aria-label="Activation rows R" value="${esc(t.r||1)}"><span class="multiply">K</span><input data-field="k" class="dimension" type="number" min="1" aria-label="Input length K" value="${esc(t.k)}"><span class="multiply">M</span><input data-field="m" class="dimension" type="number" min="1" aria-label="Output length M" value="${esc(t.m)}"><button class="icon-button remove-test" aria-label="Remove test ${i+1}">×</button></div><div class="test-bottom"><select data-field="pattern" aria-label="Data pattern">${Object.entries(patternNames).map(([v,n])=>`<option value="${v}" ${v===t.pattern?'selected':''}>${n}</option>`).join('')}</select><div class="weights">W ${[8,4,2].map(w=>`<label><input data-weight type="checkbox" value="${w}" ${t.weights.includes(w)?'checked':''}>${w}</label>`).join('')}</div><label>Runs <input data-field="repeats" type="number" min="1" max="100" value="${esc(t.repeats||1)}" aria-label="Repeats"></label><label>Seed <input class="seed" data-field="seed" placeholder="Random" value="${esc(t.seed||'')}" inputmode="numeric" aria-label="Optional reproducible seed"></label></div></div>`).join('');
   $('tests').querySelectorAll('input,select').forEach(el=>el.addEventListener('input',requestPlan));
   $('tests').querySelectorAll('.remove-test').forEach((el,i)=>el.addEventListener('click',()=>{syncTests();state.tests.splice(i,1);renderTests();requestPlan();}));
 }
 function addTest(k=16,m=8) {
-  syncTests();state.tests.push({name:`${k}×${m}`,k,m,weights:[8,4,2],pattern:'random',repeats:1,seed:''});
+  syncTests();state.tests.push({name:`${k}×${m}`,r:1,k,m,weights:[8,4,2],pattern:'random',repeats:1,seed:''});
   renderTests();requestPlan();
 }
 function suitePayload() {
@@ -87,7 +87,9 @@ async function updatePlan() {
   const sequence=++state.planSequence;
   try {
     if(!state.fpBackend&&state.designs.some(d=>selectedDesigns().includes(d.id)&&d.activation==='fp16'))throw new Error('Restart the dashboard backend to enable FP16.');
-    const plan=await api('/api/plan',suitePayload());
+    const payload=suitePayload();
+    if(!state.rowBackend&&(payload.tests.some(t=>Number(t.r)>1)||state.designs.some(d=>selectedDesigns().includes(d.id)&&(d.y_slice||1)>1)))throw new Error('Restart the dashboard backend to enable multiple activation rows and Y_SLICE.');
+    const plan=await api('/api/plan',payload);
     if(sequence!==state.planSequence)return;
     $('plan-cases').textContent=format(plan.cases);$('plan-ops').textContent=format(plan.operations);$('plan-builds').textContent=format(plan.builds);
     $('plan-note').textContent=plan.note;
@@ -147,13 +149,13 @@ function fpComparisonDetails(r) {
 }
 function resultRow(r, fast) {
   const full=r.full_k!=null;
-  const dimensions=r.k?`1×${r.k} · ${r.k}×${r.m}`:'Original suite';
+  const dimensions=r.k?`${r.r||1}×${r.k} · ${r.k}×${r.m}`:'Original suite';
   const sample=full?`<br><span class="hint">Full: 1×${r.full_k} · ${r.full_k}×${r.full_m}<br>${format(r.tiles_needed)} required tiles · sample ${esc(r.sample_status)}</span>`:'';
   const total=fast?`<td>${r.estimated_cycles!=null?`≈ ${format(r.estimated_cycles)}<br><span class="hint">${format(r.cycles)} × ${format(r.tiles_needed)}</span>`:full&&r.tiles_needed===1?format(r.cycles):'—'}</td>`:'';
   const precision=`${esc((r.activation||'int16').toUpperCase())} / ${r.wb?`W${r.wb}`:'W8,4,2'}`;
   const mismatch=r.mismatches?.length?`<div class="mismatch">${esc(r.mismatches.map(m=>`Output ${m.index}: HW=${m.hw}${m.hw_bits?' ['+m.hw_bits+']':''}, reference=${m.reference}${m.reference_bits?' ['+m.reference_bits+']':''}`).join('\n'))}</div>`:'';
   const comparison=fpComparisonDetails(r);
-  return `<tr><td>${esc(r.name)}<br><span class="hint">${esc(r.design)}</span></td><td>${dimensions}${sample}</td><td>${precision}</td><td>${badge(r.status)}</td><td>${r.matches!=null&&r.status!=='UNVERIFIED'?`${format(r.matches)}/${format(r.elements)}`:r.counts?esc(JSON.stringify(r.counts)):'—'}</td><td>${format(r.cycles)}</td>${total}</tr>${mismatch||comparison?`<tr><td colspan="${fast?7:6}">${comparison}${mismatch}</td></tr>`:''}`;
+  return `<tr><td>${esc(r.name)}<br><span class="hint">${esc(r.design)} · Y_SLICE ${r.y_slice||1}</span></td><td>${dimensions}${sample}</td><td>${precision}</td><td>${badge(r.status)}</td><td>${r.matches!=null&&r.status!=='UNVERIFIED'?`${format(r.matches)}/${format(r.elements)}`:r.counts?esc(JSON.stringify(r.counts)):'—'}</td><td>${format(r.cycles)}</td>${total}</tr>${mismatch||comparison?`<tr><td colspan="${fast?7:6}">${comparison}${mismatch}</td></tr>`:''}`;
 }
 function renderRuns() {
   const active=state.runs.filter(r=>!terminal.has(r.status)).length;
@@ -291,7 +293,7 @@ function renderModelCases() {
   const rows=matchingModelCases();cycleState.page=Math.min(cycleState.page,Math.max(0,Math.ceil(rows.length/100)-1));
   const shown=rows.slice(cycleState.page*100,(cycleState.page+1)*100);
   $('model-selection').textContent=`${format(cycleState.selected.size)} selected · ${format(rows.length)} matching · ${format(cycleState.cases.filter(r=>r.reason).length)} unavailable`;
-  $('model-tests').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Select / test</th><th>Design</th><th>X · W</th><th>Weights</th><th>HW cycles</th><th>Timing</th></tr></thead><tbody>${shown.map(r=>`<tr><td><label><input type="checkbox" data-case="${esc(r.id)}" ${cycleState.selected.has(r.id)?'checked':''} ${r.reason?'disabled':''}>${esc(r.case)}</label></td><td>${esc(r.design)}</td><td>1×${r.k} · ${r.k}×${r.m}</td><td>W${r.wb}</td><td>${format(r.hw)}</td><td>${r.reason?esc(r.reason):esc(r.note||r.status)}</td></tr>`).join('')}</tbody></table></div>${modelPager(cycleState.page,rows.length,'case')}`;
+  $('model-tests').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Select / test</th><th>Design</th><th>X · W</th><th>Weights</th><th>HW cycles</th><th>Timing</th></tr></thead><tbody>${shown.map(r=>`<tr><td><label><input type="checkbox" data-case="${esc(r.id)}" ${cycleState.selected.has(r.id)?'checked':''} ${r.reason?'disabled':''}>${esc(r.case)}</label></td><td>${esc(r.design)}</td><td>${r.r||1}×${r.k} · ${r.k}×${r.m}</td><td>W${r.wb}</td><td>${format(r.hw)}</td><td>${r.reason?esc(r.reason):esc(r.note||r.status)}</td></tr>`).join('')}</tbody></table></div>${modelPager(cycleState.page,rows.length,'case')}`;
   $('model-tests').querySelectorAll('[data-case]').forEach(el=>el.onchange=()=>{if(el.checked)cycleState.selected.add(el.dataset.case);else cycleState.selected.delete(el.dataset.case);renderModelCases();});
   $('model-tests').querySelectorAll('[data-case-page]').forEach(el=>el.onclick=()=>{cycleState.page=Number(el.dataset.casePage);renderModelCases();});
   $('model-compare').disabled=!cycleState.selected.size;
@@ -315,7 +317,7 @@ function renderCycleResult() {
     <div id="model-plot-panel" class="model-plot-panel"></div>
     <h3>By design and weight precision</h3>${errorSummaryTable(r.groups.map(g=>({...g,label:g.design+' / W'+g.wb})),'Design / weights')}
     ${r.stages.length?`<h3>Per-stage comparison</h3><p class="hint">N counts usable HW counters for that stage. — means unavailable. Load W alone and Select alone overlap; only Load X + Generate + combined W/Select + Store O form total cycles.</p>${errorSummaryTable(r.stages.map(g=>({...g,label:g.name})),'Stage')}`:''}
-    <h3>Each measured operation</h3><div class="table-wrap"><table><thead><tr><th>Test / parameters</th><th>Design / shape</th><th>HW cycles</th><th>Python cycles</th><th>Abs. error (cycles)</th><th>Abs. error (%)</th></tr></thead><tbody>${rows.map(op=>`<tr><td><details><summary>${esc(op.case)}</summary><p class="hint">${esc(op.source)}</p><pre class="model-parameters">${esc(JSON.stringify(op.parameters,null,2))}</pre>${op.note?`<p class="hint">${esc(op.note)}</p>`:''}${op.stages?`<div class="table-wrap"><table><thead><tr><th>Stage</th><th>HW</th><th>Python</th><th>Abs. cycles</th><th>Abs. %</th></tr></thead><tbody>${r.stages.map(st=>{const v=op.stages[st.id];return `<tr><td>${esc(st.name)}</td><td>${decimal(v.hw)}</td><td>${decimal(v.predicted)}</td><td>${decimal(v.absolute_error)}</td><td>${pct(v.ape)}</td></tr>`;}).join('')}</tbody></table></div>`:''}</details></td><td>${esc(op.design)} · W${op.wb}<br><span class="hint">1×${op.k} · ${op.k}×${op.m}</span></td><td>${decimal(op.hw)}</td><td>${decimal(op.predicted)}</td><td>${decimal(op.absolute_error)}</td><td>${pct(op.ape)}</td></tr>`).join('')}</tbody></table></div>${modelPager(cycleState.resultPage,r.results.length,'result')}
+    <h3>Each measured operation</h3><div class="table-wrap"><table><thead><tr><th>Test / parameters</th><th>Design / shape</th><th>HW cycles</th><th>Python cycles</th><th>Abs. error (cycles)</th><th>Abs. error (%)</th></tr></thead><tbody>${rows.map(op=>`<tr><td><details><summary>${esc(op.case)}</summary><p class="hint">${esc(op.source)}</p><pre class="model-parameters">${esc(JSON.stringify(op.parameters,null,2))}</pre>${op.note?`<p class="hint">${esc(op.note)}</p>`:''}${op.stages?`<div class="table-wrap"><table><thead><tr><th>Stage</th><th>HW</th><th>Python</th><th>Abs. cycles</th><th>Abs. %</th></tr></thead><tbody>${r.stages.map(st=>{const v=op.stages[st.id];return `<tr><td>${esc(st.name)}</td><td>${decimal(v.hw)}</td><td>${decimal(v.predicted)}</td><td>${decimal(v.absolute_error)}</td><td>${pct(v.ape)}</td></tr>`;}).join('')}</tbody></table></div>`:''}</details></td><td>${esc(op.design)} · W${op.wb}<br><span class="hint">${op.parameters?.Rin||1}×${op.k} · ${op.k}×${op.m}</span></td><td>${decimal(op.hw)}</td><td>${decimal(op.predicted)}</td><td>${decimal(op.absolute_error)}</td><td>${pct(op.ape)}</td></tr>`).join('')}</tbody></table></div>${modelPager(cycleState.resultPage,r.results.length,'result')}
     ${r.excluded.length?`<details><summary>${format(r.excluded.length)} excluded operations</summary><ul>${r.excluded.map(e=>`<li>${esc(e.case)}: ${esc(e.reason)}</li>`).join('')}</ul></details>`:''}<p class="hint">${r.notes.map(esc).join('<br>')}</p>`;
   renderModelPlotPanel();
   $('model-results').querySelectorAll('[data-result-page]').forEach(el=>el.onclick=()=>{cycleState.resultPage=Number(el.dataset.resultPage);renderCycleResult();});
@@ -463,19 +465,21 @@ function wire() {
   $('save').onclick=saveSuite;$('run').onclick=runSuite;
   $('fp-comparison').onchange=()=>{updateFPControls();requestPlan();};
   ['fp-atol','fp-rtol'].forEach(id=>$(id).oninput=requestPlan);
-  $('new-design').onclick=()=>{const d=state.designs.find(d=>selectedDesigns().includes(d.id))||state.designs[0];$('design-b').value=d.b;$('design-rf').value=d.rf;$('design-k').value=d.max_k;$('design-m').value=d.max_m;$('design-activation').value=d.activation||'int16';$('design-name').value='';$('design-dialog').showModal();};
-  $('design-form').onsubmit=async event=>{event.preventDefault();try{const d=await api('/api/designs',{name:$('design-name').value,b:Number($('design-b').value),rf:Number($('design-rf').value),max_k:Number($('design-k').value),max_m:Number($('design-m').value),activation:$('design-activation').value});state.designs.push(d);if(!['custom','llama_fast'].includes($('suite-kind').value))$('suite-kind').value='custom';renderDesigns([d.id]);kindChanged();$('design-dialog').close();requestPlan();toast('Design saved. It will be built when you run a suite.');}catch(e){toast(e.message);}};
+  $('new-design').onclick=()=>{const d=state.designs.find(d=>selectedDesigns().includes(d.id))||state.designs[0];$('design-b').value=d.b;$('design-rf').value=d.rf;$('design-ys').value=d.y_slice||1;$('design-r').value=state.rowBackend?Math.max(d.max_r||1,4):1;$('design-k').value=d.max_k;$('design-m').value=d.max_m;$('design-activation').value=d.activation||'int16';$('design-name').value='';$('design-dialog').showModal();};
+  $('design-form').onsubmit=async event=>{event.preventDefault();try{const d=await api('/api/designs',{name:$('design-name').value,b:Number($('design-b').value),rf:Number($('design-rf').value),y_slice:Number($('design-ys').value),max_r:Number($('design-r').value),max_k:Number($('design-k').value),max_m:Number($('design-m').value),activation:$('design-activation').value});state.designs.push(d);if(!['custom','llama_fast'].includes($('suite-kind').value))$('suite-kind').value='custom';renderDesigns([d.id]);kindChanged();$('design-dialog').close();requestPlan();toast('Design saved. It will be built when you run a suite.');}catch(e){toast(e.message);}};
   $('load-suite').onclick=()=>{$('saved-suites').innerHTML=state.suites.length?state.suites.map(s=>`<div class="saved-suite"><div><strong>${esc(s.name)}</strong><p class="hint">${esc(s.kind)} · ${s.design_ids.length} designs</p></div><button class="button secondary open-suite" data-id="${esc(s.id)}">Open</button></div>`).join(''):'<p class="muted">Save a suite to find it here next time.</p>';$('saved-suites').querySelectorAll('.open-suite').forEach(el=>el.onclick=()=>loadSuite(state.suites.find(s=>s.id===el.dataset.id)));$('suites-dialog').showModal();};
   $('refresh-history').onclick=()=>loadHistory().catch(e=>toast(e.message));
 }
 async function initialize() {
   try{
     const data=await api('/api/initial');state.designs=data.designs;state.suites=data.suites;
+    state.rowBackend=Boolean(data.features?.row_parallelism);
+    $('design-ys').disabled=!state.rowBackend;$('design-r').disabled=!state.rowBackend;
     state.fpBackend=!!data.features?.fp_comparison;
-    $('backend-update').classList.toggle('hidden',state.fpBackend);
+    $('backend-update').classList.toggle('hidden',state.fpBackend&&state.rowBackend);
     $('design-activation').querySelector('option[value=fp16]').disabled=!state.fpBackend;
     $('tc-picker').innerHTML=Array.from({length:11},(_,i)=>`<label><input type="checkbox" value="TC${String(i+1).padStart(2,'0')}">TC${String(i+1).padStart(2,'0')}</label>`).join('')+'<p class="hint">Leave unchecked to run all TC01–TC11.</p>';
-    state.tests=[{name:'Small random',k:16,m:8,weights:[8,4,2],pattern:'random',repeats:1,seed:''}];
+    state.tests=[{name:'Small random',r:1,k:16,m:8,weights:[8,4,2],pattern:'random',repeats:1,seed:''}];
     wire();renderTests();renderDesigns(['b8_rf8']);kindChanged();await updatePlan();await pollRuns();
     setInterval(()=>pollRuns().catch(()=>{$('connection').textContent='Disconnected · reconnecting…';}),2500);
   }catch(error){document.querySelector('main').innerHTML=`<div class="access-error"><h1>Open your private dashboard URL</h1><p>${esc(error.message)}</p><p>From the server, print the URL with:</p><code>python3 verification/gui.py status</code><p>The URL contains your access key. No account or password setup is needed.</p></div>`;}

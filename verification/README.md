@@ -78,6 +78,103 @@ across both modes, with 5,760 exact output matches. The
 [matrix verification log](logs/fp16/run_20261023_021731_113115.log) retains
 the numerical comparisons, hardware cycle counts and supplementary evidence.
 
+## Parallel rows, consecutive matmuls and DMA ordering
+
+`y_slice` is an elaboration-time activation-row parallelism parameter. Each
+active row has its own b activation banks, product tables and accumulators;
+weight storage and decoding remain one shared b-bank group per weight buffer.
+A fetched weight selects a product in every active row during the same cycle.
+INT16 and FP16 inputs use signed W8/W4/W2 weights. FP16 partial sums remain in
+the exact hardware accumulator and round once when the completed output is stored.
+
+Set `Rin` to the maximum total input rows and require `Rin >= y_slice >= 1`.
+For example, `y_slice=2, Rin=4` processes four rows in two groups sharing each
+group's weights. A partial final group masks inactive rows. Row transitions
+reset the packed-input offset and restore the bank span after a short K block.
+Defaults remain `Rin=1, y_slice=1`.
+
+The GUI exposes **Y_SLICE**, **Maximum activation rows R**, and per-test
+**R/K/M** for `X[R,K] × W[K,M] → O[R,M]`. K/column tiling preserves all rows
+and checks every output element. Saved cycle-model parameters include actual
+row count and Y_SLICE; the Python model equations themselves are unchanged.
+
+Run the small verifier from the generator root in the working Chipyard tree:
+
+```bash
+python3 verification/run_y_slice.py --mode both --y-slices 1 2 --b 2 --rf 4
+python3 verification/run_y_slice.py --mode both --y-slices 1 2 --multirow-only
+```
+
+It builds each physical format/Y_SLICE configuration once with make, compiles
+RISC-V programs using the original `Linear-sw.c` helpers, and compares actual
+Verilator outputs with independent C/Python references. Successful runs remove
+temporary build files; one dated log remains under `logs/y_slice/`.
+
+### Consecutive operations without a hardware reset
+
+```bash
+python3 verification/run_y_slice.py --mode both --y-slices 1 2 --consecutive
+python3 verification/run_y_slice.py --mode both --y-slices 1 2 --interleaved-checks
+python3 verification/run_y_slice.py --mode fp16 --y-slices 1 --interleaved-checks --pair-only
+```
+
+The eight-call sequence changes dimensions and K-block sizes, repeats earlier
+operands, exercises multiple row groups, then runs large signed/NaN values
+followed by zero inputs. Each call has its own guarded output buffer.
+`--consecutive` defers all printing, reference calculations and counter reads
+until the complete hardware sequence finishes. `--interleaved-checks` performs
+those software actions between calls; `--pair-only` keeps just A then B.
+
+Software memory activity exposed a response-ordering bug: two activation DMA
+responses could return in the opposite order, while the loader assigned them
+sequential destination positions. `DMA.scala` now keeps a queue of issued
+source IDs and captures each returned data/error response in its reserved
+slot. LUMAX receives responses in request order. A source remains occupied
+until ordered delivery, preventing premature reuse. The completion guard also
+requires DMA to be empty before finishing or starting another row group.
+
+`Config.scala`'s `Dma_Ids` is a positive build-time request-slot count. Queue
+and response-storage depth follow that value; source width is
+`max(1, log2Ceil(Dma_Ids))`, including the single-slot case. Returned source
+IDs are range-checked in simulation. Changing `Dma_Ids` requires a rebuild.
+The checked-in default remains **2**.
+
+### Activation counters follow K capacity
+
+Both `all_available_elems_x` and `j_x_start` are sized from `Cin`, rather than
+`Cout`; `cin_reg` also initializes from `Cin`. With `Cin=256, Cout=32`, a
+Cout-sized six-bit K-block index wrapped 64 to zero and repeatedly loaded the
+first 64 activations. Both two- and six-ID builds failed identically. The final
+fix keeps the original small output capacity; increasing Cout is not required.
+These are control-width corrections, without changing LUT arithmetic or
+weight-sharing logic.
+
+### Retained verification evidence
+
+| Verification | Scope | Result |
+|---|---|---|
+| [Row regression](logs/y_slice/run_20261023_225907_614283.log) | b2_rf4; INT16/FP16; W8/W4/W2; Y_SLICE=1 with two rows and Y_SLICE=2 with four rows, tails and repeated operations | 60/60 matmuls; 438/438 output elements |
+| [GUI-generated HW checks](logs/y_slice/run_20261023_225709_843818.log) | Multirow native C programs, including bounded output reporting | 18/18 HW checks |
+| [Ordered-DMA repair](logs/y_slice/run_20261101_140546_883039.log) | Three original failing schedules plus consecutive regressions; Dma_Ids=2 | 36/36 matmuls |
+| [Final width/parameter fix](logs/y_slice/run_20261101_152317_457850.log) | b8_rf8, Y_SLICE=2, Cin=256, Cout=32, Dma_Ids=6; INT16/FP16 × W8/W4/W2 plus the exact earlier failing ELF | 21/21 matmuls; 1,792 exact output words |
+| [DMA RTL parameter sweep](logs/y_slice/run_20261101_152317_457850.log) | Actual generated DMA RTL; request counts 1, 2, 3, 4 and 6 | 10,195 transactions; all slots used; reverse-order responses, source reuse, stalls and zero-latency responses checked |
+
+Every final six-ID matmul used IDs 0–5 and reached six requests awaiting
+responses simultaneously during its activation loads. The largest runtime
+shape was `X[4,256] × W[256,32] → O[4,32]`; the first two-row operands were
+repeated afterward without a reset. Hardware cycle/stage counters are saved
+for these six-ID matmuls. The other ID-count checks are DMA protocol tests,
+not comparable matmul-cycle measurements. The final log also preserves
+intermediate failing revisions; its final-source results are 21 PASS, 0 FAIL.
+ID=8 was cancelled at the user's request and is not claimed as verified.
+These targeted checks do not replace the complete historical b/RF regression.
+
+The software/GUI suite contains 49 checks:
+
+```bash
+python3 -m unittest discover -s verification/tests -v
+```
+
 ## Local GUI — one command
 
 Run this from your normal SSH terminal, from any directory:
@@ -104,8 +201,8 @@ are not reported as passing and require a new run.
 The dashboard views are:
 
 - **Build a suite:** select one or several existing designs, or create a named
-  configuration with b, RF, input capacity K and output capacity M. Add rows
-  for `X[1,K] × W[K,M] → Y[1,M]`, choose W8/W4/W2, data patterns, repeats and
+  configuration with b, RF, Y_SLICE, row capacity R, input capacity K and output
+  capacity M. Add tests for `X[R,K] × W[K,M] → Y[R,M]`, choose W8/W4/W2, data patterns, repeats and
   optional seeds, then save or run. Presets also launch the original regression,
   TC01–TC11, Llama2 and native 1024 runners.
 - **Runs:** queued/running/completed tests, exact matches, mismatches, live

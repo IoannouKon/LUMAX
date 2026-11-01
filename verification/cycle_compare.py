@@ -94,8 +94,8 @@ def physical_parameters(text=''):
                 W_MAX=value('WBitWidth', 8), buffers_w=2, HS=8)
 
 
-def parameters(k, m, wb, b, rf, in_bits=16, physical=None):
-    return dict(physical or physical_parameters(), Rin=1, Cin=int(k), Cout=int(m),
+def parameters(k, m, wb, b, rf, in_bits=16, physical=None, rows=1):
+    return dict(physical or physical_parameters(), Rin=int(rows), Cin=int(k), Cout=int(m),
                 in_bits=int(in_bits), w_bits=int(wb), XS=int(b), factor=int(rf))
 
 
@@ -253,7 +253,8 @@ def gui_cases(path, source):
             row = record(source, f'{index}/{case["name"]}/W{case["wb"]}/tile{tile+1}',
                          case['design'], k, m, case['wb'], op.get('cycles'), pc_stages(op.get('pc')),
                          op.get('status', 'INCOMPLETE'), b=design['b'], rf=design['rf'],
-                         physical=data.get('cycle_parameters'))
+                         physical=data.get('cycle_parameters'), r=op.get('r', case.get('r', 1)),
+                         y_slice=op.get('y_slice', design.get('y_slice', 1)))
             if case.get('activation', design.get('activation', 'int16')) == 'fp16':
                 row['reason'] = 'FP16 measurements are not covered by the current INT16 Python cycle model'
             if params:
