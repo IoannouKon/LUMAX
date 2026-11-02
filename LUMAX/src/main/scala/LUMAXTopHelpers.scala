@@ -1,0 +1,178 @@
+package LUMAX_PACKAGE
+
+import chisel3._
+import chisel3.util._
+
+// Existing Top helper methods, separated for navigation only. This trait has
+// no registers, modules or eager connections of its own. Each method elaborates
+// at its original call site, preserving that site's when/switch scope and
+// assignment priority. All controller state remains in LUMAX_Top.scala.
+trait LUMAXTopHelpers {
+  this: LUMAXExampleModuleImpl =>
+
+  // Each lane's starting bank is known at elaboration. Only a bank crossing
+  // from the shared cursor can rotate it; a compare/subtract handles wrap.
+  protected def rotatedActivationBank(lane: Int, shift: UInt): UInt = {
+    val bank = lane.U +& shift
+    Mux(bank >= totalSyncMems.U, bank - totalSyncMems.U, bank)
+  }
+
+  //////////////////////////////////////////////////////////////// Help Functions ////////////////////////////////////////////////////////
+
+  // A source beat may start partway through a destination word. Consume only
+  // through that word's end; the next request can reread the same source beat.
+  // Bank boundaries can still be crossed in parallel, as in the original loader.
+  protected def packedReadCount(count: UInt, firstElement: UInt, elementsPerWord: UInt): UInt = {
+    val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
+    val limited = WireDefault(count)
+    for (bank <- 0 until weightBanks) {
+      val bankStart = bank.U * elementsPerBank
+      val bankEnd = bankStart + elementsPerBank
+      val local = firstElement - bankStart
+      val wordRemaining = elementsPerWord - (local & (elementsPerWord - 1.U))
+      when(firstElement >= bankStart && firstElement < bankEnd &&
+        wordRemaining < bankEnd - firstElement) {
+        limited := count.min(wordRemaining)
+      }
+    }
+    limited
+  }
+
+  // Keep the unfinished word across responses. At most the last bank touched
+  // by a response is unfinished, so one existing carry register per stream is
+  // sufficient; no additional memory ports or per-bank register arrays are used.
+  protected def storePackedResponse(
+    memories: Seq[SyncReadMem[UInt]],
+    precision: UInt,
+    firstElement: UInt,
+    elementCount: UInt,
+    linearElement: UInt,
+    carry: UInt
+  ): Unit = {
+    val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
+    val elementsPerWord = params.DMA_bits.U / precision
+    val beatOffset = (linearElement * precision) & (params.DMA_bits - 1).U
+    val responseEnd = firstElement + elementCount
+    for (bank <- memories.indices) {
+      val bankStart = bank.U * elementsPerBank
+      val first = firstElement.max(bankStart)
+      val end = responseEnd.min(bankStart + elementsPerBank)
+      when(first < end) {
+        val local = first - bankStart
+        val row = local / elementsPerWord
+        val bitOffset = Wire(UInt(log2Ceil(params.DMA_bits).W))
+        bitOffset := (local % elementsPerWord) * precision
+        val responseShift = Wire(UInt(log2Ceil(params.DMA_bits).W))
+        responseShift := beatOffset + (first - firstElement) * precision
+        val validBits = Wire(UInt(log2Ceil(params.DMA_bits + 1).W))
+        validBits := (end - first) * precision
+        val mask = ((1.U((params.DMA_bits + 1).W) << validBits) - 1.U)(params.DMA_bits - 1, 0)
+        val packed = ((dma.io.readData >> responseShift) & mask) << bitOffset
+        val assembled = Mux(bitOffset === 0.U, 0.U, carry) | packed
+        memories(bank).write(row, assembled)
+        when(end === responseEnd) {
+          carry := assembled
+        }
+      }
+    }
+  }
+
+  protected def dmaRequest(
+    index: UInt,
+    elemsPerReg: UInt,
+    elemsPerChunk: UInt,
+    baseAddr: UInt,
+    regsPerChunk: UInt,
+    allAvailableElems: UInt
+  ): UInt = {
+
+    // calculate next index
+    val consumed = packedReadCount(elements_to_read, dma_counter_a, elemsPerChunk)
+    val index_next = index + consumed
+
+    // send DMA request
+    dma.io.mode  := false.B
+    dma.io.addr  := chunk_addres
+    dma.io.valid := true.B
+
+    when(dma.io.a_fire) {
+      // update DMA counter
+      dma_counter_a := dma_counter_a + consumed
+
+      // update send flag
+      dma_send := dma_counter_a < allAvailableElems - consumed
+
+      // configure chunk info module inputs
+      chunkInfoModule_A.io.j_x              := index_next
+      chunkInfoModule_A.io.x_elems_per_reg  := elemsPerReg
+      chunkInfoModule_A.io.elemsPerChunk_in := elemsPerChunk
+      chunkInfoModule_A.io.adr_X            := baseAddr
+      chunkInfoModule_A.io.RegsPerChunk_in  := regsPerChunk
+
+      // calculate next counter
+      val dma_counter_a_next = dma_counter_a + consumed
+
+      // update outputs
+      elements_to_read := Mux(
+        chunkInfoModule_A.io.elements_to_read <= (allAvailableElems - dma_counter_a_next),
+        chunkInfoModule_A.io.elements_to_read,
+        allAvailableElems - dma_counter_a_next
+      )
+
+      chunk_addres := chunkInfoModule_A.io.chunk_address
+
+    }
+    Mux(dma.io.a_fire, index_next, index)
+
+  }
+
+  protected def dmaResponce(
+    indexTemp: UInt,
+    elemsPerReg: UInt,
+    elemsPerChunk: UInt,
+    regsPerChunk: UInt,
+    inputBits: UInt,
+    maxBits: UInt,
+    allAvailableElems: UInt,
+    updateValidInputs: Boolean
+  ): UInt = {
+
+    // next values
+    val consumed = packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk)
+    val index_temp_next      = indexTemp + consumed
+    val dma_counter_d_next   = dma_counter_d + consumed
+
+    // optional valid_inputs update (only for X)
+    if (updateValidInputs) {
+      valid_inputs := valid_inputs + consumed
+    }
+
+    // update registers
+    dma_counter_d := dma_counter_d_next
+    dma_resp      := dma_counter_d < allAvailableElems - consumed
+
+    // configure chunk info inputs
+    chunkInfoModule_D.io.j_x_temp         := index_temp_next
+    chunkInfoModule_D.io.x_elems_per_reg  := elemsPerReg
+    chunkInfoModule_D.io.elemsPerChunk_in := elemsPerChunk
+    chunkInfoModule_D.io.RegsPerChunk_in  := regsPerChunk
+    chunkInfoModule_D.io.dma_counter_d    := dma_counter_d_next
+    chunkInfoModule_D.io.input_bits       := inputBits
+    chunkInfoModule_D.io.max_bits         := maxBits
+
+    // outputs
+    bytes_to_read := chunkInfoModule_D.io.bytes_to_read
+    reg_idx_start := chunkInfoModule_D.io.reg_idx_start
+
+    // safe clamp
+    elements_to_read_temp := Mux(
+      chunkInfoModule_D.io.elements_to_read_temp <= (allAvailableElems - dma_counter_d_next),
+      chunkInfoModule_D.io.elements_to_read_temp,
+      allAvailableElems - dma_counter_d_next
+    )
+
+    // return updated index
+    index_temp_next
+  }
+
+}
