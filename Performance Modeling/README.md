@@ -10,9 +10,9 @@ The model returns four additive stages: input loading, product generation, combi
 
 For the matrix multiplication
 
-$$
+```math
 O_{N\times M}=X_{N\times K}W_{K\times M},
-$$
+```
 
 use the following symbols. Defaults here are defaults of `compute_cycles`, not necessarily the current hardware configuration.
 
@@ -36,40 +36,40 @@ The current implementation requires `in_bits=16`, `IN_MAX=16`, `W_MAX=8`, and `D
 
 The number of activations whose products fit in one bank is
 
-$$
+```math
 \boxed{A=RF\,2^{8-w}}.
-$$
+```
 
 The default activation-window size is $V=bA$. An optional positive `block_size` replaces $V$, with $V\le bA$. The number of K windows per row group and the number of row groups are
 
-$$
+```math
 J=\left\lceil\frac K V\right\rceil,
 \qquad Q=\left\lceil\frac N Y\right\rceil.
-$$
+```
 
 For zero-based row group $g=0,\ldots,Q-1$ and window $j=0,\ldots,J-1$,
 
-$$
+```math
 a_g=\min(Y,N-gY),
 \qquad L_j=\min(V,K-jV).
-$$
+```
 
 Thus $a_g$ rows are active and $L_j$ activations are loaded per row. `Repeat activation Window` is $QJ$, counting row-group windows rather than individual rows.
 
 Each row group starts with bank span
 
-$$
+```math
 G_0=\min\left(A,\left\lceil\frac{\min(K,V)}b\right\rceil\right).
-$$
+```
 
 The bank span is the number of activation positions processed per bank. Before a subsequent window, the current controller/model updates it as
 
-$$
+```math
 G_{j+1}=\begin{cases}
 \displaystyle\min\left(G_j,\left\lceil\frac{K-bG_j}{b}\right\rceil\right),&Y=1,\\[6pt]
 \displaystyle\min\left(G_j,\left\lceil\frac{\min(V,K-(j+1)V)}b\right\rceil\right),&Y>1.
 \end{cases}
-$$
+```
 
 The $Y=1$ branch intentionally uses $K-bG_j$, matching the current RTL. With three or more windows, the final bank span can therefore remain padded even though the actual payload $L_j$ is shorter. Reset $G$ to $G_0$ for every new row group.
 
@@ -81,22 +81,22 @@ DMA uses 64-bit (8-byte) requests. Input rows and weight columns are packed cont
 
 For a read of $L$ elements of precision $q$, starting at source-element index $s$, let $u=0$ be the number already consumed, and let $G$ be the current bank span. Define
 
-$$
+```math
 p=\frac{64}{q},\qquad v=u\bmod G,
 \qquad c=\min\left(L-u,\ p-((s+u)\bmod p)\right).
-$$
+```
 
 If $p-(v\bmod p)<G-v$, also apply
 
-$$
+```math
 c\leftarrow\min\left(c,\ p-(v\bmod p)\right).
-$$
+```
 
 Issue a read of the beat at byte address
 
-$$
+```math
 \boxed{\mathrm{address}=\mathrm{base}+8\left\lfloor\frac{s+u}{p}\right\rfloor},
-$$
+```
 
 consume $c$ elements, and repeat with $u\leftarrow u+c$ until $u=L$. The destination bank-word boundaries can cause a source beat to be read more than once; retaining these requests matters for exact timing and cache behavior.
 
@@ -104,33 +104,33 @@ For activation row $r$, use $q=16$, $s=rK+jV$, and the X base address. For zero-
 
 For aligned transfers without repeated reads, the simpler request counts are
 
-$$
+```math
 n_X=\left\lceil\frac{16L_j}{64}\right\rceil,
 \qquad n_W=\left\lceil\frac{wL_j}{64}\right\rceil.
-$$
+```
 
 ### Scheduling a transfer
 
 Let a transfer start at absolute cycle $t$. For its requests $i=1,\ldots,n$, define issue cycles $s_i$, memory-ready cycles $r_i$, and ordered delivery cycles $d_i$. Set $s_0=t-1$. With $D$ request slots,
 
-$$
+```math
 \boxed{s_i=\begin{cases}
-\max(s_{i-1}+1,t),&i\le D,\\
+\max(s_{i-1}+1,t),&i\le D,\\[0pt]
 \max(s_{i-1}+1,d_{i-D}+1),&i>D.
 \end{cases}}
-$$
+```
 
 Only one request is issued per cycle, and a released slot becomes reusable on the next cycle. Responses are delivered in request order, at most one per cycle:
 
-$$
+```math
 \boxed{d_1=r_1,\qquad d_i=\max(r_i,d_{i-1}+1)\quad(i>1)}.
-$$
+```
 
 The transfer duration is measured from its starting edge to its last delivery edge:
 
-$$
+```math
 \boxed{\mathcal T=d_n-t}.
-$$
+```
 
 Controller completion cycles are added separately in the stage equations below. All stage payloads are nonempty for supported positive dimensions.
 
@@ -138,30 +138,30 @@ Controller completion cycles are added separately in the stage equations below. 
 
 For `memory_profile='uniform'`, every request has fixed response latency:
 
-$$
+```math
 r_i=s_i+H.
-$$
+```
 
 ### Default LLC memory profile
 
 For `memory_profile='chipyard_llc'`, maintain a cache of lines with a stored ready cycle $F_\ell$. The line number is
 
-$$
+```math
 \ell=\left\lfloor\frac{\mathrm{address}}{L_{\mathrm{cache}}}\right\rfloor.
-$$
+```
 
 On a miss, allocate the line and set
 
-$$
+```math
 F_\ell=s_i+H+P,
 \qquad P=\begin{cases}P_R,&\text{read},\\P_W,&\text{write}.\end{cases}
-$$
+```
 
 For both hits and misses,
 
-$$
+```math
 \boxed{r_i=\max(s_i+H,F_\ell)}.
-$$
+```
 
 This lets requests to the same not-yet-ready line share its outstanding fill delay. Hits retain the line's stored ready cycle. Every access updates LRU order; a miss evicts the least recently used line if capacity is exhausted. The number of cache lines is $\max(1,\lfloor C_{\mathrm{cache}}/L_{\mathrm{cache}}\rfloor)$.
 
@@ -180,9 +180,9 @@ This memory profile assumes cold buffers, no CPU interference, and the configure
 
 Within row group $g$ and window $j$, load active rows sequentially. Start each row's transfer at the cycle reached by the previous row. If its DMA duration is $\mathcal T_{X,g,j,r}$,
 
-$$
+```math
 \boxed{C_{X,g,j}=\sum_{r=gY}^{gY+a_g-1}\left(\mathcal T_{X,g,j,r}+2\right)+1}.
-$$
+```
 
 The two cycles per row account for response/row completion; the final cycle changes controller state. The actual payload is $L_j$ per row, including a shorter tail window.
 
@@ -190,9 +190,9 @@ The two cycles per row account for response/row completion; the final cycle chan
 
 There are $2^{w-2}$ positive even product rows per activation. Product generation takes
 
-$$
+```math
 \boxed{C_{\mathrm{PG},g,j}=G_j\left(2^{w-2}+1\right)}.
-$$
+```
 
 Parallel activation rows generate their tables concurrently, so this cost is not multiplied by $a_g$. Weight prefetch can start at the beginning of this stage.
 
@@ -200,42 +200,42 @@ Parallel activation rows generate their tables concurrently, so this cost is not
 
 Selection and accumulation require
 
-$$
+```math
 \boxed{S_j=G_j+5}
-$$
+```
 
 cycles per output column. The selected weights are shared by all active activation rows.
 
 Let $t_0$ be the absolute product-generation start cycle. For one-based output columns $c=1,\ldots,M$, define weight-load start $u_c$, buffer-ready time $f_c$, and selection-finish time $e_c$. Initialize
 
-$$
+```math
 f_0=t_0+\delta,\qquad e_0=t_0+C_{\mathrm{PG},g,j}.
-$$
+```
 
 The producer may reuse a buffer only after the column previously occupying it has completed selection:
 
-$$
+```math
 \boxed{u_c=\begin{cases}
-\max(f_{c-1},t_0),&c\le B,\\
+\max(f_{c-1},t_0),&c\le B,\\[0pt]
 \max(f_{c-1},e_{c-B}),&c>B.
 \end{cases}}
-$$
+```
 
 For column $c$, construct W requests with zero-based column index $m=c-1$, start the transfer at $u_c$, and calculate its duration $\mathcal T_{W,c}$ using $D$ slots. Then
 
-$$
+```math
 \boxed{f_c=u_c+\mathcal T_{W,c}+2},
 \qquad
 \boxed{e_c=\max(e_{c-1},f_c)+S_j}.
-$$
+```
 
 The two cycles after the last DMA delivery make the buffer ready. Selection waits for both the weight buffer and the preceding selection. One final controller cycle completes the window.
 
 The combined stage reported after product generation is
 
-$$
+```math
 \boxed{C_{\mathrm{WS},g,j}=e_M+1-\left(t_0+C_{\mathrm{PG},g,j}\right)}.
-$$
+```
 
 This subtraction avoids counting weight-fetch time hidden by product generation twice. The expression $M\max(\text{load time},\text{selection time})$ is a steady-state approximation; these recurrences also include startup, finite buffers, stalls, and completion. They process all $M$ columns, including $M=1$ or $2$.
 
@@ -247,31 +247,31 @@ This subtraction avoids counting weight-fetch time hidden by product generation 
 
 Store outputs once per row group, after all its K windows. Each beat holds up to two 32-bit outputs. For global zero-based row $r$, the number of writes is
 
-$$
+```math
 n_{O,r}=\left\lceil\frac{M+((rM)\bmod2)}2\right\rceil.
-$$
+```
 
 For exact addresses and partial beats, start with $z=0$ outputs written. Each request writes $\min(M-z,2-((rM+z)\bmod2))$ outputs to `o_address` plus $8\lfloor(rM+z)/2\rfloor$ bytes; advance $z$ by that count.
 
 The output-store lock permits only one outstanding write, even when $D>1$. Schedule each write as a separate one-request transfer, then advance one cycle after its response. With write duration $\mathcal T_{O,g,r,h}$,
 
-$$
+```math
 \boxed{C_{O,g}=\sum_{r=gY}^{gY+a_g-1}\sum_{h=1}^{n_{O,r}}\left(\mathcal T_{O,g,r,h}+1\right)+a_g+1}.
-$$
+```
 
 There is one extra cycle per completed row and one final state transition. With uniform memory latency, this simplifies to
 
-$$
+```math
 \boxed{C_{O,g}=(H+1)\sum_{r=gY}^{gY+a_g-1}n_{O,r}+a_g+1}.
-$$
+```
 
 ## 7. Total cycles and reported counters
 
 Start the first input load at cycle zero. Carry the finishing cycle of each stage into the next stage, window, and row group. The total is
 
-$$
+```math
 \boxed{C_{\mathrm{total}}=\sum_{g=0}^{Q-1}\left[\sum_{j=0}^{J-1}\left(C_{X,g,j}+C_{\mathrm{PG},g,j}+C_{\mathrm{WS},g,j}\right)+C_{O,g}\right]}.
-$$
+```
 
 | Returned value | Equation / meaning |
 |---|---|
@@ -331,9 +331,9 @@ Set `trace=True` to retain per-request issue/response cycles and per-window stag
 
 The latest maintainer-reported mean error for the updated model is approximately **4%**. This is a reported validation result, not a multiplier applied to the equations. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
 
-$$
+```math
 \mathrm{MAPE}=\frac{100}{n}\sum_{i=1}^{n}\frac{|p_i-h_i|}{h_i}.
-$$
+```
 
 The [saved accuracy report](Accuracy/README.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v2`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
 
