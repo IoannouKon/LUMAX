@@ -341,7 +341,7 @@ The manuscript's approximate DMA formula, uniform repeated-window cost, and $M\m
 
 The optional `dma_latencies` and `dma_issue_delays` arguments replay external DMA behavior for diagnosis. For request $i$, a supplied issue delay $\epsilon_i$ is added after the normal issue-time maximum, and a supplied latency $\lambda_i$ replaces the memory profile with $r_i=s_i+\lambda_i$. These are per-request arrays across the whole call; they do not take hardware stage totals as inputs. Replay results are not independent memory-latency predictions.
 
-The standalone `dma_finish_time_exact_bits` helper is separate from the memory engine used by `compute_cycles`. It schedules $\lceil\mathrm{total\_bits}/\mathrm{DMA\_WIDTH\_bits}\rceil$ requests from cycle zero, using its own `L` (default 6), `t_issue`, and `beat_time`. It includes next-cycle ID reuse and response spacing. Its defaults must not be substituted for the stage model's `HS=7` or cache profile.
+The standalone `dma_finish_time_exact_bits` helper is separate from the memory engine used by `compute_cycles`. It schedules $\lceil\mathrm{payload}/\mathrm{width}\rceil$ requests from cycle zero, where payload is `total_bits` and width is `DMA_WIDTH_bits` (both in bits), using its own `L` (default 6), `t_issue`, and `beat_time`. It includes next-cycle ID reuse and response spacing. Its defaults must not be substituted for the stage model's `HS=7` or cache profile.
 
 ## Interactive plots
 
