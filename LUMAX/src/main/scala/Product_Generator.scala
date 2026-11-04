@@ -11,7 +11,7 @@ class Product_Generator(
     val minWeightBits:Int,
     val RowsPerBlock:Int,
     val DMA_bits:Int,
-    val product_bitwidth:Int, 
+    val product_bitwidth:Int,
     val minInputBits:Int,
     val FP16_ACTIVATIONS: Boolean = false,
     val banksPerRow: Int = 0
@@ -39,10 +39,7 @@ class Product_Generator(
     val Product_out             = Output(UInt(product_bitwidth.W))
   })
 
-
-  //--------------------------------------------
   // Instantiate chunkExtenders
-  //--------------------------------------------
   val chunkExtenders: Seq[ChunkSignExtender] = Seq.fill(maxParts) {
     Module(new ChunkSignExtender(XBitWidth, minInputBits))
   }
@@ -55,16 +52,8 @@ class Product_Generator(
     ext.io.idx        := 0.U
   }
 
-
   val global_block_idx   =  io.sync_mem_idx * io.blocks_in_Sync_mem + io.counter
-  val x_th_x_reg = global_block_idx + io.dirty_elems_x //& (total_blocks_per_y - 1.U) // TODO 
-  // val y_th_x_reg =
-  //       if (params.y_slice > 1)
-  //         global_block_idx >> shift_y
-  //       else
-   //         0.U
-  
-  //--------------------------------- new code 
+  val x_th_x_reg = global_block_idx + io.dirty_elems_x
 
         val data_64 = io.X_vals(io.activation_bank)
         val bytes = VecInit(Seq.tabulate(DMA_bits / XBitWidth)(i => data_64((i + 1) *  XBitWidth - 1, i *  XBitWidth)))
@@ -81,17 +70,17 @@ class Product_Generator(
         val P_data    =   io.Product_in
         val P_slices  =   Wire(Vec(maxParts, UInt((product_bitwidth).W)))
 
-        //split 
+        // Generate packed product slices from the selected activation.
         for (i <- 0 until maxParts) {
 
-          val extender = chunkExtenders(i) //chunkExtenders(sync_mem_idx)(i)
+          val extender = chunkExtenders(i)
           extender.io.data       := data
           extender.io.input_bits := io.input_bits
           extender.io.idx        := i.U
           val signedChunk = extender.io.out
 
           val absVal_new = Mux(signedChunk < 0.S, (-signedChunk), signedChunk)
-          val valid_x = io.valid_inputs + io.dirty_elems_x > elem_start + i.U 
+          val valid_x = io.valid_inputs + io.dirty_elems_x > elem_start + i.U
           val absVal = if (FP16_ACTIVATIONS) {
             // One FP16 per 16-bit lane. The table contains exact integer significands.
             if (i == 0) Mux(valid_x, FP16Activation.significand(data), 0.U(11.W))
@@ -100,8 +89,8 @@ class Product_Generator(
             Mux(valid_x ,absVal_new.asUInt,0.U)
           }
 
-          val chunk_p   = (P_data >> (i.U * io.chunks_per_Product_bits)) & io.mask_p  // UInt(input_bits.W)
-          val scaled    = (absVal << 1) 
+          val chunk_p   = (P_data >> (i.U * io.chunks_per_Product_bits)) & io.mask_p
+          val scaled    = (absVal << 1)
           P_slices(i)   := Mux(i.U < (XBitWidth/minInputBits).U , chunk_p + scaled,chunk_p)
 
         }
@@ -109,18 +98,14 @@ class Product_Generator(
         val packed = Wire(UInt(product_bitwidth.W))
         var acc: UInt = 0.U
 
-        //Concat and Accumulate 
+        // Pack the updated slices into one product-table word.
         for (i <- 0 until maxParts) {
           val shiftAmt = i.U * io.chunks_per_Product_bits
           val shifted  = P_slices(i) << shiftAmt
           acc = acc | shifted
         }
 
-        packed := acc  
+        packed := acc
         io.Product_out   := packed
 }
-
-
-
-
 

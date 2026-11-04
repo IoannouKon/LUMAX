@@ -1,4 +1,3 @@
-
 package LUMAX_PACKAGE
 
 import chisel3._
@@ -8,7 +7,7 @@ object ChunkUtils {
   def matrixIndexWidth(params: LUMAXParams): Int =
     log2Ceil(params.Cin + 1) + log2Ceil(math.max(params.Cout, params.Rin) + 1)
 
-  //function for A request adn D respocne indexing   
+  // Legacy combined helper; the controller uses the separate A/D helpers below.
   def calcChunkInfo(
     i_x: UInt,
     cin_reg: UInt,
@@ -65,9 +64,7 @@ object ChunkUtils {
     )
   }
 
- 
-
- // function for indexing in A requests 
+ // DMA request address and source-beat element count.
   def calcChunkInfo_A(
     cin_reg: UInt,
     j_x: UInt,
@@ -75,31 +72,22 @@ object ChunkUtils {
     elemsPerChunk_in: UInt,
     adr_X: UInt,
     RegsPerChunk_in: UInt,
-    mul1 :UInt, 
+    mul1 :UInt,
     mul2 :UInt
   ): (
     UInt, UInt
   ) = {
 
-    //general arbitary 
     val linear_index  = mul1 + j_x
     val ements_per_XS = mul2.min(cin_reg - j_x)
 
-    // Calculate 
-    // val chunkIndex      = linear_index / elemsPerChunk_in
-    // val offset_in_chunk = linear_index % elemsPerChunk_in
-
-    // //Mux and Shidt 
+    // Power-of-two element counts use shifts and masks.
     val shiftAmt = Mux(elemsPerChunk_in === 32.U, 5.U,
                Mux(elemsPerChunk_in === 16.U, 4.U,
                Mux(elemsPerChunk_in ===  8.U, 3.U, 2.U)))
     val maskVal  = (1.U << shiftAmt) - 1.U
     val chunkIndex      = linear_index >> shiftAmt
     val offset_in_chunk = linear_index & maskVal
-
-
-    // val bytesPerChunk = 8
-    // val chunk_address    = adr_X + (chunkIndex * bytesPerChunk.U)
 
     val bytesPerChunkShift = 3.U  // because 8 = 2^3
     val chunk_address = adr_X + (chunkIndex << bytesPerChunkShift)
@@ -113,7 +101,7 @@ object ChunkUtils {
     )
   }
 
-//function for  D respocne indexing   
+// DMA response offsets and destination-slot counts.
   def calcChunkInfo_D(
     cin_reg: UInt,
     j_x_temp: UInt,
@@ -129,24 +117,15 @@ object ChunkUtils {
     UInt, UInt, UInt, UInt
   ) = {
 
-    //general arbitary 
     val linear_index_temp = mul1 + j_x_temp
     val ements_per_XS_temp = mul2.min(cin_reg - j_x_temp)
-
-
-    // Compute 
-    // val offset_in_chunk_temp = linear_index_temp % elemsPerChunk_in 
 
     val offset_in_chunk_temp = linear_index_temp & (elemsPerChunk_in - 1.U)
 
     val available_elems_temp = elemsPerChunk_in - offset_in_chunk_temp
     val elements_to_read_temp = Mux(ements_per_XS_temp <= available_elems_temp, ements_per_XS_temp, available_elems_temp)
-    
-    // Compute 
-    // val total_bits = elements_tements_per_XS_tempo_read_temp * input_bits
-    // val bytes_to_read = total_bits/XBitWidth
 
-    //MUX and SHIFT
+    // Convert the response element count to bits using the selected precision.
     val total_bits = Mux(input_bits === 2.U, elements_to_read_temp << 1,
                 Mux(input_bits === 4.U, elements_to_read_temp << 2,
                   Mux(input_bits === 8.U, elements_to_read_temp << 3,
@@ -158,27 +137,17 @@ object ChunkUtils {
     val shift_amt = Mux(XBitWidth === 16.U, 4.U, 3.U) // 16 → shift by 4, 8 → shift by 3
     val bytes_to_read = total_bits >> shift_amt
 
-   //compute
-    // val register_index = linear_index_temp / x_elems_per_reg //new 
-
     val register_index = Mux(x_elems_per_reg === 1.U, linear_index_temp,
                       Mux(x_elems_per_reg === 2.U, linear_index_temp >> 1,
                         linear_index_temp >> 2 // x_elems_per_reg == 4.U
                       ))
 
-    val offset_in_chunk_1 = register_index & (RegsPerChunk_in - 1.U) // 
-    // val offset_in_chunk_1 = register_index % RegsPerChunk_in //new 
-
-    // COmpute
-    // // val reg_idx_start = Mux(x_elems_per_reg === 1.U, dma_counter_d, (dma_counter_d >> 1) + (dma_counter_d & 1.U))
-    // val reg_idx_start = (dma_counter_d + x_elems_per_reg - 1.U) / x_elems_per_reg //new
+    val offset_in_chunk_1 = register_index & (RegsPerChunk_in - 1.U)
 
     val reg_idx_start = Mux(x_elems_per_reg === 1.U, dma_counter_d,
                    Mux(x_elems_per_reg === 2.U, (dma_counter_d + 1.U) >> 1,
                      (dma_counter_d + 3.U) >> 2  // x_elems_per_reg == 4.U
                    ))
-
-
 
     (
       bytes_to_read,
@@ -189,7 +158,7 @@ object ChunkUtils {
   }
 }
 
-import LUMAX_PACKAGE.ChunkUtils._   // import your function from the object
+import LUMAX_PACKAGE.ChunkUtils._
 import LUMAX_PACKAGE.LUMAX_Config
 
 class ChunkInfoModule_A(params: LUMAXParams, max_w_elems: Int) extends Module {
@@ -207,7 +176,6 @@ class ChunkInfoModule_A(params: LUMAXParams, max_w_elems: Int) extends Module {
     val chunk_address     = Output(UInt(64.W))
   })
 
-  // Call your externally defined function
   val (elementsToRead, chunkAddress) = calcChunkInfo_A(
     io.cin_reg,
     io.j_x,
@@ -237,13 +205,12 @@ class ChunkInfoModule_D(params: LUMAXParams, max_w_elems: Int, max_x_regs :Int) 
     val input_bits        = Input(UInt(6.W))
     val max_bits          = Input(UInt(6.W))
 
-    val bytes_to_read         = Output(UInt(4.W)) // Max is ceil(log2(16+2)) = 5~6
+    val bytes_to_read         = Output(UInt(4.W)) // Count in max_bits-sized slots, despite the legacy name.
     val reg_idx_start         = Output(UInt(((log2Ceil(max_w_elems) + 1).W)))
-    val offset_in_chunk_1     = Output(UInt(3.W)) // Assuming max 64 regs/chunk
+    val offset_in_chunk_1     = Output(UInt(3.W)) // Destination-register offset within the DMA word.
     val elements_to_read_temp = Output(UInt((log2Ceil(max_w_elems) + 1).W))
   })
 
-  // Call your external function
   val (bytesToRead, regIdxStart, offsetInChunk1, elementsToReadTemp) = calcChunkInfo_D(
     io.cin_reg,
     io.j_x_temp,
@@ -254,7 +221,7 @@ class ChunkInfoModule_D(params: LUMAXParams, max_w_elems: Int, max_x_regs :Int) 
     io.mul1,
     io.mul2,
     io.input_bits,
-    io.max_bits, 
+    io.max_bits,
   )
 
   // Wire outputs

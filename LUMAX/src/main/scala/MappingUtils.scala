@@ -15,23 +15,23 @@ object MappingUtils {
     totalBanks: UInt,
     WBitWidth: Int
   ): (UInt, UInt, UInt, UInt) = {
-   
-    // 1. BANK
+
+    // Bank selection.
     val bank = (idx / blocks_in_Sync_mem) % totalBanks
 
     val local = idx % blocks_in_Sync_mem
-    
-    // 3. PACKING
+
+    // Packed weights per cell.
     val elementsPerCell = WBitWidth.U / weight_bits
 
-    // 2. ROW
+    // Row and local cell positions.
     val row = local / (bankSize * elementsPerCell)
     val inRow = local % (bankSize * elementsPerCell)
 
     val wrapped_index = inRow % bankSize
     val cell = inRow / elementsPerCell
     val offset = wrapped_index % elementsPerCell
-   
+
     (bank, row, cell, offset)
   }
 }

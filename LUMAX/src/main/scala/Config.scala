@@ -4,11 +4,11 @@ case class LUMAXParams(
   Rin:            Int,
   Cin:            Int,
   Cout:           Int,
-  XBitWidth:      Int, 
-  WBitWidth:      Int, 
+  XBitWidth:      Int,
+  WBitWidth:      Int,
   OutBitWidth:    Int,
   minInputBits:   Int,
-  minWeightBits:  Int, 
+  minWeightBits:  Int,
   x_slice:        Int,
   y_slice:        Int,
   w_slice:        Int,
@@ -23,48 +23,46 @@ case class LUMAXParams(
   FP16_ACTIVATIONS: Boolean = false,
 )
 
-// Create an object to hold your configuration
+// Elaboration-time defaults. Rebuild the design after changing these values.
 object LUMAX_Config {
   val LUMAX_Config = LUMAXParams(
 
-    //Μax Matrix Dimesnions 
-    Rin         = 1,    //Used Only for a Counter  (SAME for YS for now)
-    Cin         = 1024, // Used only for OuputBitwidth
-    Cout        = 1024, // Used only to a a counter Registers  and how many output stationary outputs we have
-  
-    // Element Bidwidths  
-    XBitWidth   = 16,  // max Number of bits on input elemetns 
-    WBitWidth   = 8,   // max  Number of bits on weights elemetns 
-    OutBitWidth = 32,  // max  Number of bits on output elements  
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 1, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 1024, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 1024, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
     FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
-    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt
 
-    //new
-    minInputBits  = 8,  //2 4
-    minWeightBits = 2,  // 4 
-    
-    //Max Parallelism Paramters 
-    y_slice     =  1,    // IMPORTANT Design parameter  MAX value
-    x_slice     =  2,   // IMPORTANT Design parameter  MAX value 
-    Mem_row_factor = 8,
-    
-    //NOT USED (TODO)
-    w_slice     = 1,
-    num_filters = 1,
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
 
-    //DMA 
-    Dma_Ids     = 2,  // How many DMA Requests in flight 
-    DMA_Bytes   = 8,  // How many bytes send in one request 
-    DMA_bits    = 8*8,
+    // Parallelism and table capacity.
+    y_slice     =  1, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
 
-    //scale 
-    SCALE   = false, //1 or 0  (elaboration-time)
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
 
-    //Debug from performance counters 
-    DEBUG =  true, // 1 or  0
+    // DMA request slots and beat width.
+    Dma_Ids     = 2, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
 
-    // How many Load Buffer 
-    W_BUFFS =  2,
+    // Optional output scaling.
+    SCALE   = false, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
 
   )
 

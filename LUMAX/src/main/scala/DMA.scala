@@ -4,11 +4,9 @@ import chisel3._
 import chisel3.util._
 import freechips.rocketchip.subsystem.CacheBlockBytes
 import org.chipsalliance.cde.config.Parameters
-// import freechips.rocketchip.diplomacy.{LazyModule, LazyModuleImp, IdRange}
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
 import LUMAX_PACKAGE.LUMAX_Config
-
 
 import freechips.rocketchip.diplomacy._
 
@@ -36,7 +34,7 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
     val writeData = Input(UInt((outer.params.DMA_bits).W))
     val a_fire     = Output(Bool())
     val a_cor      = Output(Bool())
-    val readData   = Output(UInt((outer.params.DMA_bits).W)) 
+    val readData   = Output(UInt((outer.params.DMA_bits).W))
     val d_ready    = Input(Bool())
     val d_valid    = Output(Bool())
     val d_cor      = Output(Bool())
@@ -75,7 +73,7 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
 
   mem.a.bits := a_bits
   mem.a.valid := io.valid && hasFree && requestOrder.io.enq.ready
-  io.a_fire := mem.a.fire //()
+  io.a_fire := mem.a.fire
   io.a_cor := mem.a.bits.corrupt
 
   requestOrder.io.enq.valid := mem.a.fire
@@ -123,5 +121,5 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   io.SourceOut := nextSource
   io.busy := !hasFree || !requestOrder.io.enq.ready
   io.empty := !outstanding.asUInt.orR
-  io.err := false.B // Optional error logic can go here
+  io.err := false.B // Corrupt/denied response flags are exposed separately.
 }

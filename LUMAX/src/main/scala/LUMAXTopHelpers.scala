@@ -3,10 +3,8 @@ package LUMAX_PACKAGE
 import chisel3._
 import chisel3.util._
 
-// Existing Top helper methods, separated for navigation only. This trait has
-// no registers, modules or eager connections of its own. Each method elaborates
-// at its original call site, preserving that site's when/switch scope and
-// assignment priority. All controller state remains in LUMAX_Top.scala.
+// Helper calls elaborate in their caller's when/switch scope.
+// Controller state and registers are declared in LUMAX_Top.scala.
 trait LUMAXTopHelpers {
   this: LUMAXExampleModuleImpl =>
 
@@ -21,7 +19,7 @@ trait LUMAXTopHelpers {
 
   // A source beat may start partway through a destination word. Consume only
   // through that word's end; the next request can reread the same source beat.
-  // Bank boundaries can still be crossed in parallel, as in the original loader.
+  // Bank boundaries can be crossed in parallel.
   protected def packedReadCount(count: UInt, firstElement: UInt, elementsPerWord: UInt): UInt = {
     val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
     val limited = WireDefault(count)
@@ -159,10 +157,6 @@ trait LUMAXTopHelpers {
     chunkInfoModule_D.io.dma_counter_d    := dma_counter_d_next
     chunkInfoModule_D.io.input_bits       := inputBits
     chunkInfoModule_D.io.max_bits         := maxBits
-
-    // outputs
-    bytes_to_read := chunkInfoModule_D.io.bytes_to_read
-    reg_idx_start := chunkInfoModule_D.io.reg_idx_start
 
     // safe clamp
     elements_to_read_temp := Mux(
