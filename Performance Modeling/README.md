@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Architecture](../LUMAX/README.md) · [Measurements](../LUMAX/software/tests/README.md)
 
-[Model.py](Model.py), version `controller-events-v2`, predicts active accelerator cycles for INT16 or FP16 activations and signed W8/W4/W2 weights. The equations below describe its controller and memory scheduling so that the model can be understood and evaluated without reading Python. All times are integer cycle edges.
+[Model.py](Model.py), version `controller-events-v3`, predicts active accelerator cycles for INT16 or FP16 activations and signed W8/W4/W2 weights. The equations below describe its controller and memory scheduling so that the model can be understood and evaluated without reading Python. All times are integer cycle edges.
 
 The model returns four additive stages: input loading, product generation, combined weight loading/selection, and output storage. CPU preparation, software reference calculations, printing, simulator startup, and wall-clock time are outside this total. FP16 significand handling, alignment, and FP32 conversion are combinational in the modeled RTL: they affect area and achievable frequency, but do not add controller cycles.
 
@@ -253,16 +253,18 @@ n_{O,r}=\left\lceil\frac{M+((rM)\bmod2)}2\right\rceil.
 
 For exact addresses and partial beats, start with $z=0$ outputs written. Each request writes $\min(M-z,2-((rM+z)\bmod2))$ outputs to `o_address` plus $8\lfloor(rM+z)/2\rfloor$ bytes; advance $z$ by that count.
 
-The output-store lock permits only one outstanding write, even when $D>1$. Schedule each write as a separate one-request transfer, then advance one cycle after its response. With write duration $\mathcal T_{O,g,r,h}$,
+All writes in the active row group share the existing $D$ DMA request slots. Schedule them as one row-ordered transfer using the issue and ordered-delivery recurrences above. A new row may issue immediately after the preceding row's final accepted request; it does not wait for that row's acknowledgements. Partial writes on either side of a row boundary remain separate requests, even when they address the same word.
+
+Let $n_{O,g}=\sum_{r=gY}^{gY+a_g-1}n_{O,r}$, and let $\mathcal T_{O,g}$ be the duration from store entry to the final acknowledgement delivery. The controller updates its acknowledgement count and DMA-empty flag, then leaves the output state on the next edge:
 
 ```math
-\boxed{C_{O,g}=\sum_{r=gY}^{gY+a_g-1}\sum_{h=1}^{n_{O,r}}\left(\mathcal T_{O,g,r,h}+1\right)+a_g+1}.
+\boxed{C_{O,g}=\mathcal T_{O,g}+2}.
 ```
 
-There is one extra cycle per completed row and one final state transition. With uniform memory latency, this simplifies to
+There is no per-row completion bubble. The stage drains all issued writes before another row group or matmul can start. With uniform memory latency, one DMA slot gives the serialized limit; enough slots for every request allow consecutive issues:
 
 ```math
-\boxed{C_{O,g}=(H+1)\sum_{r=gY}^{gY+a_g-1}n_{O,r}+a_g+1}.
+\boxed{C_{O,g}=n_{O,g}(H+1)+1\quad(D=1),\qquad C_{O,g}=H+n_{O,g}+1\quad(D\ge n_{O,g})}.
 ```
 
 ## 7. Total cycles and reported counters
@@ -298,10 +300,10 @@ Use $N=1$, $K=M=64$, $b=2$, $Y=1$, $RF=8$, $w=4$, $D=2$, $B=2$, $H=7$, and $\del
 | Input loading | 67 | 89 |
 | Product generation | 160 | 160 |
 | Combined weight loading/selection | 2,369 | 2,369 |
-| Output storage | 258 | 274 |
-| **Total cycles** | **2,854** | **2,892** |
+| Output storage | 130 | 146 |
+| **Total cycles** | **2,726** | **2,764** |
 
-For uniform memory, the 16 input requests finish 64 cycles after the transfer starts, giving $64+2+1=67$ load cycles. Weight loading is hidden by generation and selection in this example, so the combined stage is $64\times37+1=2369$ cycles. The 32 serialized output writes cost $32(7+1)+2=258$ cycles. The cold LLC adds 22 input-load cycles for two line fills and 16 output-store cycles for four line fills; its extra weight-fetch latency remains hidden.
+For uniform memory, the 16 input requests finish 64 cycles after the transfer starts, giving $64+2+1=67$ load cycles. Weight loading is hidden by generation and selection in this example, so the combined stage is $64\times37+1=2369$ cycles. With two DMA slots, the 32 output writes issue in pairs at cycles $0,1,8,9,\ldots,120,121$; the last acknowledgement arrives at cycle 128, giving $128+2=130$ store cycles. The cold LLC adds 22 input-load cycles for two line fills and 16 output-store cycles for four line fills; its extra weight-fetch latency remains hidden.
 
 The core model requires only the Python standard library. From the repository root:
 
@@ -329,13 +331,13 @@ Set `trace=True` to retain per-request issue/response cycles and per-window stag
 
 ## Accuracy, historical equations, and diagnostics
 
-The latest maintainer-reported mean error for the updated model is approximately **4%**. This is a reported validation result, not a multiplier applied to the equations. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
+The earlier maintainer-reported mean error of approximately **4%** predates the overlapping output writes in `controller-events-v3`; it is not a validation result for this revision or a multiplier applied to the equations. The controller now schedules write concurrency, while memory latency, contention and CPU interference remain environment-model uncertainties. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
 
 ```math
 \mathrm{MAPE}=\frac{100}{n}\sum_{i=1}^{n}\frac{|p_i-h_i|}{h_i}.
 ```
 
-The [saved accuracy report](Accuracy/README.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v2`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
+The [saved accuracy report](Accuracy/README.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v3`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
 
 The manuscript's approximate DMA formula, uniform repeated-window cost, and $M\max(C_{3.1},C_{3.2})$ expression motivate the architecture but do not replace the event recurrences above. Earlier README statements about forced `HS=8`, a `Cout-2` adjustment, unused buffer/prefetch controls, and fractional cycles no longer apply. The current model uses the supplied `HS`, schedules all output columns, accounts for buffer count and prefetch delay, and produces integer cycles.
 

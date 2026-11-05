@@ -9,7 +9,7 @@ CPU traffic and unknown initial cache ownership remain sources of uncertainty.
 from collections import OrderedDict
 import math
 
-MODEL_VERSION = 'controller-events-v2'
+MODEL_VERSION = 'controller-events-v3'
 
 
 def _integer(name, value, minimum=1):
@@ -50,6 +50,17 @@ def _read_packets(length, source_element, bank_span, precision, width, base):
         consumed += count
 
 
+def _store_packets(row_start, active_rows, columns, base):
+    """Row-ordered 32-bit outputs; partial words stay separate across rows."""
+    for row in range(row_start, row_start+active_rows):
+        written = 0
+        while written<columns:
+            linear = row*columns+written
+            count = min(columns-written, 2-linear%2)
+            yield base+(linear//2)*8, count, dict(row=row)
+            written += count
+
+
 class _Memory:
     """DMA environment, independent of accelerator-stage counters."""
     def __init__(self, hs, profile, line_bytes, cache_bytes, read_penalty,
@@ -85,7 +96,8 @@ class _Memory:
 
     def transfer(self, packets, start, ids, write=False, context=None):
         responses, issued = [],start-1
-        for address,count in packets:
+        for packet in packets:
+            address,count = packet[:2]
             issued = max(issued+1,responses[-ids]+1 if len(responses)>=ids else start)
             if self.delays is not None:
                 if self.index>=len(self.delays):
@@ -95,7 +107,8 @@ class _Memory:
             delivered = max(ready,responses[-1]+1 if responses else ready)
             responses.append(delivered)
             if self.trace is not None:
-                self.trace.append(dict(context or {},address=address,write=write,
+                # Optional per-packet metadata preserves rows in a shared transfer.
+                self.trace.append(dict(context or {},**(packet[2] if len(packet)>2 else {}),address=address,write=write,
                                        elements=count,issue=issued,response=delivered))
         return responses[-1] if responses else start-1
 
@@ -208,18 +221,14 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
                     remaining=min(window_size,Cin-k_start-window_size)
                     bank_span=min(bank_span,(remaining+XS-1)//XS)
         before_store=now
-        for row in range(row_start,row_start+active_rows):
-            written=0
-            while written<Cout:
-                linear=row*Cout+written
-                count=min(Cout-written,2-linear%2)
-                address=o_address+(linear//2)*8
-                # The RTL store lock allows ONE outstanding write, even ID>1.
-                last=memory.transfer([(address,count)],now,1,write=True,context=dict(stage='store_o',row=row))
-                now=last+1
-                written+=count
-            now+=1
-        now+=1
+        # One credit pool spans the active rows: accepted writes can advance to
+        # the next row while earlier acknowledgements are still outstanding.
+        packets=_store_packets(row_start,active_rows,Cout,o_address)
+        last=memory.transfer(packets,now,ID,write=True,
+                             context=dict(stage='store_o',row_group=row_start))
+        # Final delivery updates the ack count/empty flag, then the next edge
+        # leaves sStoreOutput. There is no per-row wait or completion bubble.
+        now=last+2
         store_o+=now-before_store
     if dma_latencies is not None and memory.index!=len(dma_latencies):
         raise ValueError(f'DMA replay consumed {memory.index}/{len(dma_latencies)} responses')

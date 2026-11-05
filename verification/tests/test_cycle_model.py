@@ -41,20 +41,24 @@ class ControllerModelTests(unittest.TestCase):
         self.assertEqual([r[k] for k in (
             'cycles_load_X', 'cycles_generate_Products', 'cycles_loadW_select',
             'cycles_store_output', 'cycles load w Only', 'cycles select Only',
-            'total_cycles')], [10, 130, 33, 18, 36, 28, 191])
+            'total_cycles')], [10, 130, 33, 10, 36, 28, 183])
         for cols in (1, 2):
             one = self.run_model(Cout=cols)
             self.assertGreater(one['cycles_loadW_select'], 0)
             self.assertGreater(one['total_cycles'], 0)
 
-    def test_handshake_latency_is_used_and_output_stays_serial(self):
+    def test_handshake_latency_and_dma_credits_apply_to_output(self):
         fast = self.run_model(HS=3, ID=1, Cin=32)
         slow = self.run_model(HS=9, ID=1, Cin=32)
         self.assertGreater(slow['cycles_load_X'], fast['cycles_load_X'])
         self.assertGreater(slow['cycles_store_output'], fast['cycles_store_output'])
         parallel = self.run_model(HS=9, ID=6, Cin=32)
         self.assertLess(parallel['cycles_load_X'], slow['cycles_load_X'])
-        self.assertEqual(parallel['cycles_store_output'], slow['cycles_store_output'])
+        self.assertLess(parallel['cycles_store_output'], slow['cycles_store_output'])
+        # Two output beats: ID1 issues 0,10 and retires 9,19; ID6 issues
+        # 0,1 and retires 9,10. Drain/completion adds two cycles in both cases.
+        self.assertEqual(slow['cycles_store_output'], 21)
+        self.assertEqual(parallel['cycles_store_output'], 12)
 
     def test_literal_rtl_tail_span_differs_between_row_paths(self):
         serial = self.run_model(Cin=17, Cout=3, trace=True)
@@ -79,12 +83,37 @@ class ControllerModelTests(unittest.TestCase):
         self.assertEqual(two['cycles select Only'], one['cycles select Only'])
 
     def test_output_row_boundary_keeps_partial_writes_separate(self):
-        result = self.run_model(Rin=3, Cout=3, YS=2, trace=True)
+        result = self.run_model(Rin=3, Cout=3, YS=2, ID=6, trace=True)
         writes = [t for t in result['transactions'] if t['write']]
         self.assertEqual(result['WriteOp'], 6)  # Not ceil(9/2) = 5.
         self.assertEqual([t['elements'] for t in writes], [2, 1, 1, 2, 2, 1])
         self.assertEqual(writes[1]['address'], writes[2]['address'])
-        self.assertTrue(all(b['issue'] > a['response'] for a,b in zip(writes, writes[1:])))
+        self.assertEqual([t['row'] for t in writes], [0, 0, 1, 1, 2, 2])
+        # The next row starts while the preceding row's partial write is pending.
+        self.assertEqual(writes[2]['issue'], writes[1]['issue']+1)
+        self.assertLess(writes[2]['issue'], writes[1]['response'])
+        # A new row group waits for all acknowledgements from the previous one.
+        self.assertGreater(writes[4]['issue'], writes[3]['response'])
+        self.assertEqual(result['cycles_store_output'], 22)
+
+    def test_output_backpressure_ordered_acks_credit_reuse_and_final_drain(self):
+        baseline = self.run_model(Cout=9, trace=True)
+        latencies = [7]*baseline['dma_requests']
+        delays = [0]*baseline['dma_requests']
+        indices = [i for i,t in enumerate(baseline['transactions']) if t['write']]
+        for i,latency in zip(indices, (20, 1, 2, 30, 1)):
+            latencies[i] = latency
+        delays[indices[0]] = 5
+        result = self.run_model(Cout=9, trace=True,
+                                dma_latencies=latencies, dma_issue_delays=delays)
+        writes = [t for t in result['transactions'] if t['write']]
+        # Relative to store entry: stalled first issue at 5. Two slots and
+        # ordered delivery hold the early second/final responses until their turn.
+        start = writes[0]['issue']-5
+        self.assertEqual([t['issue']-start for t in writes], [5, 6, 26, 27, 29])
+        self.assertEqual([t['response']-start for t in writes], [25, 26, 28, 57, 58])
+        self.assertEqual(result['cycles_store_output'], 60)
+        self.assertEqual([t['elements'] for t in writes], [2, 2, 2, 2, 1])
 
     def test_fp16_has_same_controller_cycles_and_explicit_format(self):
         for wb in (8, 4, 2):
