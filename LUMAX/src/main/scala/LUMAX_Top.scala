@@ -84,6 +84,9 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val weightBanks = params.x_slice // Shared by all activation-row groups.
   val maxParts          = params.XBitWidth / params.minInputBits // Maximum packed activations per XBitWidth lane.
   val product_bitwidth  = (params.XBitWidth/params.minInputBits)*(params.WBitWidth + params.minInputBits)
+  val elems_per_chunk = params.DMA_bits / params.OutBitWidth
+  // Include a possible leading partial beat for every activation row.
+  val maxStoreWrites = params.y_slice * ((params.Cout + 2 * elems_per_chunk - 2) / elems_per_chunk)
 
   // === Completion and selection-control registers ===
   val Done          = RegInit(false.B)
@@ -160,7 +163,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val j_x_start     = RegInit(0.U(log2Ceil(params.Cin + 1).W)) // Activation K-block offset.
   val LOOPS         = RegInit(0.U(64.W))
   val i_o           = RegInit(0.U(log2Ceil(params.Rin + 1).W))
-  val j_o           = RegInit(0.U(log2Ceil(params.Cout + 1).W))
+  val storeWritesIssued = RegInit(0.U(log2Ceil(maxStoreWrites + 1).W))
   val j_x_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W))
   val i_w_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W))
 
@@ -170,7 +173,6 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Runtime activation window size and active row count.
   val XS            =  RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W))
   val YS            =  RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
-  val elems_per_chunk        = (params.DMA_bits/params.OutBitWidth)
   val done_elems_in_block    =  RegInit(0.U(log2Ceil(elems_per_chunk).W))
 
   // Independent activation-position cursors for generation and selection.
@@ -182,10 +184,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val dma_resp        = RegInit(false.B) //receiveving  DMA responces from  D channel on progress
 
   val dma_counter_a   = RegInit(0.U(log2Ceil(math.max(max_x_regs, params.Cout) + 1).W))
-  val dma_counter_d   = RegInit(0.U(log2Ceil(math.max(max_x_regs, params.Cout) + 1).W))
+  // Read phases count elements; sStoreOutput counts acknowledged write beats.
+  val dma_counter_d   = RegInit(0.U(log2Ceil(math.max(math.max(max_x_regs, params.Cout), maxStoreWrites) + 1).W))
 
   //Select and Accumulte control Signals
-  val lock            = RegInit(false.B) //send one DMA request to A channel and wait the responce from D channel (muitex)
   val READ_ON         = RegInit(false.B)
 
   // Matrices Addresses
@@ -425,7 +427,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         j_x_start := 0.U
         loops_cnt := 0.U
         i_o       := 0.U
-        j_o       := 0.U
+        storeWritesIssued := 0.U
         i_w_temp  := 0.U
         j_x_temp  := 0.U
 
@@ -1094,6 +1096,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
           load_x_cnt := 0.U
           Rin_cnt    := 0.U
+          dma_counter_a := 0.U
+          dma_counter_d := 0.U
+          storeWritesIssued := 0.U
+          dma_send := true.B
           state      := sStoreOutput
         }.otherwise{
           val XS_temp   = Mux(cin_reg - j_x  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x )
@@ -1147,7 +1153,6 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         cell_counter := 0.U
         Done             := false.B
         Done_acc         := false.B
-        lock             := false.B
 
       }
 
@@ -1159,13 +1164,14 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         PC_storeO := PC_storeO + 1.U
       }
 
-      val remaining_elems = cout_reg - dma_counter_d  // Elements left in the row
+      // Packing follows accepted requests, independently of late acknowledgements.
+      val remaining_elems = cout_reg - dma_counter_a
       val R_elems_per_chunk = ((elems_per_chunk.U - done_elems_in_block).min(remaining_elems))
-      val linear_index  = i_o * cout_reg + j_o
+      val linear_index  = i_o * cout_reg + dma_counter_a
       val chunk_index   = linear_index / ((elems_per_chunk.U)) // Output DMA-word index.
       val chunk_address = adr_O + (chunk_index * 8.U)
 
-      when(dma_send && !dma.io.busy && !lock) { //send request to DMA in A Channel
+      when(dma_send && !dma.io.busy) {
         dma.io.mode := true.B
 
         if (params.FP16_ACTIVATIONS) {
@@ -1186,7 +1192,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           scaleModule.io.inVector := dataVector
           scaleModule.io.scale    := scale
 
-          dma.io.writeData := scaleModule.io.out
+          dma.io.writeData := scaleModule.io.out << (done_elems_in_block * params.OutBitWidth.U)
 
         } else {  //NO Scale
 
@@ -1210,8 +1216,19 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         dma.io.addr   := chunk_address
         dma.io.valid  := true.B
         when(dma.io.a_fire) {
-          dma_counter_a := dma_counter_a + R_elems_per_chunk
-          dma_send      := dma_counter_a < cout_reg - R_elems_per_chunk
+          storeWritesIssued := storeWritesIssued + 1.U
+          val nextOffset = done_elems_in_block + R_elems_per_chunk
+          done_elems_in_block := Mux(nextOffset === elems_per_chunk.U, 0.U, nextOffset)
+
+          when(dma_counter_a + R_elems_per_chunk === cout_reg) {
+            // Start the next row without waiting for this row's acknowledgements.
+            dma_counter_a := 0.U
+            Rin_cnt := Rin_cnt + 1.U
+            i_o := i_o + 1.U
+            dma_send := Rin_cnt < YS - 1.U
+          }.otherwise {
+            dma_counter_a := dma_counter_a + R_elems_per_chunk
+          }
 
           for (i <- 0 until elems_per_chunk) {
             when(i.U < R_elems_per_chunk) {
@@ -1220,33 +1237,18 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             }
           }
 
-          lock    := true.B
-          j_o := j_o + R_elems_per_chunk
-
         }
 
       }
 
       when(dma.io.d_valid) { // DMA response on channel D.
-        dma_counter_d := dma_counter_d + R_elems_per_chunk
-        dma_resp := dma_counter_d < cout_reg - R_elems_per_chunk
-        lock    := false.B
-        done_elems_in_block := Mux(done_elems_in_block === (elems_per_chunk.U - 1.U), 0.U, done_elems_in_block + R_elems_per_chunk)
-      }
-
-      when(!dma_send && !dma_resp && !(Rin_cnt === YS)) {
-        Rin_cnt       := Rin_cnt + 1.U
-        dma_counter_d := 0.U
-        dma_counter_a := 0.U
-        j_o           := 0.U
-        i_o           := i_o + 1.U
-        dma_send      := true.B && (Rin_cnt < YS -1.U)
-        dma_resp      := true.B && (Rin_cnt < YS -1.U)
+        dma_counter_d := dma_counter_d + 1.U
       }
 
       // Drain accepted DMA requests and buffered responses before completion
       // or before reinitializing the counters for another activation-row group.
-      when(Rin_cnt === YS && dma.io.empty) {
+      when(Rin_cnt === YS && !dma_send && dma_counter_d === storeWritesIssued && dma.io.empty) {
+        dma_resp := false.B
         when(loops_cnt === LOOPS -1.U){
           Rin_cnt             := 0.U
           state               := sDELAY
@@ -1259,6 +1261,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           dma_resp      := true.B
           dma_counter_a := 0.U
           dma_counter_d := 0.U
+          storeWritesIssued := 0.U
 
           // Reset local indices before loading the next activation-row group.
           Rin_cnt       := 0.U
@@ -1433,7 +1436,6 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       dma_counter_a            := 0.U
       dma_send                 := true.B
       dma_resp                 := true.B
-      lock                     := false.B
       dma_counter_d            := 0.U
       buffers_mode(buff_index) := true.B
 
