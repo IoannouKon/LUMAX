@@ -1,0 +1,1007 @@
+LUMAX unused internal variable cleanup
+Removed only unobserved internal state and dead calculations in Top, used Top helpers and scaling.
+All files, utility functions, constructor parameters and module ports retained. SplitEnable, unused imports, spare module instances and incomplete out_sint branch retained. No SW kernel or Python model edits.
+Actual make verilog / CIRCT generation before and after; no new numerical Verilator tests.
+Functional comparison strips comments/formatting, consistently renames three compiler temporaries, excludes simulator RANDOMIZE_REG_INIT bookkeeping, and canonicalizes one explicit unsigned a*b+c versus c+b*a expression. Reset and sequential/combinational hardware logic are retained. This is an HDL comparison, not a numerical simulation or a general formal-equivalence tool.
+RAW TOKEN COMPARISON: two files per configuration differ due to the documented compiler/simulation-only details.
+[
+  {
+    "configuration": "int16_ys1",
+    "sv_files": 381,
+    "token_identical": 379,
+    "different": [
+      "LUMAXExample.sv",
+      "Product_Generator.sv"
+    ],
+    "before_rtl_sha256": "50c560bfd861ac9c4d638d9a90f9d510877e9895ee09662bda1e1303de4cd486",
+    "after_rtl_sha256": "4054917d9661f5e8b5470696c0df3c4a09e1f418ad691b4ad1d4785e4c8c6b23"
+  },
+  {
+    "configuration": "fp16_ys2",
+    "sv_files": 386,
+    "token_identical": 384,
+    "different": [
+      "LUMAXExample.sv",
+      "Product_Generator.sv"
+    ],
+    "before_rtl_sha256": "5c8c84bde7435b041fe222133a605d7e1443a68168cf545aefc5b5e6946212f8",
+    "after_rtl_sha256": "8f53ba5db92dc350e9a0ea0336824dc4ad489ef078668e9ea671f672bb201490"
+  },
+  {
+    "configuration": "int16_scaled",
+    "sv_files": 384,
+    "token_identical": 382,
+    "different": [
+      "LUMAXExample.sv",
+      "Product_Generator.sv"
+    ],
+    "before_rtl_sha256": "23042d032d96e598b8c4c5d299e0e16ac586df0fcce3bd31256434b6fec0c314",
+    "after_rtl_sha256": "e62a73c0805e3bd9d81258a782c4e6f56e3bf5e61d9f8241902c4b34a7b5bf15"
+  }
+]
+FUNCTIONAL RTL CHECK {"after_functional_sha256": "db60a2e84a1dd3fc96c0a8f0c3598f17b4123831561a1a6b4e486836d777fb4c", "before_functional_sha256": "db60a2e84a1dd3fc96c0a8f0c3598f17b4123831561a1a6b4e486836d777fb4c", "comparison_adjustments": {"LUMAXExample.sv": {"after": {"simulation_random_initialization_excluded": true, "temporary_signal_aliases": {"_shift_amt_T_5": "__shift_temp_1", "_shift_amt_T_6": "__shift_temp_2", "_shift_amt_T_7": "__shift_temp_0"}}, "before": {"simulation_random_initialization_excluded": true, "temporary_signal_aliases": {"_shift_amt_T_13": "__shift_temp_1", "_shift_amt_T_14": "__shift_temp_2", "_shift_amt_T_15": "__shift_temp_0"}}}, "Product_Generator.sv": {"after": {"unsigned_commutative_operand_order_normalized": true}, "before": {"unsigned_commutative_operand_order_normalized": true}}}, "configuration": "int16_ys1", "different": [], "functional_token_matches": 381, "sv_files": 381}
+FUNCTIONAL RTL CHECK {"after_functional_sha256": "2d543d00a3400614dd8d364c738458e02ed78fdba0ed6dfb822f8f6fca32d90f", "before_functional_sha256": "2d543d00a3400614dd8d364c738458e02ed78fdba0ed6dfb822f8f6fca32d90f", "comparison_adjustments": {"LUMAXExample.sv": {"after": {"simulation_random_initialization_excluded": true, "temporary_signal_aliases": {"_shift_amt_T_5": "__shift_temp_1", "_shift_amt_T_6": "__shift_temp_2", "_shift_amt_T_7": "__shift_temp_0"}}, "before": {"simulation_random_initialization_excluded": true, "temporary_signal_aliases": {"_shift_amt_T_21": "__shift_temp_1", "_shift_amt_T_22": "__shift_temp_2", "_shift_amt_T_23": "__shift_temp_0"}}}, "Product_Generator.sv": {"after": {"unsigned_commutative_operand_order_normalized": true}, "before": {"unsigned_commutative_operand_order_normalized": true}}}, "configuration": "fp16_ys2", "different": [], "functional_token_matches": 386, "sv_files": 386}
+FUNCTIONAL RTL CHECK {"after_functional_sha256": "8a323f4acc795579a91e90d0c00e50e7c9eeff1967665923c1cac5f6d9d63ca1", "before_functional_sha256": "8a323f4acc795579a91e90d0c00e50e7c9eeff1967665923c1cac5f6d9d63ca1", "comparison_adjustments": {"LUMAXExample.sv": {"after": {"simulation_random_initialization_excluded": true, "temporary_signal_aliases": {"_shift_amt_T_5": "__shift_temp_1", "_shift_amt_T_6": "__shift_temp_2", "_shift_amt_T_7": "__shift_temp_0"}}, "before": {"simulation_random_initialization_excluded": true, "temporary_signal_aliases": {"_shift_amt_T_13": "__shift_temp_1", "_shift_amt_T_14": "__shift_temp_2", "_shift_amt_T_15": "__shift_temp_0"}}}, "Product_Generator.sv": {"after": {"unsigned_commutative_operand_order_normalized": true}, "before": {"unsigned_commutative_operand_order_normalized": true}}}, "configuration": "int16_scaled", "different": [], "functional_token_matches": 384, "sv_files": 384}
+
+BUILD before int16_ys1 PASS
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-unused-vars-xov0stsu/before/int16_ys1/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-unused-vars-xov0stsu/before/int16_ys1/generated-src verilog
+CONFIG SNAPSHOT:
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int,
+  WBitWidth:      Int,
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int,
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Elaboration-time defaults. Rebuild the design after changing these values.
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 4, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 32, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 16, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+
+    // Parallelism and table capacity.
+    y_slice     =  1, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+
+    // DMA request slots and beat width.
+    Dma_Ids     = 2, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
+
+    // Optional output scaling.
+    SCALE   = false, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
+
+  )
+
+}
+
+
+BUILD before fp16_ys2 PASS
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-unused-vars-xov0stsu/before/fp16_ys2/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-unused-vars-xov0stsu/before/fp16_ys2/generated-src verilog
+CONFIG SNAPSHOT:
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int,
+  WBitWidth:      Int,
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int,
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Elaboration-time defaults. Rebuild the design after changing these values.
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 4, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 32, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 16, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
+    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+
+    // Parallelism and table capacity.
+    y_slice     =  2, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+
+    // DMA request slots and beat width.
+    Dma_Ids     = 6, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
+
+    // Optional output scaling.
+    SCALE   = false, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
+
+  )
+
+}
+
+
+BUILD before int16_scaled PASS
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-unused-vars-xov0stsu/before/int16_scaled/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-unused-vars-xov0stsu/before/int16_scaled/generated-src verilog
+CONFIG SNAPSHOT:
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int,
+  WBitWidth:      Int,
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int,
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Elaboration-time defaults. Rebuild the design after changing these values.
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 4, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 32, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 16, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+
+    // Parallelism and table capacity.
+    y_slice     =  1, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+
+    // DMA request slots and beat width.
+    Dma_Ids     = 2, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
+
+    // Optional output scaling.
+    SCALE   = true, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
+
+  )
+
+}
+
+
+BUILD after int16_ys1 PASS
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-unused-vars-xov0stsu/after/int16_ys1/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-unused-vars-xov0stsu/after/int16_ys1/generated-src verilog
+CONFIG SNAPSHOT:
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int,
+  WBitWidth:      Int,
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int,
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Elaboration-time defaults. Rebuild the design after changing these values.
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 4, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 32, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 16, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+
+    // Parallelism and table capacity.
+    y_slice     =  1, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+
+    // DMA request slots and beat width.
+    Dma_Ids     = 2, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
+
+    // Optional output scaling.
+    SCALE   = false, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
+
+  )
+
+}
+
+
+BUILD after fp16_ys2 PASS
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-unused-vars-xov0stsu/after/fp16_ys2/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-unused-vars-xov0stsu/after/fp16_ys2/generated-src verilog
+CONFIG SNAPSHOT:
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int,
+  WBitWidth:      Int,
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int,
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Elaboration-time defaults. Rebuild the design after changing these values.
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 4, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 32, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 16, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
+    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+
+    // Parallelism and table capacity.
+    y_slice     =  2, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+
+    // DMA request slots and beat width.
+    Dma_Ids     = 6, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
+
+    // Optional output scaling.
+    SCALE   = false, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
+
+  )
+
+}
+
+
+BUILD after int16_scaled PASS
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-unused-vars-xov0stsu/after/int16_scaled/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-unused-vars-xov0stsu/after/int16_scaled/generated-src verilog
+CONFIG SNAPSHOT:
+package LUMAX_PACKAGE
+
+case class LUMAXParams(
+  Rin:            Int,
+  Cin:            Int,
+  Cout:           Int,
+  XBitWidth:      Int,
+  WBitWidth:      Int,
+  OutBitWidth:    Int,
+  minInputBits:   Int,
+  minWeightBits:  Int,
+  x_slice:        Int,
+  y_slice:        Int,
+  w_slice:        Int,
+  num_filters:    Int,
+  Dma_Ids:        Int,
+  DMA_Bytes:      Int,
+  SCALE:          Boolean,
+  DEBUG:          Boolean,
+  W_BUFFS:        Int,
+  DMA_bits:       Int,
+  Mem_row_factor : Int,
+  FP16_ACTIVATIONS: Boolean = false,
+)
+
+// Elaboration-time defaults. Rebuild the design after changing these values.
+object LUMAX_Config {
+  val LUMAX_Config = LUMAXParams(
+
+    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
+    Rin         = 4, // Maximum total activation rows; must be at least y_slice.
+    Cin         = 32, // Maximum K dimension; also sizes the FP16 accumulator.
+    Cout        = 16, // Maximum output columns and output-accumulator allocation.
+
+    // Element widths and activation format.
+    XBitWidth   = 16, // Activation storage lane width.
+    WBitWidth   = 8, // Maximum weight width.
+    OutBitWidth = 32, // Output word width.
+    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
+    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+
+    // Parallelism and table capacity.
+    y_slice     =  1, // Activation rows processed in parallel.
+    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
+    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+
+    // Weight-column and accumulator-bank settings.
+    w_slice     = 1, // Output-column index step; the current design uses one.
+    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+
+    // DMA request slots and beat width.
+    Dma_Ids     = 2, // Request slots held until ordered response delivery.
+    DMA_Bytes   = 8, // Bytes per DMA beat.
+    DMA_bits    = 8*8, // Bits per DMA beat.
+
+    // Optional output scaling.
+    SCALE   = true, // Elaborate integer-output scaling when true.
+
+    // Performance-counter instrumentation.
+    DEBUG =  true, // Enable hardware performance counters.
+
+    // Weight prefetch buffers.
+    W_BUFFS =  2, // Weight buffers shared by all activation rows.
+
+  )
+
+}
+
+
+SOURCE CHECKS:
+[
+  {
+    "copy": "working",
+    "file": "ActivationAddressCounter.scala",
+    "changed": false,
+    "before_sha256": "96455715df262e38e9a6f0da17aa57ee73fcb90ac13a79a450493bc9b4d774b4",
+    "after_sha256": "96455715df262e38e9a6f0da17aa57ee73fcb90ac13a79a450493bc9b4d774b4"
+  },
+  {
+    "copy": "working",
+    "file": "ChunkInfoModules.scala",
+    "changed": false,
+    "before_sha256": "8bb57bbd3cfdb4f33dc2e8ad19fa9076195497a8ccf03c527bc69869ac4610d4",
+    "after_sha256": "8bb57bbd3cfdb4f33dc2e8ad19fa9076195497a8ccf03c527bc69869ac4610d4"
+  },
+  {
+    "copy": "working",
+    "file": "Config.scala",
+    "changed": false,
+    "before_sha256": "3ad832c7ff29178e93f2517ae40731f8a01cc6e5d6f2503ac33234a2e87f086a",
+    "after_sha256": "3ad832c7ff29178e93f2517ae40731f8a01cc6e5d6f2503ac33234a2e87f086a"
+  },
+  {
+    "copy": "working",
+    "file": "DMA.scala",
+    "changed": false,
+    "before_sha256": "5d1064fd0ceb3938647f02f484a0031e72d4b795c02fc7ef99bed3bc3313e766",
+    "after_sha256": "5d1064fd0ceb3938647f02f484a0031e72d4b795c02fc7ef99bed3bc3313e766"
+  },
+  {
+    "copy": "working",
+    "file": "FP16.scala",
+    "changed": false,
+    "before_sha256": "302c65579d55bf4d85e2339442bc66c3f385d946c22afef06be381b0fb1f07b5",
+    "after_sha256": "302c65579d55bf4d85e2339442bc66c3f385d946c22afef06be381b0fb1f07b5"
+  },
+  {
+    "copy": "working",
+    "file": "LUMAXTopHelpers.scala",
+    "changed": true,
+    "before_sha256": "62e10466055c697491c15a57898074ec6f12bda75155c09b6c92e537569e04cb",
+    "after_sha256": "b70ad86e5a929a78087c8f3a5ef7d46c05474bca91e4468cdb2ae37c440bafea"
+  },
+  {
+    "copy": "working",
+    "file": "LUMAX_Top.scala",
+    "changed": true,
+    "before_sha256": "80a964bcaf41bb2176e1b3ee3137058ba667b5b266873b5b45fcde4062c51d8c",
+    "after_sha256": "f9d2621215c354d7f152961b56ba6b00f067218361d0d899b0e0fb4967487cc3"
+  },
+  {
+    "copy": "working",
+    "file": "MappingUtils.scala",
+    "changed": false,
+    "before_sha256": "dbb103c29510044cf8ac7d82d588c8d90efe2b1243e0b7c1e6fe80f5dd86b6f2",
+    "after_sha256": "dbb103c29510044cf8ac7d82d588c8d90efe2b1243e0b7c1e6fe80f5dd86b6f2"
+  },
+  {
+    "copy": "working",
+    "file": "Product_Generator.scala",
+    "changed": false,
+    "before_sha256": "89abd51df435a7d2738e5893b24acfe522caf22e5cd0a4183092f6d48d0ace1e",
+    "after_sha256": "89abd51df435a7d2738e5893b24acfe522caf22e5cd0a4183092f6d48d0ace1e"
+  },
+  {
+    "copy": "working",
+    "file": "Scale.scala",
+    "changed": true,
+    "before_sha256": "1d62ce0394de70313ac7b74f6c3143ba67bd2b7d88888289712191a137034087",
+    "after_sha256": "8de680f24b0c3a75cf97d6d28def3feb082fc39d4b32bc04e5138924f948c056"
+  },
+  {
+    "copy": "working",
+    "file": "SignExtractor.scala",
+    "changed": false,
+    "before_sha256": "9f47401a94f44a6671a48c0e83391284e51471627570115212a14dc4ca4e73cf",
+    "after_sha256": "9f47401a94f44a6671a48c0e83391284e51471627570115212a14dc4ca4e73cf"
+  },
+  {
+    "copy": "repo",
+    "file": "ActivationAddressCounter.scala",
+    "changed": false,
+    "before_sha256": "96455715df262e38e9a6f0da17aa57ee73fcb90ac13a79a450493bc9b4d774b4",
+    "after_sha256": "96455715df262e38e9a6f0da17aa57ee73fcb90ac13a79a450493bc9b4d774b4"
+  },
+  {
+    "copy": "repo",
+    "file": "ChunkInfoModules.scala",
+    "changed": false,
+    "before_sha256": "8bb57bbd3cfdb4f33dc2e8ad19fa9076195497a8ccf03c527bc69869ac4610d4",
+    "after_sha256": "8bb57bbd3cfdb4f33dc2e8ad19fa9076195497a8ccf03c527bc69869ac4610d4"
+  },
+  {
+    "copy": "repo",
+    "file": "Config.scala",
+    "changed": false,
+    "before_sha256": "3ad832c7ff29178e93f2517ae40731f8a01cc6e5d6f2503ac33234a2e87f086a",
+    "after_sha256": "3ad832c7ff29178e93f2517ae40731f8a01cc6e5d6f2503ac33234a2e87f086a"
+  },
+  {
+    "copy": "repo",
+    "file": "DMA.scala",
+    "changed": false,
+    "before_sha256": "5d1064fd0ceb3938647f02f484a0031e72d4b795c02fc7ef99bed3bc3313e766",
+    "after_sha256": "5d1064fd0ceb3938647f02f484a0031e72d4b795c02fc7ef99bed3bc3313e766"
+  },
+  {
+    "copy": "repo",
+    "file": "FP16.scala",
+    "changed": false,
+    "before_sha256": "302c65579d55bf4d85e2339442bc66c3f385d946c22afef06be381b0fb1f07b5",
+    "after_sha256": "302c65579d55bf4d85e2339442bc66c3f385d946c22afef06be381b0fb1f07b5"
+  },
+  {
+    "copy": "repo",
+    "file": "LUMAXTopHelpers.scala",
+    "changed": true,
+    "before_sha256": "62e10466055c697491c15a57898074ec6f12bda75155c09b6c92e537569e04cb",
+    "after_sha256": "b70ad86e5a929a78087c8f3a5ef7d46c05474bca91e4468cdb2ae37c440bafea"
+  },
+  {
+    "copy": "repo",
+    "file": "LUMAX_Top.scala",
+    "changed": true,
+    "before_sha256": "80a964bcaf41bb2176e1b3ee3137058ba667b5b266873b5b45fcde4062c51d8c",
+    "after_sha256": "f9d2621215c354d7f152961b56ba6b00f067218361d0d899b0e0fb4967487cc3"
+  },
+  {
+    "copy": "repo",
+    "file": "MappingUtils.scala",
+    "changed": false,
+    "before_sha256": "dbb103c29510044cf8ac7d82d588c8d90efe2b1243e0b7c1e6fe80f5dd86b6f2",
+    "after_sha256": "dbb103c29510044cf8ac7d82d588c8d90efe2b1243e0b7c1e6fe80f5dd86b6f2"
+  },
+  {
+    "copy": "repo",
+    "file": "Product_Generator.scala",
+    "changed": false,
+    "before_sha256": "89abd51df435a7d2738e5893b24acfe522caf22e5cd0a4183092f6d48d0ace1e",
+    "after_sha256": "89abd51df435a7d2738e5893b24acfe522caf22e5cd0a4183092f6d48d0ace1e"
+  },
+  {
+    "copy": "repo",
+    "file": "Scale.scala",
+    "changed": true,
+    "before_sha256": "1d62ce0394de70313ac7b74f6c3143ba67bd2b7d88888289712191a137034087",
+    "after_sha256": "8de680f24b0c3a75cf97d6d28def3feb082fc39d4b32bc04e5138924f948c056"
+  },
+  {
+    "copy": "repo",
+    "file": "SignExtractor.scala",
+    "changed": false,
+    "before_sha256": "9f47401a94f44a6671a48c0e83391284e51471627570115212a14dc4ca4e73cf",
+    "after_sha256": "9f47401a94f44a6671a48c0e83391284e51471627570115212a14dc4ca4e73cf"
+  }
+]
+REMOVALS:
+[
+  [
+    "member mode_4",
+    1
+  ],
+  [
+    "member done",
+    1
+  ],
+  [
+    "member DATA_Y",
+    1
+  ],
+  [
+    "member usedResponse",
+    1
+  ],
+  [
+    "member currentBank",
+    1
+  ],
+  [
+    "member storedInBlock",
+    1
+  ],
+  [
+    "member usedResponse_w",
+    1
+  ],
+  [
+    "member currentBank_w",
+    1
+  ],
+  [
+    "member storedInBlock_w",
+    1
+  ],
+  [
+    "member SplitCounter",
+    1
+  ],
+  [
+    "member counter_mem",
+    1
+  ],
+  [
+    "member counter_row_w",
+    1
+  ],
+  [
+    "member counter_mem_w",
+    1
+  ],
+  [
+    "member valid_weights",
+    1
+  ],
+  [
+    "member dirty_elems_w",
+    1
+  ],
+  [
+    "member dirty_elems_w_counter_1",
+    1
+  ],
+  [
+    "member dirty_elems_w_counter_2",
+    1
+  ],
+  [
+    "member f_idx",
+    1
+  ],
+  [
+    "member XS_W",
+    1
+  ],
+  [
+    "member read_on_delay",
+    1
+  ],
+  [
+    "member x_slice_Reg",
+    1
+  ],
+  [
+    "member output_bits",
+    1
+  ],
+  [
+    "member mask_in",
+    1
+  ],
+  [
+    "member mask_w",
+    1
+  ],
+  [
+    "member bytes_to_read",
+    1
+  ],
+  [
+    "member reg_idx_start",
+    1
+  ],
+  [
+    "member offset_in_chunk_1",
+    1
+  ],
+  [
+    "member offset_in_chunk_2",
+    1
+  ],
+  [
+    "member total_blocks_per_y",
+    1
+  ],
+  [
+    "member yThXRegVec",
+    1
+  ],
+  [
+    "member shiftedVec",
+    1
+  ],
+  [
+    "member max_val",
+    1
+  ],
+  [
+    "member N",
+    1
+  ],
+  [
+    "member N_in",
+    1
+  ],
+  [
+    "member bankIdxW",
+    1
+  ],
+  [
+    "member xCellIdxW",
+    1
+  ],
+  [
+    "member readDataVec_part",
+    1
+  ],
+  [
+    "dirty-weight-only arithmetic",
+    1
+  ],
+  [
+    "unobserved valid_weights accumulation",
+    1
+  ],
+  [
+    "writes to DATA_Y",
+    1
+  ],
+  [
+    "writes to counter_mem",
+    3
+  ],
+  [
+    "writes to counter_row_w",
+    1
+  ],
+  [
+    "writes to counter_mem_w",
+    1
+  ],
+  [
+    "writes to valid_weights",
+    2
+  ],
+  [
+    "writes to dirty_elems_w_counter_1",
+    1
+  ],
+  [
+    "writes to f_idx",
+    1
+  ],
+  [
+    "writes to XS_W",
+    2
+  ],
+  [
+    "writes to read_on_delay",
+    3
+  ],
+  [
+    "writes to x_slice_Reg",
+    1
+  ],
+  [
+    "writes to output_bits",
+    1
+  ],
+  [
+    "writes to mask_in",
+    1
+  ],
+  [
+    "writes to mask_w",
+    1
+  ],
+  [
+    "writes to bytes_to_read",
+    6
+  ],
+  [
+    "writes to reg_idx_start",
+    6
+  ],
+  [
+    "writes to offset_in_chunk_1",
+    5
+  ],
+  [
+    "writes to offset_in_chunk_2",
+    3
+  ],
+  [
+    "writes to yThXRegVec",
+    1
+  ],
+  [
+    "writes to shiftedVec",
+    1
+  ],
+  [
+    "unused dirty-weight reset",
+    1
+  ],
+  [
+    "stage-one unobserved row index",
+    1
+  ],
+  [
+    "stage-three unobserved row index",
+    1
+  ],
+  [
+    "orphaned stage-one weight-address chain",
+    1
+  ],
+  [
+    "unused local shift_blocks",
+    1
+  ],
+  [
+    "unused local shift_y",
+    1
+  ],
+  [
+    "unused local shift_amt_w",
+    1
+  ],
+  [
+    "unused local shift_amt_w_new",
+    1
+  ],
+  [
+    "unused local w_mask",
+    1
+  ],
+  [
+    "unused local x_shift",
+    1
+  ],
+  [
+    "unused local offset_counter_delay",
+    1
+  ],
+  [
+    "unused byte-offset calculation",
+    4
+  ],
+  [
+    "unused initial-byte skip",
+    4
+  ],
+  [
+    "unused remaining-row calculation",
+    1
+  ]
+]
+SOFTWARE CHECKS:
+test_diagnostic_replay_is_excluded_from_independent_accuracy (test_cycle_compare.CycleComparisonTests) ... ok
+test_errors_and_missing_stages (test_cycle_compare.CycleComparisonTests) ... ok
+test_fp16_is_not_mislabeled_as_int16_cycle_model_accuracy (test_cycle_compare.CycleComparisonTests) ... ok
+test_gui_tiled_tail_uses_actual_recorded_dimensions (test_cycle_compare.CycleComparisonTests) ... ok
+test_http_comparison_auth_and_validation (test_cycle_compare.CycleComparisonTests) ... ok
+test_model_error_is_reported_without_fallback (test_cycle_compare.CycleComparisonTests) ... ok
+test_reload_picks_up_global_and_function_edits_without_restart (test_cycle_compare.CycleComparisonTests) ... ok
+test_rows_precision_and_addresses_are_native_model_inputs (test_cycle_compare.CycleComparisonTests) ... ok
+test_saved_physical_settings_and_stage_sum_validation (test_cycle_compare.CycleComparisonTests) ... ok
+test_select_subset_and_reject_unknown_sources_or_tests (test_cycle_compare.CycleComparisonTests) ... ok
+test_skips_notebook_imports_but_preserves_original_calculation (test_cycle_compare.CycleComparisonTests) ... ok
+test_addresses_control_cache_line_sharing_without_hw_counters (test_cycle_model.ControllerModelTests) ... ok
+test_elf_addresses_come_from_symbols_with_guard_offset (test_cycle_model.ControllerModelTests) ... ok
+test_fp16_has_same_controller_cycles_and_explicit_format (test_cycle_model.ControllerModelTests) ... ok
+test_hand_counted_small_uniform_transfer (test_cycle_model.ControllerModelTests) ... ok
+test_handshake_latency_is_used_and_output_stays_serial (test_cycle_model.ControllerModelTests) ... ok
+test_invalid_or_unsupported_parameters_fail_clearly (test_cycle_model.ControllerModelTests) ... ok
+test_literal_rtl_tail_span_differs_between_row_paths (test_cycle_model.ControllerModelTests) ... ok
+test_observed_issue_delays_also_mark_replay_as_diagnostic (test_cycle_model.ControllerModelTests) ... ok
+test_output_row_boundary_keeps_partial_writes_separate (test_cycle_model.ControllerModelTests) ... ok
+test_parallel_rows_share_weight_reads_and_generation (test_cycle_model.ControllerModelTests) ... ok
+test_single_credit_returns_on_next_edge_and_response_spacing_matters (test_cycle_model.ControllerModelTests) ... ok
+test_dot_products_and_directed_cases (test_fp16.FP16ReferenceTests) ... ok
+test_every_half_encoding_against_signed_weights (test_fp16.FP16ReferenceTests) ... ok
+test_fp32_rounding_and_integer_extremes (test_fp16.FP16ReferenceTests) ... ok
+test_classifier_output_tiles (test_gui.DashboardTests) ... ok
+test_cycle_extrapolation_is_marked_and_never_verifies_missing_outputs (test_gui.DashboardTests) ... ok
+test_fast_llama_http_plan_and_saved_suite (test_gui.DashboardTests) ... ok
+test_fast_llama_uses_selected_capacity_not_fixed_tile (test_gui.DashboardTests) ... ok
+test_fast_llama_worker_runs_only_one_sample_per_shape_precision (test_gui.DashboardTests) ... ok
+test_fp16_api_format_and_tolerance_contract (test_gui.DashboardTests) ... ok
+test_http_auth_plan_and_submission (test_gui.DashboardTests) ... ok
+test_invalid_or_extreme_input_rejected (test_gui.DashboardTests) ... ok
+test_legacy_progress_counts_operations_and_ignores_partial_lines (test_gui.DashboardTests) ... ok
+test_log_reads_stay_inside_logs_root (test_gui.DashboardTests) ... ok
+test_make_failure_restores_configuration (test_gui.DashboardTests) ... ok
+test_native_capacity_and_auto_tiling (test_gui.DashboardTests) ... ok
+test_original_suite_counts (test_gui.DashboardTests) ... ok
+test_result_verification_rejects_bad_data (test_gui.DashboardTests) ... ok
+test_row_parameters_survive_api_suite_and_job (test_gui.DashboardTests) ... ok
+test_saved_suites_designs_and_cancellation (test_gui.DashboardTests) ... ok
+test_signed_packing_and_reference (test_gui.DashboardTests) ... ok
+test_sources_only_operands_python_mode (test_gui.DashboardTests) ... ok
+test_subprocess_timeout_and_cancellation (test_gui.DashboardTests) ... ok
+test_tiled_host_reduction_uses_actual_hw_partials (test_gui.DashboardTests) ... ok
+test_waiting_for_config_lock_can_be_cancelled (test_gui.DashboardTests) ... ok
+test_design_format_persistence_and_legacy_defaults (test_gui_fp16.FP16DashboardTests) ... ok
+test_exact_and_tolerant_results_do_not_change_thresholds (test_gui_fp16.FP16DashboardTests) ... ok
+test_fp16_build_selects_static_flag_and_restores_config_on_failure (test_gui_fp16.FP16DashboardTests) ... ok
+test_fp16_c_source_calls_hw_and_does_not_embed_python_answers (test_gui_fp16.FP16DashboardTests) ... ok
+test_fp16_operands_and_reference_are_numeric_halves (test_gui_fp16.FP16DashboardTests) ... ok
+test_fp32_partial_sum_avoids_double_rounding (test_gui_fp16.FP16DashboardTests) ... ok
+test_invalid_tolerances_rejected (test_gui_fp16.FP16DashboardTests) ... ok
+test_k_tiling_compares_full_reference_and_reports_required_tolerance (test_gui_fp16.FP16DashboardTests) ... ok
+test_tolerance_cannot_hide_guards_incomplete_output_or_int_error (test_gui_fp16.FP16DashboardTests) ... ok
+test_zero_and_nonfinite_outputs_have_honest_suggestions (test_gui_fp16.FP16DashboardTests) ... ok
+test_build_saves_static_row_parameters_and_restores (test_gui_rows.RowTests) ... ok
+test_multirow_k_and_column_tiles_reassemble_every_row (test_gui_rows.RowTests) ... ok
+test_multirow_source_and_independent_reference (test_gui_rows.RowTests) ... ok
+test_persistence_legacy_defaults_and_capacity (test_gui_rows.RowTests) ... ok
+test_changed_shapes_repeats_and_zero_after_poison (test_reuse.ConsecutiveTests) ... ok
+test_no_reference_or_io_between_hardware_calls (test_reuse.ConsecutiveTests) ... ok
+
+----------------------------------------------------------------------
+Ran 62 tests in 7.172s
+
+OK
+
+Starting Config.scala restored byte-for-byte; utility files unchanged from pre-cleanup snapshots; temporary scripts/backups/RTL removed after validation.

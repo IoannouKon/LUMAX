@@ -1,0 +1,72 @@
+{
+  "name": "Cycle model \u00b7 native GUI integration",
+  "kind": "custom",
+  "design_ids": [
+    "cycle_int16",
+    "cycle_fp16"
+  ],
+  "designs": [
+    {
+      "id": "cycle_int16",
+      "name": "b2_rf4_int16",
+      "b": 2,
+      "rf": 4,
+      "max_k": 256,
+      "max_m": 64,
+      "max_r": 8,
+      "y_slice": 1,
+      "activation": "int16",
+      "builtin": false
+    },
+    {
+      "id": "cycle_fp16",
+      "name": "b2_rf4_fp16",
+      "b": 2,
+      "rf": 4,
+      "max_k": 256,
+      "max_m": 64,
+      "max_r": 8,
+      "y_slice": 1,
+      "activation": "fp16",
+      "builtin": false
+    }
+  ],
+  "tests": [
+    {
+      "name": "native GUI check",
+      "r": 1,
+      "k": 9,
+      "m": 7,
+      "weights": [
+        8,
+        4,
+        2
+      ],
+      "pattern": "random",
+      "repeats": 1,
+      "seed": ""
+    }
+  ],
+  "options": {
+    "mode": "auto",
+    "reference": "python",
+    "cycles": true,
+    "guards": true,
+    "integrity": false,
+    "matrices": false,
+    "timeout": 21600,
+    "build_timeout": 7200,
+    "compile_timeout": 1200,
+    "jobs": 8,
+    "workers": 6,
+    "max_cycles": 100000000000,
+    "stop_on_fail": false,
+    "tile_k": 0,
+    "tile_m": 0,
+    "t": 16,
+    "tcs": [],
+    "fp_comparison": "exact",
+    "atol": 0.0,
+    "rtol": 0.0
+  }
+}

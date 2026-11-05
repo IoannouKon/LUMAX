@@ -7,6 +7,7 @@ import ast
 import collections
 import csv
 import hashlib
+import inspect
 import json
 import math
 from pathlib import Path
@@ -53,7 +54,13 @@ def load_model():
     function = namespace.get('compute_cycles')
     if not callable(function):
         raise ValueError('Model.py must define compute_cycles(**parameters)')
-    return function, dict(path=str(MODEL_PATH), sha256=hashlib.sha256(source).hexdigest())
+    formats = namespace.get('SUPPORTED_ACTIVATIONS')
+    if formats is None:
+        # An explicit activation selector opts in to the two GUI formats.
+        # Legacy functions with only **parameters do not silently model FP16.
+        formats = ('int16', 'fp16') if 'activation' in inspect.signature(function).parameters else ('int16',)
+    return function, dict(path=str(MODEL_PATH), sha256=hashlib.sha256(source).hexdigest(),
+                         version=namespace.get('MODEL_VERSION'), activation_formats=list(formats))
 
 
 def sources(logs):
@@ -63,12 +70,15 @@ def sources(logs):
     specs = [('regression', 'run_*/total_results.csv'),
              ('test_cases', 'run_*/Log_TC*.log'),
              ('llama_shapes', 'run_*.log'), ('matrix_1024', 'run_*.log'),
+             ('cycle_model', 'run_*/measurements.json'),
              ('gui', 'run_*/job.json')]
     for kind, pattern in specs:
         for path in sorted((logs / kind).glob(pattern), reverse=True):
             if not path.resolve().is_relative_to(logs.resolve()):
                 continue
             name = path.parent.name if kind == 'regression' else path.name
+            if kind == 'cycle_model':
+                name = path.parent.name + ' · cycle-model validation'
             if kind == 'gui':
                 data = json.loads(path.read_text())
                 # Built-in GUI jobs already appear as their linked raw suite logs.
@@ -80,7 +90,7 @@ def sources(logs):
     return found
 
 
-def physical_parameters(text=''):
+def physical_parameters(text='', legacy=False):
     """Read saved Scala settings; historical runner defaults fill absent fields."""
     def value(key, default):
         matches = re.findall(r'(?m)^\s*' + key + r'\s*=\s*(\d+)\b', text)
@@ -90,13 +100,21 @@ def physical_parameters(text=''):
         return next(iter(values), default)
     return dict(YS=value('y_slice', 1), ID=value('Dma_Ids', 2),
                 DMA_WIDTH=value('DMA_Bytes', 8) * 8,
-                IN_MAX=value('XBitWidth', 16), IN_min=8,
-                W_MAX=value('WBitWidth', 8), buffers_w=2, HS=8)
+                IN_MAX=value('XBitWidth', 16), IN_min=value('minInputBits', 8),
+                W_MAX=value('WBitWidth', 8), buffers_w=value('W_BUFFS', 2),
+                # Legacy saved suites predate the ordered-response register.
+                # The modal TL hit path is six cycles; current retirement adds one.
+                HS=6 if legacy else 7)
 
 
-def parameters(k, m, wb, b, rf, in_bits=16, physical=None, rows=1):
-    return dict(physical or physical_parameters(), Rin=int(rows), Cin=int(k), Cout=int(m),
-                in_bits=int(in_bits), w_bits=int(wb), XS=int(b), factor=int(rf))
+def parameters(k, m, wb, b, rf, in_bits=16, physical=None, rows=1,
+               activation='int16', addresses=None):
+    result = dict(physical or physical_parameters(), Rin=int(rows), Cin=int(k), Cout=int(m),
+                  in_bits=int(in_bits), w_bits=int(wb), XS=int(b), factor=int(rf), activation=activation)
+    if addresses:
+        result.update({name: int(addresses[name]) for name in ('x_address', 'w_address', 'o_address')
+                       if name in addresses})
+    return result
 
 
 def pc_stages(pc):
@@ -106,7 +124,7 @@ def pc_stages(pc):
 
 
 def record(source, identifier, design, k, m, wb, total, stages=None,
-           status='PASS', reason='', physical=None, in_bits=16, **extra):
+           status='PASS', reason='', physical=None, in_bits=16, activation='int16', **extra):
     match = re.fullmatch(r'b(\d+)_rf(\d+)', design)
     saved_b, saved_rf = extra.pop('b', None), extra.pop('rf', None)
     b, rf = ((saved_b, saved_rf) if saved_b is not None and saved_rf is not None
@@ -120,10 +138,15 @@ def record(source, identifier, design, k, m, wb, total, stages=None,
         reason = reason or 'No valid positive hardware cycle measurement'
     if all(key in stages for key in MAIN) and sum(stages[key] for key in MAIN) != total:
         reason = reason or 'Stage counters do not sum to the recorded active total'
+    settings = dict(physical or physical_parameters())
+    if extra.get('y_slice') is not None:
+        settings['YS'] = int(extra['y_slice'])
     return dict(id=source + ':' + identifier, case=identifier, source=source, design=design,
                 b=b, rf=rf, k=int(k), m=int(m), wb=int(wb), in_bits=int(in_bits),
+                activation=activation,
                 hw=total, hw_stages=stages, status=status, reason=reason,
-                parameters=parameters(k, m, wb, b, rf, in_bits, physical) if b and rf else None,
+                parameters=parameters(k, m, wb, b, rf, in_bits, settings,
+                                      rows=extra.get('r', 1), activation=activation) if b and rf else None,
                 **extra)
 
 
@@ -148,13 +171,13 @@ def regression(path, source):
             stages = {key: int(row[col]) for key, col in names.items() if row.get(col, '').isdigit()}
             rows.append(record(source, 'regression_' + str(index), f'b{row["b"]}_rf{row["RF"]}',
                                row['CIN'], row['COUT'], row['W_BITS'], total, stages,
-                               row['status'], in_bits=row['IN_BITS']))
+                               row['status'], in_bits=row['IN_BITS'], physical=physical_parameters(legacy=True)))
     return rows
 
 
 def test_cases(path, source):
     text = path.read_text(errors='replace')
-    physical = physical_parameters(text)
+    physical = physical_parameters(text, legacy=True)
     rows = []
     tc = path.stem.removeprefix('Log_')
     if tc in ('TC01', 'TC02'):
@@ -199,7 +222,7 @@ def legacy_shapes(path, source, kind):
     if not design_match:
         return []
     design = design_match[1]
-    physical = physical_parameters(text)
+    physical = physical_parameters(text, legacy=True)
     rows, native_case, native_wb, geometry, completed = [], None, None, None, set()
     for line in text.splitlines():
         if kind == 'matrix_1024':
@@ -250,19 +273,39 @@ def gui_cases(path, source):
             _, k, _, m = ranges[tile]
             params = op.get('model_parameters')
             k, m = op.get('k', k), op.get('m', m)
+            fmt = op.get('activation', case.get('activation', design.get('activation', 'int16')))
             row = record(source, f'{index}/{case["name"]}/W{case["wb"]}/tile{tile+1}',
                          case['design'], k, m, case['wb'], op.get('cycles'), pc_stages(op.get('pc')),
                          op.get('status', 'INCOMPLETE'), b=design['b'], rf=design['rf'],
-                         physical=data.get('cycle_parameters'), r=op.get('r', case.get('r', 1)),
+                         physical=data.get('cycle_parameters') or physical_parameters(legacy=True),
+                         r=op.get('r', case.get('r', 1)),
+                         activation=fmt,
                          y_slice=op.get('y_slice', design.get('y_slice', 1)))
-            if case.get('activation', design.get('activation', 'int16')) == 'fp16':
-                row['reason'] = 'FP16 measurements are not covered by the current INT16 Python cycle model'
             if params:
-                row['parameters'] = params
+                row['parameters'] = dict(params)
+                row['parameters'].setdefault('activation', fmt)
+            if op.get('memory_addresses'):
+                row['parameters'].update(op['memory_addresses'])
             row['logical_case'] = case['name']
             if suite['kind'] == 'llama_fast' and case.get('tiles_needed', 1) > 1:
                 row['note'] = f'Measured sample only; full-shape {case["tiles_needed"]}-tile estimate is excluded from accuracy'
             rows.append(row)
+    return rows
+
+
+def cycle_model_cases(path, source):
+    """Immutable native measurements, including actual buffer address snapshots."""
+    data = json.loads(path.read_text())
+    if data.get('schema') != 1:
+        raise ValueError('Unknown cycle-model measurement schema')
+    rows = []
+    for item in data['records']:
+        params = item['model_parameters']
+        row = record(source, item['id'], f'b{item["b"]}_rf{item["rf"]}',
+                     item['k'], item['m'], item['wb'], item['cycles'], pc_stages(item['pc']),
+                     item['status'], r=item['r'], y_slice=item['y_slice'], activation=item['mode'])
+        row['parameters'] = dict(params)
+        rows.append(row)
     return rows
 
 
@@ -279,6 +322,7 @@ def cases(logs, selected):
         if kind == 'regression': items = regression(path, source)
         elif kind == 'test_cases': items = test_cases(path, source)
         elif kind == 'gui': items = gui_cases(path, source)
+        elif kind == 'cycle_model': items = cycle_model_cases(path, source)
         else: items = legacy_shapes(path, source, kind)
         rows.extend(items)
     if len({r['id'] for r in rows}) != len(rows):
@@ -322,17 +366,24 @@ def compare(logs, request):
         if row['reason']:
             excluded.append(dict(id=row['id'], case=row['case'], reason=row['reason']))
             continue
+        if row.get('activation', 'int16') not in info['activation_formats']:
+            excluded.append(dict(id=row['id'], case=row['case'], reason='Selected Python model does not declare '+row['activation'].upper()+' support'))
+            continue
         key = json.dumps(row['parameters'], sort_keys=True)
         try:
             if key not in memo:
                 memo[key] = function(**row['parameters'])
             output = memo[key]
+            if output.get('diagnostic_dma_replay'):
+                excluded.append(dict(id=row['id'], case=row['case'], reason='Diagnostic DMA replay uses observed memory timings; excluded from independent model accuracy'))
+                continue
             predicted = output['total_cycles']
             if isinstance(predicted, bool) or not isinstance(predicted, (int, float)) or not math.isfinite(predicted) or predicted < 0:
                 raise ValueError('Model returned an invalid total_cycles')
         except Exception as error:
             raise ValueError(f'Model.py failed for {row["case"]}: {error}') from error
-        item = dict(row, predicted=predicted, absolute_error=abs(predicted-row['hw']),
+        item = dict(row, model_context={k: output[k] for k in ('model_version', 'activation', 'memory_profile', 'memory_assumptions') if k in output},
+                    predicted=predicted, absolute_error=abs(predicted-row['hw']),
                     signed_error=predicted-row['hw'], ape=100*abs(predicted-row['hw'])/row['hw'])
         stage_pairs['total'].append((row['hw'], predicted))
         if include_stages:
@@ -351,9 +402,9 @@ def compare(logs, request):
                     stage_pairs[stage].append((hw, model))
         results.append(item)
     groups = []
-    for design, wb in sorted({(r['design'], r['wb']) for r in results}):
-        pairs = [(r['hw'], r['predicted']) for r in results if r['design']==design and r['wb']==wb]
-        groups.append(dict(design=design, wb=wb, **stats(pairs)))
+    for design, wb, fmt in sorted({(r['design'], r['wb'], r['activation']) for r in results}):
+        pairs = [(r['hw'], r['predicted']) for r in results if r['design']==design and r['wb']==wb and r['activation']==fmt]
+        groups.append(dict(design=design, wb=wb, activation=fmt, **stats(pairs)))
     return dict(model=info, summary=stats(stage_pairs['total']), groups=groups,
                 stages=[dict(id=k, name=v[0], **stats(stage_pairs[k])) for k, v in STAGES.items()
                         if k != 'total'] if include_stages else [],
@@ -361,4 +412,7 @@ def compare(logs, request):
                 notes=['Accuracy = percentage of measured operations within ±10% of HW cycles; lower MAPE/MAE is better.',
                        'Tiles are compared at their actual native dimensions. Totals sum only selected measured operations.',
                        'Load W alone and Select alone overlap the combined phase; do not add them to total cycles.',
-                       'Historical logs without a physical snapshot use the original runner contract: YS=1, DMA IDs=2, DMA=64 bits, IN_MAX=16, W_MAX=8, HS=8.'])
+                       'INT16/FP16, actual row counts, Y_SLICE and saved DMA settings are passed to the live Model.py source.',
+                       'Current DMA hits default to seven controller-visible cycles; legacy direct-response suites use six. Explicit saved timing parameters remain authoritative.',
+                       'Cache ownership, CPU interference and initial residency may be unknown. New GUI operations save physical buffer addresses; missing addresses use the model defaults.',
+                       'Diagnostic replay is excluded from independent accuracy statistics.'])

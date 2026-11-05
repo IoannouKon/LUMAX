@@ -699,6 +699,33 @@ def build_design(job, design, base_config, temporary, env):
     return sim
 
 
+def elf_buffer_addresses(elf, env):
+    """Read payload addresses from the ELF; no target instructions are added.
+
+    These snapshots let the cycle model account for source alignment and
+    sharing of LLC lines. Older logs without symbols still use model defaults.
+    """
+    nm = shutil.which('riscv64-unknown-elf-nm', path=env.get('PATH'))
+    if not nm:
+        return {}
+    try:
+        result = subprocess.run([nm, '--defined-only', str(elf)], env=env,
+                                capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return {}
+    if result.returncode:
+        return {}
+    found = {}
+    for address, name in re.findall(r'(?m)^([0-9a-fA-F]+)\s+\w\s+(xbuf|wbuf|obuf)$', result.stdout):
+        if name in found:
+            return {}
+        # test_source's _Static_assert fixes the guard prefix at eight bytes.
+        found[name] = int(address, 16) + 8
+    if len(found) != 3:
+        return {}
+    return {key: found[name] for key, name in [('x_address', 'xbuf'), ('w_address', 'wbuf'), ('o_address', 'obuf')]}
+
+
 def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expected):
     folder.mkdir()
     record = None
@@ -721,11 +748,15 @@ def run_operation(job, sim, design, base, options, x, w, wb, folder, env, expect
             return dict(status='BUILD_FAIL', matches=0, elements=count, cycles=None, core_cycles=None)
         elf = folder / 'Linear-sw.riscv'
         job.log('ELF SHA256=' + hw.sha(elf))
+        addresses = elf_buffer_addresses(elf, case_env)
+        if addresses:
+            job.log('MODEL BUFFER ADDRESSES ' + json.dumps(addresses, sort_keys=True))
         args = [str(sim), '+permissive', '+max-cycles=' + str(options['max_cycles']), '+loadmem=' + str(elf), '+permissive-off', str(elf)]
         code = job.command(args, folder, folder / 'uart.log', options['timeout'], env, 'Starting Verilator')
         uart = (folder / 'uart.log').read_text(errors='replace').replace('\r\n', '\n')
         job.update(phase='Comparing actual HW output')
         record = parse_result(uart, expected, options, code, count, activation(design))
+        record['memory_addresses'] = addresses
         if '*** FAILED ***' in uart and 'timeout' in uart.lower(): record['status'] = 'TIMEOUT'
         job.log('UART STATUS\n' + '\n'.join(line for line in uart.splitlines()
                 if not line.startswith(('HW_OUTPUT ', 'C_REFERENCE '))))
@@ -821,7 +852,8 @@ def run_custom(job, temporary, env):
                                     temporary / 'operation', env, expected)
                                 actual, expected_part = result.pop('actual', None), result.pop('expected', None)
                                 result.update(r=r, y_slice=y_slices(design), k=n, m=d, activation=fmt, model_parameters=cycle_compare.parameters(
-                                    n, d, wb, design['b'], design['rf'], physical=physical, rows=r))
+                                    n, d, wb, design['b'], design['rf'], physical=physical, rows=r,
+                                    activation=fmt, addresses=result.get('memory_addresses')))
                                 if actual is not None and len(actual) == r*d:
                                     for col, value in enumerate(actual):
                                         index_out = (col // d)*m + c + col % d

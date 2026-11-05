@@ -1,0 +1,743 @@
+{
+  "variants": {
+    "Original formula": {
+      "n": 144,
+      "hw": 205074,
+      "predicted": 170290.0,
+      "mae": 332.8888888888889,
+      "mape": 38.82612611556712,
+      "min_absolute_error": 23.0,
+      "max_absolute_error": 2388.0,
+      "min_ape": 5.788423153692615,
+      "max_ape": 82.75862068965517,
+      "wape": 23.374976837629344,
+      "within_10_pct": 3.4722222222222223
+    },
+    "Revised, dimensions only": {
+      "n": 144,
+      "hw": 205074,
+      "predicted": 208816,
+      "mae": 28.23611111111111,
+      "mape": 5.234228301181609,
+      "min_absolute_error": 0,
+      "max_absolute_error": 179,
+      "min_ape": 0.0,
+      "max_ape": 31.914893617021278,
+      "wape": 1.9826989281917746,
+      "within_10_pct": 88.19444444444444
+    },
+    "Revised, actual ELF addresses": {
+      "n": 144,
+      "hw": 205074,
+      "predicted": 208344,
+      "mae": 24.166666666666668,
+      "mape": 4.065478974634906,
+      "min_absolute_error": 0,
+      "max_absolute_error": 179,
+      "min_ape": 0.0,
+      "max_ape": 21.568627450980394,
+      "wape": 1.6969484186196202,
+      "within_10_pct": 90.97222222222223
+    }
+  },
+  "stages": [
+    {
+      "name": "Load X",
+      "original": {
+        "n": 144,
+        "hw": 24317,
+        "predicted": 14900.0,
+        "mae": 67.15972222222223,
+        "mape": 43.9470428296448,
+        "min_absolute_error": 6,
+        "max_absolute_error": 418,
+        "min_ape": 10.56910569105691,
+        "max_ape": 64.0625,
+        "wape": 39.77053090430563,
+        "within_10_pct": 0.0
+      },
+      "revised": {
+        "n": 144,
+        "hw": 24317,
+        "predicted": 25913,
+        "mae": 11.097222222222221,
+        "mape": 9.452507612247025,
+        "min_absolute_error": 0,
+        "max_absolute_error": 61,
+        "min_ape": 0.0,
+        "max_ape": 50.0,
+        "wape": 6.57153431755562,
+        "within_10_pct": 70.83333333333333
+      }
+    },
+    {
+      "name": "Generate products",
+      "original": {
+        "n": 144,
+        "hw": 75924,
+        "predicted": 80304.0,
+        "mae": 30.416666666666668,
+        "mape": 3.195568048509225,
+        "min_absolute_error": 0.0,
+        "max_absolute_error": 630.0,
+        "min_ape": 0.0,
+        "max_ape": 96.92307692307692,
+        "wape": 5.7689268215584,
+        "within_10_pct": 93.05555555555556
+      },
+      "revised": {
+        "n": 144,
+        "hw": 75924,
+        "predicted": 75924,
+        "mae": 0.0,
+        "mape": 0.0,
+        "min_absolute_error": 0,
+        "max_absolute_error": 0,
+        "min_ape": 0.0,
+        "max_ape": 0.0,
+        "wape": 0.0,
+        "within_10_pct": 100.0
+      }
+    },
+    {
+      "name": "Load W alone (overlaps)",
+      "original": {
+        "n": 144,
+        "hw": 90386,
+        "predicted": 71088.0,
+        "mae": 169.51388888888889,
+        "mape": 25.70357472073008,
+        "min_absolute_error": 1,
+        "max_absolute_error": 2090.0,
+        "min_ape": 0.5847953216374269,
+        "max_ape": 60.0,
+        "wape": 27.006394795654195,
+        "within_10_pct": 10.416666666666666
+      },
+      "revised": {
+        "n": 144,
+        "hw": 90386,
+        "predicted": 92656,
+        "mae": 16.76388888888889,
+        "mape": 3.657997905797951,
+        "min_absolute_error": 0,
+        "max_absolute_error": 141,
+        "min_ape": 0.0,
+        "max_ape": 53.84615384615385,
+        "wape": 2.6707675967517095,
+        "within_10_pct": 93.05555555555556
+      }
+    },
+    {
+      "name": "Select alone (overlaps)",
+      "original": {
+        "n": 144,
+        "hw": 62168,
+        "predicted": 58692.0,
+        "mae": 80.33333333333333,
+        "mape": 21.748533193283265,
+        "min_absolute_error": 2,
+        "max_absolute_error": 2006.0,
+        "min_ape": 2.857142857142857,
+        "max_ape": 78.66666666666667,
+        "wape": 18.607643803886244,
+        "within_10_pct": 26.38888888888889
+      },
+      "revised": {
+        "n": 144,
+        "hw": 62168,
+        "predicted": 62168,
+        "mae": 0.0,
+        "mape": 0.0,
+        "min_absolute_error": 0,
+        "max_absolute_error": 0,
+        "min_ape": 0.0,
+        "max_ape": 0.0,
+        "wape": 0.0,
+        "within_10_pct": 100.0
+      }
+    },
+    {
+      "name": "Store output",
+      "original": {
+        "n": 144,
+        "hw": 11023,
+        "predicted": 5094,
+        "mae": 41.173611111111114,
+        "mape": 46.1677309237217,
+        "min_absolute_error": 2,
+        "max_absolute_error": 144,
+        "min_ape": 11.656441717791411,
+        "max_ape": 83.72093023255815,
+        "wape": 53.78753515376939,
+        "within_10_pct": 0.0
+      },
+      "revised": {
+        "n": 144,
+        "hw": 11023,
+        "predicted": 10836,
+        "mae": 3.9652777777777777,
+        "mape": 13.205129490838724,
+        "min_absolute_error": 1,
+        "max_absolute_error": 13,
+        "min_ape": 1.1627906976744187,
+        "max_ape": 40.0,
+        "wape": 5.180078018688198,
+        "within_10_pct": 66.66666666666667
+      }
+    },
+    {
+      "name": "Combined Load W/Select",
+      "original": {
+        "n": 144,
+        "hw": 93810,
+        "predicted": 69992.0,
+        "mae": 223.66666666666666,
+        "mape": 71.16542315993333,
+        "min_absolute_error": 11,
+        "max_absolute_error": 2270.0,
+        "min_ape": 3.3989266547406083,
+        "max_ape": 214.28571428571428,
+        "wape": 34.33322673488967,
+        "within_10_pct": 4.166666666666667
+      },
+      "revised": {
+        "n": 144,
+        "hw": 93810,
+        "predicted": 95671,
+        "mae": 13.743055555555555,
+        "mape": 2.490016042774932,
+        "min_absolute_error": 0,
+        "max_absolute_error": 128,
+        "min_ape": 0.0,
+        "max_ape": 38.888888888888886,
+        "wape": 2.1095832000852788,
+        "within_10_pct": 94.44444444444444
+      }
+    }
+  ],
+  "groups": {
+    "design_format": [
+      {
+        "group": [
+          2,
+          4,
+          "fp16"
+        ],
+        "n": 12,
+        "hw": 29262,
+        "predicted": 29483,
+        "mae": 18.75,
+        "mape": 2.8156447860435545,
+        "min_absolute_error": 2,
+        "max_absolute_error": 96,
+        "min_ape": 0.04966476285075739,
+        "max_ape": 7.042253521126761,
+        "wape": 0.7689153167931105,
+        "within_10_pct": 100.0
+      },
+      {
+        "group": [
+          2,
+          4,
+          "int16"
+        ],
+        "n": 12,
+        "hw": 29243,
+        "predicted": 29586,
+        "mae": 28.583333333333332,
+        "mape": 4.046422293506418,
+        "min_absolute_error": 3,
+        "max_absolute_error": 127,
+        "min_ape": 0.4825090470446321,
+        "max_ape": 21.568627450980394,
+        "wape": 1.1729302739117053,
+        "within_10_pct": 91.66666666666667
+      },
+      {
+        "group": [
+          2,
+          8,
+          "fp16"
+        ],
+        "n": 12,
+        "hw": 15086,
+        "predicted": 15065,
+        "mae": 8.083333333333334,
+        "mape": 2.2097815769732443,
+        "min_absolute_error": 2,
+        "max_absolute_error": 49,
+        "min_ape": 0.11607661056297155,
+        "max_ape": 6.896551724137931,
+        "wape": 0.6429802465862389,
+        "within_10_pct": 100.0
+      },
+      {
+        "group": [
+          2,
+          8,
+          "int16"
+        ],
+        "n": 12,
+        "hw": 15071,
+        "predicted": 15163,
+        "mae": 9.5,
+        "mape": 3.6983626491976493,
+        "min_absolute_error": 1,
+        "max_absolute_error": 64,
+        "min_ape": 0.1556420233463035,
+        "max_ape": 21.568627450980394,
+        "wape": 0.7564196138278814,
+        "within_10_pct": 91.66666666666667
+      },
+      {
+        "group": [
+          4,
+          4,
+          "fp16"
+        ],
+        "n": 12,
+        "hw": 25912,
+        "predicted": 26483,
+        "mae": 47.583333333333336,
+        "mape": 4.135675396151514,
+        "min_absolute_error": 3,
+        "max_absolute_error": 179,
+        "min_ape": 1.0551948051948052,
+        "max_ape": 10.38961038961039,
+        "wape": 2.203612225995678,
+        "within_10_pct": 91.66666666666667
+      },
+      {
+        "group": [
+          4,
+          4,
+          "int16"
+        ],
+        "n": 12,
+        "hw": 25932,
+        "predicted": 26483,
+        "mae": 45.916666666666664,
+        "mape": 5.173898071112046,
+        "min_absolute_error": 2,
+        "max_absolute_error": 173,
+        "min_ape": 0.5347593582887701,
+        "max_ape": 21.568627450980394,
+        "wape": 2.124787906833256,
+        "within_10_pct": 83.33333333333333
+      },
+      {
+        "group": [
+          4,
+          8,
+          "fp16"
+        ],
+        "n": 12,
+        "hw": 11240,
+        "predicted": 11634,
+        "mae": 32.833333333333336,
+        "mape": 5.153675153179322,
+        "min_absolute_error": 3,
+        "max_absolute_error": 114,
+        "min_ape": 0.9314703925482368,
+        "max_ape": 11.510791366906474,
+        "wape": 3.505338078291815,
+        "within_10_pct": 83.33333333333333
+      },
+      {
+        "group": [
+          4,
+          8,
+          "int16"
+        ],
+        "n": 12,
+        "hw": 11335,
+        "predicted": 11650,
+        "mae": 26.25,
+        "mape": 4.623370017932973,
+        "min_absolute_error": 3,
+        "max_absolute_error": 121,
+        "min_ape": 0.8465608465608465,
+        "max_ape": 11.347517730496454,
+        "wape": 2.779003087781209,
+        "within_10_pct": 91.66666666666667
+      },
+      {
+        "group": [
+          8,
+          4,
+          "fp16"
+        ],
+        "n": 12,
+        "hw": 14313,
+        "predicted": 14691,
+        "mae": 31.5,
+        "mape": 4.869187228620543,
+        "min_absolute_error": 3,
+        "max_absolute_error": 115,
+        "min_ape": 0.9280742459396751,
+        "max_ape": 11.594202898550725,
+        "wape": 2.640955774470761,
+        "within_10_pct": 83.33333333333333
+      },
+      {
+        "group": [
+          8,
+          4,
+          "int16"
+        ],
+        "n": 12,
+        "hw": 14426,
+        "predicted": 14685,
+        "mae": 21.583333333333332,
+        "mape": 4.119440773788231,
+        "min_absolute_error": 3,
+        "max_absolute_error": 100,
+        "min_ape": 0.7109004739336493,
+        "max_ape": 12.23021582733813,
+        "wape": 1.7953694717870512,
+        "within_10_pct": 91.66666666666667
+      },
+      {
+        "group": [
+          8,
+          8,
+          "fp16"
+        ],
+        "n": 12,
+        "hw": 6611,
+        "predicted": 6737,
+        "mae": 10.833333333333334,
+        "mape": 4.157634342127969,
+        "min_absolute_error": 2,
+        "max_absolute_error": 26,
+        "min_ape": 0.7633587786259542,
+        "max_ape": 11.458333333333334,
+        "wape": 1.9664196036908184,
+        "within_10_pct": 91.66666666666667
+      },
+      {
+        "group": [
+          8,
+          8,
+          "int16"
+        ],
+        "n": 12,
+        "hw": 6643,
+        "predicted": 6684,
+        "mae": 8.583333333333334,
+        "mape": 3.7826554069854263,
+        "min_absolute_error": 0,
+        "max_absolute_error": 26,
+        "min_ape": 0.0,
+        "max_ape": 12.781954887218046,
+        "wape": 1.5505042902303177,
+        "within_10_pct": 91.66666666666667
+      }
+    ],
+    "weight_format": [
+      {
+        "group": [
+          2,
+          "fp16"
+        ],
+        "n": 24,
+        "hw": 16425,
+        "predicted": 16974,
+        "mae": 23.041666666666668,
+        "mape": 5.475185436847088,
+        "min_absolute_error": 2,
+        "max_absolute_error": 114,
+        "min_ape": 0.11607661056297155,
+        "max_ape": 11.594202898550725,
+        "wape": 3.3668188736681888,
+        "within_10_pct": 87.5
+      },
+      {
+        "group": [
+          2,
+          "int16"
+        ],
+        "n": 24,
+        "hw": 16577,
+        "predicted": 16898,
+        "mae": 15.041666666666666,
+        "mape": 5.145737083029438,
+        "min_absolute_error": 1,
+        "max_absolute_error": 102,
+        "min_ape": 0.2159827213822894,
+        "max_ape": 21.568627450980394,
+        "wape": 2.177716112686252,
+        "within_10_pct": 87.5
+      },
+      {
+        "group": [
+          4,
+          "fp16"
+        ],
+        "n": 24,
+        "hw": 22355,
+        "predicted": 22840,
+        "mae": 20.875,
+        "mape": 3.2738537798055543,
+        "min_absolute_error": 3,
+        "max_absolute_error": 154,
+        "min_ape": 0.41300980898296336,
+        "max_ape": 6.896551724137931,
+        "wape": 2.241109371505256,
+        "within_10_pct": 100.0
+      },
+      {
+        "group": [
+          4,
+          "int16"
+        ],
+        "n": 24,
+        "hw": 22143,
+        "predicted": 22850,
+        "mae": 29.708333333333332,
+        "mape": 5.705638277253613,
+        "min_absolute_error": 1,
+        "max_absolute_error": 173,
+        "min_ape": 0.15600624024961,
+        "max_ape": 12.781954887218046,
+        "wape": 3.219979225940478,
+        "within_10_pct": 83.33333333333333
+      },
+      {
+        "group": [
+          8,
+          "fp16"
+        ],
+        "n": 24,
+        "hw": 63644,
+        "predicted": 64279,
+        "mae": 30.875,
+        "mape": 2.921760024895431,
+        "min_absolute_error": 2,
+        "max_absolute_error": 179,
+        "min_ape": 0.04966476285075739,
+        "max_ape": 11.458333333333334,
+        "wape": 1.1642888567657594,
+        "within_10_pct": 87.5
+      },
+      {
+        "group": [
+          8,
+          "int16"
+        ],
+        "n": 24,
+        "hw": 63930,
+        "predicted": 64503,
+        "mae": 25.458333333333332,
+        "mape": 1.870699245978318,
+        "min_absolute_error": 0,
+        "max_absolute_error": 156,
+        "min_ape": 0.0,
+        "max_ape": 3.883495145631068,
+        "wape": 0.9557328327858595,
+        "within_10_pct": 100.0
+      }
+    ],
+    "dma_ids": [
+      {
+        "group": [
+          1
+        ],
+        "n": 24,
+        "hw": 51844,
+        "predicted": 52966,
+        "mae": 46.75,
+        "mape": 4.65478673363178,
+        "min_absolute_error": 2,
+        "max_absolute_error": 179,
+        "min_ape": 0.5347593582887701,
+        "max_ape": 21.568627450980394,
+        "wape": 2.164184862279145,
+        "within_10_pct": 87.5
+      },
+      {
+        "group": [
+          2
+        ],
+        "n": 72,
+        "hw": 109819,
+        "predicted": 111729,
+        "mae": 26.583333333333332,
+        "mape": 4.271290042178507,
+        "min_absolute_error": 2,
+        "max_absolute_error": 127,
+        "min_ape": 0.04966476285075739,
+        "max_ape": 21.568627450980394,
+        "wape": 1.7428678097596955,
+        "within_10_pct": 90.27777777777777
+      },
+      {
+        "group": [
+          6
+        ],
+        "n": 48,
+        "hw": 43411,
+        "predicted": 43649,
+        "mae": 9.25,
+        "mape": 3.462108493821072,
+        "min_absolute_error": 0,
+        "max_absolute_error": 64,
+        "min_ape": 0.0,
+        "max_ape": 21.568627450980394,
+        "wape": 1.0227822441316716,
+        "within_10_pct": 93.75
+      }
+    ],
+    "y_slice": [
+      {
+        "group": [
+          1
+        ],
+        "n": 72,
+        "hw": 139088,
+        "predicted": 141411,
+        "mae": 32.31944444444444,
+        "mape": 4.193378091537051,
+        "min_absolute_error": 2,
+        "max_absolute_error": 179,
+        "min_ape": 0.04966476285075739,
+        "max_ape": 21.568627450980394,
+        "wape": 1.673041527665938,
+        "within_10_pct": 90.27777777777777
+      },
+      {
+        "group": [
+          2
+        ],
+        "n": 72,
+        "hw": 65986,
+        "predicted": 66933,
+        "mae": 16.01388888888889,
+        "mape": 3.9375798577327634,
+        "min_absolute_error": 0,
+        "max_absolute_error": 121,
+        "min_ape": 0.0,
+        "max_ape": 21.568627450980394,
+        "wape": 1.74734034492165,
+        "within_10_pct": 91.66666666666667
+      }
+    ]
+  },
+  "model": {
+    "path": "/home/kioannou/chipyard_1.13.0/generators/LUMAX/Performance Modeling/Model.py",
+    "sha256": "40aff80c6f301f5f1f89c96781a443699141fe00e84431e7e622a1bb7cae8ca0",
+    "version": "controller-events-v2",
+    "activation_formats": [
+      "int16",
+      "fp16"
+    ]
+  },
+  "frozen_model_sha256": "f9318719bf8ba0543924af3d84ef01c583c62efd74a22ba776f26dd3749a4098",
+  "hardware_sources_sha256": {
+    "src/main/scala/FP16.scala": "302c65579d55bf4d85e2339442bc66c3f385d946c22afef06be381b0fb1f07b5",
+    "src/main/scala/ChunkInfoModules.scala": "82aca247c111b08b40076319bd5acd3409f7864338797987fb95265d921c077f",
+    "src/main/scala/LUMAX_Top.scala": "6c7095c769c3f129e4f8874c294ff2aded6c5816d570d5733fb1541936987efc",
+    "src/main/scala/MappingUtils.scala": "6b67339da9843024fd4613503a6070592fe426ea6fd0326c915130ee99522fe4",
+    "src/main/scala/SignExtractor.scala": "7155873a05cba1368ad0af03a05b37d4fdc460353189f83a4ff465a5821ac266",
+    "src/main/scala/Scale.scala": "005263d0fd829b5c8a87754feceba8e67d0bbfd360366b4dd9041d2be25b3c0c",
+    "src/main/scala/DMA.scala": "2f51e2c44ea42326f5a16ae3d8cb7062ef4c8da70eda92a5c19b70e86fec9abc",
+    "src/main/scala/Product_Generator.scala": "91f4835e845ded2f0ab533e7115663e6490a030e5cdc36a5849de91e5c645550",
+    "src/main/scala/ActivationAddressCounter.scala": "96455715df262e38e9a6f0da17aa57ee73fcb90ac13a79a450493bc9b4d774b4",
+    "src/main/scala/LUMAXTopHelpers.scala": "51c003d2da5600c7cdbb2c35656a22535354bb2d3009aa1452d3e651bbd92366",
+    "src/main/scala/Config.scala": "291d7246a2dc99beb71b09f8650ecdc91757bad654a4ca6f2cd5c4da99f0fbbb",
+    "software/tests/src/Linear-sw.c": "87be083bed6d55c110ec71c569d7505cfc2a1951a95a298b9dc1af4ded826aac"
+  },
+  "builds": [
+    {
+      "name": "probe_int16",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  1,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  2,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 4,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 2,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "41b44f30dcaa07a7fa5b843f8d48045bbb1912f644dc0866aaf4a8a71ac3f04c"
+    },
+    {
+      "name": "b2_rf4_fp16_ys1_id2",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  1,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  2,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 4,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 2,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "d610a2fbb3bb200d740c2f260b9ea4c95be17dce278495a2c48557c0fa1247d0"
+    },
+    {
+      "name": "b2_rf8_fp16_ys2_id6",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  2,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  2,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 8,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 6,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "f3cdb8ca395e871c674a0443269f19913985b189f20f8287e54a3b8af8339834"
+    },
+    {
+      "name": "b2_rf8_int16_ys2_id6",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  2,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  2,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 8,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 6,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "363b9594cd3eaf4b498f54ac401b5332a2513be2e69008c5482b24d06d39c56d"
+    },
+    {
+      "name": "b4_rf4_fp16_ys1_id1",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  1,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  4,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 4,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 1,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "743e1a2d14abb0f27f61238463b1a5efa450d356fed1bd9d6ed663fa18e9dcd7"
+    },
+    {
+      "name": "b4_rf4_int16_ys1_id1",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  1,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  4,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 4,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 1,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "d6740f606214e2f93f2aa49e1f8461c5d7161f1de5800318ab0fca040ade6863"
+    },
+    {
+      "name": "b4_rf8_fp16_ys2_id2",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  2,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  4,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 8,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 2,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "56ff93b192d282f468025933453aef724e43f4b13d27697ca00433c4ac19343c"
+    },
+    {
+      "name": "b4_rf8_int16_ys2_id2",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  2,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  4,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 8,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 2,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "e3181c5fcd3d2914ed2e5d603e34029d35637d028e0b0788161a1d3226ad8974"
+    },
+    {
+      "name": "b8_rf4_fp16_ys1_id2",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  1,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  8,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 4,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 2,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "24761e18fe3c7e76907a950492262c7bb66fc6caab9db306a9b1c2bf68872b83"
+    },
+    {
+      "name": "b8_rf4_int16_ys1_id2",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  1,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  8,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 4,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 2,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "33df59022efcdd72a03a175eb687e177ed9f358692a0471fc509043f67d8b69d"
+    },
+    {
+      "name": "b8_rf8_fp16_ys2_id6",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = true, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  2,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  8,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 8,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 6,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "0094a82e13a1ab9a60084a19bdcb883e5f3c116792eec1532b1e0bc1788e4c4e"
+    },
+    {
+      "name": "b8_rf8_int16_ys2_id6",
+      "config": "package LUMAX_PACKAGE\n\ncase class LUMAXParams(\n  Rin:            Int,\n  Cin:            Int,\n  Cout:           Int,\n  XBitWidth:      Int, \n  WBitWidth:      Int, \n  OutBitWidth:    Int,\n  minInputBits:   Int,\n  minWeightBits:  Int, \n  x_slice:        Int,\n  y_slice:        Int,\n  w_slice:        Int,\n  num_filters:    Int,\n  Dma_Ids:        Int,\n  DMA_Bytes:      Int,\n  SCALE:          Boolean,\n  DEBUG:          Boolean,\n  W_BUFFS:        Int,\n  DMA_bits:       Int,\n  Mem_row_factor : Int,\n  FP16_ACTIVATIONS: Boolean = false,\n)\n\n// Create an object to hold your configuration\nobject LUMAX_Config {\n  val LUMAX_Config = LUMAXParams(\n\n    //\u039cax Matrix Dimesnions \n    Rin         = 8,    //Used Only for a Counter  (SAME for YS for now)\n    Cin         = 256, // Used only for OuputBitwidth\n    Cout        = 64, // Used only to a a counter Registers  and how many output stationary outputs we have\n  \n    // Element Bidwidths  \n    XBitWidth   = 16,  // max Number of bits on input elemetns \n    WBitWidth   = 8,   // max  Number of bits on weights elemetns \n    OutBitWidth = 32,  // max  Number of bits on output elements  \n    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.\n    //params.XBitWidth + params.WBitWidth + Math.ceil(math.log(params.Cin) / math.log(2)).toInt\n\n    //new\n    minInputBits  = 8,  //2 4\n    minWeightBits = 2,  // 4 \n    \n    //Max Parallelism Paramters \n    y_slice     =  2,    // IMPORTANT Design parameter  MAX value\n    x_slice     =  8,   // IMPORTANT Design parameter  MAX value \n    Mem_row_factor = 8,\n    \n    //NOT USED (TODO)\n    w_slice     = 1,\n    num_filters = 1,\n\n    //DMA \n    Dma_Ids     = 6,  // How many DMA Requests in flight \n    DMA_Bytes   = 8,  // How many bytes send in one request \n    DMA_bits    = 8*8,\n\n    //scale \n    SCALE   = false, //1 or 0  (elaboration-time)\n\n    //Debug from performance counters \n    DEBUG =  true, // 1 or  0\n\n    // How many Load Buffer \n    W_BUFFS =  2,\n\n  )\n\n}\n\n",
+      "simulator_sha256": "51ff956685dd776ce1eace7e7633314990d291f14d58c0cfb2f014ee7ce432b6"
+    }
+  ],
+  "numerical_passes": 144,
+  "output_elements": 2052,
+  "diagnostic_stage_exact": 144,
+  "diagnostic_issue_exact": 139,
+  "historical_original": {
+    "n": 4168,
+    "hw": 22493135,
+    "predicted": 20368569.0,
+    "mae": 950.3670825335893,
+    "mape": 34.2789872696491,
+    "min_absolute_error": 29.0,
+    "max_absolute_error": 225417.0,
+    "min_ape": 0.40025470754116255,
+    "max_ape": 66.3716814159292,
+    "wape": 17.61039534951442,
+    "within_10_pct": 2.9510556621880997
+  },
+  "historical_revised": {
+    "n": 4168,
+    "hw": 22493135,
+    "predicted": 25925386,
+    "mae": 920.1139635316698,
+    "mape": 10.906816592296286,
+    "min_absolute_error": 1,
+    "max_absolute_error": 92120,
+    "min_ape": 0.023428886438809263,
+    "max_ape": 34.807039209632606,
+    "wape": 17.04980208405809,
+    "within_10_pct": 43.21017274472169
+  }
+}

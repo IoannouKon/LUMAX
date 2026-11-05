@@ -124,7 +124,34 @@ class CycleComparisonTests(unittest.TestCase):
         path=folder/'job.json';path.write_text(json.dumps(data))
         rows=c.gui_cases(path,str(path.relative_to(self.logs)))
         self.assertEqual(len(rows),1)
-        self.assertIn('FP16',rows[0]['reason'])
+        self.assertEqual(rows[0]['parameters']['activation'], 'fp16')
+        self.assertFalse(rows[0]['reason'])
+        # The loader gates FP16 on the selected model's declared interface.
+        result=c.compare(self.logs,dict(sources=[str(path.relative_to(self.logs))]))
+        self.assertEqual(result['summary']['n'],0)
+        self.assertIn('FP16',result['excluded'][0]['reason'])
+        self.model.write_text('def compute_cycles(activation="int16", **p):\n    return {"total_cycles": 20 if activation=="fp16" else 99}\n')
+        result=c.compare(self.logs,dict(sources=[str(path.relative_to(self.logs))]))
+        self.assertEqual(result['summary']['predicted'],20)
+        self.assertEqual(result['groups'][0]['activation'],'fp16')
+
+    def test_rows_precision_and_addresses_are_native_model_inputs(self):
+        folder=self.logs/'gui'/'run_20260101_000000_abcdef13';folder.mkdir(parents=True)
+        d=dict(id='ys',name='parallel',b=4,rf=8,max_k=32,max_m=16,max_r=8,y_slice=2,activation='fp16')
+        addresses=dict(x_address=0x80001008,w_address=0x80002018,o_address=0x80003028)
+        item=dict(name='rows',design='parallel',activation='fp16',r=3,k=9,m=5,wb=2,
+                  operation_results=[dict(status='PASS',cycles=200,r=3,y_slice=2,memory_addresses=addresses)])
+        path=folder/'job.json';path.write_text(json.dumps(dict(suite=dict(kind='custom',designs=[d],options=dict(g.DEFAULT_OPTIONS)),results=[item])))
+        row=c.gui_cases(path,str(path.relative_to(self.logs)))[0]
+        self.assertEqual((row['parameters']['Rin'],row['parameters']['YS']),(3,2))
+        self.assertEqual(row['parameters']['activation'],'fp16')
+        self.assertTrue(all(row['parameters'][k]==v for k,v in addresses.items()))
+
+    def test_diagnostic_replay_is_excluded_from_independent_accuracy(self):
+        self.model.write_text('def compute_cycles(**p):\n    return {"total_cycles": 20,"diagnostic_dma_replay": True}\n')
+        result=self.compare()
+        self.assertEqual(result['summary']['n'],0)
+        self.assertIn('Diagnostic',result['excluded'][0]['reason'])
 
     def test_http_comparison_auth_and_validation(self):
         store=g.Store(self.root)

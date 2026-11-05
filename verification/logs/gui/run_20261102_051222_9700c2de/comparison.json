@@ -1,0 +1,844 @@
+{
+  "model": {
+    "path": "/home/kioannou/chipyard_1.13.0/generators/LUMAX/Performance Modeling/Model.py",
+    "sha256": "40aff80c6f301f5f1f89c96781a443699141fe00e84431e7e622a1bb7cae8ca0",
+    "version": "controller-events-v2",
+    "activation_formats": [
+      "int16",
+      "fp16"
+    ]
+  },
+  "summary": {
+    "n": 6,
+    "hw": 1694,
+    "predicted": 1710,
+    "mae": 4.0,
+    "mape": 1.929794699251657,
+    "min_absolute_error": 2,
+    "max_absolute_error": 6,
+    "min_ape": 0.3816793893129771,
+    "max_ape": 3.2467532467532467,
+    "wape": 1.4167650531286895,
+    "within_10_pct": 100.0
+  },
+  "groups": [
+    {
+      "design": "b2_rf4_fp16",
+      "wb": 2,
+      "activation": "fp16",
+      "n": 1,
+      "hw": 154,
+      "predicted": 159,
+      "mae": 5.0,
+      "mape": 3.2467532467532467,
+      "min_absolute_error": 5,
+      "max_absolute_error": 5,
+      "min_ape": 3.2467532467532467,
+      "max_ape": 3.2467532467532467,
+      "wape": 3.2467532467532467,
+      "within_10_pct": 100.0
+    },
+    {
+      "design": "b2_rf4_fp16",
+      "wb": 4,
+      "activation": "fp16",
+      "n": 1,
+      "hw": 170,
+      "predicted": 174,
+      "mae": 4.0,
+      "mape": 2.3529411764705883,
+      "min_absolute_error": 4,
+      "max_absolute_error": 4,
+      "min_ape": 2.3529411764705883,
+      "max_ape": 2.3529411764705883,
+      "wape": 2.3529411764705883,
+      "within_10_pct": 100.0
+    },
+    {
+      "design": "b2_rf4_fp16",
+      "wb": 8,
+      "activation": "fp16",
+      "n": 1,
+      "hw": 524,
+      "predicted": 522,
+      "mae": 2.0,
+      "mape": 0.3816793893129771,
+      "min_absolute_error": 2,
+      "max_absolute_error": 2,
+      "min_ape": 0.3816793893129771,
+      "max_ape": 0.3816793893129771,
+      "wape": 0.3816793893129771,
+      "within_10_pct": 100.0
+    },
+    {
+      "design": "b2_rf4_int16",
+      "wb": 2,
+      "activation": "int16",
+      "n": 1,
+      "hw": 154,
+      "predicted": 159,
+      "mae": 5.0,
+      "mape": 3.2467532467532467,
+      "min_absolute_error": 5,
+      "max_absolute_error": 5,
+      "min_ape": 3.2467532467532467,
+      "max_ape": 3.2467532467532467,
+      "wape": 3.2467532467532467,
+      "within_10_pct": 100.0
+    },
+    {
+      "design": "b2_rf4_int16",
+      "wb": 4,
+      "activation": "int16",
+      "n": 1,
+      "hw": 165,
+      "predicted": 163,
+      "mae": 2.0,
+      "mape": 1.2121212121212122,
+      "min_absolute_error": 2,
+      "max_absolute_error": 2,
+      "min_ape": 1.2121212121212122,
+      "max_ape": 1.2121212121212122,
+      "wape": 1.2121212121212122,
+      "within_10_pct": 100.0
+    },
+    {
+      "design": "b2_rf4_int16",
+      "wb": 8,
+      "activation": "int16",
+      "n": 1,
+      "hw": 527,
+      "predicted": 533,
+      "mae": 6.0,
+      "mape": 1.1385199240986716,
+      "min_absolute_error": 6,
+      "max_absolute_error": 6,
+      "min_ape": 1.1385199240986716,
+      "max_ape": 1.1385199240986716,
+      "wape": 1.1385199240986716,
+      "within_10_pct": 100.0
+    }
+  ],
+  "stages": [
+    {
+      "id": "load_x",
+      "name": "Load X",
+      "n": 6,
+      "hw": 185,
+      "predicted": 191,
+      "mae": 1.3333333333333333,
+      "mape": 4.090909090909091,
+      "min_absolute_error": 0,
+      "max_absolute_error": 7,
+      "min_ape": 0.0,
+      "max_ape": 21.21212121212121,
+      "wape": 4.324324324324325,
+      "within_10_pct": 83.33333333333333
+    },
+    {
+      "id": "generate",
+      "name": "Generate products",
+      "n": 6,
+      "hw": 720,
+      "predicted": 720,
+      "mae": 0.0,
+      "mape": 0.0,
+      "min_absolute_error": 0,
+      "max_absolute_error": 0,
+      "min_ape": 0.0,
+      "max_ape": 0.0,
+      "wape": 0.0,
+      "within_10_pct": 100.0
+    },
+    {
+      "id": "loadw_select",
+      "name": "Combined Load W/Select",
+      "n": 6,
+      "hw": 549,
+      "predicted": 571,
+      "mae": 3.6666666666666665,
+      "mape": 4.136752136752137,
+      "min_absolute_error": 0,
+      "max_absolute_error": 8,
+      "min_ape": 0.0,
+      "max_ape": 9.333333333333334,
+      "wape": 4.007285974499089,
+      "within_10_pct": 100.0
+    },
+    {
+      "id": "store_o",
+      "name": "Store output",
+      "n": 6,
+      "hw": 240,
+      "predicted": 228,
+      "mae": 2.0,
+      "mape": 5.0,
+      "min_absolute_error": 2,
+      "max_absolute_error": 2,
+      "min_ape": 5.0,
+      "max_ape": 5.0,
+      "wape": 5.0,
+      "within_10_pct": 100.0
+    },
+    {
+      "id": "load_w",
+      "name": "Load W alone (overlaps)",
+      "n": 6,
+      "hw": 558,
+      "predicted": 590,
+      "mae": 5.333333333333333,
+      "mape": 5.8233132311223095,
+      "min_absolute_error": 0,
+      "max_absolute_error": 8,
+      "min_ape": 0.0,
+      "max_ape": 11.940298507462687,
+      "wape": 5.734767025089606,
+      "within_10_pct": 66.66666666666667
+    },
+    {
+      "id": "select",
+      "name": "Select alone (overlaps)",
+      "n": 6,
+      "hw": 490,
+      "predicted": 490,
+      "mae": 0.0,
+      "mape": 0.0,
+      "min_absolute_error": 0,
+      "max_absolute_error": 0,
+      "min_ape": 0.0,
+      "max_ape": 0.0,
+      "wape": 0.0,
+      "within_10_pct": 100.0
+    }
+  ],
+  "results": [
+    {
+      "id": "gui/run_20261102_051222_9700c2de/job.json:1/native GUI check/W8/tile1",
+      "case": "1/native GUI check/W8/tile1",
+      "source": "gui/run_20261102_051222_9700c2de/job.json",
+      "design": "b2_rf4_int16",
+      "b": 2,
+      "rf": 4,
+      "k": 9,
+      "m": 7,
+      "wb": 8,
+      "in_bits": 16,
+      "activation": "int16",
+      "hw": 527,
+      "hw_stages": {
+        "load_x": 32,
+        "generate": 325,
+        "load_w": 146,
+        "select": 105,
+        "store_o": 40,
+        "loadw_select": 130
+      },
+      "status": "PASS",
+      "reason": "",
+      "parameters": {
+        "YS": 1,
+        "ID": 2,
+        "DMA_WIDTH": 64,
+        "IN_MAX": 16,
+        "IN_min": 8,
+        "W_MAX": 8,
+        "buffers_w": 2,
+        "HS": 7,
+        "Rin": 1,
+        "Cin": 9,
+        "Cout": 7,
+        "in_bits": 16,
+        "w_bits": 8,
+        "XS": 2,
+        "factor": 4,
+        "activation": "int16",
+        "x_address": 2147496936,
+        "w_address": 2147496984,
+        "o_address": 2147497304
+      },
+      "r": 1,
+      "y_slice": 1,
+      "logical_case": "native GUI check",
+      "model_context": {
+        "model_version": "controller-events-v2",
+        "activation": "int16",
+        "memory_profile": "chipyard_llc",
+        "memory_assumptions": {
+          "hit_response_cycles": 7,
+          "read_miss_penalty": 11,
+          "write_miss_penalty": 4,
+          "cache_line_bytes": 64,
+          "initially_cold": true,
+          "cpu_interference": false
+        }
+      },
+      "predicted": 533,
+      "absolute_error": 6,
+      "signed_error": 6,
+      "ape": 1.1385199240986716,
+      "stages": {
+        "load_x": {
+          "hw": 32,
+          "predicted": 32,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "generate": {
+          "hw": 325,
+          "predicted": 325,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "loadw_select": {
+          "hw": 130,
+          "predicted": 138,
+          "absolute_error": 8,
+          "ape": 6.153846153846154
+        },
+        "store_o": {
+          "hw": 40,
+          "predicted": 38,
+          "absolute_error": 2,
+          "ape": 5.0
+        },
+        "load_w": {
+          "hw": 146,
+          "predicted": 154,
+          "absolute_error": 8,
+          "ape": 5.47945205479452
+        },
+        "select": {
+          "hw": 105,
+          "predicted": 105,
+          "absolute_error": 0,
+          "ape": 0.0
+        }
+      }
+    },
+    {
+      "id": "gui/run_20261102_051222_9700c2de/job.json:2/native GUI check/W4/tile1",
+      "case": "2/native GUI check/W4/tile1",
+      "source": "gui/run_20261102_051222_9700c2de/job.json",
+      "design": "b2_rf4_int16",
+      "b": 2,
+      "rf": 4,
+      "k": 9,
+      "m": 7,
+      "wb": 4,
+      "in_bits": 16,
+      "activation": "int16",
+      "hw": 165,
+      "hw_stages": {
+        "load_x": 29,
+        "generate": 25,
+        "load_w": 77,
+        "select": 70,
+        "store_o": 40,
+        "loadw_select": 71
+      },
+      "status": "PASS",
+      "reason": "",
+      "parameters": {
+        "YS": 1,
+        "ID": 2,
+        "DMA_WIDTH": 64,
+        "IN_MAX": 16,
+        "IN_min": 8,
+        "W_MAX": 8,
+        "buffers_w": 2,
+        "HS": 7,
+        "Rin": 1,
+        "Cin": 9,
+        "Cout": 7,
+        "in_bits": 16,
+        "w_bits": 4,
+        "XS": 2,
+        "factor": 4,
+        "activation": "int16",
+        "x_address": 2147497184,
+        "w_address": 2147497232,
+        "o_address": 2147497496
+      },
+      "r": 1,
+      "y_slice": 1,
+      "logical_case": "native GUI check",
+      "model_context": {
+        "model_version": "controller-events-v2",
+        "activation": "int16",
+        "memory_profile": "chipyard_llc",
+        "memory_assumptions": {
+          "hit_response_cycles": 7,
+          "read_miss_penalty": 11,
+          "write_miss_penalty": 4,
+          "cache_line_bytes": 64,
+          "initially_cold": true,
+          "cpu_interference": false
+        }
+      },
+      "predicted": 163,
+      "absolute_error": 2,
+      "signed_error": -2,
+      "ape": 1.2121212121212122,
+      "stages": {
+        "load_x": {
+          "hw": 29,
+          "predicted": 29,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "generate": {
+          "hw": 25,
+          "predicted": 25,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "loadw_select": {
+          "hw": 71,
+          "predicted": 71,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "store_o": {
+          "hw": 40,
+          "predicted": 38,
+          "absolute_error": 2,
+          "ape": 5.0
+        },
+        "load_w": {
+          "hw": 77,
+          "predicted": 77,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "select": {
+          "hw": 70,
+          "predicted": 70,
+          "absolute_error": 0,
+          "ape": 0.0
+        }
+      }
+    },
+    {
+      "id": "gui/run_20261102_051222_9700c2de/job.json:3/native GUI check/W2/tile1",
+      "case": "3/native GUI check/W2/tile1",
+      "source": "gui/run_20261102_051222_9700c2de/job.json",
+      "design": "b2_rf4_int16",
+      "b": 2,
+      "rf": 4,
+      "k": 9,
+      "m": 7,
+      "wb": 2,
+      "in_bits": 16,
+      "activation": "int16",
+      "hw": 154,
+      "hw_stages": {
+        "load_x": 33,
+        "generate": 10,
+        "load_w": 64,
+        "select": 70,
+        "store_o": 40,
+        "loadw_select": 71
+      },
+      "status": "PASS",
+      "reason": "",
+      "parameters": {
+        "YS": 1,
+        "ID": 2,
+        "DMA_WIDTH": 64,
+        "IN_MAX": 16,
+        "IN_min": 8,
+        "W_MAX": 8,
+        "buffers_w": 2,
+        "HS": 7,
+        "Rin": 1,
+        "Cin": 9,
+        "Cout": 7,
+        "in_bits": 16,
+        "w_bits": 2,
+        "XS": 2,
+        "factor": 4,
+        "activation": "int16",
+        "x_address": 2147497200,
+        "w_address": 2147497248,
+        "o_address": 2147497496
+      },
+      "r": 1,
+      "y_slice": 1,
+      "logical_case": "native GUI check",
+      "model_context": {
+        "model_version": "controller-events-v2",
+        "activation": "int16",
+        "memory_profile": "chipyard_llc",
+        "memory_assumptions": {
+          "hit_response_cycles": 7,
+          "read_miss_penalty": 11,
+          "write_miss_penalty": 4,
+          "cache_line_bytes": 64,
+          "initially_cold": true,
+          "cpu_interference": false
+        }
+      },
+      "predicted": 159,
+      "absolute_error": 5,
+      "signed_error": 5,
+      "ape": 3.2467532467532467,
+      "stages": {
+        "load_x": {
+          "hw": 33,
+          "predicted": 40,
+          "absolute_error": 7,
+          "ape": 21.21212121212121
+        },
+        "generate": {
+          "hw": 10,
+          "predicted": 10,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "loadw_select": {
+          "hw": 71,
+          "predicted": 71,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "store_o": {
+          "hw": 40,
+          "predicted": 38,
+          "absolute_error": 2,
+          "ape": 5.0
+        },
+        "load_w": {
+          "hw": 64,
+          "predicted": 64,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "select": {
+          "hw": 70,
+          "predicted": 70,
+          "absolute_error": 0,
+          "ape": 0.0
+        }
+      }
+    },
+    {
+      "id": "gui/run_20261102_051222_9700c2de/job.json:4/native GUI check/W8/tile1",
+      "case": "4/native GUI check/W8/tile1",
+      "source": "gui/run_20261102_051222_9700c2de/job.json",
+      "design": "b2_rf4_fp16",
+      "b": 2,
+      "rf": 4,
+      "k": 9,
+      "m": 7,
+      "wb": 8,
+      "in_bits": 16,
+      "activation": "fp16",
+      "hw": 524,
+      "hw_stages": {
+        "load_x": 32,
+        "generate": 325,
+        "load_w": 135,
+        "select": 105,
+        "store_o": 40,
+        "loadw_select": 127
+      },
+      "status": "PASS",
+      "reason": "",
+      "parameters": {
+        "YS": 1,
+        "ID": 2,
+        "DMA_WIDTH": 64,
+        "IN_MAX": 16,
+        "IN_min": 8,
+        "W_MAX": 8,
+        "buffers_w": 2,
+        "HS": 7,
+        "Rin": 1,
+        "Cin": 9,
+        "Cout": 7,
+        "in_bits": 16,
+        "w_bits": 8,
+        "XS": 2,
+        "factor": 4,
+        "activation": "fp16",
+        "x_address": 2147497360,
+        "w_address": 2147497408,
+        "o_address": 2147497944
+      },
+      "r": 1,
+      "y_slice": 1,
+      "logical_case": "native GUI check",
+      "model_context": {
+        "model_version": "controller-events-v2",
+        "activation": "fp16",
+        "memory_profile": "chipyard_llc",
+        "memory_assumptions": {
+          "hit_response_cycles": 7,
+          "read_miss_penalty": 11,
+          "write_miss_penalty": 4,
+          "cache_line_bytes": 64,
+          "initially_cold": true,
+          "cpu_interference": false
+        }
+      },
+      "predicted": 522,
+      "absolute_error": 2,
+      "signed_error": -2,
+      "ape": 0.3816793893129771,
+      "stages": {
+        "load_x": {
+          "hw": 32,
+          "predicted": 32,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "generate": {
+          "hw": 325,
+          "predicted": 325,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "loadw_select": {
+          "hw": 127,
+          "predicted": 127,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "store_o": {
+          "hw": 40,
+          "predicted": 38,
+          "absolute_error": 2,
+          "ape": 5.0
+        },
+        "load_w": {
+          "hw": 135,
+          "predicted": 143,
+          "absolute_error": 8,
+          "ape": 5.925925925925926
+        },
+        "select": {
+          "hw": 105,
+          "predicted": 105,
+          "absolute_error": 0,
+          "ape": 0.0
+        }
+      }
+    },
+    {
+      "id": "gui/run_20261102_051222_9700c2de/job.json:5/native GUI check/W4/tile1",
+      "case": "5/native GUI check/W4/tile1",
+      "source": "gui/run_20261102_051222_9700c2de/job.json",
+      "design": "b2_rf4_fp16",
+      "b": 2,
+      "rf": 4,
+      "k": 9,
+      "m": 7,
+      "wb": 4,
+      "in_bits": 16,
+      "activation": "fp16",
+      "hw": 170,
+      "hw_stages": {
+        "load_x": 30,
+        "generate": 25,
+        "load_w": 69,
+        "select": 70,
+        "store_o": 40,
+        "loadw_select": 75
+      },
+      "status": "PASS",
+      "reason": "",
+      "parameters": {
+        "YS": 1,
+        "ID": 2,
+        "DMA_WIDTH": 64,
+        "IN_MAX": 16,
+        "IN_min": 8,
+        "W_MAX": 8,
+        "buffers_w": 2,
+        "HS": 7,
+        "Rin": 1,
+        "Cin": 9,
+        "Cout": 7,
+        "in_bits": 16,
+        "w_bits": 4,
+        "XS": 2,
+        "factor": 4,
+        "activation": "fp16",
+        "x_address": 2147497592,
+        "w_address": 2147497640,
+        "o_address": 2147498136
+      },
+      "r": 1,
+      "y_slice": 1,
+      "logical_case": "native GUI check",
+      "model_context": {
+        "model_version": "controller-events-v2",
+        "activation": "fp16",
+        "memory_profile": "chipyard_llc",
+        "memory_assumptions": {
+          "hit_response_cycles": 7,
+          "read_miss_penalty": 11,
+          "write_miss_penalty": 4,
+          "cache_line_bytes": 64,
+          "initially_cold": true,
+          "cpu_interference": false
+        }
+      },
+      "predicted": 174,
+      "absolute_error": 4,
+      "signed_error": 4,
+      "ape": 2.3529411764705883,
+      "stages": {
+        "load_x": {
+          "hw": 30,
+          "predicted": 29,
+          "absolute_error": 1,
+          "ape": 3.3333333333333335
+        },
+        "generate": {
+          "hw": 25,
+          "predicted": 25,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "loadw_select": {
+          "hw": 75,
+          "predicted": 82,
+          "absolute_error": 7,
+          "ape": 9.333333333333334
+        },
+        "store_o": {
+          "hw": 40,
+          "predicted": 38,
+          "absolute_error": 2,
+          "ape": 5.0
+        },
+        "load_w": {
+          "hw": 69,
+          "predicted": 77,
+          "absolute_error": 8,
+          "ape": 11.594202898550725
+        },
+        "select": {
+          "hw": 70,
+          "predicted": 70,
+          "absolute_error": 0,
+          "ape": 0.0
+        }
+      }
+    },
+    {
+      "id": "gui/run_20261102_051222_9700c2de/job.json:6/native GUI check/W2/tile1",
+      "case": "6/native GUI check/W2/tile1",
+      "source": "gui/run_20261102_051222_9700c2de/job.json",
+      "design": "b2_rf4_fp16",
+      "b": 2,
+      "rf": 4,
+      "k": 9,
+      "m": 7,
+      "wb": 2,
+      "in_bits": 16,
+      "activation": "fp16",
+      "hw": 154,
+      "hw_stages": {
+        "load_x": 29,
+        "generate": 10,
+        "load_w": 67,
+        "select": 70,
+        "store_o": 40,
+        "loadw_select": 75
+      },
+      "status": "PASS",
+      "reason": "",
+      "parameters": {
+        "YS": 1,
+        "ID": 2,
+        "DMA_WIDTH": 64,
+        "IN_MAX": 16,
+        "IN_min": 8,
+        "W_MAX": 8,
+        "buffers_w": 2,
+        "HS": 7,
+        "Rin": 1,
+        "Cin": 9,
+        "Cout": 7,
+        "in_bits": 16,
+        "w_bits": 2,
+        "XS": 2,
+        "factor": 4,
+        "activation": "fp16",
+        "x_address": 2147497608,
+        "w_address": 2147497656,
+        "o_address": 2147498136
+      },
+      "r": 1,
+      "y_slice": 1,
+      "logical_case": "native GUI check",
+      "model_context": {
+        "model_version": "controller-events-v2",
+        "activation": "fp16",
+        "memory_profile": "chipyard_llc",
+        "memory_assumptions": {
+          "hit_response_cycles": 7,
+          "read_miss_penalty": 11,
+          "write_miss_penalty": 4,
+          "cache_line_bytes": 64,
+          "initially_cold": true,
+          "cpu_interference": false
+        }
+      },
+      "predicted": 159,
+      "absolute_error": 5,
+      "signed_error": 5,
+      "ape": 3.2467532467532467,
+      "stages": {
+        "load_x": {
+          "hw": 29,
+          "predicted": 29,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "generate": {
+          "hw": 10,
+          "predicted": 10,
+          "absolute_error": 0,
+          "ape": 0.0
+        },
+        "loadw_select": {
+          "hw": 75,
+          "predicted": 82,
+          "absolute_error": 7,
+          "ape": 9.333333333333334
+        },
+        "store_o": {
+          "hw": 40,
+          "predicted": 38,
+          "absolute_error": 2,
+          "ape": 5.0
+        },
+        "load_w": {
+          "hw": 67,
+          "predicted": 75,
+          "absolute_error": 8,
+          "ape": 11.940298507462687
+        },
+        "select": {
+          "hw": 70,
+          "predicted": 70,
+          "absolute_error": 0,
+          "ape": 0.0
+        }
+      }
+    }
+  ],
+  "excluded": [],
+  "notes": [
+    "Accuracy = percentage of measured operations within \u00b110% of HW cycles; lower MAPE/MAE is better.",
+    "Tiles are compared at their actual native dimensions. Totals sum only selected measured operations.",
+    "Load W alone and Select alone overlap the combined phase; do not add them to total cycles.",
+    "INT16/FP16, actual row counts, Y_SLICE and saved DMA settings are passed to the live Model.py source.",
+    "Current DMA hits default to seven controller-visible cycles; legacy direct-response suites use six. Explicit saved timing parameters remain authoritative.",
+    "Cache ownership, CPU interference and initial residency may be unknown. New GUI operations save physical buffer addresses; missing addresses use the model defaults.",
+    "Diagnostic replay is excluded from independent accuracy statistics."
+  ]
+}

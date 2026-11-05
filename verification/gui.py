@@ -132,7 +132,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send(200, dict(designs=store.designs(), suites=store.suites(), patterns=core.PATTERNS,
                     builtins=core.BUILTINS, defaults=core.DEFAULT_OPTIONS, chipyard=str(core.hw.CY),
                     input_bits=16, features=dict(activation_formats=['int16', 'fp16'], fp_comparison=True,
-                                                row_parallelism=True, y_slices=[1, 2]),
+                                                row_parallelism=True, y_slices=[1, 2], cycle_model_events=True),
                     external=core.external_runs()))
             elif path == '/api/runs':
                 self.send(200, dict(runs=store.jobs_list(), external=core.external_runs()))

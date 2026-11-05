@@ -96,7 +96,8 @@ Defaults remain `Rin=1, y_slice=1`.
 The GUI exposes **Y_SLICE**, **Maximum activation rows R**, and per-test
 **R/K/M** for `X[R,K] × W[K,M] → O[R,M]`. K/column tiling preserves all rows
 and checks every output element. Saved cycle-model parameters include actual
-row count and Y_SLICE; the Python model equations themselves are unchanged.
+row count and Y_SLICE. The controller cycle model accounts for shared weights,
+parallel row generation and partial final groups.
 
 Run the small verifier from the generator root in the working Chipyard tree:
 
@@ -259,8 +260,10 @@ sample tile; extrapolated cycles retain their ESTIMATED label.
 
 Original regression/TC/full-Llama2/native-1024 script presets remain INT16;
 choose Custom matrices or Llama2 fast for FP16. The current Python cycle model
-was written for INT16, so FP16 measurements are excluded from its accuracy
-comparison with an explicit reason. The model source and equations are unchanged.
+supports both INT16 and FP16. Its format selector describes the elaborated
+hardware; it does not switch a running design. The current FP16 arithmetic is
+combinational, so identical controller parameters and memory responses produce
+the same cycle counts in both formats. This does not imply equal clock frequency.
 
 After installing this GUI update, run `python3 verification/gui.py restart`
 from your normal SSH terminal and refresh the browser. If new frontend files
@@ -294,8 +297,8 @@ Download the current comparison as JSON directly from your browser; comparison
 does not create extra server logs or modify the original run.
 
 **Quick plot** summarizes the complete selected comparison, including operations
-on other result pages. Group by total, stage, design, weight bits or design plus
-weight bits. Choose mean/minimum/maximum absolute error in percent or cycles,
+on other result pages. Group by total, stage, design, activation format, weight
+bits or design plus activation and weight bits. Choose mean/minimum/maximum absolute error in percent or cycles,
 or compare summed **HW vs Python cycles**. The Phase selector compares a specific
 stage across designs/precisions; grouping by Stage shows all available stages.
 Each bar shows its measurement count. Stage counters that are unavailable are
@@ -322,9 +325,22 @@ cached module/bytecode. The source SHA-256 accompanies each result. No cycle
 equations or fitted corrections are duplicated in the GUI. The loader skips
 only unused `matplotlib`, `ipywidgets` and `seaborn` notebook imports; all other
 top-level definitions and the original calculation functions execute from the
-source file. Keep its `compute_cycles` interface and returned cycle keys when
+source file. The revised event model follows controller edges, finite DMA IDs,
+weight-buffer overlap, literal RTL tail spans and serialized output stores.
+Keep its `compute_cycles` interface and returned cycle keys when
 editing formulas. A broken model produces an error, without old predictions
 as a fallback.
+
+The default memory profile models the current Chipyard magic-memory/LLC setup:
+seven-cycle controller-visible hits, 64-byte cache lines, cold buffers and no
+CPU interference. Current GUI operations record ELF buffer addresses for beat
+alignment and cache-line sharing. Older records without addresses use disjoint,
+aligned defaults. Historical direct-response DMA suites use a six-cycle hit
+setting; explicit snapshots override defaults. Cache ownership, initial residency
+and CPU traffic remain prediction uncertainties. DMA-latency replay is a separate
+controller diagnostic and is excluded from independent accuracy statistics.
+See [the cycle-model validation report](../Performance%20Modeling/Cycle_Model_Validation.md)
+for measured accuracy, stage errors, coverage and limitations.
 
 Parameters use the saved b/RF, input/weight bits and actual native dimensions.
 For tiles, predictions use the actual tail dimensions and totals sum only the
@@ -333,7 +349,8 @@ with extrapolated full-shape cycles excluded from accuracy. New custom GUI
 runs snapshot physical settings and per-operation model arguments. Older GUI
 runs reconstruct tile geometry from their saved suite/design; historical logs
 without a physical snapshot use the original runner contract (YS=1, DMA IDs=2,
-64-bit DMA, maximum input/weight bits 16/8, HS=8). Every operation's arguments
+64-bit DMA, maximum input/weight bits 16/8, six-cycle direct-response hits).
+Every operation's arguments
 can be inspected in its expandable row. Missing TC01 timing, TC10 timeouts,
 misaligned TC11 counters and incomplete native-1024 results are not invented.
 
