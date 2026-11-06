@@ -27,7 +27,7 @@ This repository is an integration overlay for Chipyard. The active target is **C
 | `LUMAX/src/main/scala/` | Accelerator RTL generator and parameters |
 | `LUMAX/software/tests/src/` | C matrix multiplication test and single-case build tools |
 | `verification/` | Local verification GUI, suite runners, saved designs and dated logs |
-| `Performance Modeling/` | Analytical cycle model and notebook-oriented plots |
+| `Performance Modeling/` | Current cycle model, usage documentation and accuracy reports |
 | `LUMAXConfigs.scala` | `chipyard.LUMAXROcketConfig` SoC configuration |
 | `Configs.scala` | Rocket subsystem configuration customizations |
 | `build.sbt` | Chipyard build overlay with the `LUMAX` project |

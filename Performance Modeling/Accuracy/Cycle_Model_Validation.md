@@ -1,4 +1,6 @@
-# LUMAX controller cycle model validation
+# Historical controller cycle model validation (2026-11-02)
+
+This report describes an older controller/model revision, before the output-DMA and tagged-column changes. Its aggregate errors are not accuracy results for current Model.py/v4. See [current accuracy and scope](README.md).
 
 Validated 2026-11-02 against the Chipyard 1.13.0 implementation at the structural-refactor baseline `bb35d2f`. This change updates the Python model and comparison integration. The accelerator Scala sources and `Linear-sw.c` kernel are unchanged; the starting Config.scala was restored byte-for-byte.
 
@@ -80,12 +82,12 @@ A read-only SystemVerilog bind monitor observed state and DMA interface handshak
 
 The published source additionally marks issue-delay-only replay as diagnostic; re-evaluating every independent prediction with this final source produced identical cycle counts. The frozen validation source SHA is `f9318719bf8ba0543924af3d84ef01c583c62efd74a22ba776f26dd3749a4098`; the final source SHA is `40aff80c6f301f5f1f89c96781a443699141fe00e84431e7e622a1bb7cae8ca0`.
 
-- [Native measurements and pre-run parameters](../verification/logs/cycle_model/run_20261102_044611_527727/measurements.json)
-- [Live-model GUI comparison, with all stage errors](../verification/logs/cycle_model/run_20261102_044611_527727/comparison.json)
-- [Commands and observed results](../verification/logs/cycle_model/run_20261102_044611_527727/run.log)
-- [Configuration snapshots, source hashes and aggregate metrics](../verification/logs/cycle_model/run_20261102_044611_527727/summary.json)
-- [Six actual GUI hardware checks](../verification/logs/gui/run_20261102_051222_9700c2de/job.json)
-- [External DMA observations for diagnostic replay only](../verification/logs/cycle_model/run_20261102_044611_527727/dma_diagnostics.json)
+- [Native measurements and pre-run parameters](../../verification/logs/cycle_model/run_20261102_044611_527727/measurements.json)
+- [Live-model GUI comparison, with all stage errors](../../verification/logs/cycle_model/run_20261102_044611_527727/comparison.json)
+- [Commands and observed results](../../verification/logs/cycle_model/run_20261102_044611_527727/run.log)
+- [Configuration snapshots, source hashes and aggregate metrics](../../verification/logs/cycle_model/run_20261102_044611_527727/summary.json)
+- [Six actual GUI hardware checks](../../verification/logs/gui/run_20261102_051222_9700c2de/job.json)
+- [External DMA observations for diagnostic replay only](../../verification/logs/cycle_model/run_20261102_044611_527727/dma_diagnostics.json)
 
 ## Memory assumptions and remaining error
 

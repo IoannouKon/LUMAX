@@ -290,7 +290,7 @@ Start the first input load at cycle zero. Carry the finishing cycle of each stag
 
 The separate weight-load and selection counters describe overlapping activity. Do not add them to the four-stage total. Cycle latency at clock frequency $f$ is $C_{\mathrm{total}}/f$ seconds. Counting a multiply and an add as two operations, nominal throughput is $2NKMf/(10^9C_{\mathrm{total}})$ GOP/s.
 
-`LoadOp` and `WriteOp` count DMA read/write requests over the full call. The other operation fields are activity proxies, not a validated energy model. In particular, their use of `min(YS,Rin)` does not reduce proxy activity for a partial final row group. `Model_Plot.py` still labels some values as per-window and multiplies them by window count; do not use those plots as validated whole-matmul operation totals.
+`LoadOp` and `WriteOp` count DMA read/write requests over the full call. The other operation fields are activity proxies, not a validated energy model. In particular, their use of `min(YS,Rin)` does not reduce proxy activity for a partial final row group.
 
 ## Worked example and running the model
 
@@ -348,7 +348,7 @@ V4 uses the four-stage tags and one-cycle buffer-release delay from the accepted
 
 The total error for this single case is 13 cycles (1.81%). This is not an aggregate accuracy result. Remaining input/output differences reflect unchanged memory-environment assumptions; no latency parameters were fitted to this case. [Native run and source diff](../verification/logs/column_pipeline/run_20261105_211028_031082.log).
 
-The [earlier scheduling experiment](ColumnPipeline/README.md) retains its five-cycle hypothetical pipeline and uses the byte-identical [archived v3](archive/Model_v3.py). Its 1,296-case reductions are historical predictions, not measurements of the accepted four-stage implementation. The GUI reads the current Model.py/v4 automatically on a new comparison.
+The GUI reads the current Model.py/v4 automatically on a new comparison. Previous models and the five-cycle what-if experiment are available in Git history; this folder contains only the current model. See [accuracy reports and their revision scope](Accuracy/README.md) for current and historical evidence.
 
 ## Accuracy, historical equations, and diagnostics
 
@@ -358,25 +358,10 @@ The earlier maintainer-reported mean error of approximately **4%** predates both
 \mathrm{MAPE}=\frac{100}{n}\sum_{i=1}^{n}\frac{|p_i-h_i|}{h_i}.
 ```
 
-The [saved accuracy report](Accuracy/README.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v4`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
+The [historical saved-suite accuracy report](Accuracy/Legacy_Suite_Accuracy.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v4`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
 
 The manuscript's approximate DMA formula, uniform repeated-window cost, and $M\max(C_{3.1},C_{3.2})$ expression motivate the architecture but do not replace the event recurrences above. Earlier README statements about forced `HS=8`, a `Cout-2` adjustment, unused buffer/prefetch controls, and fractional cycles no longer apply. The current model uses the supplied `HS`, schedules all output columns, accounts for buffer count and prefetch delay, and produces integer cycles.
 
 The optional `dma_latencies` and `dma_issue_delays` arguments replay external DMA behavior for diagnosis. For request $i$, a supplied issue delay $\epsilon_i$ is added after the normal issue-time maximum, and a supplied latency $\lambda_i$ replaces the memory profile with $r_i=s_i+\lambda_i$. These are per-request arrays across the whole call; they do not take hardware stage totals as inputs. Replay results are not independent memory-latency predictions.
 
 The standalone `dma_finish_time_exact_bits` helper is separate from the memory engine used by `compute_cycles`. It schedules $\lceil\mathrm{payload}/\mathrm{width}\rceil$ requests from cycle zero, where payload is `total_bits` and width is `DMA_WIDTH_bits` (both in bits), using its own `L` (default 6), `t_issue`, and `beat_time`. It includes next-cycle ID reuse and response spacing. Its defaults must not be substituted for the stage model's `HS=7` or cache profile.
-
-## Interactive plots
-
-`Model_Plot.py` is notebook-oriented and needs `matplotlib`, `seaborn`, and `ipywidgets`. Start a notebook in `Performance Modeling` and initialize its shared names:
-
-```python
-import matplotlib.pyplot as plt
-import seaborn as sns
-from ipywidgets import SelectionSlider
-from Model import compute_cycles
-
-%run Model_Plot.py
-```
-
-Use activation precision 16 and DMA width 64; the older widget also offers unsupported values that the current model rejects. Its initial dimensions and geometry are demonstration values, not the current hardware defaults. Interpret operation plots with the counter limitations above; use the four cycle stages for latency comparisons.
