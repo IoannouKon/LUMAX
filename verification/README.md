@@ -339,8 +339,8 @@ aligned defaults. Historical direct-response DMA suites use a six-cycle hit
 setting; explicit snapshots override defaults. Cache ownership, initial residency
 and CPU traffic remain prediction uncertainties. DMA-latency replay is a separate
 controller diagnostic and is excluded from independent accuracy statistics.
-See [the cycle-model validation report](../Performance%20Modeling/Accuracy/Cycle_Model_Validation.md)
-for measured accuracy, stage errors, coverage and limitations.
+See [the current model documentation](../Performance%20Modeling/README.md#accepted-hardware-change-and-measured-scope)
+for the measured scope and current limitations.
 
 Parameters use the saved b/RF, input/weight bits and actual native dimensions.
 For tiles, predictions use the actual tail dimensions and totals sum only the

@@ -348,7 +348,7 @@ V4 uses the four-stage tags and one-cycle buffer-release delay from the accepted
 
 The total error for this single case is 13 cycles (1.81%). This is not an aggregate accuracy result. Remaining input/output differences reflect unchanged memory-environment assumptions; no latency parameters were fitted to this case. [Native run and source diff](../verification/logs/column_pipeline/run_20261105_211028_031082.log).
 
-The GUI reads the current Model.py/v4 automatically on a new comparison. Previous models and the five-cycle what-if experiment are available in Git history; this folder contains only the current model. See [accuracy reports and their revision scope](Accuracy/README.md) for current and historical evidence.
+The GUI reads the current Model.py/v4 automatically on a new comparison. Previous models and the five-cycle what-if experiment are available in Git history; this folder contains only the current model. Historical accuracy reports remain available in Git history.
 
 ## Accuracy, historical equations, and diagnostics
 
@@ -358,7 +358,7 @@ The earlier maintainer-reported mean error of approximately **4%** predates both
 \mathrm{MAPE}=\frac{100}{n}\sum_{i=1}^{n}\frac{|p_i-h_i|}{h_i}.
 ```
 
-The [historical saved-suite accuracy report](Accuracy/Legacy_Suite_Accuracy.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v4`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
+Historical saved-suite reports in Git history evaluate older models; their percentages and 2,524-cycle example do not describe `controller-events-v4`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
 
 The manuscript's approximate DMA formula, uniform repeated-window cost, and $M\max(C_{3.1},C_{3.2})$ expression motivate the architecture but do not replace the event recurrences above. Earlier README statements about forced `HS=8`, a `Cout-2` adjustment, unused buffer/prefetch controls, and fractional cycles no longer apply. The current model uses the supplied `HS`, schedules all output columns, accounts for buffer count and prefetch delay, and produces integer cycles.
 
