@@ -18,6 +18,7 @@ class ControllerModelTests(unittest.TestCase):
         cls.compute, cls.info = c.load_model()
         # Resolve the helper from the same executed source as compute_cycles.
         cls.dma_finish = staticmethod(cls.compute.__globals__['dma_finish_time_exact_bits'])
+        cls.memory = staticmethod(cls.compute.__globals__['_Memory'])
         cls.compute = staticmethod(cls.compute)
 
     def run_model(self, **changes):
@@ -42,7 +43,7 @@ class ControllerModelTests(unittest.TestCase):
         self.assertEqual([r[k] for k in (
             'cycles_load_X', 'cycles_generate_Products', 'cycles_loadW_select',
             'cycles_store_output', 'cycles load w Only', 'cycles select Only',
-            'total_cycles')], [10, 130, 27, 10, 36, 20, 177])
+            'total_cycles')], [9, 130, 25, 9, 32, 20, 173])
         for cols in (1, 2):
             one = self.run_model(Cout=cols)
             self.assertGreater(one['cycles_loadW_select'], 0)
@@ -56,10 +57,10 @@ class ControllerModelTests(unittest.TestCase):
         parallel = self.run_model(HS=9, ID=6, Cin=32)
         self.assertLess(parallel['cycles_load_X'], slow['cycles_load_X'])
         self.assertLess(parallel['cycles_store_output'], slow['cycles_store_output'])
-        # Two output beats: ID1 issues 0,10 and retires 9,19; ID6 issues
-        # 0,1 and retires 9,10. Drain/completion adds two cycles in both cases.
-        self.assertEqual(slow['cycles_store_output'], 21)
-        self.assertEqual(parallel['cycles_store_output'], 12)
+        # HS9 includes the old receiver register: physical returns take eight.
+        # ID1 issues 0,9 and retires 8,17; ID6 issues 0,1 and retires 8,9.
+        self.assertEqual(slow['cycles_store_output'], 19)
+        self.assertEqual(parallel['cycles_store_output'], 11)
 
     def test_literal_rtl_tail_span_differs_between_row_paths(self):
         serial = self.run_model(Cin=17, Cout=3, trace=True)
@@ -86,17 +87,68 @@ class ControllerModelTests(unittest.TestCase):
         refill = next(t for t in result['transactions']
                       if t['stage']=='load_w' and t['column']==2)
         self.assertEqual(refill['issue'], columns[0]['buffer_release'])
-        self.assertEqual(self.info['version'], 'controller-events-v4')
+        self.assertEqual(self.info['version'], 'controller-events-v5')
 
     def test_accepted_verilator_case_combined_stage_and_selection_counter(self):
         # Saved native RTL run_20261105_211028_031082.log: b2/RF8/YS1,
         # IDs6, X1x32 W32x32, INT16/W4. Memory parameters are the existing
         # defaults, not fitted to the counters. Whole-call memory error remains.
         result = self.run_model(Cin=32, Cout=32, w_bits=4, factor=8, ID=6,
-                                memory_profile='chipyard_llc')
+                                memory_profile='chipyard_llc', dma_bypass=False)
         self.assertEqual(result['cycles_loadW_select'], 558)
         self.assertEqual(result['cycles select Only'], 544)
         self.assertEqual(result['cycles load w Only'], 408)
+
+    def test_bypass_verilator_case_without_memory_parameter_fitting(self):
+        # Native run_20261106_033102_418881.log: same geometry as above.
+        result = self.run_model(Cin=32, Cout=32, w_bits=4, factor=8, ID=6,
+                                memory_profile='chipyard_llc')
+        self.assertTrue(result['dma_response_bypass'])
+        self.assertEqual(result['cycles_loadW_select'], 551)
+        self.assertEqual(result['cycles select Only'], 544)
+        self.assertEqual(result['cycles load w Only'], 376)
+
+    def transfer(self, ids, count=3, **changes):
+        settings = dict(hs=7, profile='uniform', line_bytes=64,
+                        cache_bytes=1024, read_penalty=11, write_penalty=4,
+                        trace=True)
+        settings.update(changes)
+        memory = self.memory(**settings)
+        memory.transfer([(i*8, 1) for i in range(count)], 0, ids)
+        return memory.trace
+
+    def test_bypass_single_credit_and_next_edge_reuse(self):
+        fast = self.transfer(1)
+        registered = self.transfer(1, bypass=False)
+        self.assertEqual([t['issue'] for t in fast], [0, 7, 14])
+        self.assertEqual([t['response'] for t in fast], [6, 13, 20])
+        self.assertEqual([t['response'] for t in registered], [7, 15, 23])
+        self.assertTrue(all(t['bypassed'] for t in fast))
+
+    def test_out_of_order_returns_buffered_and_single_d_channel(self):
+        # A arrives at 6, B is ready at 3, C is also ready at 3. B and C
+        # cannot enter the physical D channel together: C enters at 4.
+        fast = self.transfer(3, latencies=[6, 2, 1], latency_basis='tilelink')
+        self.assertEqual([t['tilelink_response'] for t in fast], [6, 3, 4])
+        self.assertEqual([t['response'] for t in fast], [6, 7, 8])
+        self.assertEqual([t['bypassed'] for t in fast], [True, False, False])
+        slow = self.transfer(3, latencies=[6, 2, 1], latency_basis='tilelink', bypass=False)
+        self.assertEqual([t['response'] for t in slow], [7, 8, 9])
+
+    def test_empty_queue_zero_latency_reply_cannot_bypass(self):
+        trace = self.transfer(1, count=2, hs=1)
+        self.assertEqual([t['issue'] for t in trace], [0, 2])
+        self.assertEqual([t['tilelink_response'] for t in trace], [0, 2])
+        self.assertEqual([t['response'] for t in trace], [1, 3])
+        self.assertEqual([t['bypassed'] for t in trace], [False, False])
+
+    def test_controller_replay_not_reduced_twice(self):
+        visible = self.transfer(1, count=1, latencies=[7])
+        physical = self.transfer(1, count=1, latencies=[6], latency_basis='tilelink')
+        self.assertEqual(visible[0]['response'], 7)
+        self.assertIsNone(visible[0]['bypassed'])
+        self.assertEqual(physical[0]['response'], 6)
+        self.assertTrue(physical[0]['bypassed'])
 
     def test_parallel_rows_share_weight_reads_and_generation(self):
         one = self.run_model(YS=2, trace=True)
@@ -122,7 +174,7 @@ class ControllerModelTests(unittest.TestCase):
         self.assertLess(writes[2]['issue'], writes[1]['response'])
         # A new row group waits for all acknowledgements from the previous one.
         self.assertGreater(writes[4]['issue'], writes[3]['response'])
-        self.assertEqual(result['cycles_store_output'], 22)
+        self.assertEqual(result['cycles_store_output'], 20)
 
     def test_output_backpressure_ordered_acks_credit_reuse_and_final_drain(self):
         baseline = self.run_model(Cout=9, trace=True)
@@ -163,6 +215,7 @@ class ControllerModelTests(unittest.TestCase):
     def test_invalid_or_unsupported_parameters_fail_clearly(self):
         for changes in (dict(Rin=0), dict(Cin=2.5), dict(ID=True), dict(in_bits=8),
                         dict(w_bits=1), dict(activation='fp32'), dict(DMA_WIDTH=128),
+                        dict(dma_bypass=1), dict(dma_latency_basis='unknown'),
                         dict(x_address=3), dict(memory_profile='unknown')):
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 self.run_model(**changes)

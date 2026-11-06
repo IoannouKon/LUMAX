@@ -326,17 +326,17 @@ equations or fitted corrections are duplicated in the GUI. The loader skips
 only unused `matplotlib`, `ipywidgets` and `seaborn` notebook imports; all other
 top-level definitions and the original calculation functions execute from the
 source file. The revised event model follows controller edges, finite DMA IDs,
-weight-buffer overlap, literal RTL tail spans and serialized output stores.
+weight-buffer overlap, literal RTL tail spans, overlapping output writes and conditional DMA response bypass.
 Keep its `compute_cycles` interface and returned cycle keys when
 editing formulas. A broken model produces an error, without old predictions
 as a fallback.
 
 The default memory profile models the current Chipyard magic-memory/LLC setup:
-seven-cycle controller-visible hits, 64-byte cache lines, cold buffers and no
+a seven-cycle registered-reference hit calibration (six-cycle physical returns with eligible head-response bypass), 64-byte cache lines, cold buffers and no
 CPU interference. Current GUI operations record ELF buffer addresses for beat
 alignment and cache-line sharing. Older records without addresses use disjoint,
 aligned defaults. Historical direct-response DMA suites use a six-cycle hit
-setting; explicit snapshots override defaults. Cache ownership, initial residency
+reference setting; explicit snapshots override defaults. Current v5 predictions describe the bypass RTL, so older controller measurements are not equivalent hardware baselines. Cache ownership, initial residency
 and CPU traffic remain prediction uncertainties. DMA-latency replay is a separate
 controller diagnostic and is excluded from independent accuracy statistics.
 See [the current model documentation](../Performance%20Modeling/README.md#accepted-hardware-change-and-measured-scope)

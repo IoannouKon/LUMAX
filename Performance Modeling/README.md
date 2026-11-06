@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Architecture](../LUMAX/README.md) · [Measurements](../LUMAX/software/tests/README.md)
 
-[Model.py](Model.py), version `controller-events-v4`, predicts active accelerator cycles for INT16 or FP16 activations and signed W8/W4/W2 weights. The equations below describe its controller and memory scheduling so that the model can be understood and evaluated without reading Python. All times are integer cycle edges.
+[Model.py](Model.py), version `controller-events-v5`, predicts active accelerator cycles for INT16 or FP16 activations and signed W8/W4/W2 weights. The equations below describe its controller and memory scheduling so that the model can be understood and evaluated without reading Python. All times are integer cycle edges.
 
 The model returns four additive stages: input loading, product generation, combined weight loading/selection, and output storage. CPU preparation, software reference calculations, printing, simulator startup, and wall-clock time are outside this total. FP16 significand handling, alignment, and FP32 conversion are combinational in the modeled RTL: they affect area and achievable frequency, but do not add controller cycles.
 
@@ -25,10 +25,13 @@ use the following symbols. Defaults here are defaults of `compute_cycles`, not n
 | $w$ | Signed weight precision | w_bits | Required: 2, 4, or 8 |
 | $D$ | Outstanding DMA request slots for reads | ID | Required |
 | $B$ | Weight-buffer count | buffers_w | 2 |
-| $H$ | Accepted-request to controller-visible cache-hit response latency | HS | 7 |
+| $H$ | Registered-reference cache-hit latency; physical return is $H-1$ | HS | 7 |
+| Bypass | Forward an already-queued head response | dma_bypass | True |
 | $\delta$ | Delay before weight prefetch starts | extra_prefetch_cycles | 0 |
 
 The current implementation requires `in_bits=16`, `IN_MAX=16`, `W_MAX=8`, and `DMA_WIDTH=64`. Select `activation='int16'` or `'fp16'`; outputs occupy 32 bits in either case. Dimensions, bank counts, row factor, buffer count, request count, and hit latency must be positive integers. Hardware geometry must match the simulated or implemented design.
+
+`dma_bypass=False` models the previous registered receiver for comparison. It is a model-only switch; the accepted RTL always enables its head-response bypass. HS keeps the same calibrated registered-reference meaning, so HS=7 represents a six-cycle physical hit plus the former receiver register. The memory itself is not assumed faster.
 
 `cache_8_4`, `cache_reads`, and `IN_min` are compatibility arguments and do not change this input16 model. The model does not currently accept 8-bit activations or a 128-bit DMA interface.
 
@@ -120,11 +123,24 @@ Let a transfer start at absolute cycle $t$. For its requests $i=1,\ldots,n$, def
 \end{cases}}
 ```
 
-Only one request is issued per cycle, and a released slot becomes reusable on the next cycle. Responses are delivered in request order, at most one per cycle:
+Only one request is issued per cycle, and a released slot becomes reusable on the next cycle. Let $r_i$ be the earliest physical response-ready cycle. Reserve one D-channel return slot per cycle, in request-issue order: $a_i$ is the first unreserved cycle at or after $r_i$. A later request may otherwise return before an earlier one. This is a declared memory-arbitration approximation, not a model of the cache's internal banks.
+
+The request must already be queued and all earlier responses must have retired before it is the head:
 
 ```math
-\boxed{d_1=r_1,\qquad d_i=\max(r_i,d_{i-1}+1)\quad(i>1)}.
+q_i=\max(s_i+1,d_{i-1}+1),\qquad d_0=t-1.
 ```
+
+For bypass enabled, an arriving queued-head response forwards directly. Earlier/out-of-order responses are registered until their turn:
+
+```math
+\boxed{d_i=\begin{cases}
+a_i,&\text{bypass enabled and }a_i\ge q_i,\\[0pt]
+\max(a_i+1,q_i),&\text{otherwise}.
+\end{cases}}
+```
+
+A new request and same-cycle response into an empty queue cannot bypass: its queue entry does not exist until the next edge. At most one response is delivered per cycle. With bypass disabled, every response takes the registered branch.
 
 The transfer duration is measured from its starting edge to its last delivery edge:
 
@@ -139,7 +155,7 @@ Controller completion cycles are added separately in the stage equations below. 
 For `memory_profile='uniform'`, every request has fixed response latency:
 
 ```math
-r_i=s_i+H.
+r_i=s_i+(H-1).
 ```
 
 ### Default LLC memory profile
@@ -153,14 +169,14 @@ For `memory_profile='chipyard_llc'`, maintain a cache of lines with a stored rea
 On a miss, allocate the line and set
 
 ```math
-F_\ell=s_i+H+P,
+F_\ell=s_i+(H-1)+P,
 \qquad P=\begin{cases}P_R,&\text{read},\\P_W,&\text{write}.\end{cases}
 ```
 
 For both hits and misses,
 
 ```math
-\boxed{r_i=\max(s_i+H,F_\ell)}.
+\boxed{r_i=\max(s_i+(H-1),F_\ell)}.
 ```
 
 This lets requests to the same not-yet-ready line share its outstanding fill delay. Hits retain the line's stored ready cycle. Every access updates LRU order; a miss evicts the least recently used line if capacity is exhausted. The number of cache lines is $\max(1,\lfloor C_{\mathrm{cache}}/L_{\mathrm{cache}}\rfloor)$.
@@ -262,11 +278,13 @@ Let $n_{O,g}=\sum_{r=gY}^{gY+a_g-1}n_{O,r}$, and let $\mathcal T_{O,g}$ be the d
 \boxed{C_{O,g}=\mathcal T_{O,g}+2}.
 ```
 
-There is no per-row completion bubble. The stage drains all issued writes before another row group or matmul can start. With uniform memory latency, one DMA slot gives the serialized limit; enough slots for every request allow consecutive issues:
+There is no per-row completion bubble. The stage drains all issued writes before another row group or matmul can start. With bypass enabled, uniform memory and $H\ge2$, one DMA slot gives the serialized limit; enough slots for every request allow consecutive issues:
 
 ```math
-\boxed{C_{O,g}=n_{O,g}(H+1)+1\quad(D=1),\qquad C_{O,g}=H+n_{O,g}+1\quad(D\ge n_{O,g})}.
+\boxed{C_{O,g}=n_{O,g}H+1\quad(D=1),\qquad C_{O,g}=H+n_{O,g}\quad(D\ge n_{O,g})}.
 ```
+
+With bypass disabled, these limits are $n_{O,g}(H+1)+1$ and $H+n_{O,g}+1$. For HS=1, same-cycle fresh responses require buffering; use the general event recurrence.
 
 ## 7. Total cycles and reported counters
 
@@ -298,13 +316,13 @@ Use $N=1$, $K=M=64$, $b=2$, $Y=1$, $RF=8$, $w=4$, $D=2$, $B=2$, $H=7$, and $\del
 
 | Stage | Uniform memory | Default cold LLC |
 |---|---:|---:|
-| Input loading | 67 | 89 |
+| Input loading | 59 | 81 |
 | Product generation | 160 | 160 |
 | Combined weight loading/selection | 2,052 | 2,052 |
-| Output storage | 130 | 146 |
-| **Total cycles** | **2,409** | **2,447** |
+| Output storage | 114 | 130 |
+| **Total cycles** | **2,385** | **2,423** |
 
-For uniform memory, the 16 input requests finish 64 cycles after the transfer starts, giving $64+2+1=67$ load cycles. Weight loading is hidden by generation and selection in this example, so the combined stage is $64\times32+4=2052$ cycles. With two DMA slots, the 32 output writes issue in pairs at cycles $0,1,8,9,\ldots,120,121$; the last acknowledgement arrives at cycle 128, giving $128+2=130$ store cycles. The cold LLC adds 22 input-load cycles for two line fills and 16 output-store cycles for four line fills; its extra weight-fetch latency remains hidden.
+For uniform memory with HS=7, physical returns take six cycles. The 16 input requests finish 56 cycles after the transfer starts, giving $56+2+1=59$ load cycles. Weight loading is hidden by generation and selection in this example, so the combined stage is $64\times32+4=2052$ cycles. With two DMA slots, the 32 output writes issue in pairs at cycles $0,1,7,8,\ldots,105,106$; the last acknowledgement arrives at cycle 112, giving $112+2=114$ store cycles. The cold LLC adds 22 input-load cycles for two line fills and 16 output-store cycles for four line fills; its extra weight-fetch latency remains hidden.
 
 The core model requires only the Python standard library. From the repository root:
 
@@ -334,34 +352,36 @@ Set `trace=True` to retain per-request issue/response cycles and per-window stag
 
 The accepted tagged-column RTL was checked with one make-built Verilator configuration: b2/RF8/Y_SLICE1, DMA IDs6, INT16/W4, X=1×32 and W=32×32. The same RISC-V executable and random vectors ran on both versions. Both returned 32/32 exact Python matches, matched the C reference and preserved memory guards. Active cycles decreased from **832 to 717 (13.82%)**; combined Load W/Select decreased from **673 to 558**. Other hardware configurations and FP16 were not run for this edit.
 
-V4 uses the four-stage tags and one-cycle buffer-release delay from the accepted source. It does not substitute measured stage counters into its equations. With the existing default memory profile and nominal buffer addresses:
+The later DMA bypass was checked using one matched make-built Verilator case with the same b2/RF8/Y_SLICE1, IDs6, INT16/W4 and 1×32 × 32×32 geometry. Both variants ran the identical RISC-V executable and vectors, returned 32/32 exact Python outputs, matched the C reference and preserved guards. Active cycles decreased from **717 to 707 (1.39%)**. Six generated-RTL protocol scenarios passed per variant, covering ordering, error flags, credit limits, source reuse, empty-queue same-cycle request/response, and randomized traffic. This is not verification of every matrix/configuration or clock timing. [DMA test evidence](../verification/logs/dma_bypass/run_20261106_033102_418881.log).
 
-| Stage | Edited Verilator | V4 prediction |
-|---|---:|---:|
-| Load X | 31 | 30 |
-| Generate products | 80 | 80 |
-| Combined Load W/Select | 558 | 558 |
-| Store output | 48 | 36 |
-| **Total active cycles** | **717** | **704** |
-| Select alone (overlaps) | 544 | 544 |
-| Load W alone (overlaps) | 408 | 408 |
+V5 models the accepted four-stage tags and one-cycle weight-buffer release together with conditional DMA response bypass. No latency constants were fitted to the measurement. With the existing default memory profile and nominal buffer addresses:
 
-The total error for this single case is 13 cycles (1.81%). This is not an aggregate accuracy result. Remaining input/output differences reflect unchanged memory-environment assumptions; no latency parameters were fitted to this case. [Native run and source diff](../verification/logs/column_pipeline/run_20261105_211028_031082.log).
+| Stage | Registered HW | Model, bypass=False | Bypass HW | Model, bypass=True |
+|---|---:|---:|---:|---:|
+| Load X | 31 | 30 | 30 | 28 |
+| Generate products | 80 | 80 | 80 | 80 |
+| Combined Load W/Select | 558 | 558 | 551 | 551 |
+| Store output | 48 | 36 | 46 | 33 |
+| **Total active cycles** | **717** | **704** | **707** | **692** |
+| Select alone (overlaps) | 544 | 544 | 544 | 544 |
+| Load W alone (overlaps) | 408 | 408 | 376 | 376 |
 
-The GUI reads the current Model.py/v4 automatically on a new comparison. Previous models and the five-cycle what-if experiment are available in Git history; this folder contains only the current model. Historical accuracy reports remain available in Git history.
+The bypass case's total error is 15 cycles (2.12%), with remaining differences in input/output memory estimates. This is one case, not an aggregate accuracy result. The earlier tagged-column run is retained in [its native log](../verification/logs/column_pipeline/run_20261105_211028_031082.log).
+
+The GUI reads current Model.py/v5 automatically on a new comparison. Existing saved arguments remain explicit: HS is a registered-reference calibration, not a request to subtract another cycle from already observed controller delivery times. Earlier controller revisions and historical accuracy reports remain available in Git history. This folder contains only the current model and README.
 
 ## Accuracy, historical equations, and diagnostics
 
-The earlier maintainer-reported mean error of approximately **4%** predates both the overlapping output writes and tagged selection in `controller-events-v4`; it is not a validation result for this revision or a multiplier applied to the equations. The controller now schedules write concurrency and tagged-column overlap, while memory latency, contention and CPU interference remain environment-model uncertainties. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
+The earlier maintainer-reported mean error of approximately **4%** predates both the overlapping output writes and tagged selection in `controller-events-v5`; it is not a validation result for this revision or a multiplier applied to the equations. The controller now schedules write concurrency and tagged-column overlap, while memory latency, contention and CPU interference remain environment-model uncertainties. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
 
 ```math
 \mathrm{MAPE}=\frac{100}{n}\sum_{i=1}^{n}\frac{|p_i-h_i|}{h_i}.
 ```
 
-Historical saved-suite reports in Git history evaluate older models; their percentages and 2,524-cycle example do not describe `controller-events-v4`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
+Historical saved-suite reports in Git history evaluate older models; their percentages and 2,524-cycle example do not describe `controller-events-v5`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
 
 The manuscript's approximate DMA formula, uniform repeated-window cost, and $M\max(C_{3.1},C_{3.2})$ expression motivate the architecture but do not replace the event recurrences above. Earlier README statements about forced `HS=8`, a `Cout-2` adjustment, unused buffer/prefetch controls, and fractional cycles no longer apply. The current model uses the supplied `HS`, schedules all output columns, accounts for buffer count and prefetch delay, and produces integer cycles.
 
-The optional `dma_latencies` and `dma_issue_delays` arguments replay external DMA behavior for diagnosis. For request $i$, a supplied issue delay $\epsilon_i$ is added after the normal issue-time maximum, and a supplied latency $\lambda_i$ replaces the memory profile with $r_i=s_i+\lambda_i$. These are per-request arrays across the whole call; they do not take hardware stage totals as inputs. Replay results are not independent memory-latency predictions.
+The optional `dma_latencies` and `dma_issue_delays` arguments replay external DMA behavior for diagnosis. A supplied issue delay is added after the normal finite-credit issue-time maximum. Set `dma_latency_basis='tilelink'` to provide accepted-request-to-physical-D-return latencies; the normal bypass/ordered-buffer rules then determine controller delivery. The default `'controller'` basis preserves existing diagnostic arrays, which already describe controller-visible responses: those values are not reduced again, and trace `tilelink_response`/`bypassed` fields are `None`. Both kinds of replay are diagnostic and excluded from independent accuracy statistics. Ordinary profile traces record actual modeled D-return and controller-delivery cycles separately, plus whether the response bypassed.
 
-The standalone `dma_finish_time_exact_bits` helper is separate from the memory engine used by `compute_cycles`. It schedules $\lceil\mathrm{payload}/\mathrm{width}\rceil$ requests from cycle zero, where payload is `total_bits` and width is `DMA_WIDTH_bits` (both in bits), using its own `L` (default 6), `t_issue`, and `beat_time`. It includes next-cycle ID reuse and response spacing. Its defaults must not be substituted for the stage model's `HS=7` or cache profile.
+The standalone `dma_finish_time_exact_bits` helper is separate from the memory engine used by `compute_cycles`. It schedules $\lceil\mathrm{payload}/\mathrm{width}\rceil$ requests from cycle zero, where payload is `total_bits` and width is `DMA_WIDTH_bits` (both in bits), using its own `L` (default 6), `t_issue`, and `beat_time`. It includes next-cycle ID reuse and response spacing. This helper takes its stated delivery latency literally; it does not implement the main model's conditional bypass or empty-queue handling. Do not substitute its defaults for the stage model's registered-reference `HS=7` or cache profile.

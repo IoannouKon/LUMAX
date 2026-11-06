@@ -1,8 +1,9 @@
 """Event-based LUMAX controller cycle model (INT16 or FP16, signed W8/W4/W2).
 
 Stage scheduling follows LUMAX_Top.scala and LUMAXTopHelpers.scala. Memory is
-an explicit environment model: HS is accepted-request to controller-visible
-cache-hit response latency. The current ordered DMA register is included.
+an explicit environment model: HS retains the registered-reference cache-hit
+latency. TileLink returns one cycle earlier; queued head responses can bypass
+the register. Early/out-of-order responses still occupy the existing buffers.
 Selection columns overlap through four valid/tag stages; consumed weight buffers
 become reusable after the final stage-2 capture, before accumulation retires.
 The default magic-memory LLC profile uses interface-observed hit/miss costs;
@@ -11,7 +12,7 @@ CPU traffic and unknown initial cache ownership remain sources of uncertainty.
 from collections import OrderedDict
 import math
 
-MODEL_VERSION = 'controller-events-v4'
+MODEL_VERSION = 'controller-events-v5'
 
 
 def _integer(name, value, minimum=1):
@@ -66,12 +67,15 @@ def _store_packets(row_start, active_rows, columns, base):
 class _Memory:
     """DMA environment, independent of accelerator-stage counters."""
     def __init__(self, hs, profile, line_bytes, cache_bytes, read_penalty,
-                 write_penalty, latencies=None, delays=None, trace=False):
+                 write_penalty, latencies=None, delays=None, trace=False,
+                 bypass=True, latency_basis='controller'):
         self.hs, self.profile, self.line_bytes = hs, profile, line_bytes
         self.lines = max(1,cache_bytes//line_bytes)
         self.read_penalty, self.write_penalty = read_penalty,write_penalty
         self.cache = OrderedDict()
         self.latencies, self.delays = latencies,delays
+        self.bypass = bypass
+        self.controller_replay = latencies is not None and latency_basis=='controller'
         self.index = self.reads = self.writes = self.misses = 0
         self.trace = [] if trace else None
 
@@ -84,20 +88,23 @@ class _Memory:
             if i>=len(self.latencies):
                 raise ValueError('DMA replay ran out of response latencies')
             return issued+_integer('DMA replay latency',self.latencies[i],0)
+        # Preserve the calibrated memory costs: HS includes the old receiver
+        # register. Model the physical return separately, not a faster memory.
+        hit = issued+self.hs-1
         if self.profile=='uniform':
-            return issued+self.hs
+            return hit
         line = address//self.line_bytes
         ready = self.cache.pop(line,None)
         if ready is None:
             self.misses += 1
-            ready = issued+self.hs+(self.write_penalty if write else self.read_penalty)
+            ready = hit+(self.write_penalty if write else self.read_penalty)
             if len(self.cache)>=self.lines:
                 self.cache.popitem(last=False)
         self.cache[line] = ready
-        return max(issued+self.hs,ready)
+        return max(hit,ready)
 
     def transfer(self, packets, start, ids, write=False, context=None):
-        responses, issued = [],start-1
+        responses, issued, return_slots = [],start-1,set()
         for packet in packets:
             address,count = packet[:2]
             issued = max(issued+1,responses[-ids]+1 if len(responses)>=ids else start)
@@ -106,12 +113,31 @@ class _Memory:
                     raise ValueError('DMA replay ran out of issue delays')
                 issued += _integer('DMA replay issue delay',self.delays[self.index],0)
             ready = self.response(address,write,issued)
-            delivered = max(ready,responses[-1]+1 if responses else ready)
+            if self.controller_replay:
+                # Existing diagnostic arrays already describe io.d_valid.
+                # Do not subtract a receiver cycle from measured delivery times.
+                arrival, bypassed = None,None
+                delivered = max(ready,responses[-1]+1 if responses else ready)
+            else:
+                # A single TileLink D channel accepts one return per cycle.
+                # Earlier-issued requests reserve contended return slots first;
+                # later requests may otherwise return early/out of order.
+                arrival = ready
+                while arrival in return_slots:
+                    arrival += 1
+                return_slots.add(arrival)
+                # Queue entries exist after issue; a released head/source is
+                # reusable on the next edge. A same-cycle new request/response
+                # into an empty queue must be buffered, even with bypass on.
+                head_ready = max(issued+1,responses[-1]+1 if responses else start)
+                bypassed = self.bypass and arrival>=head_ready
+                delivered = max(arrival if bypassed else arrival+1,head_ready)
             responses.append(delivered)
             if self.trace is not None:
                 # Optional per-packet metadata preserves rows in a shared transfer.
                 self.trace.append(dict(context or {},**(packet[2] if len(packet)>2 else {}),address=address,write=write,
-                                       elements=count,issue=issued,response=delivered))
+                                       elements=count,issue=issued,response=delivered,
+                                       tilelink_response=arrival,bypassed=bypassed))
         return responses[-1] if responses else start-1
 
 
@@ -124,18 +150,26 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
                    read_miss_penalty=11, write_miss_penalty=4,
                    x_address=0x10000000, w_address=0x20000000,
                    o_address=0x30000000, block_size=None, trace=False,
-                   dma_latencies=None, dma_issue_delays=None):
+                   dma_latencies=None, dma_issue_delays=None,
+                   dma_bypass=True, dma_latency_basis='controller'):
     """Predict active accelerator cycles; no CPU, printing, wall-clock or startup.
 
     XS=b, factor=RF, YS=elaborated row parallelism, Rin=actual rows. FP16
     significand, alignment and FP32 conversion are combinational in this RTL:
     they affect area/Fmax, not this controller's number of cycles.
 
+    HS keeps its registered-reference meaning (default 7); the unchanged
+    memory path returns at HS-1 (default 6). dma_bypass=False models the old
+    registered receiver. The default forwards only an already-queued head.
+
     Base-address defaults describe disjoint cache-line-aligned buffers. Pass
     saved physical addresses to model actual beat offsets and line sharing.
     The LLC profile assumes cold buffers and no CPU interference. Diagnostic
     dma_latencies/dma_issue_delays replay only external DMA behavior; they never
     take HW stage/total counters, and are not independent accuracy predictions.
+    Latency replay defaults to already controller-visible values for backwards
+    compatibility. Use dma_latency_basis='tilelink' for physical D-channel
+    return latencies, which exercise bypass and ordered buffering explicitly.
     cache_8_4/cache_reads are compatibility arguments for unsupported narrow-X
     experiments; they do not change the implemented input16 datapath.
     """
@@ -150,6 +184,10 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         raise ValueError('Current RTL load/store model requires DMA_WIDTH=64')
     if memory_profile not in ('uniform','chipyard_llc'):
         raise ValueError('memory_profile must be uniform or chipyard_llc')
+    if not isinstance(dma_bypass,bool):
+        raise ValueError('dma_bypass must be a bool')
+    if dma_latency_basis not in ('controller','tilelink'):
+        raise ValueError('dma_latency_basis must be controller or tilelink')
     HS=_integer('HS',HS)
     prefetch_delay=_integer('extra_prefetch_cycles',extra_prefetch_cycles,0)
     line_bytes=_integer('cache_line_bytes',cache_line_bytes)
@@ -161,7 +199,8 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         if address%8:
             raise ValueError(name+' must be DMA-beat aligned')
     memory=_Memory(HS,memory_profile,line_bytes,cache_bytes,read_penalty,
-                   write_penalty,dma_latencies,dma_issue_delays,trace)
+                   write_penalty,dma_latencies,dma_issue_delays,trace,
+                   bypass=dma_bypass,latency_basis=dma_latency_basis)
     capacity=factor*(1<<(W_MAX-w_bits))
     window_size=XS*capacity
     if block_size is not None:
@@ -268,8 +307,11 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         'WriteSramOp':memory.reads+generation*XS*min(YS,Rin),
         'model_version':MODEL_VERSION,'activation':activation,
         'selection_pipeline_latency':4,'weight_buffer_release_delay':1,
+        'dma_response_bypass':dma_bypass,'dma_latency_basis':dma_latency_basis,
         'memory_profile':memory_profile,
         'memory_assumptions':dict(hit_response_cycles=HS,read_miss_penalty=read_penalty,
+            hit_latency_basis='registered_reference',tilelink_hit_response_cycles=HS-1,
+            dma_response_bypass=dma_bypass,
             write_miss_penalty=write_penalty,cache_line_bytes=line_bytes,
             initially_cold=True,cpu_interference=False),
         'cache_misses':memory.misses,'dma_requests':memory.index,

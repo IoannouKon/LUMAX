@@ -103,7 +103,8 @@ def physical_parameters(text='', legacy=False):
                 IN_MAX=value('XBitWidth', 16), IN_min=value('minInputBits', 8),
                 W_MAX=value('WBitWidth', 8), buffers_w=value('W_BUFFS', 2),
                 # Legacy saved suites predate the ordered-response register.
-                # The modal TL hit path is six cycles; current retirement adds one.
+                # HS preserves the registered-reference calibration. Model.py
+                # determines whether a physical return can bypass its register.
                 HS=6 if legacy else 7)
 
 
@@ -413,6 +414,6 @@ def compare(logs, request):
                        'Tiles are compared at their actual native dimensions. Totals sum only selected measured operations.',
                        'Load W alone and Select alone overlap the combined phase; do not add them to total cycles.',
                        'INT16/FP16, actual row counts, Y_SLICE and saved DMA settings are passed to the live Model.py source.',
-                       'Current DMA hits default to seven controller-visible cycles; legacy direct-response suites use six. Explicit saved timing parameters remain authoritative.',
+                       'HS defaults to the seven-cycle registered-reference calibration; the current model handles eligible six-cycle head-response bypass. Explicit saved timing arguments remain authoritative; historical controller revisions differ.',
                        'Cache ownership, CPU interference and initial residency may be unknown. New GUI operations save physical buffer addresses; missing addresses use the model defaults.',
                        'Diagnostic replay is excluded from independent accuracy statistics.'])
