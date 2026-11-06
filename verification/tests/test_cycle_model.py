@@ -37,11 +37,12 @@ class ControllerModelTests(unittest.TestCase):
     def test_hand_counted_small_uniform_transfer(self):
         r = self.run_model()
         # One X beat + completion edges; 2 banks spans * 65 LUT edges.
-        # Four 7-edge selections with producer-buffer stalls and final edge.
+        # Two selection inputs per column, four-cycle tagged tails. Later
+        # columns wait for weights; the last retirement leaves the state.
         self.assertEqual([r[k] for k in (
             'cycles_load_X', 'cycles_generate_Products', 'cycles_loadW_select',
             'cycles_store_output', 'cycles load w Only', 'cycles select Only',
-            'total_cycles')], [10, 130, 33, 10, 36, 28, 183])
+            'total_cycles')], [10, 130, 27, 10, 36, 20, 177])
         for cols in (1, 2):
             one = self.run_model(Cout=cols)
             self.assertGreater(one['cycles_loadW_select'], 0)
@@ -67,8 +68,35 @@ class ControllerModelTests(unittest.TestCase):
         self.assertEqual([w['bank_span'] for w in parallel['windows']], [4, 4, 1])
         self.assertEqual(serial['cycles_generate_Products'], 780)
         self.assertEqual(parallel['cycles_generate_Products'], 585)
-        self.assertEqual(serial['cycles select Only'], 81)
-        self.assertEqual(parallel['cycles select Only'], 72)
+        self.assertEqual(serial['cycles select Only'], 60)
+        self.assertEqual(parallel['cycles select Only'], 51)
+
+    def test_tagged_columns_keep_four_cycle_tail_and_capture_before_refill(self):
+        result = self.run_model(Cin=8, Cout=4, w_bits=2, HS=1, ID=6, trace=True)
+        columns = result['columns']
+        # Four bank-position inputs per column: 16 input cycles plus one
+        # four-cycle final tail. No Done_acc handoff cycle is added afterward.
+        self.assertEqual(result['cycles select Only'], 20)
+        self.assertEqual(result['cycles_loadW_select'], 20)
+        for col in columns:
+            self.assertEqual(col['retire']-col['read_end'], 4)
+            self.assertEqual(col['buffer_release']-col['read_end'], 1)
+        self.assertEqual(columns[1]['issue_start'], columns[0]['read_end'])
+        self.assertLess(columns[1]['issue_start'], columns[0]['retire'])
+        refill = next(t for t in result['transactions']
+                      if t['stage']=='load_w' and t['column']==2)
+        self.assertEqual(refill['issue'], columns[0]['buffer_release'])
+        self.assertEqual(self.info['version'], 'controller-events-v4')
+
+    def test_accepted_verilator_case_combined_stage_and_selection_counter(self):
+        # Saved native RTL run_20261105_211028_031082.log: b2/RF8/YS1,
+        # IDs6, X1x32 W32x32, INT16/W4. Memory parameters are the existing
+        # defaults, not fitted to the counters. Whole-call memory error remains.
+        result = self.run_model(Cin=32, Cout=32, w_bits=4, factor=8, ID=6,
+                                memory_profile='chipyard_llc')
+        self.assertEqual(result['cycles_loadW_select'], 558)
+        self.assertEqual(result['cycles select Only'], 544)
+        self.assertEqual(result['cycles load w Only'], 408)
 
     def test_parallel_rows_share_weight_reads_and_generation(self):
         one = self.run_model(YS=2, trace=True)

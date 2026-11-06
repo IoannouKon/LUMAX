@@ -3,13 +3,15 @@
 Stage scheduling follows LUMAX_Top.scala and LUMAXTopHelpers.scala. Memory is
 an explicit environment model: HS is accepted-request to controller-visible
 cache-hit response latency. The current ordered DMA register is included.
+Selection columns overlap through four valid/tag stages; consumed weight buffers
+become reusable after the final stage-2 capture, before accumulation retires.
 The default magic-memory LLC profile uses interface-observed hit/miss costs;
 CPU traffic and unknown initial cache ownership remain sources of uncertainty.
 """
 from collections import OrderedDict
 import math
 
-MODEL_VERSION = 'controller-events-v3'
+MODEL_VERSION = 'controller-events-v4'
 
 
 def _integer(name, value, minimum=1):
@@ -141,7 +143,7 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
     vals=dict(zip(names,(Rin,Cin,Cout,XS,YS,ID,buffers_w,factor,DMA_WIDTH)))
     Rin,Cin,Cout,XS,YS,ID,buffers_w,factor,DMA_WIDTH=(_integer(k,vals[k]) for k in names)
     if in_bits!=16 or IN_MAX!=16 or W_MAX!=8 or w_bits not in (2,4,8):
-        raise ValueError('Verified model supports input16 and W8/W4/W2 (IN_MAX=16, W_MAX=8)')
+        raise ValueError('Model supports input16 and W8/W4/W2 (IN_MAX=16, W_MAX=8)')
     if activation not in ('int16','fp16'):
         raise ValueError('activation must be int16 or fp16')
     if DMA_WIDTH!=64:
@@ -170,6 +172,7 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
     now=load_x=generation=combined=store_o=load_w=selection=windows=0
     first_producer=first_select=None
     window_trace=[] if trace else None
+    column_trace=[] if trace else None
     for row_start in range(0,Rin,YS):
         active_rows=min(YS,Rin-row_start)
         bank_span=min(capacity,(min(Cin,window_size)+XS-1)//XS)
@@ -189,10 +192,11 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
             generation+=gen_cycles
             select_available=gen_start+gen_cycles
             producer_available=gen_start+prefetch_delay
-            finished_columns=[]
-            select_cycles=bank_span+5
+            released_columns=[]
+            last_retire=select_available
+            select_cycles=bank_span+4
             for col in range(Cout):
-                start=max(producer_available,finished_columns[col-buffers_w] if col>=buffers_w else gen_start)
+                start=max(producer_available,released_columns[col-buffers_w] if col>=buffers_w else gen_start)
                 packets=_read_packets(length,col*Cin+k_start,bank_span,w_bits,DMA_WIDTH,w_address)
                 last=memory.transfer(packets,start,ID,context=dict(stage='load_w',column=col,k_start=k_start,row_group=row_start))
                 # Response -> dma_resp cleared -> buffer ready (two edges).
@@ -202,16 +206,33 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
                     first_producer,first_select=ready-start,select_cycles
                 producer_available=ready
                 begin_select=max(select_available,ready)
-                select_available=begin_select+select_cycles
-                finished_columns.append(select_available)
-                selection+=select_cycles
-            # w_idx reaches Cout one edge before leaving the combined state.
-            now=select_available+1
+                read_end=begin_select+bank_span
+                # The next column can issue on the edge after the final input.
+                select_available=read_end
+                # Stage 2 captures the last weight on that edge; its buffer-mode
+                # bit clears for the following cycle. This is not a zero-delay
+                # release and does not wait for the four-cycle accumulator tail.
+                buffer_release=read_end+1
+                released_columns.append(buffer_release)
+                retire_end=read_end+4
+                # PC_Select counts cycles with an input or any valid tag. Count
+                # the union of occupied intervals, not overlapping tails twice.
+                selection+=retire_end-max(begin_select,last_retire)
+                if column_trace is not None:
+                    column_trace.append(dict(row_group=row_start,k_start=k_start,
+                        column=col,weight_ready=ready,issue_start=begin_select,
+                        read_end=read_end,buffer_release=buffer_release,
+                        retire=retire_end))
+                last_retire=retire_end
+            # The last tagged contribution writes O_reg on the transition edge.
+            # There is no additional Done_acc/w_idx handoff cycle in this RTL.
+            now=last_retire
             combined+=now-(gen_start+gen_cycles)
             if window_trace is not None:
                 window_trace.append(dict(row_group=row_start,k_start=k_start,k=length,
                     bank_span=bank_span,generation=gen_cycles,
-                    loadw_select=now-(gen_start+gen_cycles),select_per_column=select_cycles))
+                    loadw_select=now-(gen_start+gen_cycles),select_per_column=select_cycles,
+                    column_issue_interval=bank_span))
             if k_start+window_size<Cin:
                 if YS==1:
                     # Literal current RTL: this uses Cin - b*bank_span, NOT
@@ -246,6 +267,7 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         'ReadSramOp':(generation+selection)*XS*min(YS,Rin),
         'WriteSramOp':memory.reads+generation*XS*min(YS,Rin),
         'model_version':MODEL_VERSION,'activation':activation,
+        'selection_pipeline_latency':4,'weight_buffer_release_delay':1,
         'memory_profile':memory_profile,
         'memory_assumptions':dict(hit_response_cycles=HS,read_miss_penalty=read_penalty,
             write_miss_penalty=write_penalty,cache_line_bytes=line_bytes,
@@ -254,5 +276,5 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         'diagnostic_dma_replay':dma_latencies is not None or dma_issue_delays is not None,
     }
     if trace:
-        result.update(transactions=memory.trace,windows=window_trace)
+        result.update(transactions=memory.trace,windows=window_trace,columns=column_trace)
     return result

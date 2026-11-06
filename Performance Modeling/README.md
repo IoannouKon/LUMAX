@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Architecture](../LUMAX/README.md) · [Measurements](../LUMAX/software/tests/README.md)
 
-[Model.py](Model.py), version `controller-events-v3`, predicts active accelerator cycles for INT16 or FP16 activations and signed W8/W4/W2 weights. The equations below describe its controller and memory scheduling so that the model can be understood and evaluated without reading Python. All times are integer cycle edges.
+[Model.py](Model.py), version `controller-events-v4`, predicts active accelerator cycles for INT16 or FP16 activations and signed W8/W4/W2 weights. The equations below describe its controller and memory scheduling so that the model can be understood and evaluated without reading Python. All times are integer cycle edges.
 
 The model returns four additive stages: input loading, product generation, combined weight loading/selection, and output storage. CPU preparation, software reference calculations, printing, simulator startup, and wall-clock time are outside this total. FP16 significand handling, alignment, and FP32 conversion are combinational in the modeled RTL: they affect area and achievable frequency, but do not add controller cycles.
 
@@ -198,46 +198,47 @@ Parallel activation rows generate their tables concurrently, so this cost is not
 
 ## 5. Weight loading, selection, and buffer overlap
 
-Selection and accumulation require
+The controller carries a valid bit, output-column tag and last-input flag through four registers. It advances the input column after its last selection step, while older tagged results continue accumulating. Selection and weight loading share the existing buffers and memory ports.
+
+For bank span $G_j$, a column issues $G_j$ selection inputs. Its occupied interval, if isolated, lasts $G_j+4$ cycles. The next column can issue immediately after those $G_j$ inputs; it does not wait for the four-cycle tail. A consumed weight buffer becomes available one cycle after the final input edge reaches stage 2.
+
+Let $t_0$ be the absolute product-generation start cycle. For one-based columns $c=1,\ldots,M$, define weight-load start $u_c$, buffer-ready time $f_c$, selection-input start $a_c$, input-end edge $h_c$, buffer-release edge $q_c$, and retirement-end edge $e_c$. Initialize
 
 ```math
-\boxed{S_j=G_j+5}
+f_0=t_0+\delta,\qquad h_0=t_0+C_{\mathrm{PG},g,j}.
 ```
 
-cycles per output column. The selected weights are shared by all active activation rows.
-
-Let $t_0$ be the absolute product-generation start cycle. For one-based output columns $c=1,\ldots,M$, define weight-load start $u_c$, buffer-ready time $f_c$, and selection-finish time $e_c$. Initialize
-
-```math
-f_0=t_0+\delta,\qquad e_0=t_0+C_{\mathrm{PG},g,j}.
-```
-
-The producer may reuse a buffer only after the column previously occupying it has completed selection:
+The producer may reuse a buffer after its previous column's final weight read is captured:
 
 ```math
 \boxed{u_c=\begin{cases}
 \max(f_{c-1},t_0),&c\le B,\\[0pt]
-\max(f_{c-1},e_{c-B}),&c>B.
+\max(f_{c-1},q_{c-B}),&c>B.
 \end{cases}}
 ```
 
-For column $c$, construct W requests with zero-based column index $m=c-1$, start the transfer at $u_c$, and calculate its duration $\mathcal T_{W,c}$ using $D$ slots. Then
+Construct W requests for zero-based column $m=c-1$, start at $u_c$, and calculate transfer duration $\mathcal T_{W,c}$ using $D$ slots. Then
 
 ```math
-\boxed{f_c=u_c+\mathcal T_{W,c}+2},
-\qquad
-\boxed{e_c=\max(e_{c-1},f_c)+S_j}.
+\boxed{f_c=u_c+\mathcal T_{W,c}+2},\qquad
+\boxed{a_c=\max(h_{c-1},f_c)},
 ```
 
-The two cycles after the last DMA delivery make the buffer ready. Selection waits for both the weight buffer and the preceding selection. One final controller cycle completes the window.
+```math
+\boxed{h_c=a_c+G_j},\qquad
+\boxed{q_c=h_c+1},\qquad
+\boxed{e_c=h_c+4}.
+```
+
+The two edges after the last DMA delivery make the buffer ready. Selection inputs wait for weights and the previous column's last input, while tagged accumulation tails overlap. After the final input, the controller drains its four valid/tag stages. The last valid contribution writes O_reg on the same transition edge that ends the combined state; no additional Done_acc/w_idx handoff cycle is added.
 
 The combined stage reported after product generation is
 
 ```math
-\boxed{C_{\mathrm{WS},g,j}=e_M+1-\left(t_0+C_{\mathrm{PG},g,j}\right)}.
+\boxed{C_{\mathrm{WS},g,j}=e_M-\left(t_0+C_{\mathrm{PG},g,j}\right)}.
 ```
 
-This subtraction avoids counting weight-fetch time hidden by product generation twice. The expression $M\max(\text{load time},\text{selection time})$ is a steady-state approximation; these recurrences also include startup, finite buffers, stalls, and completion. They process all $M$ columns, including $M=1$ or $2$.
+The standalone selection counter counts the union of occupied intervals $[a_c,e_c)$, avoiding double-counting overlapping tails. With no weight stalls, this is $MG_j+4$, rather than $M(G_j+5)$ in v3. Subtracting generation in the combined-stage equation avoids counting hidden weight-prefetch time twice. All columns are processed, including $M=1$ or $2$.
 
 ![Paper Figure 3: pipelined stages and double-buffered weight transfers](../docs/assets/paper/figure-3-pipeline.png)
 
@@ -293,17 +294,17 @@ The separate weight-load and selection counters describe overlapping activity. D
 
 ## Worked example and running the model
 
-Use $N=1$, $K=M=64$, $b=2$, $Y=1$, $RF=8$, $w=4$, $D=2$, $B=2$, $H=7$, and $\delta=0$, with default addresses. Then $A=128$, $V=256$, $J=Q=1$, $G_0=32$, product generation takes $32(4+1)=160$ cycles, and selection takes $32+5=37$ cycles per column.
+Use $N=1$, $K=M=64$, $b=2$, $Y=1$, $RF=8$, $w=4$, $D=2$, $B=2$, $H=7$, and $\delta=0$, with default addresses. Then $A=128$, $V=256$, $J=Q=1$, $G_0=32$, product generation takes $32(4+1)=160$ cycles, and each column issues 32 selection inputs with a four-cycle retiring tail.
 
 | Stage | Uniform memory | Default cold LLC |
 |---|---:|---:|
 | Input loading | 67 | 89 |
 | Product generation | 160 | 160 |
-| Combined weight loading/selection | 2,369 | 2,369 |
+| Combined weight loading/selection | 2,052 | 2,052 |
 | Output storage | 130 | 146 |
-| **Total cycles** | **2,726** | **2,764** |
+| **Total cycles** | **2,409** | **2,447** |
 
-For uniform memory, the 16 input requests finish 64 cycles after the transfer starts, giving $64+2+1=67$ load cycles. Weight loading is hidden by generation and selection in this example, so the combined stage is $64\times37+1=2369$ cycles. With two DMA slots, the 32 output writes issue in pairs at cycles $0,1,8,9,\ldots,120,121$; the last acknowledgement arrives at cycle 128, giving $128+2=130$ store cycles. The cold LLC adds 22 input-load cycles for two line fills and 16 output-store cycles for four line fills; its extra weight-fetch latency remains hidden.
+For uniform memory, the 16 input requests finish 64 cycles after the transfer starts, giving $64+2+1=67$ load cycles. Weight loading is hidden by generation and selection in this example, so the combined stage is $64\times32+4=2052$ cycles. With two DMA slots, the 32 output writes issue in pairs at cycles $0,1,8,9,\ldots,120,121$; the last acknowledgement arrives at cycle 128, giving $128+2=130$ store cycles. The cold LLC adds 22 input-load cycles for two line fills and 16 output-store cycles for four line fills; its extra weight-fetch latency remains hidden.
 
 The core model requires only the Python standard library. From the repository root:
 
@@ -329,15 +330,35 @@ PY
 
 Set `trace=True` to retain per-request issue/response cycles and per-window stage information. This trace helps evaluate the equations for a specific address layout or tail window.
 
+## Accepted hardware change and measured scope
+
+The accepted tagged-column RTL was checked with one make-built Verilator configuration: b2/RF8/Y_SLICE1, DMA IDs6, INT16/W4, X=1×32 and W=32×32. The same RISC-V executable and random vectors ran on both versions. Both returned 32/32 exact Python matches, matched the C reference and preserved memory guards. Active cycles decreased from **832 to 717 (13.82%)**; combined Load W/Select decreased from **673 to 558**. Other hardware configurations and FP16 were not run for this edit.
+
+V4 uses the four-stage tags and one-cycle buffer-release delay from the accepted source. It does not substitute measured stage counters into its equations. With the existing default memory profile and nominal buffer addresses:
+
+| Stage | Edited Verilator | V4 prediction |
+|---|---:|---:|
+| Load X | 31 | 30 |
+| Generate products | 80 | 80 |
+| Combined Load W/Select | 558 | 558 |
+| Store output | 48 | 36 |
+| **Total active cycles** | **717** | **704** |
+| Select alone (overlaps) | 544 | 544 |
+| Load W alone (overlaps) | 408 | 408 |
+
+The total error for this single case is 13 cycles (1.81%). This is not an aggregate accuracy result. Remaining input/output differences reflect unchanged memory-environment assumptions; no latency parameters were fitted to this case. [Native run and source diff](../verification/logs/column_pipeline/run_20261105_211028_031082.log).
+
+The [earlier scheduling experiment](ColumnPipeline/README.md) retains its five-cycle hypothetical pipeline and uses the byte-identical [archived v3](archive/Model_v3.py). Its 1,296-case reductions are historical predictions, not measurements of the accepted four-stage implementation. The GUI reads the current Model.py/v4 automatically on a new comparison.
+
 ## Accuracy, historical equations, and diagnostics
 
-The earlier maintainer-reported mean error of approximately **4%** predates the overlapping output writes in `controller-events-v3`; it is not a validation result for this revision or a multiplier applied to the equations. The controller now schedules write concurrency, while memory latency, contention and CPU interference remain environment-model uncertainties. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
+The earlier maintainer-reported mean error of approximately **4%** predates both the overlapping output writes and tagged selection in `controller-events-v4`; it is not a validation result for this revision or a multiplier applied to the equations. The controller now schedules write concurrency and tagged-column overlap, while memory latency, contention and CPU interference remain environment-model uncertainties. For a reproducible accuracy result, record the model revision, workload population, memory parameters, physical addresses where available, and error metric. For measured active cycles $h_i$ and predictions $p_i$, mean absolute percentage error is
 
 ```math
 \mathrm{MAPE}=\frac{100}{n}\sum_{i=1}^{n}\frac{|p_i-h_i|}{h_i}.
 ```
 
-The [saved accuracy report](Accuracy/README.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v3`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
+The [saved accuracy report](Accuracy/README.md) evaluates an older model and identifies its source hash; its percentages and 2,524-cycle example do not describe `controller-events-v4`. The manuscript's reported 8.5% mean relative error also refers to its own evaluation. The worked example above is a model calculation, not a fresh hardware measurement or an aggregate accuracy validation.
 
 The manuscript's approximate DMA formula, uniform repeated-window cost, and $M\max(C_{3.1},C_{3.2})$ expression motivate the architecture but do not replace the event recurrences above. Earlier README statements about forced `HS=8`, a `Cout-2` adjustment, unused buffer/prefetch controls, and fractional cycles no longer apply. The current model uses the supplied `HS`, schedules all output columns, accounts for buffer count and prefetch delay, and produces integer cycles.
 

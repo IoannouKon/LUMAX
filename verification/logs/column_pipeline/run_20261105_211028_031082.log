@@ -1,0 +1,331 @@
+MODE=baseline; b2 RF8 Y_SLICE1 DMA IDs6; X1x32 W32x32 input16 W4; unchanged C helpers. Correctness required before cycle comparison.
+RTL SHA256=395f72dbcbd5c3ff5c7453bbbdfa454375e25e82efae4f573fc50036ded3f2f7
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-column-rtl-j0jtcr8t/baseline/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-column-rtl-j0jtcr8t/baseline/generated-src
+BUILD PASS baseline SIM SHA256=ce3bb61346e113afa04d84300fb34312be009026d758442e780d68df75f2f38a
+COMMAND: bash ./build.sh baremetal
+SAME TEST ELF SHA256=2b5f10bfbf500669bc7b7942932a9505e6299b9948f97df705697fcb540a5c3e
+X nonzero=32/32; W nonzero=957/1024; W distinct=16
+HOST PYTHON OUTPUT=[4294849697, 4294246611, 4294445684, 4294172579, 4294730136, 4294513839, 4294503340, 965317, 729280, 126164, 4294844688, 420325, 4294352742, 454713, 4294344012, 4294256986, 1116797, 4294301851, 226916, 4294691188, 4294739204, 4294748155, 562715, 4294733704, 665550, 419782, 10413, 115295, 1035572, 4294024392, 707940, 707837]
+COMMAND: /tmp/lumax-column-rtl-j0jtcr8t/baseline/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-column-rtl-j0jtcr8t/test/Linear-sw.riscv +permissive-off /tmp/lumax-column-rtl-j0jtcr8t/test/Linear-sw.riscv
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 951 PC 31 80 408 672 48 673
+HW 0 fffe34a1 fff500d3 fff80a74 fff3dfa3 fffc6198 fff914af fff8ebac 000ebac5 000b20c0 0001ecd4 fffe2110 000669e5 fff69f66 0006f039 fff67d4c fff5295a 00110a7d fff5d89b 00037664 fffbc974 fffc8504 fffca7fb 0008961b fffc6f88 000a27ce 000667c6 000028ad 0001c25f 000fcd34 fff19cc8 000acd64 000accfd 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-column-rtl-j0jtcr8t/baseline/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+Temporary parser slice-indexing fixed; rechecked saved baseline UART without rerunning hardware.
+CORRECTNESS PASS: exact Python 32/32, C reference match, all guards intact.
+VERIFIED BASELINE={"mode": "baseline", "status": "PASS", "matches": 32, "elements": 32, "core": 951, "pc": [31, 80, 408, 672, 48, 673], "cycles": 832, "hw": [4294849697, 4294246611, 4294445684, 4294172579, 4294730136, 4294513839, 4294503340, 965317, 729280, 126164, 4294844688, 420325, 4294352742, 454713, 4294344012, 4294256986, 1116797, 4294301851, 226916, 4294691188, 4294739204, 4294748155, 562715, 4294733704, 665550, 419782, 10413, 115295, 1035572, 4294024392, 707940, 707837]}
+MODE=optimized; b2 RF8 Y_SLICE1 DMA IDs6; X1x32 W32x32 input16 W4; unchanged C helpers. Correctness required before cycle comparison.
+RTL SHA256=a998fed99b53aac21462ceba1cf4b5a2f2fcb2a9921e1a3de1c5ab4be5eb60fb
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-column-rtl-j0jtcr8t/optimized/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-column-rtl-j0jtcr8t/optimized/generated-src
+BUILD PASS optimized SIM SHA256=bc4045394c9322aac3ab2315737d461178cf4f14a8c31ac70f3718178b631adf
+SAME TEST ELF SHA256=2b5f10bfbf500669bc7b7942932a9505e6299b9948f97df705697fcb540a5c3e
+X nonzero=32/32; W nonzero=957/1024; W distinct=16
+HOST PYTHON OUTPUT=[4294849697, 4294246611, 4294445684, 4294172579, 4294730136, 4294513839, 4294503340, 965317, 729280, 126164, 4294844688, 420325, 4294352742, 454713, 4294344012, 4294256986, 1116797, 4294301851, 226916, 4294691188, 4294739204, 4294748155, 562715, 4294733704, 665550, 419782, 10413, 115295, 1035572, 4294024392, 707940, 707837]
+COMMAND: /tmp/lumax-column-rtl-j0jtcr8t/optimized/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-column-rtl-j0jtcr8t/test/Linear-sw.riscv +permissive-off /tmp/lumax-column-rtl-j0jtcr8t/test/Linear-sw.riscv
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 836 PC 31 80 408 544 48 558
+HW 0 fffe34a1 fff500d3 fff80a74 fff3dfa3 fffc6198 fff914af fff8ebac 000ebac5 000b20c0 0001ecd4 fffe2110 000669e5 fff69f66 0006f039 fff67d4c fff5295a 00110a7d fff5d89b 00037664 fffbc974 fffc8504 fffca7fb 0008961b fffc6f88 000a27ce 000667c6 000028ad 0001c25f 000fcd34 fff19cc8 000acd64 000accfd 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-column-rtl-j0jtcr8t/optimized/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+CORRECTNESS PASS: exact Python 32/32, C reference match, all guards intact.
+VERIFIED RESULT={"mode": "optimized", "status": "PASS", "matches": 32, "elements": 32, "core": 836, "pc": [31, 80, 408, 544, 48, 558], "cycles": 717, "seconds": 20.17, "hw": [4294849697, 4294246611, 4294445684, 4294172579, 4294730136, 4294513839, 4294503340, 965317, 729280, 126164, 4294844688, 420325, 4294352742, 454713, 4294344012, 4294256986, 1116797, 4294301851, 226916, 4294691188, 4294739204, 4294748155, 562715, 4294733704, 665550, 419782, 10413, 115295, 1035572, 4294024392, 707940, 707837]}
+CYCLE COMPARISON: baseline=832 optimized=717 saved=115 reduction=13.822%; both outputs exact and identical.
+LOG: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/column_pipeline/run_20261105_211028_031082.log
+
+FINAL SUMMARY — one configuration, one matrix shape, identical ELF and vectors
+Config: b2 RF8 Y_SLICE1 IDs6 INT16 W4; X1x32 W32x32 -> O1x32.
+Correctness was required before cycle comparison: baseline and edited HW both match Python exactly (32/32), match C reference and preserve guards.
+Counter                  Baseline    Edited     Saved
+Load X                           31        31         0
+Generate products                80        80         0
+Load W/select combined          673       558       115
+Store output                     48        48         0
+Load W alone (overlaps)         408       408         0
+Select alone (overlaps)         672       544       128
+Total active cycles             832       717       115
+CPU native-call rdcycle         951       836       115
+Total active-cycle reduction: 13.822115%.
+Only permanent source edit: working Chipyard src/main/scala/LUMAX_Top.scala. Config, C kernel, DMA and models unchanged. No other configurations or formats tested for this change. No commit.
+Baseline Top SHA256: 395f72dbcbd5c3ff5c7453bbbdfa454375e25e82efae4f573fc50036ded3f2f7
+Edited Top SHA256: a998fed99b53aac21462ceba1cf4b5a2f2fcb2a9921e1a3de1c5ab4be5eb60fb
+
+SOURCE DIFF FOR REVIEW
+--- baseline/LUMAX_Top.scala
++++ edited/LUMAX_Top.scala
+@@ -89,10 +89,15 @@
+   val maxStoreWrites = params.y_slice * ((params.Cout + 2 * elems_per_chunk - 2) / elems_per_chunk)
+ 
+   // === Completion and selection-control registers ===
+-  val Done          = RegInit(false.B)
+-  val Done_acc      = RegInit(false.B)
+-  val delay         = RegInit(false.B)
+-  val delay_counter = RegInit(0.U(3.W)) // Selection pipeline fill counter.
++  // Selection issues one bank-position token per cycle. The existing data
++  // path reaches accumulation four clocks later (decode, LUT read and capture).
++  // Valid/column/last tags travel with those tokens, including during stalls.
++  val selectionIssue = WireDefault(false.B)
++  val selectionLast = WireDefault(false.B)
++  val selectionValid = RegInit(VecInit(Seq.fill(4)(false.B)))
++  val selectionColumn = Reg(Vec(4, UInt(log2Ceil(params.Cout + 1).W)))
++  val selectionEnd = RegInit(VecInit(Seq.fill(4)(false.B)))
++  val weightBufferS2 = RegInit(0.U(log2Ceil(params.W_BUFFS).W))
+ 
+   val sum    = Reg(Vec(totalSyncMems, SInt((params.XBitWidth + 1).W))) // Signed odd-weight correction for each activation lane.
+   val Sign   = Reg(Vec(totalSyncMems, Bool())) // True for a nonnegative product sign.
+@@ -151,6 +156,15 @@
+   val load_x_cnt    = RegInit(0.U(64.W)) // Progress through activation K windows.
+   val Rin_cnt       = RegInit(0.U(log2Ceil(params.y_slice + 1).W)) // Output row within the active Y_SLICE group.
+   val loops_cnt     = RegInit(0.U(64.W))
++
++  selectionValid(0) := selectionIssue
++  selectionColumn(0) := w_idx
++  selectionEnd(0) := selectionLast
++  for (stage <- 1 until 4) {
++    selectionValid(stage) := selectionValid(stage - 1)
++    selectionColumn(stage) := selectionColumn(stage - 1)
++    selectionEnd(stage) := selectionEnd(stage - 1)
++  }
+ 
+   // === Matrix-coordinate registers ===
+   //Indexer for Matrices
+@@ -757,8 +771,7 @@
+         counter_1     := 0.U
+ 
+         READ_ON       := true.B
+-        delay         := true.B
+-        delay_counter := 0.U
++
+ 
+         counter_row := 0.U
+         offset_counter := 0.U
+@@ -778,8 +791,19 @@
+         PC_loadW_and_Select := PC_loadW_and_Select + 1.U
+       }
+ 
+-      when(buffers_mode.reduce(_ || _)) { // Select products from a ready weight buffer.
+-
++      // Input-side progress is independent of results still in the pipeline.
++      selectionIssue := READ_ON && (w_idx < cout_reg) && buffers_mode(select_buff_idx)
++      selectionLast := selectionIssue && (cycleCount_2 === x_elems_per_reg - 1.U) &&
++        (counter_2 === blocks_in_Sync_mem - 1.U)
++      weightBufferS2 := select_buff_idx
++
++      // Release only after the final weight read has reached stage 2. Earlier
++      // results no longer need this SRAM buffer; they carry their own column tag.
++      when(selectionValid(0) && selectionEnd(0)) {
++        buffers_mode(weightBufferS2) := false.B
++      }
++
++      locally { // Payload stages keep advancing even when a new input is unavailable.
+         val buff_index = select_buff_idx
+ 
+         // Pipeline weight addresses by one cycle and activation addresses by two.
+@@ -790,30 +814,38 @@
+         activationBankShiftS3 := RegNext(activationAddress.io.bankShift, 0.U)
+ 
+         if(params.DEBUG) {
+-          PC_Select := PC_Select + 1.U
++          when(selectionIssue || selectionValid.asUInt.orR) {
++            PC_Select := PC_Select + 1.U
++          }
+         }
+ 
+         // Request phase (cycle N)
+-        val enable_read = READ_ON && (offset_counter === 0.U)
++        val enable_read = selectionIssue && (offset_counter === 0.U)
+         val row         = Mux(offset_counter === 3.U, counter_row + 1.U, counter_row)
+ 
+         // Read request
+         val readData = Seq.tabulate(totalSyncMems)(i => I_MEM(i).read(row, enable_read))
+ 
+-        // Capture results (cycle N+1)
+-        for (i <- 0 until totalSyncMems) {
+-          I_vals(i) := readData(i)
+-
+-        }
+-
+-        when (offset_counter === 3.U && READ_ON && cycleCount_2 === x_elems_per_reg - 1.U) {
+-          offset_counter := 0.U
+-          counter_row    := counter_row + 1.U
+-        }.otherwise {
+-          offset_counter    := Mux(cycleCount_2 === x_elems_per_reg - 1.U ,offset_counter + 1.U,offset_counter)
+-        }
+-
+-        val enable_read_w = READ_ON && (elements_counter === 0.U )
++        // Capture only requested activation words; hold the current word
++        // while its remaining cells flow through selection.
++        val readValid = RegNext(enable_read, false.B)
++        when(readValid) {
++          for (i <- 0 until totalSyncMems) {
++            I_vals(i) := readData(i)
++          }
++        }
++
++        when(selectionIssue) {
++          when(offset_counter === 3.U && cycleCount_2 === x_elems_per_reg - 1.U) {
++            offset_counter := 0.U
++            counter_row := counter_row + 1.U
++          }.otherwise {
++            offset_counter := Mux(cycleCount_2 === x_elems_per_reg - 1.U,
++              offset_counter + 1.U, offset_counter)
++          }
++        }
++
++        val enable_read_w = selectionIssue && (elements_counter === 0.U)
+ 
+         val W_wire = Wire(Vec(buffers, Vec(weightBanks, UInt(params.DMA_bits.W))))
+ 
+@@ -824,11 +856,13 @@
+           }
+         }
+ 
+-        when(elements_counter === elemsPerChunk_w * weightBanks.U - weightBanks.U ){
+-          elements_counter := 0.U
+-          row_weight := row_weight + 1.U
+-        }.otherwise {
+-          elements_counter := elements_counter + weightBanks.U
++        when(selectionIssue) {
++          when(elements_counter === elemsPerChunk_w * weightBanks.U - weightBanks.U) {
++            elements_counter := 0.U
++            row_weight := row_weight + 1.U
++          }.otherwise {
++            elements_counter := elements_counter + weightBanks.U
++          }
+         }
+ 
+         val start_row = RegNext(counter_2 << shiftAmt)
+@@ -856,7 +890,7 @@
+ 
+           // Each parallel lane owns this bank; no global-index division.
+           val byte_w_idx = weightCellS2
+-          val buff_idx   = buff_index(buffIdxW - 1, 0)
++          val buff_idx   = weightBufferS2(buffIdxW - 1, 0)
+           val data_64 =  W_wire(buff_idx)(sync_mem_idx)
+           val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
+           val W_value = bytes_8(byte_w_idx)
+@@ -950,8 +984,8 @@
+ 
+           // 6. Read Partial Product from Temp Memory
+ 
+-          val enable_read        = if (params.FP16_ACTIVATIONS) READ_ON && w_reg_valid_temp && abs_weight_uint =/= 0.U
+-          else READ_ON && w_reg_valid_temp
++          val enable_read        = if (params.FP16_ACTIVATIONS) selectionValid(1) && w_reg_valid_temp && abs_weight_uint =/= 0.U
++          else selectionValid(1) && w_reg_valid_temp
+           val finalAddressInBRAM = row_idx
+ 
+           Products(sync_mem_idx) := temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read)
+@@ -961,13 +995,8 @@
+           w_reg_valid(sync_mem_idx) := RegNext(w_reg_valid_temp)
+         }
+ 
+-        when(delay_counter === 1.U + 2.U  ){
+-          delay := false.B
+-        }.elsewhen(delay_counter < 3.U) {
+-          delay_counter := delay_counter + 1.U
+-        }
+-
+-        when(READ_ON && !Done)  {
++
++        when(selectionIssue)  {
+           when(cycleCount_2 === x_elems_per_reg - 1.U) {
+             activationAddress.io.advance := true.B
+             when(offset_counter_1 === lastWeightOffset) {
+@@ -980,10 +1009,10 @@
+           }
+           cycleCount_2 := Mux(cycleCount_2 === x_elems_per_reg - 1.U , 0.U ,cycleCount_2 + 1.U)
+           counter_2    := Mux(cycleCount_2 === x_elems_per_reg - 1.U ,counter_2 + 1.U,counter_2)
+-          Done         := Done || (cycleCount_2 === x_elems_per_reg - 1.U  && counter_2 === blocks_in_Sync_mem - 1.U)
+-        }
+-
+-        when(!delay && !Done_acc ) { // Accumulate after the selection pipeline has filled.
++
++        }
++
++        when(selectionValid(3)) { // Retire only tagged, valid product contributions.
+ 
+           // Reduce the b bank contributions separately for each activation row.
+           val groupSize = totalSyncMems / params.y_slice
+@@ -1037,36 +1066,34 @@
+ 
+           for (y <- 0 until params.y_slice) {
+             if (params.y_slice == 1) {
+-              O_reg(0)(y)(w_idx - 0.U) :=  (O_reg(0)(y)(w_idx - 0.U) +  accum(y))
++              O_reg(0)(y)(selectionColumn(3)) :=  (O_reg(0)(y)(selectionColumn(3)) +  accum(y))
+               if (params.FP16_ACTIVATIONS) {
+                 val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+-                fp16Flags.get(y)(w_idx) := fp16Flags.get(y)(w_idx) | flags
++                fp16Flags.get(y)(selectionColumn(3)) := fp16Flags.get(y)(selectionColumn(3)) | flags
+               }
+             } else {
+               when(y.U < YS) {
+-                O_reg(0)(y)(w_idx) := O_reg(0)(y)(w_idx) + accum(y)
++                O_reg(0)(y)(selectionColumn(3)) := O_reg(0)(y)(selectionColumn(3)) + accum(y)
+                 if (params.FP16_ACTIVATIONS) {
+                   val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+-                  fp16Flags.get(y)(w_idx) := fp16Flags.get(y)(w_idx) | flags
++                  fp16Flags.get(y)(selectionColumn(3)) := fp16Flags.get(y)(selectionColumn(3)) | flags
+                 }
+               }
+             }
+           }
+ 
+-          Done_acc := RegNext(RegNext(RegNext(Done)))
+-
+-        }
+-
+-      }
+-
+-      when(Done_acc && w_idx =/= cout_reg) { // Release the consumed weight buffer and advance the output column.
++
++        }
++
++      }
++
++      when(selectionLast) { // Start the next column before this one's tail retires.
+ 
+         offset_counter_1 := 0.U
+         cell_counter   := 0.U
+         // Every output column replays X from the same initial bank/cell.
+         activationAddress.io.restart := true.B
+ 
+-        Products.foreach(_ := 0.U)
+         cycleCount_2 := 0.U
+         counter_2    := 0.U
+         w_idx      := Mux(w_idx === cout_reg,0.U,w_idx +  params.w_slice.U)
+@@ -1079,15 +1106,14 @@
+ 
+         READ_ON       := true.B
+ 
+-        delay         := true.B
+-        delay_counter := 0.U
+-
+-        Done                           := false.B
+-        Done_acc                       := false.B
+-        buffers_mode(select_buff_idx)  := false.B
++
+         select_buff_idx                := select_buff_idx + 1.U
+ 
+-      }.elsewhen(w_idx === cout_reg) {
++      }
++
++      // The final tagged contribution updates O_reg on this edge. Only then
++      // may the controller change K windows or expose outputs to the DMA.
++      when(selectionValid(3) && selectionEnd(3) && (selectionColumn(3) === cout_reg - 1.U)) {
+ 
+         when(load_x_cnt >= dma_limit) {
+           i_w        := 0.U
+@@ -1151,8 +1177,7 @@
+         counter_2        := 0.U
+         offset_counter_1 := 0.U
+         cell_counter := 0.U
+-        Done             := false.B
+-        Done_acc         := false.B
++
+ 
+       }
+ 
+
+Temporary runner, source backups, test C/ELF, generated RTL and simulator executables removed. End: 2026-11-05T21:19:13.414024+02:00
