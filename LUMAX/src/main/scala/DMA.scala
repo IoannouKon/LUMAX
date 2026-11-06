@@ -79,6 +79,12 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   requestOrder.io.enq.valid := mem.a.fire
   requestOrder.io.enq.bits := nextSource
 
+  /*
+   Previous registered response path, before the bypass optimization.
+   Reference only: this block is inactive and is not elaborated.
+   To restore it, replace the active response block below; do not enable both.
+   Request issue and source-ID retirement remain shared and unchanged.
+
   // LUMAX consumes every d_valid pulse (the legacy d_ready input is unused).
   // Capture both Get data and Put acknowledgements, then retire in issue order.
   mem.d.ready := true.B
@@ -100,6 +106,42 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   io.d_valid := deliver
   io.d_cor := responseCorrupt(oldest)
   io.d_den := responseDenied(oldest)
+  io.tag := oldest
+  requestOrder.io.deq.ready := deliver
+  */
+
+  // LUMAX consumes every d_valid pulse (the legacy d_ready input is unused).
+  // Retire at most one Get/Put response per cycle, strictly in request order.
+  mem.d.ready := true.B
+  val oldest = requestOrder.io.deq.bits
+  val buffered = requestOrder.io.deq.valid && responseValid(oldest)
+  // A queued head response can flow directly to LUMAX. Replies for later
+  // requests still reserve their source slots and wait in the existing buffer.
+  // An empty request queue cannot bypass, including a same-cycle new request.
+  val bypass = requestOrder.io.deq.valid && !responseValid(oldest) &&
+    mem.d.fire && (mem.d.bits.source === oldest)
+
+  when(mem.d.fire) {
+    val source = mem.d.bits.source
+    assert(source < ID.U, "DMA received an out-of-range response source")
+    assert(outstanding(source) || (mem.a.fire && nextSource === source),
+      "DMA received a response without an accepted request")
+    assert(!responseValid(source), "DMA response slot overwritten")
+    // Forwarded responses are not also buffered: the normal queue dequeue
+    // below retires them and frees their source exactly once on this edge.
+    when(!bypass) {
+      responseData(source) := mem.d.bits.data
+      responseCorrupt(source) := mem.d.bits.corrupt
+      responseDenied(source) := mem.d.bits.denied
+      responseValid(source) := true.B
+    }
+  }
+
+  val deliver = buffered || bypass
+  io.readData := Mux(bypass, mem.d.bits.data, responseData(oldest))
+  io.d_valid := deliver
+  io.d_cor := Mux(bypass, mem.d.bits.corrupt, responseCorrupt(oldest))
+  io.d_den := Mux(bypass, mem.d.bits.denied, responseDenied(oldest))
   io.tag := oldest
   requestOrder.io.deq.ready := deliver
 

@@ -1,0 +1,269 @@
+MODE=baseline; b2 RF8 Y_SLICE1 DMA IDs6; X1x32 W32x32 INT16 W4; unchanged native C helpers. Correctness required before cycle comparison.
+DMA SHA256=5d1064fd0ceb3938647f02f484a0031e72d4b795c02fc7ef99bed3bc3313e766; TOP SHA256=a998fed99b53aac21462ceba1cf4b5a2f2fcb2a9921e1a3de1c5ab4be5eb60fb
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-dma-bypass-tdz3d_l5/baseline/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-dma-bypass-tdz3d_l5/baseline/generated-src
+BUILD PASS baseline SIM SHA256=0373149b2d7d7fb251b849aba27566984ff70214728327c87831f1f7da636fd7
+COMMAND: bash ./build.sh baremetal
+SAME TEST ELF SHA256=83a1367e5807a3efe7a78a921c0b167dee7b5f25a7578028c7bcdae6bfd9eaa4
+X_NONZERO=32/32; W_NONZERO=957/1024; W_DISTINCT=16
+PYTHON OUTPUT=[484275, 4294811138, 113831, 4294820883, 4294597722, 1355168, 770265, 610604, 240463, 491852, 43249, 286760, 230762, 4294367003, 492522, 213345, 4294732820, 4294817743, 469490, 4294639236, 4294873813, 263820, 4293796252, 361196, 464532, 1769216, 54512, 4294667304, 180919, 265981, 116107, 419226]
+COMMAND: /tmp/lumax-dma-bypass-tdz3d_l5/baseline/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-dma-bypass-tdz3d_l5/test/Linear-sw.riscv +permissive-off /tmp/lumax-dma-bypass-tdz3d_l5/test/Linear-sw.riscv
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 836 PC 31 80 408 544 48 558
+HW 0 000763b3 fffd9e02 0001bca7 fffdc413 fffa5c5a 0014ada0 000bc0d9 0009512c 0003ab4f 0007814c 0000a8f1 00046028 0003856a fff6d71b 000783ea 00034161 fffc6c14 fffdb7cf 000729f2 fffafe84 fffe92d5 0004068c ffee219c 000582ec 00071694 001aff00 0000d4f0 fffb6c28 0002c2b7 00040efd 0001c58b 0006659a 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-dma-bypass-tdz3d_l5/baseline/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+CORRECTNESS PASS: exact Python 32/32; C match; all guards intact.
+VERIFIED RESULT={"mode": "baseline", "status": "PASS", "matches": 32, "elements": 32, "core": 836, "pc": [31, 80, 408, 544, 48, 558], "cycles": 717, "hw": [484275, 4294811138, 113831, 4294820883, 4294597722, 1355168, 770265, 610604, 240463, 491852, 43249, 286760, 230762, 4294367003, 492522, 213345, 4294732820, 4294817743, 469490, 4294639236, 4294873813, 263820, 4293796252, 361196, 464532, 1769216, 54512, 4294667304, 180919, 265981, 116107, 419226], "seconds": 19.82}
+LOG: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/dma_bypass/run_20261106_033102_418881.log
+MODE=bypass; b2 RF8 Y_SLICE1 DMA IDs6; X1x32 W32x32 INT16 W4; unchanged native C helpers. Correctness required before cycle comparison.
+DMA SHA256=65049ec6a50296eac92b04b0f8187f4affe82091acd9f49c3cf4d45811029dec; TOP SHA256=a998fed99b53aac21462ceba1cf4b5a2f2fcb2a9921e1a3de1c5ab4be5eb60fb
+COMMAND: make -j8 CONFIG=LUMAXROcketConfig sim=/tmp/lumax-dma-bypass-tdz3d_l5/bypass/simulator-LUMAXROcketConfig gen_dir=/tmp/lumax-dma-bypass-tdz3d_l5/bypass/generated-src
+BUILD PASS bypass SIM SHA256=67ad378ec2174da2520680248e92e01687b43f1185537d6b34e63e00b71b67be
+SAME TEST ELF SHA256=83a1367e5807a3efe7a78a921c0b167dee7b5f25a7578028c7bcdae6bfd9eaa4
+X_NONZERO=32/32; W_NONZERO=957/1024; W_DISTINCT=16
+PYTHON OUTPUT=[484275, 4294811138, 113831, 4294820883, 4294597722, 1355168, 770265, 610604, 240463, 491852, 43249, 286760, 230762, 4294367003, 492522, 213345, 4294732820, 4294817743, 469490, 4294639236, 4294873813, 263820, 4293796252, 361196, 464532, 1769216, 54512, 4294667304, 180919, 265981, 116107, 419226]
+COMMAND: /tmp/lumax-dma-bypass-tdz3d_l5/bypass/simulator-LUMAXROcketConfig +permissive +max-cycles=2000000000 +loadmem=/tmp/lumax-dma-bypass-tdz3d_l5/test/Linear-sw.riscv +permissive-off /tmp/lumax-dma-bypass-tdz3d_l5/test/Linear-sw.riscv
+RESULT 0 GUARDS 1 C_MATCH 1 CORE 826 PC 30 80 376 544 46 551
+HW 0 000763b3 fffd9e02 0001bca7 fffdc413 fffa5c5a 0014ada0 000bc0d9 0009512c 0003ab4f 0007814c 0000a8f1 00046028 0003856a fff6d71b 000783ea 00034161 fffc6c14 fffdb7cf 000729f2 fffafe84 fffe92d5 0004068c ffee219c 000582ec 00071694 001aff00 0000d4f0 fffb6c28 0002c2b7 00040efd 0001c58b 0006659a 
+TEST_DONE 0
+[UART] UART0 is here (stdin/stdout).
+- /tmp/lumax-dma-bypass-tdz3d_l5/bypass/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/TestDriver.v:158: Verilog $finish
+
+CORRECTNESS PASS: exact Python 32/32; C match; all guards intact.
+VERIFIED RESULT={"mode": "bypass", "status": "PASS", "matches": 32, "elements": 32, "core": 826, "pc": [30, 80, 376, 544, 46, 551], "cycles": 707, "hw": [484275, 4294811138, 113831, 4294820883, 4294597722, 1355168, 770265, 610604, 240463, 491852, 43249, 286760, 230762, 4294367003, 492522, 213345, 4294732820, 4294817743, 469490, 4294639236, 4294873813, 263820, 4293796252, 361196, 464532, 1769216, 54512, 4294667304, 180919, 265981, 116107, 419226], "seconds": 20.872}
+CYCLES: baseline=717 bypass=707 saved=10 reduction=1.394700%
+LOG: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/logs/dma_bypass/run_20261106_033102_418881.log
+
+GENERATED DMA RTL PROTOCOL CHECKS baseline
+DmaModule and Queue extracted from /tmp/lumax-dma-bypass-tdz3d_l5/baseline/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/chipyard.harness.TestHarness.LUMAXROcketConfig.fir
+Root reset bound to synchronous UInt1 as in the Chipyard elaboration; datapath and queue logic unchanged.
+Isolated DMA FIRRTL SHA256=b8a3546be11c1ae07061b4530319653fe10773fa0fd96df332d8a18773ca245a
+Actual commands: [['firtool', '/tmp/lumax-dma-bypass-tdz3d_l5/baseline/protocol/dma.fir', '-o', '/tmp/lumax-dma-bypass-tdz3d_l5/baseline/protocol/dma.sv'], ['verilator', '--cc', '--exe', '--build', '-j', '4', '--assert', '-Wno-fatal', '--top-module', 'DmaModule', '--Mdir', '/tmp/lumax-dma-bypass-tdz3d_l5/baseline/protocol/obj', '/tmp/lumax-dma-bypass-tdz3d_l5/baseline/protocol/dma.sv', '/tmp/lumax-dma-bypass-tdz3d_l5/dma_check.cpp']]
+PASS single_response_and_no_duplicate issued=1 retired=1 fast=0 buffered=1
+PASS out_of_order_then_head_response issued=2 retired=2 fast=0 buffered=2
+PASS buffered_delivery_with_concurrent_later_arrival issued=3 retired=3 fast=0 buffered=3
+PASS full_capacity_and_next_cycle_source_reuse issued=6 retired=6 fast=0 buffered=6
+PASS empty_queue_same_cycle_new_request_response issued=1 retired=1 fast=0 buffered=1
+PASS random_requests_responses_A_backpressure_flags_and_reuse issued=1113 retired=1113 fast=0 buffered=1113
+TOTAL: 6/6 generated-RTL protocol checks PASS; mode=baseline
+
+GENERATED DMA RTL PROTOCOL CHECKS bypass
+DmaModule and Queue extracted from /tmp/lumax-dma-bypass-tdz3d_l5/bypass/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/chipyard.harness.TestHarness.LUMAXROcketConfig.fir
+Root reset bound to synchronous UInt1 as in the Chipyard elaboration; datapath and queue logic unchanged.
+Isolated DMA FIRRTL SHA256=43cb6778d9c90b2c4cbada1efec6a912bbba5be46ae986a9372ed535fa6a48c2
+Actual commands: [['firtool', '/tmp/lumax-dma-bypass-tdz3d_l5/bypass/protocol/dma.fir', '-o', '/tmp/lumax-dma-bypass-tdz3d_l5/bypass/protocol/dma.sv'], ['verilator', '--cc', '--exe', '--build', '-j', '4', '--assert', '-Wno-fatal', '--top-module', 'DmaModule', '--Mdir', '/tmp/lumax-dma-bypass-tdz3d_l5/bypass/protocol/obj', '/tmp/lumax-dma-bypass-tdz3d_l5/bypass/protocol/dma.sv', '/tmp/lumax-dma-bypass-tdz3d_l5/dma_check.cpp']]
+PASS single_response_and_no_duplicate issued=1 retired=1 fast=1 buffered=0
+PASS out_of_order_then_head_response issued=2 retired=2 fast=1 buffered=1
+PASS buffered_delivery_with_concurrent_later_arrival issued=3 retired=3 fast=1 buffered=2
+PASS full_capacity_and_next_cycle_source_reuse issued=7 retired=7 fast=3 buffered=4
+PASS empty_queue_same_cycle_new_request_response issued=1 retired=1 fast=0 buffered=1
+PASS random_requests_responses_A_backpressure_flags_and_reuse issued=1133 retired=1133 fast=657 buffered=476
+TOTAL: 6/6 generated-RTL protocol checks PASS; mode=bypass
+
+FINAL SUMMARY
+Config: b2 RF8 Y_SLICE1 IDs6, INT16 W4, X1x32 W32x32 -> O1x32; seed20261106.
+One matmul per variant; same ELF and vectors. Both 32/32 exact Python outputs, C match and guards PASS.
+Counter                          Baseline   Bypass   Saved
+Load X                                 31       30       1
+Generate products                      80       80       0
+Load W/select combined                558      551       7
+Store output                           48       46       2
+Load W alone (overlaps)               408      376      32
+Select alone (overlaps)               544      544       0
+Total active cycles                   717      707      10
+CPU matmul-call rdcycle                836      826      10
+Reduction: 10/717 = 1.394700% active cycles for this case. No claim about other shapes, DMA ID counts or Fmax.
+Six generated-RTL protocol scenarios PASS on each variant, including direct/buffered data and flags, out-of-order returns, full credit/backpressure, simultaneous request/response, next-cycle source reuse and empty-queue zero-latency response capture. Randomized bypass run: 2000 cycles, 1133 requests retired, 657 fast and 476 buffered.
+Only DMA.scala changed. Original Config, LUMAX_Top.scala, C kernel and production cycle model unchanged. No commit.
+Old DMA SHA256=5d1064fd0ceb3938647f02f484a0031e72d4b795c02fc7ef99bed3bc3313e766
+New DMA SHA256=65049ec6a50296eac92b04b0f8187f4affe82091acd9f49c3cf4d45811029dec
+
+DMA SOURCE DIFF
+--- baseline/DMA.scala
++++ bypass/DMA.scala
+@@ -80,26 +80,37 @@
+   requestOrder.io.enq.bits := nextSource
+ 
+   // LUMAX consumes every d_valid pulse (the legacy d_ready input is unused).
+-  // Capture both Get data and Put acknowledgements, then retire in issue order.
++  // Retire at most one Get/Put response per cycle, strictly in request order.
+   mem.d.ready := true.B
++  val oldest = requestOrder.io.deq.bits
++  val buffered = requestOrder.io.deq.valid && responseValid(oldest)
++  // A queued head response can flow directly to LUMAX. Replies for later
++  // requests still reserve their source slots and wait in the existing buffer.
++  // An empty request queue cannot bypass, including a same-cycle new request.
++  val bypass = requestOrder.io.deq.valid && !responseValid(oldest) &&
++    mem.d.fire && (mem.d.bits.source === oldest)
++
+   when(mem.d.fire) {
+     val source = mem.d.bits.source
+     assert(source < ID.U, "DMA received an out-of-range response source")
+     assert(outstanding(source) || (mem.a.fire && nextSource === source),
+       "DMA received a response without an accepted request")
+     assert(!responseValid(source), "DMA response slot overwritten")
+-    responseData(source) := mem.d.bits.data
+-    responseCorrupt(source) := mem.d.bits.corrupt
+-    responseDenied(source) := mem.d.bits.denied
+-    responseValid(source) := true.B
++    // Forwarded responses are not also buffered: the normal queue dequeue
++    // below retires them and frees their source exactly once on this edge.
++    when(!bypass) {
++      responseData(source) := mem.d.bits.data
++      responseCorrupt(source) := mem.d.bits.corrupt
++      responseDenied(source) := mem.d.bits.denied
++      responseValid(source) := true.B
++    }
+   }
+ 
+-  val oldest = requestOrder.io.deq.bits
+-  val deliver = requestOrder.io.deq.valid && responseValid(oldest)
+-  io.readData := responseData(oldest)
++  val deliver = buffered || bypass
++  io.readData := Mux(bypass, mem.d.bits.data, responseData(oldest))
+   io.d_valid := deliver
+-  io.d_cor := responseCorrupt(oldest)
+-  io.d_den := responseDenied(oldest)
++  io.d_cor := Mux(bypass, mem.d.bits.corrupt, responseCorrupt(oldest))
++  io.d_den := Mux(bypass, mem.d.bits.denied, responseDenied(oldest))
+   io.tag := oldest
+   requestOrder.io.deq.ready := deliver
+ 
+
+TEMPORARY GENERATED-RTL TEST HARNESS (C++)
+#include "VDmaModule.h"
+#include "verilated.h"
+#include <algorithm>
+#include <cstdint>
+#include <deque>
+#include <iostream>
+#include <random>
+#include <stdexcept>
+#include <vector>
+
+struct Entry { unsigned id; uint64_t value; bool arrived=false, corrupt=false, denied=false; };
+struct Check {
+  VDmaModule dut;
+  std::deque<Entry> order;
+  bool bypass;
+  uint64_t issued=0, retired=0, fast=0, buffered=0, cycles=0;
+  explicit Check(bool mode):bypass(mode) {
+    dut.clock=0;dut.reset=1;dut.io_valid=0;dut.auto_out_a_ready=1;
+    dut.auto_out_d_valid=0;dut.auto_out_d_bits_source=0;dut.auto_out_d_bits_data=0;
+    dut.auto_out_d_bits_opcode=1;dut.auto_out_d_bits_param=0;dut.auto_out_d_bits_size=3;
+    dut.auto_out_d_bits_sink=0;dut.auto_out_d_bits_corrupt=0;dut.auto_out_d_bits_denied=0;
+    dut.io_addr=0;dut.io_log_S=3;dut.io_mode=0;dut.io_mask=255;dut.io_writeData=0;dut.io_d_ready=0;
+    for(int i=0;i<3;i++)tick();dut.reset=0;dut.eval();
+  }
+  void need(bool ok,const char *what) {if(!ok)throw std::runtime_error(std::string(what)+" at cycle "+std::to_string(cycles));}
+  void tick(){dut.clock=0;dut.eval();dut.clock=1;dut.eval();dut.clock=0;dut.eval();cycles++;}
+  Entry make(unsigned id) {return Entry{id,UINT64_C(0x1234000000000000)+issued+1,false,bool((issued+1)&1),bool((issued+1)&2)};}
+  unsigned freeid(){for(unsigned i=0;i<6;i++)if(std::none_of(order.begin(),order.end(),[&](const Entry&e){return e.id==i;}))return i;return 0;}
+  void step(bool request=false,bool a_ready=true,int reply=-1,bool fresh=false) {
+    unsigned source=freeid();Entry fresh_entry=make(source);Entry response{};
+    if(reply>=0) {
+      auto it=std::find_if(order.begin(),order.end(),[&](const Entry&e){return e.id==unsigned(reply);});
+      if(it==order.end()){need(fresh&&request&&unsigned(reply)==source,"unexpected test reply");response=fresh_entry;}
+      else {need(!it->arrived,"duplicate test reply");response=*it;}
+    }
+    dut.io_valid=request;dut.auto_out_a_ready=a_ready;dut.io_mode=(issued&1)?1:0;
+    dut.io_addr=0x80000000+issued*8;dut.io_mask=(issued&1)?15:255;dut.io_writeData=0x76540000+issued;
+    dut.auto_out_d_valid=reply>=0;dut.auto_out_d_bits_source=reply>=0?unsigned(reply):0;
+    dut.auto_out_d_bits_data=response.value;dut.auto_out_d_bits_corrupt=response.corrupt;dut.auto_out_d_bits_denied=response.denied;
+    dut.eval();
+    bool expected_a=request&&a_ready&&order.size()<6;
+    bool direct=!order.empty()&&!order.front().arrived&&reply>=0&&unsigned(reply)==order.front().id&&bypass;
+    bool expected_d=!order.empty()&&(order.front().arrived||direct);
+    need(bool(dut.io_busy)==(order.size()==6),"DMA capacity disagrees with ledger");
+    need(bool(dut.io_a_fire)==expected_a,"A acceptance mismatch");
+    need(bool(dut.io_d_valid)==expected_d,"D validity/order mismatch");
+    need(dut.auto_out_d_ready,"D response unexpectedly backpressured");
+    if(expected_a){
+      need(dut.auto_out_a_bits_source==source,"source reservation/reuse mismatch");
+      need(dut.auto_out_a_bits_address==dut.io_addr,"request address changed");
+      need(dut.auto_out_a_bits_mask==dut.io_mask,"request mask changed");
+      if(dut.io_mode)need(dut.auto_out_a_bits_data==dut.io_writeData,"request write data changed");
+    }
+    if(expected_d){
+      Entry wanted=order.front();
+      need(dut.io_tag==wanted.id,"retired tag mismatch");
+      need(dut.io_readData==wanted.value,"response data mismatch");
+      need(bool(dut.io_d_cor)==wanted.corrupt,"corrupt flag mismatch");
+      need(bool(dut.io_d_den)==wanted.denied,"denied flag mismatch");
+      if(direct)fast++;else buffered++;
+    }
+    if(reply>=0){
+      auto it=std::find_if(order.begin(),order.end(),[&](const Entry&e){return e.id==unsigned(reply);});
+      if(it!=order.end())it->arrived=true;else {need(expected_a,"fresh response without accepted A");fresh_entry.arrived=true;}
+    }
+    if(expected_d){order.pop_front();retired++;}
+    if(expected_a){order.push_back(fresh_entry);issued++;}
+    tick();
+    need(bool(dut.io_empty)==order.empty(),"DMA empty mismatch");
+  }
+  std::vector<unsigned> pending(){std::vector<unsigned> ids;for(const auto&e:order)if(!e.arrived)ids.push_back(e.id);return ids;}
+  void drain(){while(!order.empty()){auto p=pending();step(false,true,p.empty()?-1:int(p.back()));}step();}
+  void done(const char*name){drain();std::cout<<"PASS "<<name<<" issued="<<issued<<" retired="<<retired<<" fast="<<fast<<" buffered="<<buffered<<"\n";}
+};
+int main(int argc,char **argv){
+  Verilated::commandArgs(argc,argv);bool bypass=argc>1&&std::string(argv[1])=="bypass";
+  try {
+    {Check t(bypass);t.step(true);t.step(false,true,0);t.done("single_response_and_no_duplicate");}
+    {Check t(bypass);t.step(true);t.step(true);t.step(false,true,1);t.step(false,true,0);t.done("out_of_order_then_head_response");}
+    {Check t(bypass);t.step(true);t.step(true);t.step(true);t.step(false,true,1);t.step(false,true,0);t.step(false,true,2);t.done("buffered_delivery_with_concurrent_later_arrival");}
+    {Check t(bypass);for(int i=0;i<6;i++)t.step(true);t.step(true,true,0);t.step(true,true,1);t.done("full_capacity_and_next_cycle_source_reuse");}
+    {Check t(bypass);t.step(true,true,0,true);t.done("empty_queue_same_cycle_new_request_response");}
+    {Check t(bypass);std::mt19937 rng(20261106);for(int i=0;i<2000;i++){auto p=t.pending();int reply=!p.empty()&&(rng()%4!=0)?int(p[rng()%p.size()]):-1;t.step(rng()%4!=0,rng()%5!=0,reply);}t.done("random_requests_responses_A_backpressure_flags_and_reuse");if(bypass)t.need(t.fast>0&&t.buffered>0,"random coverage missing a delivery path");}
+    std::cout<<"TOTAL: 6/6 generated-RTL protocol checks PASS; mode="<<(bypass?"bypass":"baseline")<<"\n";
+  }catch(const std::exception&e){std::cerr<<"FAIL "<<e.what()<<"\n";return 1;}
+  return 0;
+}
+
+TEMPORARY FIRRTL EXTRACTION / VERILATOR DRIVER
+from pathlib import Path
+import hashlib,re,subprocess,sys
+sys.dont_write_bytecode=True
+root=Path('/home/kioannou/chipyard_1.13.0/generators/LUMAX');work=Path(__file__).resolve().parent
+sys.path.insert(0,str(root/'verification'))
+import run_llama_shapes as hw
+mode=sys.argv[1];env=hw.environment();folder=work/mode/'protocol';folder.mkdir(exist_ok=True)
+fir=next((work/mode/'generated-src').rglob('chipyard.harness.TestHarness.LUMAXROcketConfig.fir'))
+text=fir.read_text();modules={}
+for match in re.finditer(r'(?ms)^  (?:module|extmodule|intmodule) (\w+) .*?(?=^  (?:module|extmodule|intmodule) |\Z)',text):modules[match[1]]=match[0]
+selected=[];visited=set()
+def add(name):
+ if name in visited:return
+ visited.add(name);block=modules[name]
+ for child in re.findall(r'(?m)^\s+inst \w+ of (\w+)',block):add(child)
+ if name=='DmaModule':
+  assert 'input reset : Reset' in block
+  block=block.replace('input reset : Reset','input reset : UInt<1>',1)
+ selected.append(block)
+add('DmaModule')
+extracted=folder/'dma.fir';extracted.write_text(text.splitlines()[0]+'\ncircuit DmaModule :\n'+''.join(selected))
+sv=folder/'dma.sv'
+commands=[['firtool',str(extracted),'-o',str(sv)],['verilator','--cc','--exe','--build','-j','4','--assert','-Wno-fatal','--top-module','DmaModule','--Mdir',str(folder/'obj'),str(sv),str(work/'dma_check.cpp')]]
+logfile=Path((work/'log_path.txt').read_text())
+for i,cmd in enumerate(commands):
+ p=subprocess.run(cmd,cwd=folder,env=env,capture_output=True,text=True,timeout=300)
+ (folder/f'build_{i}.log').write_text(p.stdout+p.stderr)
+ if p.returncode:raise RuntimeError(p.stdout[-4000:]+p.stderr[-4000:])
+p=subprocess.run([str(folder/'obj/VDmaModule'),mode],cwd=folder,env=env,capture_output=True,text=True,timeout=30)
+(folder/'results.log').write_text(p.stdout+p.stderr)
+with logfile.open('a') as out:
+ out.write('\nGENERATED DMA RTL PROTOCOL CHECKS '+mode+'\n')
+ out.write('DmaModule and Queue extracted from '+str(fir)+'\n')
+ out.write('Root reset bound to synchronous UInt1 as in the Chipyard elaboration; datapath and queue logic unchanged.\n')
+ out.write('Isolated DMA FIRRTL SHA256='+hashlib.sha256(extracted.read_bytes()).hexdigest()+'\n')
+ out.write('Actual commands: '+repr(commands)+'\n')
+ out.write(p.stdout+p.stderr)
+print(p.stdout+p.stderr,flush=True)
+assert p.returncode==0
+assert 'TOTAL: 6/6 generated-RTL protocol checks PASS' in p.stdout
+
+Temporary scripts, source snapshots, generated RTL, ELF and simulators removed. End: 2026-11-06T03:39:11.754312+02:00
+
+POST-VERIFICATION COMMENT-ONLY UPDATE
+Previous registered response path retained as one inactive Scala block comment, per user request. Removing that exact comment reproduces the tested active DMA source byte-for-byte (SHA25665049ec6a50296eac92b04b0f8187f4affe82091acd9f49c3cf4d45811029dec).
+Final DMA source including legacy comment SHA256=45ec2c0d9645fe663668f504980ce93bb0e8277434b9e50cd8e2904744a7328f
