@@ -13,7 +13,7 @@ import math
 from pathlib import Path
 import re
 
-MODEL_PATH = Path(__file__).resolve().parents[1] / 'Performance Modeling' / 'Model.py'
+MODEL_PATH = Path(__file__).resolve().parents[2] / 'Performance Modeling' / 'Model.py'
 STAGES = {
     'total': ('Total active cycles', 'total_cycles'),
     'load_x': ('Load X', 'cycles_load_X'),

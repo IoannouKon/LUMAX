@@ -62,7 +62,7 @@ import traceback
 sys.dont_write_bytecode = True
 SELF = Path(__file__).resolve()
 ROOT = SELF.parent
-sys.path.insert(0, str(ROOT.parent))
+sys.path.insert(0, str(ROOT.parent / 'OLD_VERIFICATION'))
 # Existing tracked framework helpers; no new companion Python file is needed.
 import cycle_compare as cc
 import run_fp16 as fp
