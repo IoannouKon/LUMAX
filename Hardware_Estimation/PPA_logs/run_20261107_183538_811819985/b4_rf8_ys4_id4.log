@@ -1,0 +1,612 @@
+Configuration: b4_rf8_ys4_id4
+Group: ys
+Start: 2026-11-08T00:39:11+02:00
+FP16/INT16: fp16; capacities R=8 K=4097 M=128; target=20ns; utilization=0.40
+Power: statistical activity=0.10 duty=0.50 unless VCD explicitly supplied
+Flow: placement + CTS, final PPA analysis only; estimated wire RC. Post-CTS timing repair, intermediate timing reports, routing and OpenRCX disabled.
+Command: python3 -u -B /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_ppa.py run --activations fp16 --max-r 8 --max-k 4097 --max-m 128 --period-ns 20 --uncertainty-ns 1 --utilization 0.40 --activity 0.10 --duty 0.50 --threads 4 --timeout 14400 --output /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work --b 4 --rf 8 --ys 4 --ids 4 
+2026-11-08 00:39:24 REUSE assembly
+2026-11-08 00:39:24 START rtl
+2026-11-08 00:40:06 DONE rtl: 41.183s
+2026-11-08 00:40:06 START sram_validation
+2026-11-08 00:40:11 DONE sram_validation: 5.617s
+2026-11-08 00:40:11 START controller_memory_validation
+2026-11-08 01:00:11 FAILED: Command '['/home/kioannou/chipyard_1.13.0/.conda-env/bin/verilator', '--cc', '--exe', '--build', '--assert', '-Wno-fatal', '--top-module', 'LUMAXExample', '-j', '2', '--Mdir', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/obj', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memories/lumax_sram_wrappers.v', '/home/kioannou/sram22_sky130_macros/sram22_128x32m4w8/sram22_128x32m4w8.v', '/home/kioannou/sram22_sky130_macros/sram22_512x32m4w8/sram22_512x32m4w8.v', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/controller.cpp']' timed out after 1200 seconds
+2026-11-08 01:00:20 Report: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/runs/20261108_003911_875256/report.md
+
+FINAL STATUS: FAILED; process exit=1
+
+All netlists, databases, SPEF and intermediate artifacts: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/assembly/feed85ba2d385a72ba08028e2c89dccbf1bc5e397b2d5528fd2bb39ae44b0501/assembly.log -----
+Reused existing Chipyard dependency assembly: /home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard.jar
+Guard: no checked non-LUMAX source/resource/build input is newer.
+All current LUMAX Scala sources are recompiled into a private overlay.
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/compile_config.log -----
+COMMAND /home/kioannou/chipyard_1.13.0/.conda-env/lib/jvm/bin/java -cp /home/kioannou/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.12/scala-compiler-2.13.12.jar:/home/kioannou/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.12/scala-reflect-2.13.12.jar:/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/assembly/feed85ba2d385a72ba08028e2c89dccbf1bc5e397b2d5528fd2bb39ae44b0501/chipyard.jar scala.tools.nsc.Main -classpath /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/assembly/feed85ba2d385a72ba08028e2c89dccbf1bc5e397b2d5528fd2bb39ae44b0501/chipyard.jar -Xplugin:/home/kioannou/.cache/coursier/v1/https/repo1.maven.org/maven2/org/chipsalliance/chisel-plugin_2.13.12/6.5.0/chisel-plugin_2.13.12-6.5.0.jar -language:reflectiveCalls -d /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/classes /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/Config.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/FP16.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ChunkInfoModules.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/MappingUtils.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/SignExtractor.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Scale.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/Product_Generator.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ActivationAddressCounter.scala /home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAXTopHelpers.scala
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M
+warning: 2 deprecations
+warning: 6 deprecations (since rocketchip 2.0.0)
+warning: 8 deprecations in total; re-run with -deprecation for details
+3 warnings
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/compile.log -----
+COMMAND /home/kioannou/chipyard_1.13.0/.conda-env/bin/verilator --cc --exe --build --assert -Wno-fatal --top-module LUMAXExample -j 2 --Mdir /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/obj /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memories/lumax_sram_wrappers.v /home/kioannou/sram22_sky130_macros/sram22_128x32m4w8/sram22_128x32m4w8.v /home/kioannou/sram22_sky130_macros/sram22_512x32m4w8/sram22_512x32m4w8.v /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/controller.cpp
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10144:27: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10144 |     {4'h0, dma_counter_a} >= 16'h0 & {4'h0, dma_counter_a} < _GEN_283[15:0]
+      |                           ^~
+                   ... For warning description see https://verilator.org/warn/UNSIGNED?v=5.022
+                   ... Use "/* verilator lint_off UNSIGNED */" and lint_on around source to disable this message.
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10218:27: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10218 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_323[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10297:27: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10297 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_367[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10353:50: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10353 |   wire [15:0]   _GEN_399 = {4'h0, dma_counter_d} < 16'h0 ? 16'h0 : {4'h0, dma_counter_d};
+      |                                                  ^
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10497:27: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10497 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_477[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10553:50: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10553 |   wire [15:0]   _GEN_509 = {4'h0, dma_counter_d} < 16'h0 ? 16'h0 : {4'h0, dma_counter_d};
+      |                                                  ^
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10694:27: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10694 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_587[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10750:50: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10750 |   wire [15:0]   _GEN_619 = {4'h0, dma_counter_d} < 16'h0 ? 16'h0 : {4'h0, dma_counter_d};
+      |                                                  ^
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10891:27: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10891 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_697[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:10947:50: Comparison is constant due to unsigned arithmetic
+                                                                                                                                                                                             : ... note: In instance 'LUMAXExample'
+10947 |   wire [15:0]   _GEN_729 = {4'h0, dma_counter_d} < 16'h0 ? 16'h0 : {4'h0, dma_counter_d};
+      |                                                  ^
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:35820:27: Comparison is constant due to unsigned arithmetic
+35820 |     {4'h0, dma_counter_a} >= 16'h0 & {4'h0, dma_counter_a} < _GEN_5838[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:35897:27: Comparison is constant due to unsigned arithmetic
+35897 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_5878[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:35973:27: Comparison is constant due to unsigned arithmetic
+35973 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_5918[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:36029:51: Comparison is constant due to unsigned arithmetic
+36029 |   wire [15:0]   _GEN_5950 = {4'h0, dma_counter_d} < 16'h0 ? 16'h0 : {4'h0, dma_counter_d};
+      |                                                   ^
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:36167:27: Comparison is constant due to unsigned arithmetic
+36167 |     {4'h0, dma_counter_d} >= 16'h0 & {4'h0, dma_counter_d} < _GEN_6028[15:0]
+      |                           ^~
+%Warning-UNSIGNED: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v:36223:51: Comparison is constant due to unsigned arithmetic
+36223 |   wire [15:0]   _GEN_6060 = {4'h0, dma_counter_d} < 16'h0 ? 16'h0 : {4'h0, dma_counter_d};
+      |                                                   ^
+make: Entering directory '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/obj'
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -Os -c -o controller.o /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/controller.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -c -o verilated.o /home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/verilated.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -c -o verilated_threads.o /home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/verilated_threads.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -x c++-header VLUMAXExample__pch.h -o VLUMAXExample__pch.h.fast.gch
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -x c++-header VLUMAXExample__pch.h -o VLUMAXExample__pch.h.slow.gch
+echo "" > VLUMAXExample__ALL.verilator_deplist.tmp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample.o VLUMAXExample.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample___024root__DepSet_h25a733b3__0.o VLUMAXExample___024root__DepSet_h25a733b3__0.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample___024root__DepSet_h25a733b3__1.o VLUMAXExample___024root__DepSet_h25a733b3__1.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample___024root__DepSet_h25a733b3__2.o VLUMAXExample___024root__DepSet_h25a733b3__2.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample___024root__DepSet_h3e83995c__0.o VLUMAXExample___024root__DepSet_h3e83995c__0.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample___024root__DepSet_h3e83995c__1.o VLUMAXExample___024root__DepSet_h3e83995c__1.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample___024root__DepSet_h3e83995c__2.o VLUMAXExample___024root__DepSet_h3e83995c__2.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample_Product_Generator__DepSet_he2728ffd__0.o VLUMAXExample_Product_Generator__DepSet_he2728ffd__0.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.fast -c -o VLUMAXExample_I_MEM_0_ext__DepSet_hf906a589__0.o VLUMAXExample_I_MEM_0_ext__DepSet_hf906a589__0.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample__ConstPool_0.o VLUMAXExample__ConstPool_0.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample___024root__Slow.o VLUMAXExample___024root__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample___024root__DepSet_h25a733b3__0__Slow.o VLUMAXExample___024root__DepSet_h25a733b3__0__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample___024root__DepSet_h3e83995c__0__Slow.o VLUMAXExample___024root__DepSet_h3e83995c__0__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample___024root__DepSet_h3e83995c__1__Slow.o VLUMAXExample___024root__DepSet_h3e83995c__1__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample_Product_Generator__Slow.o VLUMAXExample_Product_Generator__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample_Product_Generator__DepSet_h970a6a07__0__Slow.o VLUMAXExample_Product_Generator__DepSet_h970a6a07__0__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample_I_MEM_0_ext__Slow.o VLUMAXExample_I_MEM_0_ext__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample_I_MEM_0_ext__DepSet_h34cdf040__0__Slow.o VLUMAXExample_I_MEM_0_ext__DepSet_h34cdf040__0__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample_I_MEM_0_ext__DepSet_hf906a589__0__Slow.o VLUMAXExample_I_MEM_0_ext__DepSet_hf906a589__0__Slow.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++   -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -include VLUMAXExample__pch.h.slow -c -o VLUMAXExample__Syms.o VLUMAXExample__Syms.cpp
+make: *** [/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/verilated.mk:269: VLUMAXExample___024root__DepSet_h25a733b3__0.o] Terminated
+make: *** Deleting intermediate file 'VLUMAXExample__ALL.verilator_deplist.tmp'
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/elaborate.log -----
+COMMAND /home/kioannou/chipyard_1.13.0/.conda-env/lib/jvm/bin/java -cp /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/classes:/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/assembly/feed85ba2d385a72ba08028e2c89dccbf1bc5e397b2d5528fd2bb39ae44b0501/chipyard.jar chipyard.Generator --target-dir /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812 --name PPA --top-module chipyard.harness.TestHarness --legacy-configs chipyard:LUMAXROcketConfig
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M
+L2 InclusiveCache Client Map:
+	0 <= debug
+	1 <= serial_tl_0_0
+	2 <= serial_tl_0_1
+	3 <= serial_tl_0_2
+	4 <= serial_tl_0_3
+	5 <= DMA
+	6 <= Core 0 DCache
+	7 <= Core 0 ICache
+
+Interrupt map (2 harts 1 interrupts):
+  [1, 1] => uart_0
+
+<stdin>:82.18-87.5: Warning (simple_bus_reg): /soc/cbus_clock: missing or empty reg/ranges property
+<stdin>:109.18-114.5: Warning (simple_bus_reg): /soc/fbus_clock: missing or empty reg/ranges property
+<stdin>:125.18-130.5: Warning (simple_bus_reg): /soc/mbus_clock: missing or empty reg/ranges property
+<stdin>:131.18-136.5: Warning (simple_bus_reg): /soc/pbus_clock: missing or empty reg/ranges property
+<stdin>:142.18-147.5: Warning (simple_bus_reg): /soc/sbus_clock: missing or empty reg/ranges property
+<stdin>:42.30-46.6: Warning (interrupt_provider): /cpus/cpu@0/interrupt-controller: Missing #address-cells in interrupt provider
+<stdin>:115.37-124.5: Warning (interrupt_provider): /soc/interrupt-controller@c000000: Missing #address-cells in interrupt provider
+Clock sbus_0: using diplomatically specified frequency of 500.0.
+Clock pbus_0: using diplomatically specified frequency of 500.0.
+Clock fbus_0: using diplomatically specified frequency of 500.0.
+Clock mbus_0: using diplomatically specified frequency of 500.0.
+Clock cbus_0: using diplomatically specified frequency of 500.0.
+/dts-v1/;
+
+/ {
+	#address-cells = <1>;
+	#size-cells = <1>;
+	compatible = "ucb-bar,chipyard-dev";
+	model = "ucb-bar,chipyard";
+	L3: aliases {
+		serial0 = &L26;
+	};
+	L18: chosen {
+		stdout-path = &L26;
+	};
+	L2: cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		timebase-frequency = <500000>;
+		L13: cpu@0 {
+			clock-frequency = <0>;
+			compatible = "sifive,rocket0", "riscv";
+			d-cache-block-size = <64>;
+			d-cache-sets = <64>;
+			d-cache-size = <4096>;
+			d-tlb-sets = <1>;
+			d-tlb-size = <4>;
+			device_type = "cpu";
+			hardware-exec-breakpoint-count = <1>;
+			i-cache-block-size = <64>;
+			i-cache-sets = <64>;
+			i-cache-size = <4096>;
+			i-tlb-sets = <1>;
+			i-tlb-size = <4>;
+			mmu-type = "riscv,sv39";
+			next-level-cache = <&L10>;
+			reg = <0x0>;
+			riscv,isa = "rv64imaczicsr_zifencei_zihpm_xrocket";
+			riscv,pmpgranularity = <4>;
+			riscv,pmpregions = <8>;
+			status = "okay";
+			timebase-frequency = <500000>;
+			tlb-split;
+			L11: interrupt-controller {
+				#interrupt-cells = <1>;
+				compatible = "riscv,cpu-intc";
+				interrupt-controller;
+			};
+		};
+	};
+	L29: htif {
+		compatible = "ucb,htif0";
+	};
+	L25: memory@8000000 {
+		device_type = "memory";
+		reg = <0x8000000 0x10000>;
+		status = "disabled";
+	};
+	L21: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>;
+	};
+	L1: soc {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "ucb-bar,chipyard-soc", "simple-bus";
+		ranges;
+		L24: boot-address-reg@1000 {
+			reg = <0x1000 0x1000>;
+			reg-names = "control";
+		};
+		L10: cache-controller@2010000 {
+			cache-block-size = <64>;
+			cache-level = <2>;
+			cache-sets = <1024>;
+			cache-size = <524288>;
+			cache-unified;
+			compatible = "sifive,inclusivecache0", "cache";
+			next-level-cache = <&L21 &L25>;
+			reg = <0x2010000 0x1000>;
+			reg-names = "control";
+			sifive,mshr-count = <7>;
+		};
+		L7: cbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <500000000>;
+			clock-output-names = "cbus_clock";
+			compatible = "fixed-clock";
+		};
+		L14: clint@2000000 {
+			compatible = "riscv,clint0";
+			interrupts-extended = <&L11 3 &L11 7>;
+			reg = <0x2000000 0x10000>;
+			reg-names = "control";
+		};
+		L27: clock-gater@100000 {
+			reg = <0x100000 0x1000>;
+			reg-names = "control";
+		};
+		L16: debug-controller@0 {
+			compatible = "sifive,debug-013", "riscv,debug-013";
+			debug-attach = "jtag";
+			interrupts-extended = <&L11 65535>;
+			reg = <0x0 0x1000>;
+			reg-names = "control";
+		};
+		L8: error-device@3000 {
+			compatible = "sifive,error0";
+			reg = <0x3000 0x1000>;
+		};
+		L6: fbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <500000000>;
+			clock-output-names = "fbus_clock";
+			compatible = "fixed-clock";
+		};
+		L15: interrupt-controller@c000000 {
+			#interrupt-cells = <1>;
+			compatible = "riscv,plic0";
+			interrupt-controller;
+			interrupts-extended = <&L11 11 &L11 9>;
+			reg = <0xc000000 0x4000000>;
+			reg-names = "control";
+			riscv,max-priority = <1>;
+			riscv,ndev = <1>;
+		};
+		L9: mbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <500000000>;
+			clock-output-names = "mbus_clock";
+			compatible = "fixed-clock";
+		};
+		L5: pbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <500000000>;
+			clock-output-names = "pbus_clock";
+			compatible = "fixed-clock";
+		};
+		L23: rom@10000 {
+			compatible = "sifive,rom0";
+			reg = <0x10000 0x10000>;
+			reg-names = "mem";
+		};
+		L4: sbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <500000000>;
+			clock-output-names = "sbus_clock";
+			compatible = "fixed-clock";
+		};
+		L26: serial@10020000 {
+			clocks = <&L5>;
+			compatible = "sifive,uart0";
+			interrupt-parent = <&L15>;
+			interrupts = <1>;
+			reg = <0x10020000 0x1000>;
+			reg-names = "control";
+		};
+		L28: tile-reset-setter@110000 {
+			reg = <0x110000 0x1000>;
+			reg-names = "control";
+		};
+	};
+};
+
+Generated Address Map
+	       0 -     1000 ARWX  debug-controller@0
+	    1000 -     2000 ARW   boot-address-reg@1000
+	    3000 -     4000 ARWX  error-device@3000
+	   10000 -    20000  R X  rom@10000
+	  100000 -   101000 ARW   clock-gater@100000
+	  110000 -   111000 ARW   tile-reset-setter@110000
+	 2000000 -  2010000 ARW   clint@2000000
+	 2010000 -  2011000 ARW   cache-controller@2010000
+	 8000000 -  8010000 ARWXC memory@8000000
+	 c000000 - 10000000 ARW   interrupt-controller@c000000
+	10020000 - 10021000 ARW   serial@10020000
+	80000000 - 90000000 ARWXC memory@80000000
+
+IOCells generated by IOBinders:
+  IOBinder for interface sifive.blocks.devices.uart.HasPeripheryUART generated:
+    1 X GenericDigitalInIOCell
+    1 X GenericDigitalOutIOCell
+  IOBinder for interface testchipip.boot.CanHavePeripheryCustomBootPin generated:
+    1 X GenericDigitalInIOCell
+  IOBinder for interface freechips.rocketchip.devices.debug.HasPeripheryDebug generated:
+    3 X GenericDigitalInIOCell
+    1 X GenericDigitalOutIOCell
+  IOBinder for interface chipyard.clocking.CanHaveClockTap generated:
+    1 X GenericDigitalOutIOCell
+  IOBinder for interface testchipip.serdes.CanHavePeripheryTLSerial generated:
+    35 X GenericDigitalInIOCell
+    34 X GenericDigitalOutIOCell
+
+  Total generated 77 IOCells:
+    40 X GenericDigitalInIOCell
+    37 X GenericDigitalOutIOCell
+Harness binder clock is 100.0
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 951:32: [W004] Dynamic index with width 5 is too wide for Vec of size 16 (expected index width 4).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 961:45: [W002] Dynamic index with width 6 is too large for extractee of width 16
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1076:28: [W004] Dynamic index with width 8 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1076:63: [W004] Dynamic index with width 8 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1079:35: [W004] Dynamic index with width 8 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1079:75: [W004] Dynamic index with width 8 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1206:41: [W004] Dynamic index with width 3 is too wide for Vec of size 4 (expected index width 2).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1206:50: [W004] Dynamic index with width 12 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1207:46: [W004] Dynamic index with width 3 is too wide for Vec of size 4 (expected index width 2).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1207:55: [W004] Dynamic index with width 12 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1260:23: [W004] Dynamic index with width 3 is too wide for Vec of size 4 (expected index width 2).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1260:32: [W004] Dynamic index with width 12 is too wide for Vec of size 128 (expected index width 7).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1261:57: [W004] Dynamic index with width 3 is too wide for Vec of size 4 (expected index width 2).
+[warn] home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/LUMAX_Top.scala 1261:66: [W004] Dynamic index with width 12 is too wide for Vec of size 128 (expected index width 7).
+[warn] generators/rocket-chip/src/main/scala/rocket/ICache.scala 508:25: [W002] Dynamic index with width 7 is too large for extractee of width 64
+[warn]     val s1_vb = vb_array(Cat(i.U, s1_idx).pad(log2Ceil(nSets*nWays))) && !s1_slaveValid
+[warn]                         ^
+[warn] generators/testchipip/src/main/scala/serdes/TLSerdes.scala 85:9: [W008] Return values of asTypeOf will soon be read-only
+[warn]       c <> b.io.protocol
+[warn]         ^
+[warn] There were 16 warning(s) during hardware elaboration.
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/firtool.log -----
+COMMAND /home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools/bin/firtool /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.fir --format=fir --verilog --disable-opt --preserve-aggregate=none --disable-all-randomization --strip-debug-info --repl-seq-mem --repl-seq-mem-file=/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/seq_mems.conf --lowering-options=disallowLocalVariables,disallowPackedArrays,noAlwaysComb -o /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.raw
+home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala:27:7: warning: module contains 8 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala:126:11: note: example printf here, will just be a printf in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/DMA.scala:27:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ActivationAddressCounter.scala:11:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ActivationAddressCounter.scala:62:11: note: example printf here, will just be a printf in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/src/main/scala/ActivationAddressCounter.scala:11:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/collision.log -----
+[1295] %Fatal: lumax_sram_wrappers.v:50: Assertion failed in TOP.tb.m0: LUMAX_SRAM_PORT_COLLISION I_MEM_0_ext
+%Error: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memories/lumax_sram_wrappers.v:50: Verilog $stop
+Aborting...
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/compile.log -----
+COMMAND /home/kioannou/chipyard_1.13.0/.conda-env/bin/verilator --binary --timing --assert -Wno-fatal --top-module tb -j 2 --Mdir /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/obj /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memories/lumax_sram_wrappers.v /home/kioannou/sram22_sky130_macros/sram22_128x32m4w8/sram22_128x32m4w8.v /home/kioannou/sram22_sky130_macros/sram22_512x32m4w8/sram22_512x32m4w8.v
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:15:33: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'k' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   15 |   @(negedge clk); m0_we=1; m0_wa=k; m0_d={$urandom,$urandom};
+      |                                 ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.022
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:27:33: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   27 |   if(op==0) begin m0_we=1; m0_wa=address; m0_d={$urandom,$urandom}; m0_gold[address]=m0_d; end
+      |                                 ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:28:34: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   28 |   if(op==1) begin m0_en0=1; m0_a0=address; m0_expected[0]=m0_gold[address]; m0_known[0]=1; end
+      |                                  ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:29:34: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   29 |   if(op==2) begin m0_en1=1; m0_a1=address; m0_expected[1]=m0_gold[address]; m0_known[1]=1; end
+      |                                  ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:30:34: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   30 |   if(op==3) begin m0_en2=1; m0_a2=address; m0_expected[2]=m0_gold[address]; m0_known[2]=1; end
+      |                                  ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:51:33: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'k' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   51 |   @(negedge clk); m1_we=1; m1_wa=k; m1_d={$urandom,$urandom};
+      |                                 ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:58:33: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   58 |   if(op==0) begin m1_we=1; m1_wa=address; m1_d={$urandom,$urandom}; m1_gold[address]=m1_d; end
+      |                                 ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:59:34: Operator ASSIGN expects 7 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   59 |   if(op==1) begin m1_en0=1; m1_a0=address; m1_expected[0]=m1_gold[address]; m1_known[0]=1; end
+      |                                  ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:76:33: Operator ASSIGN expects 9 bits on the Assign RHS, but Assign RHS's VARREF 'k' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   76 |   @(negedge clk); m2_we=1; m2_wa=k; m2_d={$urandom,$urandom};
+      |                                 ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:76:41: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's REPLICATE generates 64 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   76 |   @(negedge clk); m2_we=1; m2_wa=k; m2_d={$urandom,$urandom};
+      |                                         ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:83:33: Operator ASSIGN expects 9 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   83 |   if(op==0) begin m2_we=1; m2_wa=address; m2_d={$urandom,$urandom}; m2_gold[address]=m2_d; end
+      |                                 ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:83:47: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's REPLICATE generates 64 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   83 |   if(op==0) begin m2_we=1; m2_wa=address; m2_d={$urandom,$urandom}; m2_gold[address]=m2_d; end
+      |                                               ^
+%Warning-WIDTHTRUNC: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:84:34: Operator ASSIGN expects 9 bits on the Assign RHS, but Assign RHS's VARREF 'address' generates 32 bits.
+                                                                                                                                                                                                            : ... note: In instance 'tb'
+   84 |   if(op==1) begin m2_en0=1; m2_a0=address; m2_expected[0]=m2_gold[address]; m2_known[0]=1; end
+      |                                  ^
+make: Entering directory '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/obj'
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated.o /home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/verilated.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated_timing.o /home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/verilated_timing.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated_threads.o /home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/verilated_threads.cpp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/python3 /home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtb.cpp Vtb___024root__DepSet_hfe20aad3__0.cpp Vtb___024root__DepSet_ha183790c__0.cpp Vtb__main.cpp Vtb___024root__Slow.cpp Vtb___024root__DepSet_hfe20aad3__0__Slow.cpp Vtb___024root__DepSet_ha183790c__0__Slow.cpp Vtb__Syms.cpp > Vtb__ALL.cpp
+echo "" > Vtb__ALL.verilator_deplist.tmp
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++ -Os  -I.  -MMD -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include -I/home/kioannou/chipyard_1.13.0/.conda-env/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o Vtb__ALL.o Vtb__ALL.cpp
+Archive /home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-ar -rcs Vtb__ALL.a Vtb__ALL.o
+/home/kioannou/chipyard_1.13.0/.conda-env/bin/x86_64-conda-linux-gnu-c++    verilated.o verilated_timing.o verilated_threads.o Vtb__ALL.a    -pthread -lpthread -latomic   -o Vtb
+rm Vtb__ALL.verilator_deplist.tmp
+make: Leaving directory '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/obj'
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/simulation.log -----
+COMMAND /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/obj/Vtb
+LUMAX_SRAM_ADAPTER_PASS
+- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memory_validation/tb.sv:92: Verilog $finish
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/runs/20261108_003911_875256/memory_requirements.json -----
+[
+  {
+    "depth": 128,
+    "extra_ports": [],
+    "hierarchy": [
+      "LUMAXExample.I_MEM_15.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_14.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_13.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_12.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_11.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_10.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_9.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_8.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_7.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_6.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_5.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_4.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_3.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_2.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_1.I_MEM_0_ext",
+      "LUMAXExample.I_MEM_0.I_MEM_0_ext"
+    ],
+    "masked": false,
+    "module_name": "I_MEM_0_ext",
+    "read": 3,
+    "readwrite": 0,
+    "width": 64,
+    "write": 1
+  },
+  {
+    "depth": 128,
+    "extra_ports": [],
+    "hierarchy": [
+      "LUMAXExample.W_MEM_1_3.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_1_2.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_1_1.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_1_0.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_0_3.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_0_2.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_0_1.W_MEM_0_0_ext",
+      "LUMAXExample.W_MEM_0_0.W_MEM_0_0_ext"
+    ],
+    "masked": false,
+    "module_name": "W_MEM_0_0_ext",
+    "read": 1,
+    "readwrite": 0,
+    "width": 64,
+    "write": 1
+  },
+  {
+    "depth": 512,
+    "extra_ports": [],
+    "hierarchy": [
+      "LUMAXExample.temp_muls_mem_15.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_14.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_13.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_12.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_11.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_10.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_9.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_8.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_7.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_6.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_5.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_4.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_3.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_2.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_1.temp_muls_mem_0_ext",
+      "LUMAXExample.temp_muls_mem_0.temp_muls_mem_0_ext"
+    ],
+    "masked": false,
+    "module_name": "temp_muls_mem_0_ext",
+    "read": 1,
+    "readwrite": 0,
+    "width": 32,
+    "write": 1
+  }
+]
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/runs/20261108_003911_875256/report.json -----
+{
+  "area": null,
+  "configuration": {
+    "activations": "fp16",
+    "activity": 0.1,
+    "b": 4,
+    "duty": 0.5,
+    "ids": 4,
+    "input_delay_ns": 2.0,
+    "max_k": 4097,
+    "max_m": 128,
+    "max_r": 8,
+    "output_delay_ns": 2.0,
+    "output_load_pf": 0.05,
+    "period_ns": 20.0,
+    "rf": 8,
+    "threads": 4,
+    "timeout": 14400,
+    "uncertainty_ns": 1.0,
+    "utilization": 0.4,
+    "workload_label": "unspecified",
+    "ys": 4
+  },
+  "elapsed_seconds": 1269.005,
+  "error": "Command '['/home/kioannou/chipyard_1.13.0/.conda-env/bin/verilator', '--cc', '--exe', '--build', '--assert', '-Wno-fatal', '--top-module', 'LUMAXExample', '-j', '2', '--Mdir', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/obj', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memories/lumax_sram_wrappers.v', '/home/kioannou/sram22_sky130_macros/sram22_128x32m4w8/sram22_128x32m4w8.v', '/home/kioannou/sram22_sky130_macros/sram22_512x32m4w8/sram22_512x32m4w8.v', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/controller.cpp']' timed out after 1200 seconds",
+  "flow_mode": "placement_cts_quick",
+  "power": null,
+  "routing_performed": false,
+  "skipped_physical_steps": [
+    "clock_tree_resize",
+    "global_route",
+    "global_route_resize",
+    "detailed_route",
+    "extraction"
+  ],
+  "stages": {
+    "assembly": {
+      "original_seconds": 0.134,
+      "reused": true,
+      "seconds": 0
+    },
+    "rtl": {
+      "reused": false,
+      "seconds": 41.183
+    },
+    "sram_validation": {
+      "reused": false,
+      "seconds": 5.617
+    }
+  },
+  "started": "20261108_003911_875256",
+  "status": "FAILED",
+  "timing": null
+}
+
+----- /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/runs/20261108_003911_875256/report.md -----
+# LUMAX ASIC PPA
+
+Status: **FAILED**
+
+Scope: LUMAX + DMA accelerator block; SKY130 HD. Rocket, caches, pad ring and package excluded.
+
+Flow: placement + clock-tree synthesis; post-CTS timing repair, intermediate timing reports, routing and OpenRCX disabled. Timing and power use placement-estimated wire RC.
+
+Configuration: `{"activations": "fp16", "activity": 0.1, "b": 4, "duty": 0.5, "ids": 4, "input_delay_ns": 2.0, "max_k": 4097, "max_m": 128, "max_r": 8, "output_delay_ns": 2.0, "output_load_pf": 0.05, "period_ns": 20.0, "rf": 8, "threads": 4, "timeout": 14400, "uncertainty_ns": 1.0, "utilization": 0.4, "workload_label": "unspecified", "ys": 4}`
+
+Incomplete: Command '['/home/kioannou/chipyard_1.13.0/.conda-env/bin/verilator', '--cc', '--exe', '--build', '--assert', '-Wno-fatal', '--top-module', 'LUMAXExample', '-j', '2', '--Mdir', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/obj', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/LUMAX.v', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/memories/lumax_sram_wrappers.v', '/home/kioannou/sram22_sky130_macros/sram22_128x32m4w8/sram22_128x32m4w8.v', '/home/kioannou/sram22_sky130_macros/sram22_512x32m4w8/sram22_512x32m4w8.v', '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/PPA_logs/work/cache/designs/74fac1b9535e73e07d8bbc1e03ea42d21e95e34b1faa54e7f2b9d668d6b02812/controller_memory_validation/controller.cpp']' timed out after 1200 seconds
+
+No physical hardware is needed. This flow performs ASIC floorplanning, placement and clock-tree synthesis only.
+Global routing, post-route resizing, detailed routing and OpenRCX extraction are commented out/disabled for now. No routed database or SPEF is required.
+COMPLETE means the pre-route estimation flow and its available checks completed; it does not establish routing/timing closure.
+No fabricated-silicon frequency/power guarantee, DRC/LVS signoff or SRAM-wrapper correctness proof is claimed.
+Power comparisons need the same clock and activity/workload. Timing and area need the same technology, capacities and floorplan policy.
+Generated logs/configs/Tcl and cached-stage manifests retain the provenance. Null means unavailable, never zero.
