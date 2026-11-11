@@ -6,13 +6,16 @@ latency. TileLink returns one cycle earlier; queued head responses can bypass
 the register. Early/out-of-order responses still occupy the existing buffers.
 Selection columns overlap through four valid/tag stages; consumed weight buffers
 become reusable after the final stage-2 capture, before accumulation retires.
+Weight requests advance to the next reserved buffer after the final request is
+issued, while earlier responses are still pending. The final response marks its
+buffer ready on the same edge; selection can start on the following cycle.
 The default magic-memory LLC profile uses interface-observed hit/miss costs;
 CPU traffic and unknown initial cache ownership remain sources of uncertainty.
 """
 from collections import OrderedDict
 import math
 
-MODEL_VERSION = 'controller-events-v5'
+MODEL_VERSION = 'controller-events-v6'
 
 
 def _integer(name, value, minimum=1):
@@ -78,6 +81,11 @@ class _Memory:
         self.controller_replay = latencies is not None and latency_basis=='controller'
         self.index = self.reads = self.writes = self.misses = 0
         self.trace = [] if trace else None
+        # One DMA engine spans all columns and stages. Retain its outstanding
+        # source credits and D-channel reservations across transfer() calls.
+        self.responses = []
+        self.return_slots = set()
+        self.last_issue = -1
 
     def response(self, address, write, issued):
         i = self.index
@@ -104,7 +112,9 @@ class _Memory:
         return max(hit,ready)
 
     def transfer(self, packets, start, ids, write=False, context=None):
-        responses, issued, return_slots = [],start-1,set()
+        responses, return_slots = self.responses,self.return_slots
+        issued = max(start-1,self.last_issue)
+        last = None
         for packet in packets:
             address,count = packet[:2]
             issued = max(issued+1,responses[-ids]+1 if len(responses)>=ids else start)
@@ -133,12 +143,14 @@ class _Memory:
                 bypassed = self.bypass and arrival>=head_ready
                 delivered = max(arrival if bypassed else arrival+1,head_ready)
             responses.append(delivered)
+            self.last_issue = issued
+            last = delivered
             if self.trace is not None:
                 # Optional per-packet metadata preserves rows in a shared transfer.
                 self.trace.append(dict(context or {},**(packet[2] if len(packet)>2 else {}),address=address,write=write,
                                        elements=count,issue=issued,response=delivered,
                                        tilelink_response=arrival,bypassed=bypassed))
-        return responses[-1] if responses else start-1
+        return last if last is not None else start-1
 
 
 def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
@@ -238,12 +250,18 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
                 start=max(producer_available,released_columns[col-buffers_w] if col>=buffers_w else gen_start)
                 packets=_read_packets(length,col*Cin+k_start,bank_span,w_bits,DMA_WIDTH,w_address)
                 last=memory.transfer(packets,start,ID,context=dict(stage='load_w',column=col,k_start=k_start,row_group=row_start))
-                # Response -> dma_resp cleared -> buffer ready (two edges).
-                ready=last+2
+                # The final response writes SRAM and marks the reserved buffer
+                # ready on the same edge; selection sees it next cycle.
+                ready=last+1
+                # Per-column latency intervals can overlap; this diagnostic
+                # sum is not an exclusive stage duration. Total cycles use
+                # the combined producer/selection schedule below.
                 load_w+=ready-start
                 if first_producer is None:
                     first_producer,first_select=ready-start,select_cycles
-                producer_available=ready
+                # The independent request cursor can fill the next buffer
+                # before this column's ordered responses have all returned.
+                producer_available=memory.last_issue+1
                 begin_select=max(select_available,ready)
                 read_end=begin_select+bank_span
                 # The next column can issue on the edge after the final input.
