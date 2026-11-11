@@ -29,7 +29,7 @@ class LUMAXExample(opcodes: OpcodeSet, val params: LUMAXParams)
 
   override lazy val module = new LUMAXExampleModuleImpl(this)
 
-  val dma = LazyModule(new DmaModule(LUMAX_Config.LUMAX_Config))
+  val dma = LazyModule(new DmaModule(params))
 
   tlNode   := dma.node  // Connect the memory module to the accelerator’s TileLink node
 
@@ -142,6 +142,13 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val load_w_buff_idx  = RegInit(0.U(log2Ceil(buffers).W))
   val select_buff_idx  = RegInit(0.U(log2Ceil(buffers).W))
   val w_count          = RegInit(0.U(log2Ceil(params.Cout + 1).W)) // counter to for current Weight matrix Column
+
+  // Reserve a buffer on its first accepted request, including while it fills.
+  // Requests and ordered responses have independent column/buffer cursors:
+  // j_w/load_w_buff_idx issue; w_count/weightReturnBuffer receive.
+  val weightReserved = RegInit(VecInit(Seq.fill(buffers)(false.B)))
+  val weightReturnBuffer = RegInit(0.U(log2Ceil(buffers).W))
+  val weightReturnBase = RegInit(0.U(matrixIndexWidth(params).W))
 
   // === Product-table storage and generation/select counters ===
   //Create SyncReadMems (Memory Blocks to store Prodcuts)
@@ -698,6 +705,17 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         w_count       := 0.U
         i_w_temp      := i_w
 
+        // X is drained and the previous selection pipeline has retired before
+        // entering a new K window. Both weight streams start at column zero.
+        assert(dma.io.empty, "New weight window has outstanding activation DMA")
+        j_w := 0.U
+        load_w_buff_idx := 0.U
+        weightReturnBuffer := 0.U
+        select_buff_idx := 0.U
+        weightReturnBase := temp_mul1
+        weightReserved.foreach(_ := false.B)
+        buffers_mode.foreach(_ := false.B)
+
         state      := sGenerateRegFiles
         // Seed selection once after X is loaded, before producing its LUT rows.
         activationAddress.io.restart := true.B
@@ -801,6 +819,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       // results no longer need this SRAM buffer; they carry their own column tag.
       when(selectionValid(0) && selectionEnd(0)) {
         buffers_mode(weightBufferS2) := false.B
+        weightReserved(weightBufferS2) := false.B
       }
 
       locally { // Payload stages keep advancing even when a new input is unavailable.
@@ -1115,6 +1134,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       // may the controller change K windows or expose outputs to the DMA.
       when(selectionValid(3) && selectionEnd(3) && (selectionColumn(3) === cout_reg - 1.U)) {
 
+        assert(j_w === cout_reg && w_count === cout_reg && dma.io.empty,
+          "Selection retired before all weight requests/responses drained")
+        assert(!weightReserved.asUInt.orR,
+          "Selection retired while a weight buffer was still reserved")
+
         when(load_x_cnt >= dma_limit) {
           i_w        := 0.U
           i_w_start  := 0.U
@@ -1415,99 +1439,82 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       init_cycle := false.B
     }
 
-    // send request to DMA in A Channel
-    when(dma_send && !dma.io.busy && !SplitEnable) {
+    // Weight memory is column-major and bit-packed. The source-beat offset
+    // and destination-word limit must be computed independently for A and D:
+    // requests may already belong to B while A's responses are still arriving.
+    val beatShift = Mux(weight_bits === 2.U, 5.U,
+      Mux(weight_bits === 4.U, 4.U, 3.U))
+    val issueLinear = mul1 +& i_w_start +& dma_counter_a
+    val returnLinear = weightReturnBase +& i_w_start +& dma_counter_d
+    val issueAvailable = elemsPerChunk_w - (issueLinear & (elemsPerChunk_w - 1.U))
+    val returnAvailable = elemsPerChunk_w - (returnLinear & (elemsPerChunk_w - 1.U))
+    val issueCount = packedReadCount((all_available_elems - dma_counter_a).min(issueAvailable),
+      dma_counter_a, elemsPerChunk_w)
+    val returnCount = packedReadCount((all_available_elems - dma_counter_d).min(returnAvailable),
+      dma_counter_d, elemsPerChunk_w)
 
-      i_w := dmaRequest(
-        i_w,
-        w_elems_per_reg,
-        elemsPerChunk_w,
-        adr_W,
-        RegsPerChunk_w,
-        all_available_elems
-      )
-
-    }
-
-    // response from DMA in D channel
-    when(dma.io.d_valid) {
-
-      i_w_temp := dmaResponce(
-        i_w_temp,
-        w_elems_per_reg,
-        elemsPerChunk_w,
-        RegsPerChunk_w,
-        weight_bits,
-        params.WBitWidth.U,
-        all_available_elems,
-        false
-      )
-    }
-
-    when(dma.io.d_valid) {
-      for (b <- 0 until buffers) {
-        when(buff_index === b.U) {
-          storePackedResponse(W_MEM(b), weight_bits, dma_counter_d,
-            packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_w),
-            mul1 + i_w_temp, dataResponse_w)
+    // Continue a filling buffer, or reserve an empty one. A ready/reading
+    // buffer cannot be overwritten before selection's final read is captured.
+    val canIssue = j_w < cout_reg &&
+      (dma_counter_a =/= 0.U || !weightReserved(load_w_buff_idx))
+    when(canIssue && !dma.io.busy && !SplitEnable) {
+      dma.io.mode := 0.U
+      dma.io.addr := adr_W + ((issueLinear >> beatShift) << 3)
+      dma.io.valid := true.B
+      when(dma.io.a_fire) {
+        val next = dma_counter_a +& issueCount
+        assert(issueCount =/= 0.U && next <= all_available_elems,
+          "Weight request exceeded its column window")
+        when(dma_counter_a === 0.U) { weightReserved(load_w_buff_idx) := true.B }
+        when(next === all_available_elems) {
+          // Advance after the final accepted request, without waiting for D.
+          dma_counter_a := 0.U
+          i_w := i_w_start
+          j_w := j_w + 1.U
+          mul1 := mul1 + cin_reg
+          load_w_buff_idx := Mux(load_w_buff_idx === (buffers - 1).U,
+            0.U, load_w_buff_idx + 1.U)
+        }.otherwise {
+          dma_counter_a := next
+          i_w := i_w_start + next
         }
       }
     }
 
-    when(!dma_resp && !SplitEnable) {
-
-      i_w                      := i_w_start
-      j_w                      := j_w + 1.U
-      dma_counter_a            := 0.U
-      dma_send                 := true.B
-      dma_resp                 := true.B
-      dma_counter_d            := 0.U
-      buffers_mode(buff_index) := true.B
-
-      // Advance to the next weight column.
-      val remain_in_column_regs = (cin_reg - i_w_start  + w_elems_per_reg -1.U)/w_elems_per_reg
-      val XS_W_temp             = Mux(remain_in_column_regs >= x_slice_weights_reg,x_slice_weights_reg,remain_in_column_regs)
-      // Advance to the next weight column.
-
-      load_w_buff_idx := load_w_buff_idx + 1.U
-      w_count         := w_count + 1.U
-
-      //before load W
-      val temp_mul1 = (j_w + 1.U) * cin_reg
-      val temp_mul2 = if (params.y_slice == 1) XS_W_temp * w_elems_per_reg
-      else (XS_W_temp * w_elems_per_reg).min(valid_inputs)
-
-      mul1 := temp_mul1
-      mul2 := temp_mul2
-      val all_available_elems_next = (temp_mul2).min(cin_reg - i_w_start)
-      all_available_elems    := all_available_elems_next
-      i_w_temp               := i_w_start
-
-      chunkInfoModule_A.io.j_x              := i_w_start
-      chunkInfoModule_A.io.x_elems_per_reg  := w_elems_per_reg
-      chunkInfoModule_A.io.elemsPerChunk_in := elemsPerChunk_w
-      chunkInfoModule_A.io.adr_X            := adr_W
-      chunkInfoModule_A.io.RegsPerChunk_in  := RegsPerChunk_w
-      chunkInfoModule_A.io.mul1             := temp_mul1
-      chunkInfoModule_A.io.mul2             := temp_mul2
-
-      elements_to_read := Mux(chunkInfoModule_A.io.elements_to_read <= all_available_elems_next, chunkInfoModule_A.io.elements_to_read, all_available_elems_next)
-      chunk_addres              := chunkInfoModule_A.io.chunk_address
-
-      chunkInfoModule_D.io.j_x_temp         := i_w_start
-      chunkInfoModule_D.io.x_elems_per_reg  := w_elems_per_reg
-      chunkInfoModule_D.io.elemsPerChunk_in := elemsPerChunk_w
-      chunkInfoModule_D.io.RegsPerChunk_in  := RegsPerChunk_w
-      chunkInfoModule_D.io.mul1             := temp_mul1
-      chunkInfoModule_D.io.mul2             := temp_mul2
-      chunkInfoModule_D.io.input_bits       := weight_bits
-      chunkInfoModule_D.io.max_bits         := params.WBitWidth.U
-      elements_to_read_temp := Mux(chunkInfoModule_D.io.elements_to_read_temp <= all_available_elems_next , chunkInfoModule_D.io.elements_to_read_temp, all_available_elems_next)
-
+    // DmaModule retires in request order. One response cursor and the existing
+    // packed-word carry therefore suffice; no per-ID payload table is added.
+    when(dma.io.d_valid) {
+      val next = dma_counter_d +& returnCount
+      assert(w_count < cout_reg && weightReserved(weightReturnBuffer),
+        "Weight response has no reserved destination buffer")
+      assert(returnCount =/= 0.U && next <= all_available_elems,
+        "Weight response exceeded its column window")
+      for (b <- 0 until buffers) {
+        when(weightReturnBuffer === b.U) {
+          storePackedResponse(W_MEM(b), weight_bits, dma_counter_d,
+            returnCount, returnLinear, dataResponse_w)
+        }
+      }
+      when(next === all_available_elems) {
+        // The SRAM write and ready flag commit together. Selection starts in
+        // the following cycle; the extra registered dma_resp handoff is gone.
+        buffers_mode(weightReturnBuffer) := true.B
+        dma_counter_d := 0.U
+        i_w_temp := i_w_start
+        w_count := w_count + 1.U
+        weightReturnBase := weightReturnBase + cin_reg
+        weightReturnBuffer := Mux(weightReturnBuffer === (buffers - 1).U,
+          0.U, weightReturnBuffer + 1.U)
+      }.otherwise {
+        dma_counter_d := next
+        i_w_temp := i_w_start + next
+      }
     }
   }
 
 }
+
+case object LUMAXParamsKey extends Field[LUMAXParams](LUMAX_Config.LUMAX_Config)
 
 class WithLUMAXAccelerator extends Config((site, here, up) => {
     case BuildRoCC => Seq(
@@ -1519,7 +1526,7 @@ class WithLUMAXAccelerator extends Config((site, here, up) => {
       LazyModule(
       new LUMAXExample(
       opcodes = OpcodeSet.all,            // Opcode used for the accelerator
-      params  = LUMAX_Config.LUMAX_Config // Elaboration-time accelerator configuration.
+      params  = site(LUMAXParamsKey)
     ) {
 
     }
