@@ -1,0 +1,510 @@
+Running with RISCV=/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools
+echo "$mfc_extra_anno_contents" > /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.extrafirtool.anno.json
+jq -s '[.[][]]' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.anno.json /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.extrafirtool.anno.json > /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.appended.anno.json
+mkdir -p /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/
+echo "emittedLineLength=2048,noAlwaysComb,disallowLocalVariables,verifLabels,disallowPortDeclSharing,locationInfoStyle=wrapInAtSquareBracket" > /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/.mfc_lowering_options
+rm -rf /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral
+(set -o pipefail && firtool \
+	--format=fir \
+	--export-module-hierarchy \
+	--verify-each=true \
+	--warn-on-unprocessed-annotations \
+	--disable-annotation-classless \
+	--disable-annotation-unknown \
+	--mlir-timing \
+	--lowering-options=emittedLineLength=2048,noAlwaysComb,disallowLocalVariables,verifLabels,disallowPortDeclSharing,locationInfoStyle=wrapInAtSquareBracket \
+	--repl-seq-mem \
+	--repl-seq-mem-file=/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.mems.conf \
+	--annotation-file=/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.appended.anno.json \
+	--split-verilog \
+	-o /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral \
+	/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.fir |& tee /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.firtool.log)
+generators/rocket-chip/src/main/scala/tilelink/ToAXI4.scala:103:9: warning: module contains 32 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/ToAXI4.scala:280:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/ToAXI4.scala:103:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/amba/axi4/Deinterleaver.scala:48:9: warning: module contains 32 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/amba/axi4/Deinterleaver.scala:104:20: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/amba/axi4/Deinterleaver.scala:48:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/amba/axi4/UserYanker.scala:36:9: warning: module contains 2 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/amba/axi4/UserYanker.scala:69:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/amba/axi4/UserYanker.scala:36:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 12 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/AtomicAutomata.scala:36:9: warning: module contains 2 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:77:13: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/AtomicAutomata.scala:36:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/AtomicAutomata.scala:36:9: warning: module contains 2 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:77:13: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/AtomicAutomata.scala:36:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/devices/tilelink/Error.scala:21:9: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/devices/tilelink/Error.scala:34:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/devices/tilelink/Error.scala:21:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceA.scala:33:7: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Parameters.scala:222:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceA.scala:33:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceB.scala:33:7: warning: module contains 4 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceB.scala:59:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceB.scala:33:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceC.scala:35:7: warning: module contains 5 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceC.scala:64:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceC.scala:35:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceD.scala:48:7: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceD.scala:123:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SourceD.scala:48:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:36:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:86:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:36:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:36:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:86:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:36:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SinkC.scala:41:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SinkC.scala:90:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SinkC.scala:41:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SinkD.scala:34:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SinkD.scala:82:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/SinkD.scala:34:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Directory.scala:56:7: warning: module contains 5 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Directory.scala:86:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Directory.scala:56:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:36:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:86:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/ListBuffer.scala:36:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: warning: module contains 70 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:105:14: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/MSHR.scala:84:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Scheduler.scala:27:7: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Scheduler.scala:291:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip-inclusive-cache/design/craft/inclusivecache/src/Scheduler.scala:27:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/util/IDPool.scala:8:7: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/util/IDPool.scala:44:10: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/util/IDPool.scala:8:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/CacheCork.scala:42:9: warning: module contains 6 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/CacheCork.scala:116:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/CacheCork.scala:42:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:318:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:719:13: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:318:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/DCache.scala:120:32: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:719:13: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/DCache.scala:120:32: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/DCache.scala:101:7: warning: module contains 10 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/DCache.scala:1186:11: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/DCache.scala:101:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/DMA.scala:27:7: warning: module contains 12 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/DMA.scala:126:11: note: example printf here, will just be a printf in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/DMA.scala:27:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/ActivationAddressCounter.scala:11:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/ActivationAddressCounter.scala:62:11: note: example printf here, will just be a printf in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/ActivationAddressCounter.scala:11:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/LUMAX_Top.scala:45:7: warning: module contains 6 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/LUMAX_Top.scala:710:15: note: example printf here, will just be a printf in the future
+home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/lumax/LUMAX_Top.scala:45:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/ICache.scala:251:7: warning: module contains 2 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/ICache.scala:521:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/ICache.scala:251:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:318:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:719:13: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/TLB.scala:318:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/Frontend.scala:82:7: warning: module contains 2 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/Frontend.scala:96:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/Frontend.scala:82:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/PTW.scala:219:7: warning: module contains 5 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/PTW.scala:395:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/PTW.scala:219:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tile/LazyRoCC.scala:400:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tile/LazyRoCC.scala:418:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tile/LazyRoCC.scala:400:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/SimpleHellaCacheIF.scala:18:7: warning: module contains 2 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/SimpleHellaCacheIF.scala:72:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/SimpleHellaCacheIF.scala:18:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/SimpleHellaCacheIF.scala:95:7: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/SimpleHellaCacheIF.scala:124:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/SimpleHellaCacheIF.scala:95:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/IBuf.scala:21:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/IBuf.scala:79:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/IBuf.scala:21:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/CSR.scala:377:7: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/CSR.scala:1021:9: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/CSR.scala:377:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/util/PlusArg.scala:58:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/util/PlusArg.scala:64:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/util/PlusArg.scala:58:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/rocket/RocketCore.scala:153:7: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/rocket/RocketCore.scala:855:11: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/rocket/RocketCore.scala:153:7: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/devices/tilelink/Plic.scala:132:9: warning: module contains 4 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/devices/tilelink/Plic.scala:251:11: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/devices/tilelink/Plic.scala:132:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/SRAM.scala:63:9: warning: module contains 1 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/SRAM.scala:231:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/SRAM.scala:63:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Arbiter.scala:22:12: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Xbar.scala:74:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: warning: module contains 3 printf-encoded verification operation(s), which are deprecated and will be removed in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:214:16: note: example printf here, will just be a printf in the future
+generators/rocket-chip/src/main/scala/tilelink/Fragmenter.scala:92:9: note: For more information, see https://github.com/llvm/circt/issues/6970
+generators/rocket-chip/src/main/scala/prci/ClockDomain.scala:14:9: warning: unprocessed annotation:'freechips.rocketchip.util.RegFieldDescMappingAnnotation' still remaining after LowerToHW
+generators/rocket-chip/src/main/scala/tile/RocketTile.scala:141:7: warning: unprocessed annotation:'freechips.rocketchip.util.ParamsAnnotation' still remaining after LowerToHW
+generators/chipyard/src/main/scala/DigitalTop.scala:47:7: warning: unprocessed annotation:'freechips.rocketchip.util.AddressMapAnnotation' still remaining after LowerToHW
+generators/rocket-chip/src/main/scala/util/DescribedSRAM.scala:17:26: warning: unprocessed annotation:'freechips.rocketchip.util.SRAMAnnotation' still remaining after LowerToHW
+===-------------------------------------------------------------------------===
+                         ... Execution time report ...
+===-------------------------------------------------------------------------===
+  Total Execution Time: 9.8710 seconds
+
+  ----User Time----  ----Wall Time----  ----Name----
+    0.4473 (  1.8%)    0.4473 (  4.5%)  FIR Parser
+    0.0224 (  0.1%)    0.0224 (  0.2%)    Parse annotations
+    0.0000 (  0.0%)    0.0000 (  0.0%)    Parse OMIR
+    0.3331 (  1.3%)    0.3331 (  3.4%)    Parse modules
+    0.0680 (  0.3%)    0.0680 (  0.7%)    Verify circuit
+   14.4335 ( 58.1%)    4.6256 ( 46.9%)  'firrtl.circuit' Pipeline
+    0.0063 (  0.0%)    0.0063 (  0.1%)    LowerOpenAggs
+    0.0854 (  0.3%)    0.0854 (  0.9%)    ResolvePaths
+    0.0034 (  0.0%)    0.0034 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.0725 (  0.3%)    0.0725 (  0.7%)    LowerFIRRTLAnnotations
+    0.0028 (  0.0%)    0.0028 (  0.0%)    LowerIntmodules
+    0.0028 (  0.0%)    0.0028 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.3023 (  1.2%)    0.0158 (  0.2%)    'firrtl.module' Pipeline
+    0.1361 (  0.5%)    0.0088 (  0.1%)      LowerIntrinsics
+    0.1087 (  0.4%)    0.1087 (  1.1%)    LowerSignatures
+    0.0000 (  0.0%)    0.0000 (  0.0%)    InjectDUTHierarchy
+    3.3741 ( 13.6%)    0.2137 (  2.2%)    'firrtl.module' Pipeline
+    0.3425 (  1.4%)    0.0287 (  0.3%)      PassiveWires
+    1.8295 (  7.4%)    0.1061 (  1.1%)      DropName
+    0.5439 (  2.2%)    0.0380 (  0.4%)      CSE
+    0.0305 (  0.1%)    0.0034 (  0.0%)        (A) DominanceInfo
+    0.1470 (  0.6%)    0.0214 (  0.2%)      LowerCHIRRTLPass
+    0.2690 (  1.1%)    0.0198 (  0.2%)      LowerMatches
+    0.2001 (  0.8%)    0.2001 (  2.0%)    InferWidths
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) SymbolTable
+    0.0040 (  0.0%)    0.0040 (  0.0%)      (A) circt::hw::InnerSymbolTableCollection
+    0.0666 (  0.3%)    0.0666 (  0.7%)    MemToRegOfVec
+    0.1405 (  0.6%)    0.1405 (  1.4%)    InferResets
+    0.0039 (  0.0%)    0.0039 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.0711 (  0.3%)    0.0711 (  0.7%)    DropConst
+    0.0017 (  0.0%)    0.0017 (  0.0%)    HoistPassthrough
+    0.1477 (  0.6%)    0.1477 (  1.5%)    Dedup
+    0.0002 (  0.0%)    0.0002 (  0.0%)      (A) circt::firrtl::NLATable
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) SymbolTable
+    0.4071 (  1.6%)    0.0302 (  0.3%)    'firrtl.module' Pipeline
+    0.3518 (  1.4%)    0.0265 (  0.3%)      FlattenMemory
+    0.3305 (  1.3%)    0.3305 (  3.3%)    LowerFIRRTLTypes
+    0.0000 (  0.0%)    0.0000 (  0.0%)      (A) SymbolTable
+    0.8260 (  3.3%)    0.2007 (  2.0%)    'any' Pipeline
+    0.7593 (  3.1%)    0.1977 (  2.0%)      ExpandWhens
+    1.4190 (  5.7%)    0.2911 (  2.9%)    'firrtl.module' Pipeline
+    0.5242 (  2.1%)    0.1161 (  1.2%)      SFCCompat
+    0.3576 (  1.4%)    0.0896 (  0.9%)      LayerMerge
+    0.4144 (  1.7%)    0.0842 (  0.9%)      LayerSink
+    0.0117 (  0.0%)    0.0045 (  0.0%)        (A) DominanceInfo
+    0.2696 (  1.1%)    0.2696 (  2.7%)    LowerLayers
+    0.3396 (  1.4%)    0.3396 (  3.4%)    Inliner
+    0.0000 (  0.0%)    0.0000 (  0.0%)      (A) SymbolTable
+    0.6930 (  2.8%)    0.1313 (  1.3%)    'firrtl.module' Pipeline
+    0.6398 (  2.6%)    0.1297 (  1.3%)      RandomizeRegisterInit
+    0.2712 (  1.1%)    0.2712 (  2.7%)    CheckCombLoops
+    0.0080 (  0.0%)    0.0080 (  0.1%)      (A) circt::firrtl::InstanceGraph
+    2.7864 ( 11.2%)    0.5528 (  5.6%)    'firrtl.module' Pipeline
+    2.5508 ( 10.3%)    0.5028 (  5.1%)      Canonicalizer
+    0.1711 (  0.7%)    0.0499 (  0.5%)      InferReadWrite
+    0.1919 (  0.8%)    0.1919 (  1.9%)    LowerMemory
+    0.0045 (  0.0%)    0.0045 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) SymbolTable
+    0.0753 (  0.3%)    0.0753 (  0.8%)    PrefixModules
+    0.0137 (  0.1%)    0.0137 (  0.1%)      (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) circt::firrtl::NLATable
+    0.4167 (  1.7%)    0.4167 (  4.2%)    IMConstProp
+    0.0080 (  0.0%)    0.0080 (  0.1%)    HoistPassthrough
+    0.0050 (  0.0%)    0.0050 (  0.1%)      (A) circt::firrtl::InstanceGraph
+    0.3468 (  1.4%)    0.3468 (  3.5%)  IMDeadCodeElim
+    0.0043 (  0.0%)    0.0043 (  0.0%)    (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)    (A) SymbolTable
+    0.0057 (  0.0%)    0.0057 (  0.1%)    (A) circt::hw::InnerSymbolTableCollection
+    0.0061 (  0.0%)    0.0061 (  0.1%)  'firrtl.circuit' Pipeline
+    0.0060 (  0.0%)    0.0060 (  0.1%)    AddSeqMemPorts
+    0.0058 (  0.0%)    0.0058 (  0.1%)      (A) circt::firrtl::InstanceGraph
+    0.1181 (  0.5%)    0.1181 (  1.2%)  CreateSiFiveMetadata
+    0.0044 (  0.0%)    0.0044 (  0.0%)    (A) circt::firrtl::InstanceGraph
+    0.3071 (  1.2%)    0.3071 (  3.1%)  'firrtl.circuit' Pipeline
+    0.0140 (  0.1%)    0.0140 (  0.1%)    ExtractInstances
+    0.0033 (  0.0%)    0.0033 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) circt::firrtl::NLATable
+    0.0001 (  0.0%)    0.0001 (  0.0%)    GrandCentral
+    0.1009 (  0.4%)    0.1009 (  1.0%)    BlackBoxReader
+    0.1921 (  0.8%)    0.1921 (  1.9%)    SymbolDCE
+    0.1761 (  0.7%)    0.1761 (  1.8%)  InnerSymbolDCE
+    1.3241 (  5.3%)    0.6008 (  6.1%)  'firrtl.circuit' Pipeline
+    0.7233 (  2.9%)    0.1898 (  1.9%)    'firrtl.module' Pipeline
+    0.5111 (  2.1%)    0.1846 (  1.9%)      Canonicalizer
+    0.1328 (  0.5%)    0.0127 (  0.1%)      RegisterOptimizer
+    0.3685 (  1.5%)    0.3685 (  3.7%)    IMConstProp
+    0.0044 (  0.0%)    0.0044 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.3084 (  1.2%)    0.3084 (  3.1%)  IMDeadCodeElim
+    0.0042 (  0.0%)    0.0042 (  0.0%)    (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)    (A) SymbolTable
+    0.0059 (  0.0%)    0.0059 (  0.1%)    (A) circt::hw::InnerSymbolTableCollection
+    1.2979 (  5.2%)    0.5854 (  5.9%)  'firrtl.circuit' Pipeline
+    0.0000 (  0.0%)    0.0000 (  0.0%)    EmitOMIR
+    0.5960 (  2.4%)    0.1778 (  1.8%)    'firrtl.module' Pipeline
+    0.0633 (  0.3%)    0.0074 (  0.1%)      MergeConnections
+    0.4446 (  1.8%)    0.1692 (  1.7%)      Vectorization
+    0.0311 (  0.1%)    0.0311 (  0.3%)    ResolveTraces
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) circt::firrtl::NLATable
+    0.0070 (  0.0%)    0.0070 (  0.1%)      (A) circt::hw::InnerSymbolTableCollection
+    0.1165 (  0.5%)    0.1165 (  1.2%)    LowerXMR
+    0.0041 (  0.0%)    0.0041 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.1755 (  0.7%)    0.1755 (  1.8%)    LowerClasses
+    0.0040 (  0.0%)    0.0040 (  0.0%)      (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) SymbolTable
+    0.0004 (  0.0%)    0.0004 (  0.0%)    VerifyObjectFields
+    0.0001 (  0.0%)    0.0001 (  0.0%)      (A) SymbolTable
+    0.1164 (  0.5%)    0.0061 (  0.1%)    'firrtl.module' Pipeline
+    0.0438 (  0.2%)    0.0031 (  0.0%)      Lint
+    0.3183 (  1.3%)    0.3183 (  3.2%)  LowerFIRRTLToHW
+    0.0050 (  0.0%)    0.0050 (  0.1%)    (A) circt::firrtl::InstanceGraph
+    0.0001 (  0.0%)    0.0001 (  0.0%)    (A) circt::firrtl::NLATable
+    1.5280 (  6.1%)    0.3174 (  3.2%)  'hw.module' Pipeline
+    0.2624 (  1.1%)    0.1165 (  1.2%)    CSE
+    0.0073 (  0.0%)    0.0010 (  0.0%)      (A) DominanceInfo
+    1.2328 (  5.0%)    0.1995 (  2.0%)    Canonicalizer
+    0.0062 (  0.0%)    0.0062 (  0.1%)  VerifyInnerRefNamespace
+    0.0003 (  0.0%)    0.0003 (  0.0%)  VerifyObjectFields
+    0.0001 (  0.0%)    0.0001 (  0.0%)    (A) SymbolTable
+    0.0022 (  0.0%)    0.0022 (  0.0%)  ExternalizeClockGate
+    0.0546 (  0.2%)    0.0546 (  0.6%)  LowerSimToSV
+    0.2229 (  0.9%)    0.2229 (  2.3%)  LowerSeqToSV
+    0.2671 (  1.1%)    0.0728 (  0.7%)  'hw.module' Pipeline
+    0.1771 (  0.7%)    0.0716 (  0.7%)    LowerVerifToSV
+    0.0737 (  0.3%)    0.0737 (  0.7%)  HWMemSimImpl
+    1.0946 (  4.4%)    0.3502 (  3.5%)  'hw.module' Pipeline
+    0.3148 (  1.3%)    0.1065 (  1.1%)    CSE
+    0.0374 (  0.2%)    0.0042 (  0.0%)      (A) DominanceInfo
+    0.2869 (  1.2%)    0.1282 (  1.3%)    Canonicalizer
+    0.2194 (  0.9%)    0.0801 (  0.8%)    CSE
+    0.0271 (  0.1%)    0.0047 (  0.0%)      (A) DominanceInfo
+    0.1055 (  0.4%)    0.0331 (  0.3%)    HWCleanup
+    0.0086 (  0.0%)    0.0086 (  0.1%)  VerifyInnerRefNamespace
+    0.0011 (  0.0%)    0.0011 (  0.0%)  VerifyObjectFields
+    0.0001 (  0.0%)    0.0001 (  0.0%)    (A) SymbolTable
+    0.3231 (  1.3%)    0.0857 (  0.9%)  'hw.module' Pipeline
+    0.0465 (  0.2%)    0.0070 (  0.1%)    HWLegalizeModules
+    0.1658 (  0.7%)    0.0787 (  0.8%)    PrettifyVerilog
+    0.0813 (  0.3%)    0.0813 (  0.8%)  StripDebugInfoWithPred
+    0.0143 (  0.1%)    0.0143 (  0.1%)  HWExportModuleHierarchy
+    0.0001 (  0.0%)    0.0001 (  0.0%)    (A) SymbolTable
+    0.0146 (  0.1%)    0.0146 (  0.1%)  VerifyInnerRefNamespace
+    0.0005 (  0.0%)    0.0005 (  0.0%)  VerifyObjectFields
+    0.6181 (  2.5%)    0.6181 (  6.3%)  ExportSplitVerilog
+    0.8112 (  3.3%)    0.2798 (  2.8%)  'builtin.module' Pipeline
+    0.0701 (  0.3%)    0.0701 (  0.7%)    HWLowerInstanceChoices
+    0.5314 (  2.1%)    0.1696 (  1.7%)    'hw.module' Pipeline
+    0.4717 (  1.9%)    0.1694 (  1.7%)      PrepareForEmission
+   -0.2552 ( -1.0%)   -0.2552 ( -2.6%)  Rest
+   24.8588 (100.0%)    9.8710 (100.0%)  Total
+sed -i 's/.*/& /' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.mems.conf # need trailing space for SFC macrocompiler
+touch /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/firrtl_black_box_resource_files.f # if there are no BB's then the file might not be generated, instead always generate it
+/home/kioannou/chipyard_1.13.0/scripts/uniquify-module-names.py \
+	--model-hier-json /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/model_module_hierarchy.json \
+	--top-hier-json /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/top_module_hierarchy.json \
+	--in-all-filelist /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/filelist.f \
+	--in-bb-filelist /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/firrtl_black_box_resource_files.f \
+	--dut ChipTop \
+	--model ZCU106FPGATestHarness \
+	--target-dir /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral \
+	--out-dut-filelist /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.f \
+	--out-model-filelist /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.f \
+	--out-model-hier-json /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/model_module_hierarchy.uniquified.json \
+	--gcpath /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral
+sed -i 's/module\( \+\)plusarg_reader/module\1plusarg_reader_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/plusarg_reader_ZCU106FPGATestHarness_UNIQUIFIED.v
+sed -i 's/\( \*\)plusarg_reader\( \+\)/\1plusarg_reader_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ZCU106FPGATestHarness.sv
+sed -i 's/module\( \+\)ResetCatchAndSync_d3/module\1ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)ResetCatchAndSync_d3\( \+\)/\1ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ZCU106FPGATestHarness.sv
+sed -i 's/module\( \+\)ResetCatchAndSync_d3/module\1ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)ResetCatchAndSync_d3\( \+\)/\1ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ResetWrangler.sv
+sed -i 's/module\( \+\)ResetCatchAndSync_d3/module\1ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerShiftReg_w1_d3_i0/module\1AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)AsyncResetSynchronizerShiftReg_w1_d3_i0\( \+\)/\1AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ResetCatchAndSync_d3_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerShiftReg_w1_d3_i0/module\1AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerShiftReg_w1_d3_i0/module\1AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0\( \+\)/\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerShiftReg_w1_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)ram_2x80/module\1ram_2x80_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/ram_2x80_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)ram_2x80\( \+\)/\1ram_2x80_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/Queue2_TLBundleD_a32d64s4k1z4u.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0\( \+\)/\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerShiftReg_w4_d3_i0.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/\( \*\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0\( \+\)/\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED\2/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerShiftReg_w1_d3_i0_2.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -i 's/module\( \+\)AsyncResetSynchronizerPrimitiveShiftReg_d3_i0/module\1AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED/' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/AsyncResetSynchronizerPrimitiveShiftReg_d3_i0_ZCU106FPGATestHarness_UNIQUIFIED.sv
+sed -e 's;^;/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/;' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/firrtl_black_box_resource_files.f > /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.bb.f
+sed -i 's/\.\///' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.f
+sed -i 's/\.\///' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.f
+sed -i 's/\.\///' /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.bb.f
+sort -u /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.f /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.f /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.bb.f > /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.all.f
+cp -f  /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral
+cp: missing destination file operand after '/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral'
+Try 'cp --help' for more information.
+make: [Makefile:126: /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.f] Error 1 (ignored)
+touch /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.f
+/home/kioannou/chipyard_1.13.0/scripts/split-mems-conf.py \
+	--in-smems-conf /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.mems.conf \
+	--in-model-hrchy-json /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/model_module_hierarchy.uniquified.json \
+	--dut-module-name ChipTop \
+	--model-module-name ZCU106FPGATestHarness \
+	--out-dut-smems-conf /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.conf \
+	--out-model-smems-conf /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.conf
+cd /home/kioannou/chipyard_1.13.0 && java -cp /home/kioannou/chipyard_1.13.0/.classpath_cache/tapeout.jar tapeout.macros.MacroCompiler -n /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.conf -v /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.v -f /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.fir --mode synflops
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M -Djava.io.tmpdir=/home/kioannou/chipyard_1.13.0/.java_tmp
+touch /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.v /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.fir
+cd /home/kioannou/chipyard_1.13.0 && java -cp /home/kioannou/chipyard_1.13.0/.classpath_cache/tapeout.jar tapeout.macros.MacroCompiler  -n /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.conf -v /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.v -f /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.fir --mode synflops
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M -Djava.io.tmpdir=/home/kioannou/chipyard_1.13.0/.java_tmp
+WARNING: Empty *.mems.conf file. No memories generated.
+touch /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.v /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.fir
+rm -f /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.common.f
+sort -u /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.f /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.all.f | grep -v '.*\.\(svh\|h\)$' >> /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.common.f
+echo "/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.top.mems.v" >> /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.common.f
+echo "/tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/gen-collateral/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.model.mems.v" >> /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.common.f
+printf '%s\n' /home/kioannou/chipyard_1.13.0/generators/rocket-chip-blocks/vsrc/SRLatch.v > /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.vsrcs.f.tmp
+cat /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/sim_files.common.f >> /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.vsrcs.f.tmp
+mv /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.vsrcs.f.tmp /tmp/lumax-vivado-comparison-1020/run_20261111_191949_049813/builds/b8_rf8_ys1_id8_fp16_r8_k1216_n1216_50mhz/rtl/chipyard.fpga.zcu106.ZCU106FPGATestHarness.LUMAXzcu106.vsrcs.f

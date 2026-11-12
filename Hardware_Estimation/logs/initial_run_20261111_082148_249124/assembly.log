@@ -1,0 +1,33 @@
+Running with RISCV=/home/kioannou/chipyard_1.13.0/.conda-env/riscv-tools
+echo "Checking all submodules in generators/ are initialized. Uninitialized submodules will be displayed" ; ! git submodule status /home/kioannou/chipyard_1.13.0/generators | grep ^-
+Checking all submodules in generators/ are initialized. Uninitialized submodules will be displayed
+mkdir -p /home/kioannou/chipyard_1.13.0/.classpath_cache/
+cd /home/kioannou/chipyard_1.13.0 && java -jar /home/kioannou/chipyard_1.13.0/scripts/sbt-launch.jar -Dsbt.ivy.home=/home/kioannou/chipyard_1.13.0/.ivy2 -Dsbt.global.base=/home/kioannou/chipyard_1.13.0/.sbt -Dsbt.boot.directory=/home/kioannou/chipyard_1.13.0/.sbt/boot/ -Dsbt.color=always -Dsbt.supershell=false -Dsbt.server.forcestart=true ";project chipyard_fpga; set assembly / assemblyOutputPath := file(\"/home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard_fpga.jar\"); assembly" && touch /home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard_fpga.jar
+Picked up JAVA_TOOL_OPTIONS: -Xmx8G -Xss8M -Djava.io.tmpdir=/home/kioannou/chipyard_1.13.0/.java_tmp
+[0m[[0m[0minfo[0m] [0m[0mwelcome to sbt 1.8.2 (N/A Java 20.0.2-internal)[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project chipyard_1-13-0-build from plugins.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading project definition from /home/kioannou/chipyard_1.13.0/project[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project chipyardRoot from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project testchipip from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project barf from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project constellation from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project icenet from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project cva6 from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project ibex from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project sodor from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mloading settings for project midas_target_utils from build.sbt ...[0m
+[0m[[0m[0minfo[0m] [0m[0mresolving key references (47609 settings) ...[0m
+[0m[[0m[0minfo[0m] [0m[0mset current project to chipyardRoot (in build file:/home/kioannou/chipyard_1.13.0/)[0m
+[0m[[0m[0minfo[0m] [0m[0mset current project to chipyard_fpga (in build file:/home/kioannou/chipyard_1.13.0/)[0m
+[0m[[0m[0minfo[0m] [0m[0mDefining assembly / assemblyOutputPath[0m
+[0m[[0m[0minfo[0m] [0m[0mThe new value will be used by assembly[0m
+[0m[[0m[0minfo[0m] [0m[0mReapplying settings...[0m
+[0m[[0m[0minfo[0m] [0m[0mset current project to chipyard_fpga (in build file:/home/kioannou/chipyard_1.13.0/)[0m
+Warning: Tried to extract the base path for relative glob tools/firrtl2/src/main/java/**/*.{java,scala}. To disable this warning, re-run the program with java option, -Dsbt.io.implicit.relative.glob.conversion=allow
+Warning: Tried to extract the base path for relative glob tools/firrtl2/src/main/java/**/*.{java,scala}. To disable this warning, re-run the program with java option, -Dsbt.io.implicit.relative.glob.conversion=allow
+Warning: Tried to extract the base path for relative glob tools/stage/src/main/scala/**/*.{java,scala}. To disable this warning, re-run the program with java option, -Dsbt.io.implicit.relative.glob.conversion=allow
+Warning: Tried to extract the base path for relative glob tools/stage/src/main/scala/**/*.{java,scala}. To disable this warning, re-run the program with java option, -Dsbt.io.implicit.relative.glob.conversion=allow
+[0m[[0m[33mwarn[0m] [0m[0mmultiple main classes detected: run 'show discoveredMainClasses' to see the list[0m
+[0m[[0m[0minfo[0m] [0m[0mAssembly jar up to date: /home/kioannou/chipyard_1.13.0/.classpath_cache/chipyard_fpga.jar[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 7 s, completed Nov 11, 2026, 8:35:35 AM[0m
+[0J

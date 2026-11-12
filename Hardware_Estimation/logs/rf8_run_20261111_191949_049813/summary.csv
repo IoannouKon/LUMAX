@@ -1,0 +1,9 @@
+name,accelerator,wb,b,rf,ys,ids,status,resources_stage,luts,registers,bram_tiles,uram,dsps,dynamic_power_w,system_total_power_w,system_dynamic_power_w,power_confidence,estimated_internal_fmax_mhz,routed,timing_met,elapsed_seconds,reason
+gemmini_w8,gemmini,8,,,,,PASS,post_route,45504.0,22800.0,16.0,0.0,167.0,0.265,2.339,1.737,Low,64.008,True,True,2815.9,
+gemmini_w4,gemmini,4,,,,,PASS,post_route,45647.0,22843.0,16.0,0.0,152.0,0.268,2.343,1.74,Low,66.774,True,True,2809.9,
+gemmini_w2,gemmini,2,,,,,PASS,post_route,44720.0,22850.0,16.0,0.0,152.0,0.251,2.323,1.721,Low,67.231,True,True,2795.9,
+lumax_b4_rf8_ys1_id8,lumax,,4,8,1,8,PASS,post_route,80228.0,78352.0,10.0,0.0,26.0,0.235,2.271,1.669,Low,51.916,True,True,5835.8,
+lumax_b8_rf8_ys1_id8,lumax,,8,8,1,8,TIMING_FAILED,post_route,95844.0,79224.0,20.0,0.0,38.0,0.275,2.33,1.728,Low,47.792,True,False,8099.0,
+lumax_b16_rf8_ys1_id8,lumax,,16,8,1,8,FAILED,post_synthesis,217584.0,80836.0,40.0,0.0,60.0,,,,,,,,5095.1,Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b16_rf8_ys1_id8/driver.log
+lumax_b8_rf8_ys2_id8,lumax,,8,8,2,8,FAILED,post_synthesis,262762.0,155926.0,24.0,0.0,38.0,,,,,,,,8898.0,Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b8_rf8_ys2_id8/driver.log
+lumax_b4_rf8_ys4_id8,lumax,,4,8,4,8,FAILED,post_synthesis,344471.0,306652.0,16.0,0.0,26.0,,,,,,,,4110.1,Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b4_rf8_ys4_id8/driver.log

@@ -1,0 +1,14 @@
+ifeq ($(SUB_PROJECT),LUMAXzcu106)
+	SBT_PROJECT       ?= chipyard_fpga
+	MODEL             ?= ZCU106FPGATestHarness
+	VLOG_MODEL        ?= $(MODEL)
+	MODEL_PACKAGE     ?= chipyard.fpga.zcu106
+	CONFIG            ?= LUMAXzcu106
+	CONFIG_PACKAGE    ?= $(MODEL_PACKAGE)
+	GENERATOR_PACKAGE ?= chipyard
+	TB                ?= none
+	TOP               ?= ChipTop
+	BOARD             ?= zcu106
+	FPGA_BRAND        ?= xilinx
+	EXTRA_GENERATOR_REQS += $(shell find $(base_dir)/fpga/src/main/resources/vcu118/sdboot -type f -not -path '*/build/*')
+endif

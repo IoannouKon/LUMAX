@@ -1,0 +1,6 @@
+name,accelerator,wb,b,rf,ys,ids,status,resources_stage,luts,registers,bram_tiles,uram,dsps,dynamic_power_w,system_total_power_w,system_dynamic_power_w,power_confidence,estimated_internal_fmax_mhz,routed,timing_met,elapsed_seconds,reason
+gemmini_w8,gemmini,8,,,,,PASS,post_route,45504.0,22800.0,16.0,0.0,167.0,0.265,2.339,1.737,Low,64.008,True,True,2815.9,
+gemmini_w4,gemmini,4,,,,,PASS,post_route,45647.0,22843.0,16.0,0.0,152.0,0.268,2.343,1.74,Low,66.774,True,True,2809.9,
+gemmini_w2,gemmini,2,,,,,PASS,post_route,44720.0,22850.0,16.0,0.0,152.0,0.251,2.323,1.721,Low,67.231,True,True,2795.9,
+lumax_b16_rf8_ys1_id8,lumax,,16,8,1,8,TIMING_FAILED,post_route,40594.0,5553.0,60.0,0.0,0.0,0.077,2.148,1.546,Low,34.357,True,False,3959.0,
+lumax_b8_rf8_ys2_id8,lumax,,8,8,2,8,TIMING_FAILED,post_route,30582.0,5218.0,48.0,0.0,0.0,0.058,2.139,1.538,Low,33.901,True,False,3842.9,

@@ -1,0 +1,32 @@
+[2026-11-11T19:19:50.382373+02:00] Reusing frozen FPGA assembly
+[2026-11-11T19:19:50.384078+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b4_rf8_ys1_id8/driver.log
+[2026-11-11T20:57:06.229340+02:00] lumax_b4_rf8_ys1_id8: PASS
+[2026-11-11T20:57:06.232265+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b8_rf8_ys1_id8/driver.log
+[2026-11-11T23:12:05.266671+02:00] lumax_b8_rf8_ys1_id8: TIMING_FAILED
+[2026-11-11T23:12:05.270855+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b16_rf8_ys1_id8/driver.log
+[2026-11-12T00:37:00.332356+02:00] Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 387, in run
+    self.command(args, hw.CHIPYARD, folder / "driver.log")
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 141, in command
+    raise RuntimeError(f"Command exited with status {proc.returncode}. See {log}")
+RuntimeError: Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b16_rf8_ys1_id8/driver.log
+
+[2026-11-12T00:37:00.336380+02:00] lumax_b16_rf8_ys1_id8: FAILED
+[2026-11-12T00:37:00.340738+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b8_rf8_ys2_id8/driver.log
+[2026-11-12T03:05:18.288541+02:00] Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 387, in run
+    self.command(args, hw.CHIPYARD, folder / "driver.log")
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 141, in command
+    raise RuntimeError(f"Command exited with status {proc.returncode}. See {log}")
+RuntimeError: Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b8_rf8_ys2_id8/driver.log
+
+[2026-11-12T03:05:18.292831+02:00] lumax_b8_rf8_ys2_id8: FAILED
+[2026-11-12T03:05:18.297358+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b4_rf8_ys4_id8/driver.log
+[2026-11-12T04:13:48.410903+02:00] Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 387, in run
+    self.command(args, hw.CHIPYARD, folder / "driver.log")
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 141, in command
+    raise RuntimeError(f"Command exited with status {proc.returncode}. See {log}")
+RuntimeError: Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_191949_049813/lumax_b4_rf8_ys4_id8/driver.log
+
+[2026-11-12T04:13:48.413967+02:00] lumax_b4_rf8_ys4_id8: FAILED

@@ -1,0 +1,22 @@
+/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/gemmini/gemmini/Arithmetic.scala:54: warning: Implicit definition should have explicit type (inferred gemmini.ArithmeticOps[chisel3.UInt]) [quickfixable]
+    override implicit def cast(self: UInt) = new ArithmeticOps(self) {
+                          ^
+/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/gemmini/gemmini/Arithmetic.scala:91: warning: Implicit definition should have explicit type (inferred gemmini.ArithmeticOps[chisel3.SInt]) [quickfixable]
+    override implicit def cast(self: SInt) = new ArithmeticOps(self) {
+                          ^
+/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/gemmini/gemmini/Arithmetic.scala:525: warning: Implicit definition should have explicit type (inferred gemmini.ArithmeticOps[gemmini.DummySInt]) [quickfixable]
+    override implicit def cast(self: DummySInt) = new ArithmeticOps(self) {
+                          ^
+/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/gemmini/gemmini/Controller.scala:68: warning: Implicit definition should have explicit type (inferred freechips.rocketchip.tilelink.TLEdgeOut) [quickfixable]
+  implicit val edge = outer.spad.id_node.edges.out.head
+               ^
+/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/gemmini/gemmini/VectorScalarMultiplier.scala:136: warning: unreachable code
+            case b: Bool => 1.U(1.W)
+                               ^
+warning: 4 deprecations
+warning: 5 deprecations (since 2.13.0)
+warning: 11 deprecations (since FireSim 1.14)
+warning: 65 deprecations (since rocketchip 2.0.0)
+warning: 85 deprecations in total; re-run with -deprecation for details
+warning: 5 feature warnings; re-run with -feature for details
+11 warnings

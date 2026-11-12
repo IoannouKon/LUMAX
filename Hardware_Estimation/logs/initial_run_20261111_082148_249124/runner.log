@@ -1,0 +1,30 @@
+[2026-11-11T08:34:31.572938+02:00] Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 338, in run
+    overlay = self.prepare()
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 171, in prepare
+    manifest = json.loads((snapshot / "manifest.json").read_text())
+  File "/home/kioannou/miniforge3/lib/python3.10/pathlib.py", line 1134, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/home/kioannou/miniforge3/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/sources/manifest.json'
+
+[2026-11-11T08:34:55.530862+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/assembly.log
+[2026-11-11T08:35:36.742248+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/overlay_compile.log
+[2026-11-11T08:36:11.930199+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/overlay_jar.log
+[2026-11-11T08:36:34.000446+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/gemmini_w8/driver.log
+[2026-11-11T09:23:29.910209+02:00] gemmini_w8: PASS
+[2026-11-11T09:23:29.912670+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/gemmini_w4/driver.log
+[2026-11-11T10:10:19.794831+02:00] gemmini_w4: PASS
+[2026-11-11T10:10:19.797693+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/gemmini_w2/driver.log
+[2026-11-11T10:56:55.696239+02:00] gemmini_w2: PASS
+[2026-11-11T10:56:55.776337+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/lumax_b6_rf4_ys8_id8/driver.log
+[2026-11-11T17:22:48.692431+02:00] Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 362, in run
+    self.command(args, hw.CHIPYARD, folder / "driver.log")
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 138, in command
+    raise RuntimeError(f"Command exited with status {proc.returncode}. See {log}")
+RuntimeError: Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/lumax_b6_rf4_ys8_id8/driver.log
+
+[2026-11-11T17:22:48.696404+02:00] lumax_b6_rf4_ys8_id8: FAILED
+[2026-11-11T17:22:48.700093+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/Vivado_Comparison/run_20261111_082148_249124/lumax_b8_rf4_ys8_id8/driver.log

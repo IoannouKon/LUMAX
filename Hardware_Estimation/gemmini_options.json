@@ -1,0 +1,159 @@
+{
+  "config": {
+    "chipyard": "/home/kioannou/chipyard_1.13.0",
+    "tile_rows": 1,
+    "tile_columns": 1,
+    "mesh_rows": 4,
+    "mesh_columns": 4,
+    "sp_kib": 32,
+    "acc_kib": 4,
+    "sp_banks": 4,
+    "dma_ids": 8,
+    "dma_bits": 64,
+    "dma_maxbytes": 64,
+    "tile_latency": 2,
+    "disable_scaling": true,
+    "disable_bias": true,
+    "weights": [
+      8,
+      4,
+      2
+    ],
+    "shapes": [
+      [
+        4,
+        224,
+        224
+      ],
+      [
+        4,
+        224,
+        32
+      ],
+      [
+        4,
+        224,
+        1216
+      ],
+      [
+        4,
+        1216,
+        224
+      ],
+      [
+        5,
+        224,
+        224
+      ],
+      [
+        5,
+        224,
+        32
+      ],
+      [
+        5,
+        224,
+        1216
+      ],
+      [
+        5,
+        1216,
+        224
+      ],
+      [
+        8,
+        224,
+        224
+      ],
+      [
+        8,
+        224,
+        32
+      ],
+      [
+        8,
+        224,
+        1216
+      ],
+      [
+        8,
+        1216,
+        224
+      ]
+    ],
+    "jobs": 2,
+    "build_timeout": 3600,
+    "sim_timeout": 7200,
+    "suite_hours": null,
+    "max_cycles": 200000000,
+    "numerical_rule": "fp32_bound",
+    "atol": 0.0001,
+    "rtol": 1e-05,
+    "replay": false,
+    "dim": 4
+  },
+  "compiler_jars": {
+    "scala-compiler-2.13.12.jar": "/home/kioannou/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.12/scala-compiler-2.13.12.jar",
+    "scala-reflect-2.13.12.jar": "/home/kioannou/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.12/scala-reflect-2.13.12.jar",
+    "chisel-plugin_2.13.12-6.5.0.jar": "/home/kioannou/.cache/coursier/v1/https/repo1.maven.org/maven2/org/chipsalliance/chisel-plugin_2.13.12/6.5.0/chisel-plugin_2.13.12-6.5.0.jar"
+  },
+  "source_sha256": {
+    "gemmini/AccumulatorMem.scala": "09e710bdd7ec5c3a5e738d72433529583da29b5d50629447f2887535a06abd9b",
+    "gemmini/AccumulatorScale.scala": "036fa0005a02eb570e72f18c0ab7c7a00e7c1504a665aaa67b205d45efed40eb",
+    "gemmini/Activation.scala": "9aec0433b8be1861a0e474f7fc13f9276c5344e60951da3b18eb8fbc41cc7c2b",
+    "gemmini/Arithmetic.scala": "fbad802b6eea2276b7da4b4e891045c1f1243d5ef3ec22e67e31ffa1359b915b",
+    "gemmini/BeatMerger.scala": "f3a819332dda9af409bb39fc02068ac381865e6453a0c912d6db8ca2cddfa1af",
+    "gemmini/CmdFSM.scala": "441784079f8cb0140c7e34d1d89e6d5cdf700caf4ff8c6cfcfed20c3e17ea8d9",
+    "gemmini/Configs.scala": "a5411928ad7977b8e0a302edbd224add7d798b347d87053a3913d5cf3d5a8e5c",
+    "gemmini/ConfigsFP.scala": "214679d6dd8faba6b3f10492b66a34139f079b11d784a6ff27315cd6933c649d",
+    "gemmini/Controller.scala": "6ff8210e510f171af9c9cffb57e34155e8415f132ef01389fe8acb380a12a7b0",
+    "gemmini/CounterFile.scala": "daa937f95ed94c0c085c64bb3d24ee71d3dcd251f839f1654468093690d72192",
+    "gemmini/CustomCPUConfigs.scala": "297f6e464dc925493837dfbc2cf603b101ecf29589967715c83fc469c1db25bb",
+    "gemmini/CustomConfigs.scala": "5371b2ff72f7e5e14521586a5839cd0516eb8b37688e9a5d6b37b4fdd2f88369",
+    "gemmini/CustomSoCConfigs.scala": "f72bd443afff0b3200af63af0a97d6ed67303fdf95035f8fff736b29a0930c71",
+    "gemmini/DMA.scala": "f74edcf6a8ad35798f6d1bd1a458d04b5c92c41d62bf526ef15dea216989c1c7",
+    "gemmini/DMACommandTracker.scala": "a0fbc60a1cdd4f58636a3aafed630f5bec106176fa3e5b57ce028321ac73e0b6",
+    "gemmini/DSEConfigs.scala": "7ce4eac12e52e146844ce9c1f38a36f79b08efb2a6fd2f771500b507b9639ec3",
+    "gemmini/Dataflow.scala": "e87024cf9357868ddeb013d0599e5f48fc709c224dbad3d1a64b56bbe2e7815f",
+    "gemmini/ExecuteController.scala": "cb64cbb1416a8ca097b3ccf2c13f8cf2ec30406a8ad8877f44eca762b4529c43",
+    "gemmini/FPIntMac.scala": "1abe770a1402c20dbf13f401fab728d1026919e6f0bc20f48c148d16cb2016f4",
+    "gemmini/FrontendTLB.scala": "a377f50746a0d607b3b3738faf2a8ba12ce0b234f9b41d70961fd463b093206a",
+    "gemmini/GemminiConfigs.scala": "2ff88f23c3416cddd078bdd0db66c52ed4f08888424dafbec317aca0a3499217",
+    "gemmini/GemminiISA.scala": "65e9ea63c026caad7f79ed15d7b700744a0da2d4a1a93c33b826e27a921579ff",
+    "gemmini/Im2Col.scala": "85977c0003b4ec0bf9e7c9e78f33e13ee9224d785e26a771805e9b3958ef44aa",
+    "gemmini/InstructionCompression.scala": "95972dd9445c74677f0ca132a1a1d5974b489112a2abebd4d651b0febb1eadfe",
+    "gemmini/LoadController.scala": "54ecd17f781b2bf94454a9a2b791b8d7f9b2298ef3c1e32d4a3206f2d0afb519",
+    "gemmini/LocalAddr.scala": "cb1d7de3d0f04c77f79044fb53c560409743962cd82d2a86b8ae95898231ac61",
+    "gemmini/LoopConv.scala": "8609d9f27ff037ffdeaba53f70e8c0a9b3a994c3871e9eacbee20e58d3dc6c6d",
+    "gemmini/LoopMatmul.scala": "e81dcaf45d3758df0339d05451d68c1dfe2ae720af80a815ec20a42968cbfe0d",
+    "gemmini/LoopUnroller.scala": "01e3eb8c12ac749e34a1de1cd16d88900c0383f2a4b8cb2e9c8fdd093b95152c",
+    "gemmini/Mesh.scala": "043ffc5d4e9f70dbe5ee7c0a4ece993a7999e24417179df3110e56c55bda376d",
+    "gemmini/MeshWithDelays.scala": "564238b9bde490211c219398cf9bac56590be48ce2765ea7ec3902891f01f0b3",
+    "gemmini/MultiHeadedQueue.scala": "68e537e5a3d6b811f78f07d0dfabe7ceec55bb664e960c2d3b6c4ae39fd77a51",
+    "gemmini/MultiTailedQueue.scala": "51e148223ddf51222e6cc3c74d6b84d179529dcd1154a37691b155c94fff0d5b",
+    "gemmini/NormCmd.scala": "7f70d5aa2a63d8c05fdb75b0f0f26930983894eb68712afe751a63946d078f06",
+    "gemmini/Normalizer.scala": "31013f874085f8ba9724ea6f2e624afe329a64ed6f9f6405801164500b7791b3",
+    "gemmini/PE.scala": "03981120bf8702ff0ae1ae5a5b1a32fba6dce63cdaf9ce87dc093b013156519e",
+    "gemmini/Pipeline.scala": "c33cdc67d9e9eb61478e69a182503be8bd801d950555ed3179c40f68763aa8ae",
+    "gemmini/PixelRepeater.scala": "172347ac6c9737d03ed379c73bfdf360d1c9919f94fa5c5fd9f310437b6a31f7",
+    "gemmini/ReservationStation.scala": "8f010ff4c54562f35b4b322599ae2e82851b5ba330b39769acabcdccf7232035",
+    "gemmini/Scratchpad.scala": "6aeee3a63a43383eb11fdb59e507fca7f356a00e7af7696fa261a676284d1a8f",
+    "gemmini/SharedExtMem.scala": "7ee395b0e906d2de6decc6ed9bbc0dfcd60a1791da8f6c1829c6482cd6d81619",
+    "gemmini/Shifter.scala": "aaa70ce1c9c6872f717aa800b9d1dda5fc2b6f5b396ff9c960718ffda87b26ad",
+    "gemmini/StoreController.scala": "e76e8799f7fe67a245894a32fa976fd371d6d508a9be3ab55838998e42c2ba6f",
+    "gemmini/SyncMem.scala": "c118cdae6ceb96896c43c41281f85d7d3adfff9b0fc74e0413d9ed272c10af97",
+    "gemmini/TagQueue.scala": "513c0b8aa5b813207919eee9916b3c27f4a5805f3c5a07f2acab04042671c0ae",
+    "gemmini/Tile.scala": "e0819f691428f312a0f204b5c081fc7481a3ffd0cd07f1b630378f93c38f82fb",
+    "gemmini/TilerController.scala": "e48bd886b6a354db95a1f32977826a9af0eda913e40284e88e2d2460dc05c8ff",
+    "gemmini/TilerFSM.scala": "fd84f2a45546cb9c807566697f1ad624d010b4a607e7e7e1e744727e07ae7c00",
+    "gemmini/TilerScheduler.scala": "ae6638331c6f6e8342f94a262938b5829a0e334f6e835edbde529f14d4aee187",
+    "gemmini/TransposePreloadUnroller.scala": "a11538f9e6cac152862cd4bd2c44e0a3398a6926c874bb635b2ecc9bc5d49148",
+    "gemmini/Transposer.scala": "69a1349d98d188e9fffe8acb4e108e6fbb56c8ef314956faa4bf22a23828e5e3",
+    "gemmini/Util.scala": "e57a938f1d6a417d558ac7018ec34ce48e0cf0678c6dfd4ddca6c51fefbce20b",
+    "gemmini/VectorScalarMultiplier.scala": "83193de7af2997ad9d06cd81912cb8d9e37a78e8883160f13e7bc26e783352d9",
+    "gemmini/WeightedArbiter.scala": "9166528522f060bcedcf2af7c1538e3690b449a52a9fa2d6ed869fae74f3f4b8",
+    "gemmini/XactTracker.scala": "3f38c83c4813874fc52f2d3150fcbcc0d3efcb166546ad054cb53cf4d1300f3d",
+    "gemmini/ZeroWriter.scala": "cc8adef645cb46a6152a74fbfed2e16cb144082910a09b21a60f48d34099c3ac"
+  },
+  "recorded_from": "Gemmini TEST_LLMS run_20261108_131221_994034"
+}
