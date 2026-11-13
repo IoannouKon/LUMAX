@@ -1,0 +1,7 @@
+configuration,weight_bits,array_dim,scratchpad_kib,accumulator_kib,dma_read_ids,dma_write_ids,clock_target_mhz,status,resources_stage,luts,registers,bram_tiles,dsps,dynamic_power_w,system_total_power_w,system_dynamic_power_w,power_confidence,estimated_internal_fmax_mhz,timing_met,routed,system_setup_slack_ns,system_hold_slack_ns,gemmini_internal_setup_slack_ns
+d4_sp32_acc4_id8/w8,8,4,32,4,8,8,50,PASS,post_route,45504.0,22800.0,16.0,167.0,0.265,2.339,1.737,Low,64.008,True,True,0.145,0.010,4.375
+d4_sp32_acc4_id8/w4,4,4,32,4,8,8,50,PASS,post_route,45647.0,22843.0,16.0,152.0,0.268,2.343,1.74,Low,66.774,True,True,0.117,0.010,5.022
+d4_sp32_acc4_id8/w2,2,4,32,4,8,8,50,PASS,post_route,44720.0,22850.0,16.0,152.0,0.251,2.323,1.721,Low,67.231,True,True,0.229,0.010,5.124
+d4_sp32_acc4_id16/w2,2,4,32,4,16,16,50,PASS,post_route,45114.0,23498.0,16.0,152.0,0.25,2.325,1.723,Low,67.286,True,True,0.129,0.010,5.136
+d8_sp32_acc4_id16/w2,2,8,32,4,16,16,50,PASS,post_route,91924.0,36186.0,32.0,159.0,0.875,2.958,2.352,Low,67.123,True,True,0.111,0.010,5.100
+d8_sp64_acc16_id16/w2,2,8,64,16,16,16,50,PASS,post_route,95539.0,36488.0,32.0,159.0,0.892,2.98,2.374,Low,63.44,True,True,0.075,0.010,4.235

@@ -1,0 +1,223 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version     : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date             : Wed Nov 11 09:22:53 2026
+| Host             : cheetara running 64-bit Ubuntu 20.04.6 LTS
+| Command          : report_power -hierarchical_depth 6 -file /tmp/lumax-vivado-comparison-1020/run_20261111_082148_249124/builds/gemmini_w8_50mhz/runs/20261111_063634_061306/reports/power.rpt
+| Design           : ZCU106FPGATestHarness
+| Device           : xczu7ev-ffvc1156-2-e
+| Design State     : routed
+| Grade            : extended
+| Process          : typical
+| Characterization : Production
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Power Report
+
+Table of Contents
+-----------------
+1. Summary
+1.1 On-Chip Components
+1.2 Power Supply Summary
+1.3 Confidence Level
+2. Settings
+2.1 Environment
+2.2 Clock Constraints
+3. Detailed Reports
+3.1 By Hierarchy
+
+1. Summary
+----------
+
++--------------------------+--------------+
+| Total On-Chip Power (W)  | 2.339        |
+| Design Power Budget (W)  | Unspecified* |
+| Power Budget Margin (W)  | NA           |
+| Dynamic (W)              | 1.737        |
+| Device Static (W)        | 0.602        |
+| Effective TJA (C/W)      | 1.0          |
+| Max Ambient (C)          | 97.7         |
+| Junction Temperature (C) | 27.3         |
+| Confidence Level         | Low          |
+| Setting File             | ---          |
+| Simulation Activity File | ---          |
+| Design Nets Matched      | NA           |
++--------------------------+--------------+
+* Specify Design Power Budget using, set_operating_conditions -design_power_budget <value in Watts>
+
+
+1.1 On-Chip Components
+----------------------
+
++--------------------------+-----------+----------+-----------+-----------------+
+| On-Chip                  | Power (W) | Used     | Available | Utilization (%) |
++--------------------------+-----------+----------+-----------+-----------------+
+| Clocks                   |     0.249 |       14 |       --- |             --- |
+| CLB Logic                |     0.166 |   172984 |       --- |             --- |
+|   LUT as Logic           |     0.112 |    77207 |    230400 |           33.51 |
+|   LUT as Distributed RAM |     0.045 |     5808 |    101760 |            5.71 |
+|   CARRY8                 |     0.003 |     1852 |     28800 |            6.43 |
+|   LUT as Shift Register  |     0.003 |      920 |    101760 |            0.90 |
+|   Register               |     0.003 |    56224 |    460800 |           12.20 |
+|   Others                 |    <0.001 |     2503 |       --- |             --- |
+|   BUFG                   |    <0.001 |        1 |        64 |            1.56 |
+|   F7/F8 Muxes            |     0.000 |     1972 |    230400 |            0.86 |
+| Signals                  |     0.152 |   167611 |       --- |             --- |
+| Block RAM                |     0.064 |    184.5 |       312 |           59.13 |
+| MMCM                     |     0.213 |        0 |       --- |             --- |
+| PLL                      |     0.178 |        3 |       --- |             --- |
+| DSPs                     |     0.060 |      180 |      1728 |           10.42 |
+| I/O                      |     0.655 |      124 |       360 |           34.44 |
+| Static Power             |     0.602 |          |           |                 |
+| Total                    |     2.339 |          |           |                 |
++--------------------------+-----------+----------+-----------+-----------------+
+
+
+1.2 Power Supply Summary
+------------------------
+
++-----------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
+| Source          | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
++-----------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
+| Vccint          |       0.850 |     0.967 |       0.820 |      0.147 |       NA    | Unspecified | NA         |
+| Vccint_io       |       0.850 |     0.431 |       0.361 |      0.070 |       NA    | Unspecified | NA         |
+| Vccbram         |       0.850 |     0.004 |       0.002 |      0.002 |       NA    | Unspecified | NA         |
+| Vccaux          |       1.800 |     0.360 |       0.213 |      0.148 |       NA    | Unspecified | NA         |
+| Vccaux_io       |       1.800 |     0.194 |       0.139 |      0.055 |       NA    | Unspecified | NA         |
+| Vcco33          |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco25          |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco18          |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco15          |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco135         |       1.350 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco12          |       1.200 |     0.081 |       0.081 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco10          |       1.000 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vccadc          |       1.800 |     0.008 |       0.000 |      0.008 |       NA    | Unspecified | NA         |
+| VCC_PSINTFP     |       0.850 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSINTLP     |       0.850 |     0.005 |       0.000 |      0.005 |       NA    | Unspecified | NA         |
+| VPS_MGTRAVCC    |       0.850 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSINTFP_DDR |       0.850 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSPLL       |       1.200 |     0.002 |       0.000 |      0.002 |       NA    | Unspecified | NA         |
+| VPS_MGTRAVTT    |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_PSDDR_504  |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSAUX       |       1.800 |     0.002 |       0.000 |      0.002 |       NA    | Unspecified | NA         |
+| VCC_PSBATT      |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSDDR_PLL   |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_PSIO0_500  |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_PSIO1_501  |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_PSIO2_502  |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_PSIO3_503  |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSADC       |       1.800 |     0.002 |       0.000 |      0.002 |       NA    | Unspecified | NA         |
+| VCCINT_VCU      |       0.900 |     0.026 |       0.000 |      0.026 |       NA    | Unspecified | NA         |
+| MGTAVcc         |       0.900 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| MGTAVtt         |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| MGTVccaux       |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
++-----------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
+
+
+1.3 Confidence Level
+--------------------
+
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+| User Input Data             | Confidence | Details                                                | Action                                                                                                     |
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+| Design implementation state | High       | Design is routed                                       |                                                                                                            |
+| Clock nodes activity        | High       | User specified more than 95% of clocks                 |                                                                                                            |
+| I/O nodes activity          | Low        | More than 75% of inputs are missing user specification | Provide missing input activity with simulation results or by editing the "By Resource Type -> I/Os" view   |
+| Internal nodes activity     | Medium     | User specified less than 25% of internal nodes         | Provide missing internal nodes activity with simulation results or by editing the "By Resource Type" views |
+| Device models               | High       | Device models are Production                           |                                                                                                            |
+|                             |            |                                                        |                                                                                                            |
+| Overall confidence level    | Low        |                                                        |                                                                                                            |
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+
+
+2. Settings
+-----------
+
+2.1 Environment
+---------------
+
++-----------------------+--------------------------+
+| Ambient Temp (C)      | 25.0                     |
+| ThetaJA (C/W)         | 1.0                      |
+| Airflow (LFM)         | 250                      |
+| Heat Sink             | medium (Medium Profile)  |
+| ThetaSA (C/W)         | 1.5                      |
+| Board Selection       | medium (10"x10")         |
+| # of Board Layers     | 12to15 (12 to 15 Layers) |
+| Board Temperature (C) | 25.0                     |
++-----------------------+--------------------------+
+
+
+2.2 Clock Constraints
+---------------------
+
++-----------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+| Clock                                                                                               | Domain                                                                                                                                                                                                         | Constraint (ns) |
++-----------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+| clk_out1_harnessSysPLL                                                                              | harnessSysPLL/inst/clk_out1_harnessSysPLL                                                                                                                                                                      |            20.0 |
+| dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK | dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/DRCK                                                                                                                                             |            50.0 |
+| mmcm_clkout0                                                                                        | mig/island/blackbox/inst/u_ddr4_infrastructure/mmcm_clkout0                                                                                                                                                    |             3.3 |
+| mmcm_clkout5                                                                                        | mig/island/blackbox/inst/u_ddr4_infrastructure/mmcm_clkout5                                                                                                                                                    |            13.3 |
+| mmcm_clkout6                                                                                        | mig/island/blackbox/inst/u_ddr4_infrastructure/mmcm_clkout6                                                                                                                                                    |             6.7 |
+| pll_clk[0]                                                                                          | mig/island/blackbox/inst/u_ddr4_mem_intfc/u_mig_ddr4_phy/inst/u_ddr4_phy_pll/pll_clk[0]                                                                                                                        |             0.4 |
+| pll_clk[0]_DIV                                                                                      | mig/island/blackbox/inst/u_ddr4_mem_intfc/u_mig_ddr4_phy/inst/generate_block1.u_ddr_xiphy/byte_num[0].xiphy_byte_wrapper.u_xiphy_byte_wrapper/I_CONTROL[0].GEN_I_CONTROL.u_xiphy_control/TX_BIT_CTRL_OUT0[26]  |             3.3 |
+| pll_clk[1]                                                                                          | mig/island/blackbox/inst/u_ddr4_mem_intfc/u_mig_ddr4_phy/inst/u_ddr4_phy_pll/pll_clk[1]                                                                                                                        |             0.4 |
+| pll_clk[1]_DIV                                                                                      | mig/island/blackbox/inst/u_ddr4_mem_intfc/u_mig_ddr4_phy/inst/generate_block1.u_ddr_xiphy/byte_num[4].xiphy_byte_wrapper.u_xiphy_byte_wrapper/I_CONTROL[0].GEN_I_CONTROL.u_xiphy_control/TX_BIT_CTRL_OUT0[26]  |             3.3 |
+| pll_clk[2]                                                                                          | mig/island/blackbox/inst/u_ddr4_mem_intfc/u_mig_ddr4_phy/inst/u_ddr4_phy_pll/pll_clk[2]                                                                                                                        |             0.4 |
+| pll_clk[2]_DIV                                                                                      | mig/island/blackbox/inst/u_ddr4_mem_intfc/u_mig_ddr4_phy/inst/generate_block1.u_ddr_xiphy/byte_num[10].xiphy_byte_wrapper.u_xiphy_byte_wrapper/I_CONTROL[0].GEN_I_CONTROL.u_xiphy_control/TX_BIT_CTRL_OUT2[26] |             3.3 |
+| sys_clock                                                                                           | sys_clock_p                                                                                                                                                                                                    |             3.3 |
++-----------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+
+
+3. Detailed Reports
+-------------------
+
+3.1 By Hierarchy
+----------------
+
++-----------------------------------------+-----------+
+| Name                                    | Power (W) |
++-----------------------------------------+-----------+
+| ZCU106FPGATestHarness                   |     1.737 |
+|   chiptop0                              |     0.378 |
+|     system                              |     0.378 |
+|       bank                              |     0.006 |
+|         ram                             |     0.006 |
+|           mem                           |     0.006 |
+|       cbus                              |     0.003 |
+|         buffer                          |     0.001 |
+|       coh_wrapper                       |     0.066 |
+|         l2                              |     0.065 |
+|           inclusive_cache_bank_sched    |     0.065 |
+|       mbus                              |     0.002 |
+|       pbus                              |     0.002 |
+|       tile_prci_domain                  |     0.298 |
+|         buffer                          |     0.002 |
+|         element_reset_domain_rockettile |     0.296 |
+|           core                          |     0.014 |
+|           dcache                        |     0.006 |
+|           frontend                      |     0.007 |
+|           ptw                           |     0.003 |
+|           v                             |     0.265 |
+|   dbg_hub                               |     0.003 |
+|     inst                                |     0.003 |
+|       BSCANID.u_xsdbm_id                |     0.003 |
+|         CORE_XSDB.UUT_MASTER            |     0.003 |
+|           U_ICON_INTERFACE              |     0.002 |
+|   harnessSysPLL                         |     0.098 |
+|     inst                                |     0.098 |
+|   mig                                   |     1.252 |
+|     axi4asource                         |     0.002 |
+|     deint                               |     0.002 |
+|     island                              |     1.247 |
+|       axi4asink                         |     0.007 |
+|         nodeIn_r_source                 |     0.005 |
+|       blackbox                          |     1.239 |
+|         inst                            |     1.239 |
+|           u_ddr4_infrastructure         |     0.119 |
+|           u_ddr4_mem_intfc              |     1.080 |
+|           u_ddr_axi                     |     0.041 |
+|   sys_clock_ibufds                      |     0.003 |
++-----------------------------------------+-----------+
+
+

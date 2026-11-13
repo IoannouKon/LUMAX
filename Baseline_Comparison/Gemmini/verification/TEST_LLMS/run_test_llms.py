@@ -6,7 +6,7 @@ KV=32, intermediate=1216. Rows 4,5,8; 12 shapes x 3 precisions = 36.
 These are independent matmuls, not an execution of the full language model.
 
 Run: python3 run_test_llms.py check | start | status | stop
-Each run saves runs/run_<date>/verilator.log and cycles.csv. start detaches
+Each run saves dDIM_spSP_accACC_idIDS/runs/run_<date>/verilator.log and cycles.csv. start detaches
 from SSH; all shape/configuration options are editable below. Hardware builds
 are reused only when source/configuration/tool hashes match. Python numerical
 references stay on the host; actual matrix arithmetic runs in Gemmini RTL.
@@ -765,7 +765,7 @@ def main():
                     target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,target)
                 shutil.copyfile(ASSETS/'software/gemmini_fpint.h',state/'gemmini_fpint.h')
                 shutil.copyfile(ASSETS/'software/rocc-software/src/xcustom.h',state/'xcustom.h')
-                output = ROOT/'runs'/name;output.mkdir(parents=True)
+                output = ROOT/f"d{cfg['dim']}_sp{cfg['sp_kib']}_acc{cfg['acc_kib']}_id{cfg['dma_ids']}"/'runs'/name;output.mkdir(parents=True)
                 log = output/'verilator.log'
                 atomic(state/'options.json',dict(config=cfg,plan=plan,compiler_jars=jars,log=str(log), runner_sha256=sha(SELF), assets=str(ASSETS), source_sha256={str(p.relative_to(source)):sha(p) for p in sorted(source.rglob('*.scala'))}, software_sha256={name:sha(state/name) for name in ('gemmini_fpint.h','xcustom.h')}))
                 atomic(pointer,dict(state=str(state),log=str(log)))
