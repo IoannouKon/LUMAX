@@ -51,8 +51,8 @@ compiled tool assemblies remain outside Git.
 
 The initial B8/RF4/YS8, B16/RF4/YS4 and B16/RF4/YS8 attempts were cancelled
 at the user's request after B6 exceeded capacity; they have no completed
-implementation measurements. The later compact-validity-width correction is
-being measured separately and is **not included in these archived results**.
+implementation measurements. The completed compact-validity-width results are now archived in
+[LUMAX/](LUMAX/README.md); the logs listed above retain the earlier versions.
 New script runs snapshot the current working Chipyard sources; they do not
 implicitly reproduce a historical source version. Consult each run's frozen
 `sources/` and manifest when matching versions.
@@ -160,3 +160,13 @@ into the corresponding `fpga/src/main/` locations and add the block in
 Chipyard FPGA-shells and VCU118 SD boot-ROM sources are also required.
 Set `LUMAX_CHIPYARD` to that prepared checkout. These setup steps are already
 done in `/home/kioannou/chipyard_1.13.0`; this archive operation did not alter it.
+
+
+## Completed optimized LUMAX implementations
+
+[LUMAX/README.md](LUMAX/README.md) and [LUMAX/summary.csv](LUMAX/summary.csv)
+archive the latest eight successful implementations: two ID8 configurations
+and six ID16 configurations. All use the seven optimization flags and passed
+implementation at 50 MHz. Each has original resource, power and timing reports,
+plus effective configuration metadata. These are separate from the historical
+logs/ snapshots above.

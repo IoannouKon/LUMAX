@@ -1,0 +1,1339 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date              : Fri Nov 13 12:47:07 2026
+| Host              : cheetara running 64-bit Ubuntu 20.04.6 LTS
+| Command           : report_timing -from [get_cells -hierarchical -filter {IS_SEQUENTIAL && NAME =~ "chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/*"}] -to [get_cells -hierarchical -filter {IS_SEQUENTIAL && NAME =~ "chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/*"}] -delay_type max -max_paths 5 -file /tmp/lumax-w2-id16-1020/run_20261113_003838_822227/vivado/lumax_b4_rf8_ys8_id16_w2/builds/b4_rf8_ys8_id16_fp16_r8_k1216_n1216_50mhz/runs/20261113_094443_737884/reports/lumax_internal_timing.rpt
+| Design            : ZCU106FPGATestHarness
+| Device            : xczu7ev-ffvc1156
+| Speed File        : -2  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : E
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             6.338ns  (required time - arrival time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[30]
+                            (rising edge-triggered cell RAMB36E2 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            19.998ns  (clk_out1_harnessSysPLL rise@19.998ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        13.196ns  (logic 3.238ns (24.539%)  route 9.958ns (75.461%))
+  Logic Levels:           33  (CARRY8=12 LUT1=1 LUT2=3 LUT3=1 LUT4=2 LUT5=7 LUT6=7)
+  Clock Path Skew:        -0.071ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.839ns = ( 24.837 - 19.998 ) 
+    Source Clock Delay      (SCD):    4.656ns
+    Clock Pessimism Removal (CPR):    -0.254ns
+  Clock Uncertainty:      0.094ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.174ns
+    Phase Error              (PE):    0.000ns
+  Clock Net Delay (Source):      2.453ns (routing 1.051ns, distribution 1.402ns)
+  Clock Net Delay (Destination): 2.199ns (routing 0.954ns, distribution 1.245ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.453     4.656    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X83Y247        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X83Y247        FDRE (Prop_DFF_SLICEM_C_Q)
+                                                      0.078     4.734 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/Q
+                         net (fo=238, routed)         1.523     6.257    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_11[2]
+    SLICE_X57Y263        LUT1 (Prop_B6LUT_SLICEM_I0_O)
+                                                      0.052     6.309 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229/O
+                         net (fo=1, routed)           0.016     6.325    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229_n_0
+    SLICE_X57Y263        CARRY8 (Prop_CARRY8_SLICEM_S[1]_O[7])
+                                                      0.238     6.563 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169/O[7]
+                         net (fo=33, routed)          1.338     7.901    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169_n_8
+    SLICE_X76Y265        LUT2 (Prop_H6LUT_SLICEL_I0_O)
+                                                      0.099     8.000 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277/O
+                         net (fo=1, routed)           0.010     8.010    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277_n_0
+    SLICE_X76Y265        CARRY8 (Prop_CARRY8_SLICEL_S[7]_CO[7])
+                                                      0.115     8.125 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247/CO[7]
+                         net (fo=1, routed)           0.026     8.151    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247_n_0
+    SLICE_X76Y266        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056     8.207 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_238/O[0]
+                         net (fo=18, routed)          0.385     8.592    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_329[8]
+    SLICE_X75Y263        CARRY8 (Prop_CARRY8_SLICEL_DI[0]_O[3])
+                                                      0.113     8.705 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45/O[3]
+                         net (fo=4, routed)           0.232     8.937    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45_n_12
+    SLICE_X77Y261        LUT2 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.097     9.034 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88/O
+                         net (fo=1, routed)           0.011     9.045    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88_n_0
+    SLICE_X77Y261        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[6])
+                                                      0.109     9.154 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_39/CO[6]
+                         net (fo=4, routed)           0.127     9.281    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount2517_in
+    SLICE_X77Y260        LUT3 (Prop_D6LUT_SLICEL_I0_O)
+                                                      0.050     9.331 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[12]_i_24/O
+                         net (fo=2, routed)           0.156     9.487    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount1
+    SLICE_X79Y260        LUT6 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098     9.585 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43/O
+                         net (fo=8, routed)           0.290     9.875    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43_n_0
+    SLICE_X74Y260        LUT6 (Prop_B6LUT_SLICEM_I2_O)
+                                                      0.089     9.964 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22/O
+                         net (fo=1, routed)           0.206    10.170    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22_n_0
+    SLICE_X76Y260        LUT6 (Prop_F6LUT_SLICEL_I5_O)
+                                                      0.049    10.219 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7/O
+                         net (fo=1, routed)           0.011    10.230    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7_n_0
+    SLICE_X76Y260        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    10.385 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3/CO[7]
+                         net (fo=1, routed)           0.026    10.411    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3_n_0
+    SLICE_X76Y261        CARRY8 (Prop_CARRY8_SLICEL_CI_O[2])
+                                                      0.067    10.478 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6/O[2]
+                         net (fo=21, routed)          0.486    10.964    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6_n_13
+    SLICE_X70Y263        LUT4 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098    11.062 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35/O
+                         net (fo=1, routed)           0.022    11.084    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35_n_0
+    SLICE_X70Y263        CARRY8 (Prop_CARRY8_SLICEM_S[5]_CO[6])
+                                                      0.113    11.197 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w_reg[63]_i_9/CO[6]
+                         net (fo=44, routed)          0.391    11.588    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/end_341
+    SLICE_X72Y267        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.148    11.736 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754/O
+                         net (fo=4, routed)           0.145    11.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754_n_0
+    SLICE_X71Y268        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.097    11.978 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782/O
+                         net (fo=1, routed)           0.238    12.216    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782_n_0
+    SLICE_X71Y268        LUT6 (Prop_F6LUT_SLICEM_I0_O)
+                                                      0.051    12.267 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756/O
+                         net (fo=2, routed)           0.092    12.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756_n_0
+    SLICE_X71Y268        LUT5 (Prop_C5LUT_SLICEM_I4_O)
+                                                      0.099    12.458 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757/O
+                         net (fo=2, routed)           0.186    12.645    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757_n_0
+    SLICE_X71Y269        LUT6 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.052    12.697 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674/O
+                         net (fo=1, routed)           0.096    12.793    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674_n_0
+    SLICE_X71Y269        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.135    12.928 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486/O
+                         net (fo=58, routed)          1.281    14.208    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486_n_0
+    SLICE_X62Y266        LUT5 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.090    14.298 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402/O
+                         net (fo=9, routed)           0.119    14.417    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402_n_0
+    SLICE_X62Y267        LUT2 (Prop_F6LUT_SLICEL_I0_O)
+                                                      0.123    14.540 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493/O
+                         net (fo=1, routed)           0.011    14.551    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493_n_0
+    SLICE_X62Y267        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    14.706 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363/CO[7]
+                         net (fo=1, routed)           0.026    14.732    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363_n_0
+    SLICE_X62Y268        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.747 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436/CO[7]
+                         net (fo=1, routed)           0.026    14.773    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436_n_0
+    SLICE_X62Y269        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.788 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470/CO[7]
+                         net (fo=1, routed)           0.052    14.840    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470_n_0
+    SLICE_X62Y270        CARRY8 (Prop_CARRY8_SLICEL_CI_O[5])
+                                                      0.116    14.956 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476/O[5]
+                         net (fo=1, routed)           0.404    15.360    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_341[30]
+    SLICE_X59Y271        LUT4 (Prop_G6LUT_SLICEL_I3_O)
+                                                      0.089    15.449 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_370/O
+                         net (fo=3, routed)           0.391    15.841    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_340[30]
+    SLICE_X63Y274        LUT6 (Prop_H6LUT_SLICEM_I0_O)
+                                                      0.101    15.942 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_326/O
+                         net (fo=1, routed)           0.368    16.310    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_326_n_0
+    SLICE_X60Y271        LUT5 (Prop_G6LUT_SLICEL_I4_O)
+                                                      0.123    16.433 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_213/O
+                         net (fo=1, routed)           0.149    16.582    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_213_n_0
+    SLICE_X61Y271        LUT5 (Prop_B6LUT_SLICEM_I4_O)
+                                                      0.100    16.682 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_88/O
+                         net (fo=2, routed)           0.727    17.409    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_88_n_0
+    SLICE_X67Y269        LUT5 (Prop_H6LUT_SLICEM_I2_O)
+                                                      0.053    17.462 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_10/O
+                         net (fo=3, routed)           0.390    17.852    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/W0_data[62]
+    RAMB36_X2Y52         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[30]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                     19.998    19.998 r  
+    AH12                                              0.000    19.998 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079    20.077    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456    20.533 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040    20.573    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000    20.573 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286    20.859    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    20.883 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886    21.769    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630    22.399 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215    22.614    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    22.638 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.199    24.837    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/R0_clk
+    RAMB36_X2Y52         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/CLKBWRCLK
+                         clock pessimism             -0.254    24.583    
+                         clock uncertainty           -0.094    24.489    
+    RAMB36_X2Y52         RAMB36E2 (Setup_RAMB36E2_RAMB36_CLKBWRCLK_DINBDIN[30])
+                                                     -0.299    24.190    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg
+  -------------------------------------------------------------------
+                         required time                         24.190    
+                         arrival time                         -17.852    
+  -------------------------------------------------------------------
+                         slack                                  6.338    
+
+Slack (MET) :             6.365ns  (required time - arrival time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[24]
+                            (rising edge-triggered cell RAMB36E2 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            19.998ns  (clk_out1_harnessSysPLL rise@19.998ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        13.208ns  (logic 3.204ns (24.258%)  route 10.004ns (75.742%))
+  Logic Levels:           36  (CARRY8=15 LUT1=1 LUT2=3 LUT3=2 LUT4=1 LUT5=5 LUT6=9)
+  Clock Path Skew:        -0.071ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.839ns = ( 24.837 - 19.998 ) 
+    Source Clock Delay      (SCD):    4.656ns
+    Clock Pessimism Removal (CPR):    -0.254ns
+  Clock Uncertainty:      0.094ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.174ns
+    Phase Error              (PE):    0.000ns
+  Clock Net Delay (Source):      2.453ns (routing 1.051ns, distribution 1.402ns)
+  Clock Net Delay (Destination): 2.199ns (routing 0.954ns, distribution 1.245ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.453     4.656    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X83Y247        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X83Y247        FDRE (Prop_DFF_SLICEM_C_Q)
+                                                      0.078     4.734 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/Q
+                         net (fo=238, routed)         1.523     6.257    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_11[2]
+    SLICE_X57Y263        LUT1 (Prop_B6LUT_SLICEM_I0_O)
+                                                      0.052     6.309 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229/O
+                         net (fo=1, routed)           0.016     6.325    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229_n_0
+    SLICE_X57Y263        CARRY8 (Prop_CARRY8_SLICEM_S[1]_O[7])
+                                                      0.238     6.563 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169/O[7]
+                         net (fo=33, routed)          1.338     7.901    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169_n_8
+    SLICE_X76Y265        LUT2 (Prop_H6LUT_SLICEL_I0_O)
+                                                      0.099     8.000 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277/O
+                         net (fo=1, routed)           0.010     8.010    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277_n_0
+    SLICE_X76Y265        CARRY8 (Prop_CARRY8_SLICEL_S[7]_CO[7])
+                                                      0.115     8.125 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247/CO[7]
+                         net (fo=1, routed)           0.026     8.151    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247_n_0
+    SLICE_X76Y266        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056     8.207 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_238/O[0]
+                         net (fo=18, routed)          0.385     8.592    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_329[8]
+    SLICE_X75Y263        CARRY8 (Prop_CARRY8_SLICEL_DI[0]_O[3])
+                                                      0.113     8.705 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45/O[3]
+                         net (fo=4, routed)           0.232     8.937    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45_n_12
+    SLICE_X77Y261        LUT2 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.097     9.034 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88/O
+                         net (fo=1, routed)           0.011     9.045    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88_n_0
+    SLICE_X77Y261        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[6])
+                                                      0.109     9.154 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_39/CO[6]
+                         net (fo=4, routed)           0.127     9.281    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount2517_in
+    SLICE_X77Y260        LUT3 (Prop_D6LUT_SLICEL_I0_O)
+                                                      0.050     9.331 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[12]_i_24/O
+                         net (fo=2, routed)           0.156     9.487    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount1
+    SLICE_X79Y260        LUT6 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098     9.585 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43/O
+                         net (fo=8, routed)           0.290     9.875    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43_n_0
+    SLICE_X74Y260        LUT6 (Prop_B6LUT_SLICEM_I2_O)
+                                                      0.089     9.964 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22/O
+                         net (fo=1, routed)           0.206    10.170    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22_n_0
+    SLICE_X76Y260        LUT6 (Prop_F6LUT_SLICEL_I5_O)
+                                                      0.049    10.219 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7/O
+                         net (fo=1, routed)           0.011    10.230    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7_n_0
+    SLICE_X76Y260        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    10.385 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3/CO[7]
+                         net (fo=1, routed)           0.026    10.411    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3_n_0
+    SLICE_X76Y261        CARRY8 (Prop_CARRY8_SLICEL_CI_O[2])
+                                                      0.067    10.478 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6/O[2]
+                         net (fo=21, routed)          0.486    10.964    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6_n_13
+    SLICE_X70Y263        LUT4 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098    11.062 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35/O
+                         net (fo=1, routed)           0.022    11.084    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35_n_0
+    SLICE_X70Y263        CARRY8 (Prop_CARRY8_SLICEM_S[5]_CO[6])
+                                                      0.113    11.197 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w_reg[63]_i_9/CO[6]
+                         net (fo=44, routed)          0.391    11.588    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/end_341
+    SLICE_X72Y267        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.148    11.736 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754/O
+                         net (fo=4, routed)           0.145    11.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754_n_0
+    SLICE_X71Y268        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.097    11.978 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782/O
+                         net (fo=1, routed)           0.238    12.216    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782_n_0
+    SLICE_X71Y268        LUT6 (Prop_F6LUT_SLICEM_I0_O)
+                                                      0.051    12.267 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756/O
+                         net (fo=2, routed)           0.092    12.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756_n_0
+    SLICE_X71Y268        LUT5 (Prop_C5LUT_SLICEM_I4_O)
+                                                      0.099    12.458 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757/O
+                         net (fo=2, routed)           0.186    12.645    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757_n_0
+    SLICE_X71Y269        LUT6 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.052    12.697 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674/O
+                         net (fo=1, routed)           0.096    12.793    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674_n_0
+    SLICE_X71Y269        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.135    12.928 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486/O
+                         net (fo=58, routed)          1.281    14.208    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486_n_0
+    SLICE_X62Y266        LUT5 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.090    14.298 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402/O
+                         net (fo=9, routed)           0.119    14.417    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402_n_0
+    SLICE_X62Y267        LUT2 (Prop_F6LUT_SLICEL_I0_O)
+                                                      0.123    14.540 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493/O
+                         net (fo=1, routed)           0.011    14.551    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493_n_0
+    SLICE_X62Y267        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    14.706 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363/CO[7]
+                         net (fo=1, routed)           0.026    14.732    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363_n_0
+    SLICE_X62Y268        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.747 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436/CO[7]
+                         net (fo=1, routed)           0.026    14.773    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436_n_0
+    SLICE_X62Y269        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.788 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470/CO[7]
+                         net (fo=1, routed)           0.052    14.840    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470_n_0
+    SLICE_X62Y270        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.855 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476/CO[7]
+                         net (fo=1, routed)           0.026    14.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476_n_0
+    SLICE_X62Y271        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.896 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_462/CO[7]
+                         net (fo=1, routed)           0.026    14.922    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_462_n_0
+    SLICE_X62Y272        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.937 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_426/CO[7]
+                         net (fo=1, routed)           0.026    14.963    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_426_n_0
+    SLICE_X62Y273        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056    15.019 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_464/O[0]
+                         net (fo=1, routed)           0.340    15.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_341[49]
+    SLICE_X60Y273        LUT6 (Prop_D6LUT_SLICEL_I5_O)
+                                                      0.050    15.409 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_411/O
+                         net (fo=1, routed)           0.200    15.609    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_340[49]
+    SLICE_X60Y267        LUT6 (Prop_D6LUT_SLICEL_I5_O)
+                                                      0.146    15.755 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_307/O
+                         net (fo=4, routed)           0.576    16.331    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_307_n_0
+    SLICE_X64Y270        LUT6 (Prop_H6LUT_SLICEM_I1_O)
+                                                      0.090    16.421 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_222/O
+                         net (fo=2, routed)           0.613    17.034    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_222_n_0
+    SLICE_X66Y269        LUT3 (Prop_D5LUT_SLICEL_I0_O)
+                                                      0.110    17.144 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_95/O
+                         net (fo=2, routed)           0.306    17.450    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_95_n_0
+    SLICE_X69Y269        LUT5 (Prop_H6LUT_SLICEL_I4_O)
+                                                      0.051    17.501 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_16/O
+                         net (fo=3, routed)           0.363    17.864    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/W0_data[56]
+    RAMB36_X2Y52         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[24]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                     19.998    19.998 r  
+    AH12                                              0.000    19.998 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079    20.077    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456    20.533 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040    20.573    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000    20.573 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286    20.859    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    20.883 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886    21.769    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630    22.399 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215    22.614    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    22.638 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.199    24.837    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/R0_clk
+    RAMB36_X2Y52         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/CLKBWRCLK
+                         clock pessimism             -0.254    24.583    
+                         clock uncertainty           -0.094    24.489    
+    RAMB36_X2Y52         RAMB36E2 (Setup_RAMB36E2_RAMB36_CLKBWRCLK_DINBDIN[24])
+                                                     -0.260    24.229    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg
+  -------------------------------------------------------------------
+                         required time                         24.229    
+                         arrival time                         -17.864    
+  -------------------------------------------------------------------
+                         slack                                  6.365    
+
+Slack (MET) :             6.377ns  (required time - arrival time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[24]
+                            (rising edge-triggered cell RAMB36E2 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            19.998ns  (clk_out1_harnessSysPLL rise@19.998ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        13.187ns  (logic 3.204ns (24.297%)  route 9.983ns (75.703%))
+  Logic Levels:           36  (CARRY8=15 LUT1=1 LUT2=3 LUT3=2 LUT4=1 LUT5=5 LUT6=9)
+  Clock Path Skew:        -0.080ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.830ns = ( 24.828 - 19.998 ) 
+    Source Clock Delay      (SCD):    4.656ns
+    Clock Pessimism Removal (CPR):    -0.254ns
+  Clock Uncertainty:      0.094ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.174ns
+    Phase Error              (PE):    0.000ns
+  Clock Net Delay (Source):      2.453ns (routing 1.051ns, distribution 1.402ns)
+  Clock Net Delay (Destination): 2.190ns (routing 0.954ns, distribution 1.236ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.453     4.656    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X83Y247        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X83Y247        FDRE (Prop_DFF_SLICEM_C_Q)
+                                                      0.078     4.734 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/Q
+                         net (fo=238, routed)         1.523     6.257    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_11[2]
+    SLICE_X57Y263        LUT1 (Prop_B6LUT_SLICEM_I0_O)
+                                                      0.052     6.309 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229/O
+                         net (fo=1, routed)           0.016     6.325    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229_n_0
+    SLICE_X57Y263        CARRY8 (Prop_CARRY8_SLICEM_S[1]_O[7])
+                                                      0.238     6.563 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169/O[7]
+                         net (fo=33, routed)          1.338     7.901    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169_n_8
+    SLICE_X76Y265        LUT2 (Prop_H6LUT_SLICEL_I0_O)
+                                                      0.099     8.000 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277/O
+                         net (fo=1, routed)           0.010     8.010    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277_n_0
+    SLICE_X76Y265        CARRY8 (Prop_CARRY8_SLICEL_S[7]_CO[7])
+                                                      0.115     8.125 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247/CO[7]
+                         net (fo=1, routed)           0.026     8.151    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247_n_0
+    SLICE_X76Y266        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056     8.207 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_238/O[0]
+                         net (fo=18, routed)          0.385     8.592    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_329[8]
+    SLICE_X75Y263        CARRY8 (Prop_CARRY8_SLICEL_DI[0]_O[3])
+                                                      0.113     8.705 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45/O[3]
+                         net (fo=4, routed)           0.232     8.937    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45_n_12
+    SLICE_X77Y261        LUT2 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.097     9.034 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88/O
+                         net (fo=1, routed)           0.011     9.045    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88_n_0
+    SLICE_X77Y261        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[6])
+                                                      0.109     9.154 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_39/CO[6]
+                         net (fo=4, routed)           0.127     9.281    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount2517_in
+    SLICE_X77Y260        LUT3 (Prop_D6LUT_SLICEL_I0_O)
+                                                      0.050     9.331 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[12]_i_24/O
+                         net (fo=2, routed)           0.156     9.487    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount1
+    SLICE_X79Y260        LUT6 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098     9.585 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43/O
+                         net (fo=8, routed)           0.290     9.875    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43_n_0
+    SLICE_X74Y260        LUT6 (Prop_B6LUT_SLICEM_I2_O)
+                                                      0.089     9.964 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22/O
+                         net (fo=1, routed)           0.206    10.170    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22_n_0
+    SLICE_X76Y260        LUT6 (Prop_F6LUT_SLICEL_I5_O)
+                                                      0.049    10.219 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7/O
+                         net (fo=1, routed)           0.011    10.230    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7_n_0
+    SLICE_X76Y260        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    10.385 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3/CO[7]
+                         net (fo=1, routed)           0.026    10.411    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3_n_0
+    SLICE_X76Y261        CARRY8 (Prop_CARRY8_SLICEL_CI_O[2])
+                                                      0.067    10.478 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6/O[2]
+                         net (fo=21, routed)          0.486    10.964    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6_n_13
+    SLICE_X70Y263        LUT4 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098    11.062 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35/O
+                         net (fo=1, routed)           0.022    11.084    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35_n_0
+    SLICE_X70Y263        CARRY8 (Prop_CARRY8_SLICEM_S[5]_CO[6])
+                                                      0.113    11.197 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w_reg[63]_i_9/CO[6]
+                         net (fo=44, routed)          0.391    11.588    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/end_341
+    SLICE_X72Y267        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.148    11.736 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754/O
+                         net (fo=4, routed)           0.145    11.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754_n_0
+    SLICE_X71Y268        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.097    11.978 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782/O
+                         net (fo=1, routed)           0.238    12.216    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782_n_0
+    SLICE_X71Y268        LUT6 (Prop_F6LUT_SLICEM_I0_O)
+                                                      0.051    12.267 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756/O
+                         net (fo=2, routed)           0.092    12.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756_n_0
+    SLICE_X71Y268        LUT5 (Prop_C5LUT_SLICEM_I4_O)
+                                                      0.099    12.458 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757/O
+                         net (fo=2, routed)           0.186    12.645    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757_n_0
+    SLICE_X71Y269        LUT6 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.052    12.697 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674/O
+                         net (fo=1, routed)           0.096    12.793    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674_n_0
+    SLICE_X71Y269        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.135    12.928 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486/O
+                         net (fo=58, routed)          1.281    14.208    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486_n_0
+    SLICE_X62Y266        LUT5 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.090    14.298 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402/O
+                         net (fo=9, routed)           0.119    14.417    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402_n_0
+    SLICE_X62Y267        LUT2 (Prop_F6LUT_SLICEL_I0_O)
+                                                      0.123    14.540 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493/O
+                         net (fo=1, routed)           0.011    14.551    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493_n_0
+    SLICE_X62Y267        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    14.706 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363/CO[7]
+                         net (fo=1, routed)           0.026    14.732    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363_n_0
+    SLICE_X62Y268        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.747 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436/CO[7]
+                         net (fo=1, routed)           0.026    14.773    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436_n_0
+    SLICE_X62Y269        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.788 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470/CO[7]
+                         net (fo=1, routed)           0.052    14.840    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470_n_0
+    SLICE_X62Y270        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.855 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476/CO[7]
+                         net (fo=1, routed)           0.026    14.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476_n_0
+    SLICE_X62Y271        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.896 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_462/CO[7]
+                         net (fo=1, routed)           0.026    14.922    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_462_n_0
+    SLICE_X62Y272        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.937 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_426/CO[7]
+                         net (fo=1, routed)           0.026    14.963    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_426_n_0
+    SLICE_X62Y273        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056    15.019 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_464/O[0]
+                         net (fo=1, routed)           0.340    15.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_341[49]
+    SLICE_X60Y273        LUT6 (Prop_D6LUT_SLICEL_I5_O)
+                                                      0.050    15.409 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_411/O
+                         net (fo=1, routed)           0.200    15.609    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_340[49]
+    SLICE_X60Y267        LUT6 (Prop_D6LUT_SLICEL_I5_O)
+                                                      0.146    15.755 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_307/O
+                         net (fo=4, routed)           0.576    16.331    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_307_n_0
+    SLICE_X64Y270        LUT6 (Prop_H6LUT_SLICEM_I1_O)
+                                                      0.090    16.421 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_222/O
+                         net (fo=2, routed)           0.613    17.034    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_222_n_0
+    SLICE_X66Y269        LUT3 (Prop_D5LUT_SLICEL_I0_O)
+                                                      0.110    17.144 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_95/O
+                         net (fo=2, routed)           0.306    17.450    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_95_n_0
+    SLICE_X69Y269        LUT5 (Prop_H6LUT_SLICEL_I4_O)
+                                                      0.051    17.501 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_16/O
+                         net (fo=3, routed)           0.342    17.843    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/W0_data[56]
+    RAMB36_X2Y53         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[24]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                     19.998    19.998 r  
+    AH12                                              0.000    19.998 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079    20.077    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456    20.533 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040    20.573    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000    20.573 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286    20.859    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    20.883 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886    21.769    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630    22.399 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215    22.614    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    22.638 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.190    24.828    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/R0_clk
+    RAMB36_X2Y53         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg/CLKBWRCLK
+                         clock pessimism             -0.254    24.574    
+                         clock uncertainty           -0.094    24.480    
+    RAMB36_X2Y53         RAMB36E2 (Setup_RAMB36E2_RAMB36_CLKBWRCLK_DINBDIN[24])
+                                                     -0.260    24.220    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg
+  -------------------------------------------------------------------
+                         required time                         24.220    
+                         arrival time                         -17.843    
+  -------------------------------------------------------------------
+                         slack                                  6.377    
+
+Slack (MET) :             6.438ns  (required time - arrival time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[30]
+                            (rising edge-triggered cell RAMB36E2 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            19.998ns  (clk_out1_harnessSysPLL rise@19.998ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        13.086ns  (logic 3.238ns (24.743%)  route 9.848ns (75.257%))
+  Logic Levels:           33  (CARRY8=12 LUT1=1 LUT2=3 LUT3=1 LUT4=2 LUT5=7 LUT6=7)
+  Clock Path Skew:        -0.080ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.830ns = ( 24.828 - 19.998 ) 
+    Source Clock Delay      (SCD):    4.656ns
+    Clock Pessimism Removal (CPR):    -0.254ns
+  Clock Uncertainty:      0.094ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.174ns
+    Phase Error              (PE):    0.000ns
+  Clock Net Delay (Source):      2.453ns (routing 1.051ns, distribution 1.402ns)
+  Clock Net Delay (Destination): 2.190ns (routing 0.954ns, distribution 1.236ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.453     4.656    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X83Y247        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X83Y247        FDRE (Prop_DFF_SLICEM_C_Q)
+                                                      0.078     4.734 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/Q
+                         net (fo=238, routed)         1.523     6.257    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_11[2]
+    SLICE_X57Y263        LUT1 (Prop_B6LUT_SLICEM_I0_O)
+                                                      0.052     6.309 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229/O
+                         net (fo=1, routed)           0.016     6.325    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229_n_0
+    SLICE_X57Y263        CARRY8 (Prop_CARRY8_SLICEM_S[1]_O[7])
+                                                      0.238     6.563 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169/O[7]
+                         net (fo=33, routed)          1.338     7.901    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169_n_8
+    SLICE_X76Y265        LUT2 (Prop_H6LUT_SLICEL_I0_O)
+                                                      0.099     8.000 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277/O
+                         net (fo=1, routed)           0.010     8.010    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277_n_0
+    SLICE_X76Y265        CARRY8 (Prop_CARRY8_SLICEL_S[7]_CO[7])
+                                                      0.115     8.125 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247/CO[7]
+                         net (fo=1, routed)           0.026     8.151    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247_n_0
+    SLICE_X76Y266        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056     8.207 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_238/O[0]
+                         net (fo=18, routed)          0.385     8.592    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_329[8]
+    SLICE_X75Y263        CARRY8 (Prop_CARRY8_SLICEL_DI[0]_O[3])
+                                                      0.113     8.705 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45/O[3]
+                         net (fo=4, routed)           0.232     8.937    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45_n_12
+    SLICE_X77Y261        LUT2 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.097     9.034 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88/O
+                         net (fo=1, routed)           0.011     9.045    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88_n_0
+    SLICE_X77Y261        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[6])
+                                                      0.109     9.154 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_39/CO[6]
+                         net (fo=4, routed)           0.127     9.281    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount2517_in
+    SLICE_X77Y260        LUT3 (Prop_D6LUT_SLICEL_I0_O)
+                                                      0.050     9.331 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[12]_i_24/O
+                         net (fo=2, routed)           0.156     9.487    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount1
+    SLICE_X79Y260        LUT6 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098     9.585 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43/O
+                         net (fo=8, routed)           0.290     9.875    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43_n_0
+    SLICE_X74Y260        LUT6 (Prop_B6LUT_SLICEM_I2_O)
+                                                      0.089     9.964 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22/O
+                         net (fo=1, routed)           0.206    10.170    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22_n_0
+    SLICE_X76Y260        LUT6 (Prop_F6LUT_SLICEL_I5_O)
+                                                      0.049    10.219 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7/O
+                         net (fo=1, routed)           0.011    10.230    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7_n_0
+    SLICE_X76Y260        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    10.385 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3/CO[7]
+                         net (fo=1, routed)           0.026    10.411    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3_n_0
+    SLICE_X76Y261        CARRY8 (Prop_CARRY8_SLICEL_CI_O[2])
+                                                      0.067    10.478 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6/O[2]
+                         net (fo=21, routed)          0.486    10.964    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6_n_13
+    SLICE_X70Y263        LUT4 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098    11.062 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35/O
+                         net (fo=1, routed)           0.022    11.084    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35_n_0
+    SLICE_X70Y263        CARRY8 (Prop_CARRY8_SLICEM_S[5]_CO[6])
+                                                      0.113    11.197 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w_reg[63]_i_9/CO[6]
+                         net (fo=44, routed)          0.391    11.588    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/end_341
+    SLICE_X72Y267        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.148    11.736 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754/O
+                         net (fo=4, routed)           0.145    11.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754_n_0
+    SLICE_X71Y268        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.097    11.978 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782/O
+                         net (fo=1, routed)           0.238    12.216    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782_n_0
+    SLICE_X71Y268        LUT6 (Prop_F6LUT_SLICEM_I0_O)
+                                                      0.051    12.267 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756/O
+                         net (fo=2, routed)           0.092    12.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756_n_0
+    SLICE_X71Y268        LUT5 (Prop_C5LUT_SLICEM_I4_O)
+                                                      0.099    12.458 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757/O
+                         net (fo=2, routed)           0.186    12.645    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757_n_0
+    SLICE_X71Y269        LUT6 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.052    12.697 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674/O
+                         net (fo=1, routed)           0.096    12.793    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674_n_0
+    SLICE_X71Y269        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.135    12.928 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486/O
+                         net (fo=58, routed)          1.281    14.208    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486_n_0
+    SLICE_X62Y266        LUT5 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.090    14.298 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402/O
+                         net (fo=9, routed)           0.119    14.417    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402_n_0
+    SLICE_X62Y267        LUT2 (Prop_F6LUT_SLICEL_I0_O)
+                                                      0.123    14.540 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493/O
+                         net (fo=1, routed)           0.011    14.551    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493_n_0
+    SLICE_X62Y267        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    14.706 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363/CO[7]
+                         net (fo=1, routed)           0.026    14.732    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363_n_0
+    SLICE_X62Y268        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.747 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436/CO[7]
+                         net (fo=1, routed)           0.026    14.773    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436_n_0
+    SLICE_X62Y269        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.788 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470/CO[7]
+                         net (fo=1, routed)           0.052    14.840    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470_n_0
+    SLICE_X62Y270        CARRY8 (Prop_CARRY8_SLICEL_CI_O[5])
+                                                      0.116    14.956 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476/O[5]
+                         net (fo=1, routed)           0.404    15.360    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_341[30]
+    SLICE_X59Y271        LUT4 (Prop_G6LUT_SLICEL_I3_O)
+                                                      0.089    15.449 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_370/O
+                         net (fo=3, routed)           0.391    15.841    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_340[30]
+    SLICE_X63Y274        LUT6 (Prop_H6LUT_SLICEM_I0_O)
+                                                      0.101    15.942 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_326/O
+                         net (fo=1, routed)           0.368    16.310    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_326_n_0
+    SLICE_X60Y271        LUT5 (Prop_G6LUT_SLICEL_I4_O)
+                                                      0.123    16.433 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_213/O
+                         net (fo=1, routed)           0.149    16.582    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_213_n_0
+    SLICE_X61Y271        LUT5 (Prop_B6LUT_SLICEM_I4_O)
+                                                      0.100    16.682 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_88/O
+                         net (fo=2, routed)           0.727    17.409    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_88_n_0
+    SLICE_X67Y269        LUT5 (Prop_H6LUT_SLICEM_I2_O)
+                                                      0.053    17.462 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_10/O
+                         net (fo=3, routed)           0.281    17.743    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/W0_data[62]
+    RAMB36_X2Y53         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[30]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                     19.998    19.998 r  
+    AH12                                              0.000    19.998 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079    20.077    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456    20.533 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040    20.573    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000    20.573 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286    20.859    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    20.883 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886    21.769    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630    22.399 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215    22.614    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    22.638 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.190    24.828    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/R0_clk
+    RAMB36_X2Y53         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg/CLKBWRCLK
+                         clock pessimism             -0.254    24.574    
+                         clock uncertainty           -0.094    24.480    
+    RAMB36_X2Y53         RAMB36E2 (Setup_RAMB36E2_RAMB36_CLKBWRCLK_DINBDIN[30])
+                                                     -0.299    24.181    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2/I_MEM_0_ext/mem_0_0/ram_reg
+  -------------------------------------------------------------------
+                         required time                         24.181    
+                         arrival time                         -17.743    
+  -------------------------------------------------------------------
+                         slack                                  6.438    
+
+Slack (MET) :             6.456ns  (required time - arrival time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[21]
+                            (rising edge-triggered cell RAMB36E2 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            19.998ns  (clk_out1_harnessSysPLL rise@19.998ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        13.131ns  (logic 3.194ns (24.324%)  route 9.937ns (75.676%))
+  Logic Levels:           36  (CARRY8=15 LUT1=1 LUT2=3 LUT3=2 LUT4=1 LUT5=5 LUT6=9)
+  Clock Path Skew:        -0.071ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.839ns = ( 24.837 - 19.998 ) 
+    Source Clock Delay      (SCD):    4.656ns
+    Clock Pessimism Removal (CPR):    -0.254ns
+  Clock Uncertainty:      0.094ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.174ns
+    Phase Error              (PE):    0.000ns
+  Clock Net Delay (Source):      2.453ns (routing 1.051ns, distribution 1.402ns)
+  Clock Net Delay (Destination): 2.199ns (routing 0.954ns, distribution 1.245ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.453     4.656    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X83Y247        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X83Y247        FDRE (Prop_DFF_SLICEM_C_Q)
+                                                      0.078     4.734 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/blocks_in_Sync_mem_reg[1]/Q
+                         net (fo=238, routed)         1.523     6.257    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_11[2]
+    SLICE_X57Y263        LUT1 (Prop_B6LUT_SLICEM_I0_O)
+                                                      0.052     6.309 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229/O
+                         net (fo=1, routed)           0.016     6.325    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_229_n_0
+    SLICE_X57Y263        CARRY8 (Prop_CARRY8_SLICEM_S[1]_O[7])
+                                                      0.238     6.563 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169/O[7]
+                         net (fo=33, routed)          1.338     7.901    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_169_n_8
+    SLICE_X76Y265        LUT2 (Prop_H6LUT_SLICEL_I0_O)
+                                                      0.099     8.000 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277/O
+                         net (fo=1, routed)           0.010     8.010    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_277_n_0
+    SLICE_X76Y265        CARRY8 (Prop_CARRY8_SLICEL_S[7]_CO[7])
+                                                      0.115     8.125 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247/CO[7]
+                         net (fo=1, routed)           0.026     8.151    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_247_n_0
+    SLICE_X76Y266        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056     8.207 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/I_MEM_31_i_238/O[0]
+                         net (fo=18, routed)          0.385     8.592    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/_GEN_329[8]
+    SLICE_X75Y263        CARRY8 (Prop_CARRY8_SLICEL_DI[0]_O[3])
+                                                      0.113     8.705 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45/O[3]
+                         net (fo=4, routed)           0.232     8.937    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/valid_inputs_reg[14]_i_45_n_12
+    SLICE_X77Y261        LUT2 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.097     9.034 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88/O
+                         net (fo=1, routed)           0.011     9.045    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_88_n_0
+    SLICE_X77Y261        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[6])
+                                                      0.109     9.154 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_39/CO[6]
+                         net (fo=4, routed)           0.127     9.281    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount2517_in
+    SLICE_X77Y260        LUT3 (Prop_D6LUT_SLICEL_I0_O)
+                                                      0.050     9.331 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[12]_i_24/O
+                         net (fo=2, routed)           0.156     9.487    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/returnCount1
+    SLICE_X79Y260        LUT6 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098     9.585 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43/O
+                         net (fo=8, routed)           0.290     9.875    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_43_n_0
+    SLICE_X74Y260        LUT6 (Prop_B6LUT_SLICEM_I2_O)
+                                                      0.089     9.964 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22/O
+                         net (fo=1, routed)           0.206    10.170    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_22_n_0
+    SLICE_X76Y260        LUT6 (Prop_F6LUT_SLICEL_I5_O)
+                                                      0.049    10.219 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7/O
+                         net (fo=1, routed)           0.011    10.230    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0[7]_i_7_n_0
+    SLICE_X76Y260        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    10.385 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3/CO[7]
+                         net (fo=1, routed)           0.026    10.411    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[7]_i_3_n_0
+    SLICE_X76Y261        CARRY8 (Prop_CARRY8_SLICEL_CI_O[2])
+                                                      0.067    10.478 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6/O[2]
+                         net (fo=21, routed)          0.486    10.964    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/local_0_reg[12]_i_6_n_13
+    SLICE_X70Y263        LUT4 (Prop_F6LUT_SLICEM_I1_O)
+                                                      0.098    11.062 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35/O
+                         net (fo=1, routed)           0.022    11.084    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w[63]_i_35_n_0
+    SLICE_X70Y263        CARRY8 (Prop_CARRY8_SLICEM_S[5]_CO[6])
+                                                      0.113    11.197 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dataResponse_w_reg[63]_i_9/CO[6]
+                         net (fo=44, routed)          0.391    11.588    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/end_341
+    SLICE_X72Y267        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.148    11.736 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754/O
+                         net (fo=4, routed)           0.145    11.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_754_n_0
+    SLICE_X71Y268        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.097    11.978 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782/O
+                         net (fo=1, routed)           0.238    12.216    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_782_n_0
+    SLICE_X71Y268        LUT6 (Prop_F6LUT_SLICEM_I0_O)
+                                                      0.051    12.267 f  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756/O
+                         net (fo=2, routed)           0.092    12.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_756_n_0
+    SLICE_X71Y268        LUT5 (Prop_C5LUT_SLICEM_I4_O)
+                                                      0.099    12.458 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757/O
+                         net (fo=2, routed)           0.186    12.645    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_757_n_0
+    SLICE_X71Y269        LUT6 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.052    12.697 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674/O
+                         net (fo=1, routed)           0.096    12.793    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_674_n_0
+    SLICE_X71Y269        LUT5 (Prop_D5LUT_SLICEM_I4_O)
+                                                      0.135    12.928 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486/O
+                         net (fo=58, routed)          1.281    14.208    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_486_n_0
+    SLICE_X62Y266        LUT5 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.090    14.298 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402/O
+                         net (fo=9, routed)           0.119    14.417    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_402_n_0
+    SLICE_X62Y267        LUT2 (Prop_F6LUT_SLICEL_I0_O)
+                                                      0.123    14.540 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493/O
+                         net (fo=1, routed)           0.011    14.551    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_493_n_0
+    SLICE_X62Y267        CARRY8 (Prop_CARRY8_SLICEL_S[5]_CO[7])
+                                                      0.155    14.706 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363/CO[7]
+                         net (fo=1, routed)           0.026    14.732    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_363_n_0
+    SLICE_X62Y268        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.747 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436/CO[7]
+                         net (fo=1, routed)           0.026    14.773    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_436_n_0
+    SLICE_X62Y269        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.788 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470/CO[7]
+                         net (fo=1, routed)           0.052    14.840    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_470_n_0
+    SLICE_X62Y270        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.855 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476/CO[7]
+                         net (fo=1, routed)           0.026    14.881    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_476_n_0
+    SLICE_X62Y271        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.896 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_462/CO[7]
+                         net (fo=1, routed)           0.026    14.922    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_462_n_0
+    SLICE_X62Y272        CARRY8 (Prop_CARRY8_SLICEL_CI_CO[7])
+                                                      0.015    14.937 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_426/CO[7]
+                         net (fo=1, routed)           0.026    14.963    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_426_n_0
+    SLICE_X62Y273        CARRY8 (Prop_CARRY8_SLICEL_CI_O[0])
+                                                      0.056    15.019 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_464/O[0]
+                         net (fo=1, routed)           0.340    15.359    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_341[49]
+    SLICE_X60Y273        LUT6 (Prop_D6LUT_SLICEL_I5_O)
+                                                      0.050    15.409 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_411/O
+                         net (fo=1, routed)           0.200    15.609    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/packed_340[49]
+    SLICE_X60Y267        LUT6 (Prop_D6LUT_SLICEL_I5_O)
+                                                      0.146    15.755 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_307/O
+                         net (fo=4, routed)           0.576    16.331    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_307_n_0
+    SLICE_X64Y270        LUT6 (Prop_H6LUT_SLICEM_I1_O)
+                                                      0.090    16.421 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_222/O
+                         net (fo=2, routed)           0.608    17.029    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_222_n_0
+    SLICE_X66Y269        LUT3 (Prop_B6LUT_SLICEL_I2_O)
+                                                      0.098    17.127 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_97/O
+                         net (fo=2, routed)           0.303    17.430    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_97_n_0
+    SLICE_X70Y269        LUT5 (Prop_H6LUT_SLICEM_I2_O)
+                                                      0.053    17.483 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_1_2_i_19/O
+                         net (fo=3, routed)           0.304    17.787    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/W0_data[53]
+    RAMB36_X2Y52         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/DINBDIN[21]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                     19.998    19.998 r  
+    AH12                                              0.000    19.998 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079    20.077    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456    20.533 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040    20.573    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000    20.573 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286    20.859    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    20.883 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886    21.769    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630    22.399 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215    22.614    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    22.638 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.199    24.837    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/R0_clk
+    RAMB36_X2Y52         RAMB36E2                                     r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg/CLKBWRCLK
+                         clock pessimism             -0.254    24.583    
+                         clock uncertainty           -0.094    24.489    
+    RAMB36_X2Y52         RAMB36E2 (Setup_RAMB36E2_RAMB36_CLKBWRCLK_DINBDIN[21])
+                                                     -0.246    24.243    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/W_MEM_0_2/I_MEM_0_ext/mem_0_0/ram_reg
+  -------------------------------------------------------------------
+                         required time                         24.243    
+                         arrival time                         -17.787    
+  -------------------------------------------------------------------
+                         slack                                  6.456    
+
+
+
+
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date              : Fri Nov 13 12:47:12 2026
+| Host              : cheetara running 64-bit Ubuntu 20.04.6 LTS
+| Command           : report_timing -from [get_cells -hierarchical -filter {IS_SEQUENTIAL && NAME =~ "chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/*"}] -to [get_cells -hierarchical -filter {IS_SEQUENTIAL && NAME =~ "chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/*"}] -delay_type min -max_paths 5 -file /tmp/lumax-w2-id16-1020/run_20261113_003838_822227/vivado/lumax_b4_rf8_ys8_id16_w2/builds/b4_rf8_ys8_id16_fp16_r8_k1216_n1216_50mhz/runs/20261113_094443_737884/reports/lumax_internal_timing.rpt -append
+| Design            : ZCU106FPGATestHarness
+| Device            : xczu7ev-ffvc1156
+| Speed File        : -2  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : E
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.011ns  (arrival time - required time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_REG_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_reg[9]/D
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk_out1_harnessSysPLL rise@0.000ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        0.173ns  (logic 0.059ns (34.104%)  route 0.114ns (65.896%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.102ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.677ns
+    Source Clock Delay      (SCD):    4.831ns
+    Clock Pessimism Removal (CPR):    -0.257ns
+  Clock Net Delay (Source):      2.191ns (routing 0.954ns, distribution 1.237ns)
+  Clock Net Delay (Destination): 2.473ns (routing 1.051ns, distribution 1.422ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079     0.079    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456     0.535 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040     0.575    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.575 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.861    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.885 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886     1.771    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630     2.401 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215     2.616    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     2.640 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.191     4.831    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X75Y292        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_REG_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X75Y292        FDRE (Prop_EFF_SLICEL_C_Q)
+                                                      0.059     4.890 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_REG_reg[9]/Q
+                         net (fo=1, routed)           0.114     5.004    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_REG[9]
+    SLICE_X76Y291        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_reg[9]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.473     4.677    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X76Y291        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_reg[9]/C
+                         clock pessimism              0.257     4.933    
+    SLICE_X76Y291        FDRE (Hold_HFF_SLICEL_C_D)
+                                                      0.060     4.993    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/sum_6_reg[9]
+  -------------------------------------------------------------------
+                         required time                         -4.993    
+                         arrival time                           5.004    
+  -------------------------------------------------------------------
+                         slack                                  0.011    
+
+Slack (MET) :             0.013ns  (arrival time - required time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[10]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[16]/D
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk_out1_harnessSysPLL rise@0.000ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        0.273ns  (logic 0.181ns (66.202%)  route 0.092ns (33.798%))
+  Logic Levels:           2  (CARRY8=2)
+  Clock Path Skew:        0.201ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.490ns
+    Source Clock Delay      (SCD):    4.628ns
+    Clock Pessimism Removal (CPR):    -0.339ns
+  Clock Net Delay (Source):      1.988ns (routing 0.954ns, distribution 1.034ns)
+  Clock Net Delay (Destination): 2.286ns (routing 1.051ns, distribution 1.235ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079     0.079    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456     0.535 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040     0.575    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.575 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.861    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.885 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886     1.771    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630     2.401 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215     2.616    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     2.640 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       1.988     4.628    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X54Y179        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[10]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X54Y179        FDRE (Prop_CFF_SLICEM_C_Q)
+                                                      0.058     4.686 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[10]/Q
+                         net (fo=2, routed)           0.079     4.766    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[10]
+    SLICE_X54Y179        CARRY8 (Prop_CARRY8_SLICEM_S[2]_CO[7])
+                                                      0.092     4.858 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[8]_i_1/CO[7]
+                         net (fo=1, routed)           0.004     4.862    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[8]_i_1_n_0
+    SLICE_X54Y180        CARRY8 (Prop_CARRY8_SLICEM_CI_O[0])
+                                                      0.031     4.893 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[16]_i_1/O[0]
+                         net (fo=1, routed)           0.009     4.902    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[16]_i_1_n_15
+    SLICE_X54Y180        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[16]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.286     4.490    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/clock
+    SLICE_X54Y180        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[16]/C
+                         clock pessimism              0.339     4.829    
+    SLICE_X54Y180        FDRE (Hold_AFF_SLICEM_C_D)
+                                                      0.060     4.889    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/PC_loadX_reg[16]
+  -------------------------------------------------------------------
+                         required time                         -4.889    
+                         arrival time                           4.902    
+  -------------------------------------------------------------------
+                         slack                                  0.013    
+
+Slack (MET) :             0.014ns  (arrival time - required time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA/WADR2
+                            (rising edge-triggered cell RAMD32 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk_out1_harnessSysPLL rise@0.000ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.058ns (37.289%)  route 0.098ns (62.711%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.052ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.528ns
+    Source Clock Delay      (SCD):    4.702ns
+    Clock Pessimism Removal (CPR):    -0.225ns
+  Clock Net Delay (Source):      2.062ns (routing 0.954ns, distribution 1.108ns)
+  Clock Net Delay (Destination): 2.325ns (routing 1.051ns, distribution 1.274ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079     0.079    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456     0.535 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040     0.575    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.575 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.861    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.885 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886     1.771    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630     2.401 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215     2.616    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     2.640 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.062     4.702    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/clock
+    SLICE_X64Y233        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X64Y233        FDRE (Prop_CFF_SLICEM_C_Q)
+                                                      0.058     4.760 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/Q
+                         net (fo=11, routed)          0.098     4.857    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/ADDRD2
+    SLICE_X64Y234        RAMD32                                       r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA/WADR2
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.325     4.528    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/WCLK
+    SLICE_X64Y234        RAMD32                                       r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA/CLK
+                         clock pessimism              0.225     4.754    
+    SLICE_X64Y234        RAMD32 (Hold_E5LUT_SLICEM_CLK_WADR2)
+                                                      0.090     4.844    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA
+  -------------------------------------------------------------------
+                         required time                         -4.844    
+                         arrival time                           4.857    
+  -------------------------------------------------------------------
+                         slack                                  0.014    
+
+Slack (MET) :             0.014ns  (arrival time - required time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA_D1/WADR2
+                            (rising edge-triggered cell RAMD32 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk_out1_harnessSysPLL rise@0.000ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.058ns (37.289%)  route 0.098ns (62.711%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.052ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.528ns
+    Source Clock Delay      (SCD):    4.702ns
+    Clock Pessimism Removal (CPR):    -0.225ns
+  Clock Net Delay (Source):      2.062ns (routing 0.954ns, distribution 1.108ns)
+  Clock Net Delay (Destination): 2.325ns (routing 1.051ns, distribution 1.274ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079     0.079    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456     0.535 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040     0.575    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.575 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.861    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.885 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886     1.771    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630     2.401 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215     2.616    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     2.640 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.062     4.702    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/clock
+    SLICE_X64Y233        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X64Y233        FDRE (Prop_CFF_SLICEM_C_Q)
+                                                      0.058     4.760 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/Q
+                         net (fo=11, routed)          0.098     4.857    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/ADDRD2
+    SLICE_X64Y234        RAMD32                                       r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA_D1/WADR2
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.325     4.528    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/WCLK
+    SLICE_X64Y234        RAMD32                                       r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA_D1/CLK
+                         clock pessimism              0.225     4.754    
+    SLICE_X64Y234        RAMD32 (Hold_E6LUT_SLICEM_CLK_WADR2)
+                                                      0.090     4.844    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMA_D1
+  -------------------------------------------------------------------
+                         required time                         -4.844    
+                         arrival time                           4.857    
+  -------------------------------------------------------------------
+                         slack                                  0.014    
+
+Slack (MET) :             0.014ns  (arrival time - required time)
+  Source:                 chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Destination:            chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMB/WADR2
+                            (rising edge-triggered cell RAMD32 clocked by clk_out1_harnessSysPLL  {rise@0.000ns fall@9.999ns period=19.998ns})
+  Path Group:             clk_out1_harnessSysPLL
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk_out1_harnessSysPLL rise@0.000ns - clk_out1_harnessSysPLL rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.058ns (37.289%)  route 0.098ns (62.711%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.052ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.528ns
+    Source Clock Delay      (SCD):    4.702ns
+    Clock Pessimism Removal (CPR):    -0.225ns
+  Clock Net Delay (Source):      2.062ns (routing 0.954ns, distribution 1.108ns)
+  Clock Net Delay (Destination): 2.325ns (routing 1.051ns, distribution 1.274ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.079     0.079    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.456     0.535 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.040     0.575    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.575 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.861    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.885 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          0.886     1.771    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                      0.630     2.401 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.215     2.616    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     2.640 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.062     4.702    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/clock
+    SLICE_X64Y233        FDRE                                         r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X64Y233        FDRE (Prop_CFF_SLICEM_C_Q)
+                                                      0.058     4.760 r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/enq_ptr_value_reg[2]/Q
+                         net (fo=11, routed)          0.098     4.857    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/ADDRD2
+    SLICE_X64Y234        RAMD32                                       r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMB/WADR2
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_out1_harnessSysPLL rise edge)
+                                                      0.000     0.000 r  
+    AH12                                              0.000     0.000 r  sys_clock_p (IN)
+                         net (fo=0)                   0.100     0.100    sys_clock_ibufds/I
+    HPIOBDIFFINBUF_X1Y84 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.552     0.652 r  sys_clock_ibufds/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.050     0.702    sys_clock_ibufds/OUT
+    AH12                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.702 r  sys_clock_ibufds/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     1.025    _sys_clock_ibufds_O
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     1.053 r  _sys_clock_ibufds_O_BUFG_inst/O
+                         net (fo=20, routed)          1.004     2.057    harnessSysPLL/inst/clk_in1
+    MMCM_X1Y4            MMCME4_ADV (Prop_MMCM_CLKIN1_CLKOUT0)
+                                                     -0.127     1.930 r  harnessSysPLL/inst/mmcme4_adv_inst/CLKOUT0
+                         net (fo=1, routed)           0.245     2.175    harnessSysPLL/inst/clk_out1_harnessSysPLL
+    BUFGCE_X1Y109        BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     2.203 r  harnessSysPLL/inst/clkout1_buf/O
+    X1Y2 (CLOCK_ROOT)    net (fo=26488, routed)       2.325     4.528    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/WCLK
+    SLICE_X64Y234        RAMD32                                       r  chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMB/CLK
+                         clock pessimism              0.225     4.754    
+    SLICE_X64Y234        RAMD32 (Hold_F5LUT_SLICEM_CLK_WADR2)
+                                                      0.090     4.844    chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example/dma/requestOrder/ram_ext/Memory_reg_0_15_0_3/RAMB
+  -------------------------------------------------------------------
+                         required time                         -4.844    
+                         arrival time                           4.857    
+  -------------------------------------------------------------------
+                         slack                                  0.014    
+
+
+
+
