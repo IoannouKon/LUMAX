@@ -9,13 +9,17 @@ become reusable after the final stage-2 capture, before accumulation retires.
 Weight requests advance to the next reserved buffer after the final request is
 issued, while earlier responses are still pending. The final response marks its
 buffer ready on the same edge; selection can start on the following cycle.
-The default magic-memory LLC profile uses interface-observed hit/miss costs;
-CPU traffic and unknown initial cache ownership remain sources of uncertainty.
+The magic-memory LLC environment includes full-line refill bandwidth, merged
+miss queues, one shared SourceD service port and approximate SRAM-bank hazards.
+Its effective secondary-request interval is calibrated from DMA transaction
+traces, not from stage-cycle totals. It is not a cycle-exact model of the LLC:
+round-robin arbitration, coherence, CPU traffic and initial ownership remain
+sources of uncertainty. BRAM output prefetch and DMA-credit timing are explicit.
 """
 from collections import OrderedDict
 import math
 
-MODEL_VERSION = 'controller-events-v6'
+MODEL_VERSION = 'controller-events-v7'
 
 
 def _integer(name, value, minimum=1):
@@ -68,11 +72,20 @@ def _store_packets(row_start, active_rows, columns, base):
 
 
 class _Memory:
-    """DMA environment, independent of accelerator-stage counters."""
+    """Approximate LLC/DMA environment, independent of stage-cycle counters.
+
+    The current Chipyard profile has four 8-byte SRAM subbanks and an 8-beat
+    64-byte refill. A cache line is not usable by all secondary requests when
+    its first response returns. Warm hits keep HS-1 latency. Miss-head wormhole
+    service and refill completion are separate; merged requests serialize.
+    secondary_cycles is an effective interface calibration (default two), not
+    an assertion that every real MSHR response is exactly two cycles apart.
+    """
     def __init__(self, hs, profile, line_bytes, cache_bytes, read_penalty,
                  write_penalty, latencies=None, delays=None, trace=False,
-                 bypass=True, latency_basis='controller'):
+                 bypass=True, latency_basis='controller', secondary_cycles=2, subbanks=4, full_writes=True):
         self.hs, self.profile, self.line_bytes = hs, profile, line_bytes
+        self.secondary_cycles, self.subbanks, self.full_writes = secondary_cycles, subbanks, full_writes
         self.lines = max(1,cache_bytes//line_bytes)
         self.read_penalty, self.write_penalty = read_penalty,write_penalty
         self.cache = OrderedDict()
@@ -86,9 +99,18 @@ class _Memory:
         self.responses = []
         self.return_slots = set()
         self.last_issue = -1
+        self.refill_end = -1
+        self.line_service = {}
+        self.bank_slots = set()
+        self.service_slots = set()
 
-    def response(self, address, write, issued):
+    def response(self, address, write, issued, full_write=False):
         i = self.index
+        if i and i%4096==0:
+            cutoff=issued-2*self.hs
+            self.bank_slots={slot for slot in self.bank_slots if slot[0]>=cutoff}
+            self.service_slots={slot for slot in self.service_slots if slot>=cutoff}
+            self.return_slots.intersection_update(slot for slot in self.return_slots if slot>=cutoff)
         self.index += 1
         self.writes += bool(write)
         self.reads += not write
@@ -105,16 +127,50 @@ class _Memory:
         ready = self.cache.pop(line,None)
         if ready is None:
             self.misses += 1
-            ready = hit+(self.write_penalty if write else self.read_penalty)
+            # Outer refill D channel is 64 bits in LUMAXROcketConfig.
+            beats = self.line_bytes//8
+            # read_penalty historically includes the seven tail beats;
+            # write_penalty describes the first acknowledgement. Preserve those
+            # public meanings while reserving the whole physical refill burst.
+            first_latency = self.hs-1+(self.write_penalty if write else max(0,self.read_penalty-(beats-1)))
+            first = max(issued+first_latency,self.refill_end+1)
+            self.refill_end = first+beats-1
+            ready = self.refill_end+1
+            # BankedStore gives incoming refill writes priority over SourceD
+            # reads. Represent their port occupancy; this is approximate because
+            # future arbitration can also delay already-pending operations.
+            for beat in range(beats):
+                self.bank_slots.add((first-(self.hs-1)+beat,beat%self.subbanks))
+            response = first if address%self.line_bytes==0 else self.refill_end
             if len(self.cache)>=self.lines:
                 self.cache.popitem(last=False)
+        else:
+            response = max(hit,ready)
         self.cache[line] = ready
-        return max(hit,ready)
+        # SourceD has one shared request pipeline. Its SRAM read is four
+        # interface cycles before the modeled response; writeback follows three
+        # stages after the read. These offsets describe this Chipyard profile,
+        # not a portable DRAM timing model.
+        service=max(response-4,self.line_service.get(line,-1))
+        bank=(address//8)%self.subbanks
+        needs_read = not (write and full_write and self.full_writes)
+        while service in self.service_slots or (needs_read and (service,bank) in self.bank_slots):
+            service+=1
+        self.service_slots.add(service)
+        if needs_read:
+            self.bank_slots.add((service,bank))
+        if write:
+            self.bank_slots.add((service+3,bank))
+        # Requests merged behind a refill have an effective reload interval;
+        # an already-warm line can continue at one request per cycle.
+        self.line_service[line]=service+(self.secondary_cycles if hit<ready else 1)
+        return service+4
 
-    def transfer(self, packets, start, ids, write=False, context=None):
+    def transfer(self, packets, start, ids, write=False, context=None, prefetch_latency=0, prefetch_depth=0):
         responses, return_slots = self.responses,self.return_slots
         issued = max(start-1,self.last_issue)
         last = None
+        local_issues = []
         for packet in packets:
             address,count = packet[:2]
             issued = max(issued+1,responses[-ids]+1 if len(responses)>=ids else start)
@@ -122,7 +178,15 @@ class _Memory:
                 if self.index>=len(self.delays):
                     raise ValueError('DMA replay ran out of issue delays')
                 issued += _integer('DMA replay issue delay',self.delays[self.index],0)
-            ready = self.response(address,write,issued)
+            if prefetch_depth:
+                # SyncReadMem read -> queue enqueue -> non-flow dequeue.
+                # A full queue frees a reservation only after an accepted A beat.
+                data_ready=start+len(local_issues)+prefetch_latency
+                if len(local_issues)>=prefetch_depth:
+                    data_ready=max(data_ready,local_issues[-prefetch_depth]+1+prefetch_latency)
+                issued=max(issued,data_ready)
+            local_issues.append(issued)
+            ready = self.response(address,write,issued,full_write=write and count==2)
             if self.controller_replay:
                 # Existing diagnostic arrays already describe io.d_valid.
                 # Do not subtract a receiver cycle from measured delivery times.
@@ -163,12 +227,22 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
                    x_address=0x10000000, w_address=0x20000000,
                    o_address=0x30000000, block_size=None, trace=False,
                    dma_latencies=None, dma_issue_delays=None,
-                   dma_bypass=True, dma_latency_basis='controller'):
+                   dma_bypass=True, dma_latency_basis='controller',
+                   bram_outputs=True, dma_full_writes=True,
+                   llc_secondary_cycles=2, llc_subbanks=4):
     """Predict active accelerator cycles; no CPU, printing, wall-clock or startup.
 
     XS=b, factor=RF, YS=elaborated row parallelism, Rin=actual rows. FP16
     significand, alignment and FP32 conversion are combinational in this RTL:
     they affect area/Fmax, not this controller's number of cycles.
+
+    bram_outputs=True matches the optimized OutputAccumulator: one synchronous
+    read plus a non-flow queue, four words including the pending read. False
+    models the older output register array. dma_full_writes=True matches the
+    PutFullData optimization; set False for historical PutPartial-only logs.
+    llc_secondary_cycles (default 2) is an effective transaction-trace calibration
+    for merged LLC misses. It is an exposed memory-environment assumption, not
+    a fitted stage multiplier or a claim of exact inclusive-cache simulation.
 
     HS keeps its registered-reference meaning (default 7); the unchanged
     memory path returns at HS-1 (default 6). dma_bypass=False models the old
@@ -200,10 +274,16 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         raise ValueError('dma_bypass must be a bool')
     if dma_latency_basis not in ('controller','tilelink'):
         raise ValueError('dma_latency_basis must be controller or tilelink')
+    if not isinstance(bram_outputs,bool) or not isinstance(dma_full_writes,bool):
+        raise ValueError('bram_outputs and dma_full_writes must be bools')
+    secondary=_integer('llc_secondary_cycles',llc_secondary_cycles)
+    subbanks=_integer('llc_subbanks',llc_subbanks)
     HS=_integer('HS',HS)
     prefetch_delay=_integer('extra_prefetch_cycles',extra_prefetch_cycles,0)
     line_bytes=_integer('cache_line_bytes',cache_line_bytes)
     cache_bytes=_integer('cache_bytes',cache_bytes)
+    if line_bytes<8 or line_bytes%8:
+        raise ValueError('cache_line_bytes must be a positive multiple of 8')
     read_penalty=_integer('read_miss_penalty',read_miss_penalty,0)
     write_penalty=_integer('write_miss_penalty',write_miss_penalty,0)
     for name,address in [('x_address',x_address),('w_address',w_address),('o_address',o_address)]:
@@ -212,7 +292,8 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
             raise ValueError(name+' must be DMA-beat aligned')
     memory=_Memory(HS,memory_profile,line_bytes,cache_bytes,read_penalty,
                    write_penalty,dma_latencies,dma_issue_delays,trace,
-                   bypass=dma_bypass,latency_basis=dma_latency_basis)
+                   bypass=dma_bypass,latency_basis=dma_latency_basis,
+                   secondary_cycles=secondary,subbanks=subbanks,full_writes=dma_full_writes)
     capacity=factor*(1<<(W_MAX-w_bits))
     window_size=XS*capacity
     if block_size is not None:
@@ -303,7 +384,9 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         # the next row while earlier acknowledgements are still outstanding.
         packets=_store_packets(row_start,active_rows,Cout,o_address)
         last=memory.transfer(packets,now,ID,write=True,
-                             context=dict(stage='store_o',row_group=row_start))
+                             context=dict(stage='store_o',row_group=row_start),
+                             prefetch_latency=2 if bram_outputs else 0,
+                             prefetch_depth=4 if bram_outputs else 0)
         # Final delivery updates the ack count/empty flag, then the next edge
         # leaves sStoreOutput. There is no per-row wait or completion bubble.
         now=last+2
@@ -326,12 +409,17 @@ def compute_cycles(Rin, Cin, Cout, in_bits, w_bits, XS, YS, ID,
         'model_version':MODEL_VERSION,'activation':activation,
         'selection_pipeline_latency':4,'weight_buffer_release_delay':1,
         'dma_response_bypass':dma_bypass,'dma_latency_basis':dma_latency_basis,
+        'bram_outputs':bram_outputs,'dma_full_writes':dma_full_writes,
         'memory_profile':memory_profile,
         'memory_assumptions':dict(hit_response_cycles=HS,read_miss_penalty=read_penalty,
             hit_latency_basis='registered_reference',tilelink_hit_response_cycles=HS-1,
             dma_response_bypass=dma_bypass,
             write_miss_penalty=write_penalty,cache_line_bytes=line_bytes,
-            initially_cold=True,cpu_interference=False),
+            initially_cold=True,cpu_interference=False,
+            refill_beats=line_bytes//8,llc_subbanks=subbanks,
+            secondary_service_cycles=secondary,
+            secondary_service_basis='effective interface calibration; not exact LLC RTL',
+            full_write_opcode=dma_full_writes),
         'cache_misses':memory.misses,'dma_requests':memory.index,
         'diagnostic_dma_replay':dma_latencies is not None or dma_issue_delays is not None,
     }
