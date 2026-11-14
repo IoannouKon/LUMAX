@@ -66,9 +66,17 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   val hasFree = available.orR
 
   val a_bits = Wire(mem.a.bits.cloneType)
+  // A complete transfer is a PutFullData, not a masked read/modify/write.
+  // Compare against the transfer mask (also correct for sub-beat sizes).
+  // Partial output tails keep their original byte enables and PutPartialData.
+  val fullWrite = edge.Put(fromSource = nextSource, toAddress = io.addr,
+    lgSize = io.log_S, data = io.writeData)
+  val writeMask = io.mask(params.DMA_Bytes - 1, 0)
+  val useFullWrite = fullWrite._1 && writeMask === edge.mask(io.addr, io.log_S)
   a_bits := Mux(io.mode === 0.U,
     edge.Get(fromSource = nextSource, toAddress = io.addr, lgSize = io.log_S)._2,
-    edge.Put(fromSource = nextSource, toAddress = io.addr, lgSize = io.log_S, data = io.writeData, mask = io.mask)._2
+    Mux(useFullWrite, fullWrite._2,
+      edge.Put(fromSource = nextSource, toAddress = io.addr, lgSize = io.log_S, data = io.writeData, mask = writeMask)._2)
   )
 
   mem.a.bits := a_bits

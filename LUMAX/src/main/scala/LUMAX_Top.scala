@@ -57,6 +57,9 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Maximum finite FP16 * signed W8 in units of 2^-24 is strictly below 2^47.
   val accumulatorWidth = if (params.FP16_ACTIVATIONS) 48 + log2Ceil(params.Cin) else params.OutBitWidth
   val dma = outer.dma.module
+  val fp16Geometry = params.FP16_ACTIVATIONS && params.FP16_CONST_GEOMETRY
+  require(!params.BRAM_OUTPUTS || (!params.SCALE && params.OutBitWidth == 32),
+    "BRAM outputs support unscaled INT32 or FP32 output words")
 
   // === Command interface and instruction decode ===
   // ROCC interface
@@ -97,6 +100,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val selectionValid = RegInit(VecInit(Seq.fill(4)(false.B)))
   val selectionColumn = Reg(Vec(4, UInt(log2Ceil(params.Cout + 1).W)))
   val selectionEnd = RegInit(VecInit(Seq.fill(4)(false.B)))
+  val selectionFirst = if (params.BRAM_OUTPUTS) Some(RegInit(VecInit(Seq.fill(4)(false.B)))) else None
   val weightBufferS2 = RegInit(0.U(log2Ceil(params.W_BUFFS).W))
 
   val sum    = Reg(Vec(totalSyncMems, SInt((params.XBitWidth + 1).W))) // Signed odd-weight correction for each activation lane.
@@ -113,11 +117,17 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val max_blocks_in_sync_mem = regs_per_mem
 
   // === Output accumulators and activation/weight memories ===
-  val O_reg     = RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.S(accumulatorWidth.W))))))))  // Register for Output results
+  val O_reg     = if (params.BRAM_OUTPUTS) None else Some(RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.S(accumulatorWidth.W)))))))))  // Register for Output results
   val fp16Meta = if (params.FP16_ACTIVATIONS) Some(Reg(Vec(totalSyncMems, new FP16ProductMeta))) else None
-  val fp16Flags = if (params.FP16_ACTIVATIONS) Some(RegInit(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.U(3.W))))))) else None
+  val fp16Flags = if (params.FP16_ACTIVATIONS && !params.BRAM_OUTPUTS) Some(RegInit(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.U(3.W))))))) else None
   val I_MEM = Seq.fill(totalSyncMems)(SyncReadMem(regs_per_mem/4, UInt(params.DMA_bits.W)))
   val W_MEM = Seq.fill(buffers, weightBanks) { SyncReadMem(regs_per_mem_w/8, UInt(params.DMA_bits.W))}
+
+  // Optional shared activation read port. State-local helpers select its request.
+  val activationReadAddress = WireDefault(0.U(math.max(1, log2Ceil(regs_per_mem / 4)).W))
+  val activationReadEnable = WireDefault(false.B)
+  val activationReadData = if (params.SHARED_ACTIVATION_READ)
+    Some(VecInit(I_MEM.map(_.read(activationReadAddress, activationReadEnable)))) else None
 
   // === DMA response carry registers ===
   val dataResponse = RegInit(0.U(params.DMA_bits.W))
@@ -188,6 +198,14 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val j_x_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W))
   val i_w_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W))
 
+  // Shadow the existing input-row coordinates with running element bases.
+  // Advance only at row completion; restore the row-group base for each K window.
+  val xRowBase = if (params.INCREMENTAL_ADDRESSES) Some(RegInit(0.U(matrixIndexWidth(params).W))) else None
+  val xStartBase = if (params.INCREMENTAL_ADDRESSES) Some(RegInit(0.U(matrixIndexWidth(params).W))) else None
+  val outputRowBase = if (params.INCREMENTAL_ADDRESSES) Some(RegInit(0.U(matrixIndexWidth(params).W))) else None
+  val bankValidPositions = if (params.COUNTER_VALIDITY)
+    Some(Reg(Vec(weightBanks, UInt(log2Ceil(RowsPerBlock + 1).W)))) else None
+
   val init_cycle      = RegInit(true.B)
   val step_new        = RegInit(0.U(log2Ceil(params.Cin + 1).W))
 
@@ -199,6 +217,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Independent activation-position cursors for generation and selection.
   val counter_1 = RegInit(0.U(log2Ceil(RowsPerBlock + 2).W)) // Logical activation position during LUT generation.
   val counter_2 = RegInit(0.U(log2Ceil(RowsPerBlock + 2).W)) // Logical activation position during selection.
+
+  if (params.BRAM_OUTPUTS) {
+    selectionFirst.get(0) := selectionIssue && counter_2 === 0.U && cycleCount_2 === 0.U
+    for (stage <- 1 until 4) selectionFirst.get(stage) := selectionFirst.get(stage - 1)
+  }
 
   //Add registers to track the ongoing DMA transaction's mode
   val dma_send        = RegInit(false.B) //sending DMA requests to A channel on progress
@@ -228,7 +251,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
   // === Runtime element formats and performance counters ===
   //bitwidths
-  val input_bits  = RegInit(0.U(6.W)) //  input bits
+  val input_bits  = if (fp16Geometry) 16.U(6.W) else RegInit(0.U(6.W)) //  input bits
   val weight_bits = RegInit(0.U(6.W)) //  weights bits
 
   val PC_loadX    =  RegInit(0.U(64.W))
@@ -245,7 +268,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val dirty_elems_x         = RegInit(0.U(log2Ceil(params.DMA_bits/params.minInputBits).W)) // Initial activation-element offset for bank traversal.
   // Counts activation elements along K; output-column capacity must not truncate it.
   val all_available_elems_x = RegInit(0.U(log2Ceil(params.Cin + 1).W))
-  val x_elems_per_reg       = RegInit((params.XBitWidth / params.minInputBits).U)             //How many input elements fit  in one input register
+  val x_elems_per_reg       = if (fp16Geometry) 1.U(2.W) else RegInit((params.XBitWidth / params.minInputBits).U)             //How many input elements fit  in one input register
   val w_elems_per_reg = RegInit((params.WBitWidth / params.minWeightBits).U(3.W) )            //How many weight elements fit  in one weight register
 
   // === Product-table geometry and precision masks ===
@@ -267,7 +290,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val elements_to_read_temp = RegInit(0.U((log2Ceil(max_w_elems) + 1).W))
 
   // DMA bus parameters (how many register or elements fitr in 64 bits dma channel)
-  val elemsPerChunk_in = RegInit(0.U(5.W))
+  val elemsPerChunk_in = if (fp16Geometry) 4.U(5.W) else RegInit(0.U(5.W))
   val RegsPerChunk_in  = RegInit((params.DMA_bits / params.XBitWidth).U(math.max(1, log2Ceil(params.DMA_bits / params.XBitWidth) + 1).W))
   val elemsPerChunk_w  = RegInit((params.DMA_bits / params.minInputBits).asUInt)
   val RegsPerChunk_w   = RegInit((params.DMA_bits / params.WBitWidth).U(math.max(1, log2Ceil(params.DMA_bits / params.WBitWidth) + 1).W))
@@ -342,6 +365,59 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   dma.io.d_ready   := false.B // Unused by DmaModule; each d_valid response is consumed.
 
   // === Activation chunk extenders ===
+  // Optional output SRAM: prefetch DMA words through a four-entry elastic queue.
+  // The reader has its own cursor so SRAM latency is hidden while DMA stalls.
+  val outputMemory = if (params.BRAM_OUTPUTS)
+    Some(Module(new OutputAccumulator(params.y_slice, params.Cout, accumulatorWidth))) else None
+  val outputWords = if (params.BRAM_OUTPUTS) Some(Module(new Queue(UInt(params.DMA_bits.W), 4))) else None
+  val outputReadIssue = WireDefault(false.B)
+  val outputReadPending = if (params.BRAM_OUTPUTS) RegNext(outputReadIssue, false.B) else false.B
+  val outputReadRow = if (params.BRAM_OUTPUTS) Some(RegInit(0.U(log2Ceil(params.y_slice + 1).W))) else None
+  val outputReadColumn = if (params.BRAM_OUTPUTS) Some(RegInit(0.U(log2Ceil(params.Cout + 1).W))) else None
+  val outputReadParity = if (params.BRAM_OUTPUTS) Some(RegInit(false.B)) else None
+  val outputReadCount = WireDefault(0.U(2.W))
+  if (params.BRAM_OUTPUTS) {
+    val mem = outputMemory.get
+    val queue = outputWords.get
+    outputReadCount := (Mux(outputReadParity.get, 1.U, 2.U)).min(cout_reg - outputReadColumn.get)
+    mem.io.readValid := selectionValid(2)
+    mem.io.readColumn := selectionColumn(2)
+    mem.io.updateColumn := selectionColumn(3)
+    mem.io.first := selectionFirst.get(3) && load_x_cnt === 1.U
+    mem.io.updateValid.foreach(_ := false.B)
+    mem.io.delta.foreach(_ := 0.S)
+    mem.io.flags.foreach(_ := 0.U)
+    mem.io.storeValid := outputReadIssue
+    mem.io.storeRow := outputReadRow.get
+    mem.io.storeColumn := outputReadColumn.get
+    mem.io.storeCount := outputReadCount
+    val count = RegEnable(outputReadCount, outputReadIssue)
+    val offset = RegEnable(outputReadParity.get, outputReadIssue)
+    val words = (0 until elems_per_chunk).map { i =>
+      val bits = if (params.FP16_ACTIVATIONS) {
+        val convert = Module(new Fixed24ToFP32(accumulatorWidth))
+        convert.io.value := mem.io.storeValues(i)
+        convert.io.flags := mem.io.storeFlags(i)
+        convert.io.bits
+      } else mem.io.storeValues(i).asUInt
+      Mux(i.U < count, bits, 0.U(32.W))
+    }
+    queue.io.enq.valid := outputReadPending
+    queue.io.enq.bits := words.zipWithIndex.foldLeft(0.U(params.DMA_bits.W)) {
+      case (packed, (word, i)) => packed | (word << ((i.U + offset.asUInt) << 5))
+    }
+    queue.io.deq.ready := false.B
+    when(outputReadPending) { assert(queue.io.enq.ready, "Output prefetch queue overflow") }
+    when(outputReadIssue) {
+      val next = outputReadColumn.get + outputReadCount
+      outputReadParity.get := outputReadParity.get ^ outputReadCount(0)
+      when(next === cout_reg) {
+        outputReadColumn.get := 0.U
+        outputReadRow.get := outputReadRow.get + 1.U
+      }.otherwise { outputReadColumn.get := next }
+    }
+  }
+
   // ChunkSignExtender Module
   val chunkExtenders = Seq.fill(totalSyncMems,maxParts) { Module(new ChunkSignExtender(params.XBitWidth,params.minInputBits))}
   for {
@@ -368,7 +444,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       product_bitwidth,
       params.minInputBits,
       params.FP16_ACTIVATIONS,
-      if (params.y_slice > 1) weightBanks else 0
+      if (params.y_slice > 1) weightBanks else 0,
+      params.COMPACT_VALIDITY_WIDTH
     ))
   }
 
@@ -448,6 +525,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         j_x_start := 0.U
         loops_cnt := 0.U
         i_o       := 0.U
+        if (params.INCREMENTAL_ADDRESSES) {
+          xRowBase.get := 0.U
+          xStartBase.get := 0.U
+          outputRowBase.get := 0.U
+        }
         storeWritesIssued := 0.U
         i_w_temp  := 0.U
         j_x_temp  := 0.U
@@ -459,7 +541,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
         // XS YS Registers Init
         YS      := Mux(rin_reg >= y_slice_Reg,y_slice_Reg,rin_reg)
-        elemsPerChunk_in :=   params.DMA_bits.U  / input_bits
+        if (!fp16Geometry) elemsPerChunk_in := params.DMA_bits.U / input_bits
         elemsPerChunk_w  :=   params.DMA_bits.U  / weight_bits
       }
 
@@ -472,13 +554,13 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
         clmp := scaledSlice
         val clamped        = Mux(cin_reg >= scaledSlice, scaledSlice, cin_reg)
-        val elems_per_word = params.XBitWidth.U/input_bits
+        val elems_per_word = if (fp16Geometry) 1.U else params.XBitWidth.U/input_bits
         val temp_mul       = clamped * elems_per_word
 
         x_slice_input_reg := scaledSlice
         XS                := clamped
 
-        x_elems_per_reg := elems_per_word
+        if (!fp16Geometry) x_elems_per_reg := elems_per_word
         w_elems_per_reg := params.WBitWidth.U/weight_bits
 
         //before load X
@@ -537,7 +619,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       }
 
       when(cmd.fire && (mode_8)) {
-        input_bits   := (if (params.FP16_ACTIVATIONS) 16.U else rs1(5,0))
+        if (!fp16Geometry) input_bits := (if (params.FP16_ACTIVATIONS) 16.U else rs1(5,0))
         weight_bits  := rs1(11,6)
 
         if(params.DEBUG){
@@ -622,13 +704,14 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         }
         j_x           := Mux(Rin_cnt < YS -1.U,j_x_start,j_x)
         i_x           := Mux(Rin_cnt < YS -1.U,i_x + 1.U,i_x)
-        mul1          := Mux(Rin_cnt < YS -1.U,cin_reg*(i_x + 1.U),mul1)
+        mul1          := Mux(Rin_cnt < YS -1.U,(if (params.INCREMENTAL_ADDRESSES) xRowBase.get + cin_reg else cin_reg*(i_x + 1.U)),mul1)
 
         //before load X
         val XS_temp   = Mux(cin_reg - j_x_start  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x_start )
-        val mul1_temp = (i_x + 1.U) * cin_reg
+        val mul1_temp = if (params.INCREMENTAL_ADDRESSES) xRowBase.get + cin_reg else (i_x + 1.U) * cin_reg
 
         val mul2_temp = XS_temp * x_elems_per_reg
+        if (params.INCREMENTAL_ADDRESSES) xRowBase.get := xRowBase.get + cin_reg
 
         XS            := XS_temp
         mul2          := mul2_temp
@@ -651,8 +734,9 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         chunkInfoModule_D.io.max_bits         := params.XBitWidth.U
         elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
 
+        val initialWords = readActivations(0.U, Rin_cnt + 1.U === YS)
         for (sync_mem_idx <- 0 until totalSyncMems) {
-          I_vals(sync_mem_idx) := I_MEM(sync_mem_idx).read(0.U, Rin_cnt + 1.U === YS )
+          I_vals(sync_mem_idx) := initialWords(sync_mem_idx)
         }
 
       }
@@ -660,6 +744,20 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       when(Rin_cnt === YS && !SplitEnable){
         val x_slice_reg_elems = x_slice_input_reg * x_elems_per_reg
         load_x_cnt := load_x_cnt + 1.U
+        if (params.INCREMENTAL_ADDRESSES) {
+          when(j_x_start + x_slice_reg_elems >= cin_reg) { xStartBase.get := xRowBase.get }
+        }
+        if (params.COUNTER_VALIDITY) {
+          // One limit per bank is shared by all Y rows and all output columns.
+          // The existing counter_2 advances the position; no per-cycle products.
+          val span = blocks_in_Sync_mem * x_elems_per_reg
+          for (bank <- 0 until weightBanks) {
+            val start = bankOffset(span, bank)
+            val remaining = Mux(valid_inputs > start, valid_inputs - start, 0.U)
+            val positions = Mux(x_elems_per_reg === 2.U, (remaining + 1.U) >> 1, remaining)
+            bankValidPositions.get(bank) := positions.min(blocks_in_Sync_mem)
+          }
+        }
         j_x_start  := Mux(j_x_start + x_slice_reg_elems   >= cin_reg , 0.U,j_x_start + x_slice_reg_elems )
         i_x_start  := Mux(j_x_start + x_slice_reg_elems   >= cin_reg , i_x_start + YS -0.U,i_x_start)
         cycleCount_1 := 0.U
@@ -670,7 +768,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         val XS_W_temp             = Mux(remain_in_column_regs >= x_slice_weights_reg,x_slice_weights_reg,remain_in_column_regs)  //max_w_elems
 
         //before load W
-        val temp_mul1 = j_w * cin_reg
+        val temp_mul1 = if (params.INCREMENTAL_ADDRESSES) 0.U else j_w * cin_reg
         val temp_mul2 = if (params.y_slice == 1) XS_W_temp * w_elems_per_reg
         else (XS_W_temp * w_elems_per_reg).min(valid_inputs)
         mul1 := temp_mul1
@@ -769,7 +867,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       val row         = Mux(offset_counter === 3.U, counter_row + 1.U, counter_row)
 
       // Read request
-      val readData = Seq.tabulate(totalSyncMems)(i => I_MEM(i).read(row, enable_read))
+      val readData = readActivations(row, enable_read)
 
       // Delay the enable signal by 1 cycle
       val read_valid = RegNext(enable_read, init=false.B)
@@ -785,6 +883,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         Rin_cnt       := 0.U
         j_x           := j_x_start
         i_x           := i_x_start
+        if (params.INCREMENTAL_ADDRESSES) xRowBase.get := xStartBase.get
         cycleCount_1  := 0.U
         counter_1     := 0.U
 
@@ -843,7 +942,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         val row         = Mux(offset_counter === 3.U, counter_row + 1.U, counter_row)
 
         // Read request
-        val readData = Seq.tabulate(totalSyncMems)(i => I_MEM(i).read(row, enable_read))
+        val readData = readActivations(row, enable_read)
 
         // Capture only requested activation words; hold the current word
         // while its remaining cells flow through selection.
@@ -894,7 +993,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           val global_block_idx   =  sync_mem_idx.U * blocks_in_Sync_mem + counter_2
           val x_th_x_reg = global_block_idx
 
-          val valid_x = if (params.y_slice == 1) valid_inputs > x_th_x_reg * x_elems_per_reg
+          val valid_x = if (params.COUNTER_VALIDITY) {
+            val activeRow = if (params.y_slice == 1) true.B else (sync_mem_idx / weightBanks).U < YS
+            activeRow && counter_2 < bankValidPositions.get(sync_mem_idx % weightBanks)
+          } else if (params.y_slice == 1) valid_inputs > x_th_x_reg * x_elems_per_reg
           else ((sync_mem_idx / weightBanks).U < YS) &&
           (valid_inputs > (((sync_mem_idx % weightBanks).U * blocks_in_Sync_mem + counter_2) * x_elems_per_reg))
 
@@ -1084,15 +1186,22 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           })
 
           for (y <- 0 until params.y_slice) {
-            if (params.y_slice == 1) {
-              O_reg(0)(y)(selectionColumn(3)) :=  (O_reg(0)(y)(selectionColumn(3)) +  accum(y))
+            if (params.BRAM_OUTPUTS) {
+              val mem = outputMemory.get
+              mem.io.updateValid(y) := y.U < YS
+              mem.io.delta(y) := accum(y)
+              if (params.FP16_ACTIVATIONS) {
+                mem.io.flags(y) := (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+              }
+            } else if (params.y_slice == 1) {
+              O_reg.get(0)(y)(selectionColumn(3)) :=  (O_reg.get(0)(y)(selectionColumn(3)) +  accum(y))
               if (params.FP16_ACTIVATIONS) {
                 val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
                 fp16Flags.get(y)(selectionColumn(3)) := fp16Flags.get(y)(selectionColumn(3)) | flags
               }
             } else {
               when(y.U < YS) {
-                O_reg(0)(y)(selectionColumn(3)) := O_reg(0)(y)(selectionColumn(3)) + accum(y)
+                O_reg.get(0)(y)(selectionColumn(3)) := O_reg.get(0)(y)(selectionColumn(3)) + accum(y)
                 if (params.FP16_ACTIVATIONS) {
                   val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
                   fp16Flags.get(y)(selectionColumn(3)) := fp16Flags.get(y)(selectionColumn(3)) | flags
@@ -1151,9 +1260,14 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           storeWritesIssued := 0.U
           dma_send := true.B
           state      := sStoreOutput
+          if (params.BRAM_OUTPUTS) {
+            outputReadRow.get := 0.U
+            outputReadColumn.get := 0.U
+            outputReadParity.get := i_o(0) && cout_reg(0)
+          }
         }.otherwise{
           val XS_temp   = Mux(cin_reg - j_x  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x )
-          val mul1_temp = i_x * cin_reg
+          val mul1_temp = if (params.INCREMENTAL_ADDRESSES) xRowBase.get else i_x * cin_reg
           val mul2_temp = XS_temp * x_elems_per_reg
 
           i_w           := i_w_start + step_new
@@ -1167,7 +1281,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           mul1          := mul1_temp
 
           //before load X
-          val elems_per_word = params.XBitWidth.U / input_bits
+          val elems_per_word = if (fp16Geometry) 1.U else params.XBitWidth.U / input_bits
           all_available_elems_x := (XS * elems_per_word).min(cin_reg - j_x)
           j_x_temp              := j_x
 
@@ -1213,21 +1327,29 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         PC_storeO := PC_storeO + 1.U
       }
 
+      if (params.BRAM_OUTPUTS) {
+        outputReadIssue := outputReadRow.get < YS &&
+          (outputWords.get.io.count +& outputReadPending.asUInt) < 4.U
+      }
+
       // Packing follows accepted requests, independently of late acknowledgements.
       val remaining_elems = cout_reg - dma_counter_a
       val R_elems_per_chunk = ((elems_per_chunk.U - done_elems_in_block).min(remaining_elems))
-      val linear_index  = i_o * cout_reg + dma_counter_a
+      val linear_index  = (if (params.INCREMENTAL_ADDRESSES) outputRowBase.get else i_o * cout_reg) + dma_counter_a
       val chunk_index   = linear_index / ((elems_per_chunk.U)) // Output DMA-word index.
       val chunk_address = adr_O + (chunk_index * 8.U)
 
-      when(dma_send && !dma.io.busy) {
+      when(dma_send && !dma.io.busy && (if (params.BRAM_OUTPUTS) outputWords.get.io.deq.valid else true.B)) {
         dma.io.mode := true.B
 
-        if (params.FP16_ACTIVATIONS) {
+        if (params.BRAM_OUTPUTS) {
+          dma.io.writeData := outputWords.get.io.deq.bits
+          outputWords.get.io.deq.ready := dma.io.a_fire
+        } else if (params.FP16_ACTIVATIONS) {
           val words = (0 until elems_per_chunk).map { i =>
             val index = dma_counter_a + i.U
             val convert = Module(new Fixed24ToFP32(accumulatorWidth))
-            convert.io.value := O_reg(0)(Rin_cnt)(index)
+            convert.io.value := O_reg.get(0)(Rin_cnt)(index)
             convert.io.flags := fp16Flags.get(Rin_cnt)(index)
             Mux(i.U < R_elems_per_chunk, convert.io.bits, 0.U(32.W))
           }
@@ -1237,7 +1359,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         } else if(params.SCALE) {
 
           val scaleModule = Module(new Scale_Vector)
-          val dataVector = VecInit((0 until elems_per_chunk).map(i => Mux(i.U < R_elems_per_chunk, O_reg(0)(Rin_cnt)(dma_counter_a + i.U), 0.S(params.DMA_bits.W))))
+          val dataVector = VecInit((0 until elems_per_chunk).map(i => Mux(i.U < R_elems_per_chunk, O_reg.get(0)(Rin_cnt)(dma_counter_a + i.U), 0.S(params.DMA_bits.W))))
           scaleModule.io.inVector := dataVector
           scaleModule.io.scale    := scale
 
@@ -1247,7 +1369,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
           val data_chunk = (0 until elems_per_chunk).foldLeft(0.U(params.DMA_bits.W)) { (acc, i) =>
             acc | Mux( i.U < R_elems_per_chunk,
-              O_reg(0)(Rin_cnt)(dma_counter_a + i.U).asUInt << ((i.U + done_elems_in_block) * params.OutBitWidth.U),
+              O_reg.get(0)(Rin_cnt)(dma_counter_a + i.U).asUInt << ((i.U + done_elems_in_block) * params.OutBitWidth.U),
               0.U(params.DMA_bits.W)
             )
           }
@@ -1274,15 +1396,18 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             dma_counter_a := 0.U
             Rin_cnt := Rin_cnt + 1.U
             i_o := i_o + 1.U
+            if (params.INCREMENTAL_ADDRESSES) outputRowBase.get := outputRowBase.get + cout_reg
             dma_send := Rin_cnt < YS - 1.U
           }.otherwise {
             dma_counter_a := dma_counter_a + R_elems_per_chunk
           }
 
-          for (i <- 0 until elems_per_chunk) {
-            when(i.U < R_elems_per_chunk) {
-              O_reg(0)(Rin_cnt)(dma_counter_a + i.U) := 0.S
-              if (params.FP16_ACTIVATIONS) fp16Flags.get(Rin_cnt)(dma_counter_a + i.U) := 0.U
+          if (!params.BRAM_OUTPUTS) {
+            for (i <- 0 until elems_per_chunk) {
+              when(i.U < R_elems_per_chunk) {
+                O_reg.get(0)(Rin_cnt)(dma_counter_a + i.U) := 0.S
+                if (params.FP16_ACTIVATIONS) fp16Flags.get(Rin_cnt)(dma_counter_a + i.U) := 0.U
+              }
             }
           }
 
@@ -1296,7 +1421,9 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
       // Drain accepted DMA requests and buffered responses before completion
       // or before reinitializing the counters for another activation-row group.
-      when(Rin_cnt === YS && !dma_send && dma_counter_d === storeWritesIssued && dma.io.empty) {
+      val outputReadsDrained = if (params.BRAM_OUTPUTS)
+        !outputWords.get.io.deq.valid && !outputReadPending else true.B
+      when(Rin_cnt === YS && !dma_send && dma_counter_d === storeWritesIssued && dma.io.empty && outputReadsDrained) {
         dma_resp := false.B
         when(loops_cnt === LOOPS -1.U){
           Rin_cnt             := 0.U
@@ -1337,7 +1464,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           }
 
           // recompute chunk parameters for next X load
-          val elems_per_word = params.XBitWidth.U / input_bits
+          val elems_per_word = if (fp16Geometry) 1.U else params.XBitWidth.U / input_bits
           all_available_elems_x := (XS_temp * elems_per_word).min(cin_reg)
 
           // reset load counters
@@ -1354,7 +1481,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             val capacity = (1.U << (params.WBitWidth.U - weight_bits)) * params.Mem_row_factor.U
             blocks_in_Sync_mem := initialBlocks.min(capacity)
           }
-          val mul1_temp = i_x * cin_reg
+          val mul1_temp = if (params.INCREMENTAL_ADDRESSES) xRowBase.get else i_x * cin_reg
           val mul2_temp = XS_temp * x_elems_per_reg
 
           mul2          := mul2_temp

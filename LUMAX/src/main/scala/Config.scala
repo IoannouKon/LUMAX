@@ -21,6 +21,13 @@ case class LUMAXParams(
   DMA_bits:       Int,
   Mem_row_factor : Int,
   FP16_ACTIVATIONS: Boolean = false,
+  FP16_CONST_GEOMETRY: Boolean = false,
+  COUNTER_VALIDITY: Boolean = false,
+  INCREMENTAL_ADDRESSES: Boolean = false,
+  PRECISION_SHIFT_PACKING: Boolean = false,
+  SHARED_ACTIVATION_READ: Boolean = false,
+  BRAM_OUTPUTS: Boolean = false,
+  COMPACT_VALIDITY_WIDTH: Boolean = false,
 )
 
 // Elaboration-time defaults. Rebuild the design after changing these values.
@@ -37,6 +44,15 @@ object LUMAX_Config {
     WBitWidth   = 8, // Maximum weight width.
     OutBitWidth = 32, // Output word width.
     FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+
+    // Independent elaboration-time resource optimizations; false keeps the original path.
+    FP16_CONST_GEOMETRY = true, // FP16 has one activation/lane and four/DMA beat.
+    COUNTER_VALIDITY = true, // Compare the existing position counter to per-bank limits.
+    INCREMENTAL_ADDRESSES = true, // Advance matrix row bases by addition.
+    PRECISION_SHIFT_PACKING = true, // Decode W2/W4/W8 and X8/X16 into shifts/masks.
+    SHARED_ACTIVATION_READ = true, // Share one SRAM read port between controller states.
+    BRAM_OUTPUTS = true, // Bank exact output accumulators in synchronous SRAM.
+    COMPACT_VALIDITY_WIDTH = true, // Count-width generator input instead of one bit per possible element.
 
     minInputBits  = 8, // Minimum input width used to size packed-lane storage.
     minWeightBits = 2, // Minimum weight width used to size product-table storage.
