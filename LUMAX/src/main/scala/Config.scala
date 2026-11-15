@@ -28,6 +28,7 @@ case class LUMAXParams(
   SHARED_ACTIVATION_READ: Boolean = false,
   BRAM_OUTPUTS: Boolean = false,
   COMPACT_VALIDITY_WIDTH: Boolean = false,
+  EARLY_WEIGHT_BUFFER_RELEASE: Boolean = false,
 )
 
 // Elaboration-time defaults. Rebuild the design after changing these values.
@@ -53,6 +54,7 @@ object LUMAX_Config {
     SHARED_ACTIVATION_READ = true, // Share one SRAM read port between controller states.
     BRAM_OUTPUTS = true, // Bank exact output accumulators in synchronous SRAM.
     COMPACT_VALIDITY_WIDTH = true, // Count-width generator input instead of one bit per possible element.
+    EARLY_WEIGHT_BUFFER_RELEASE = false, // Experimental W8/input16: hold the last SRAM word and refill its buffer early.
 
     minInputBits  = 8, // Minimum input width used to size packed-lane storage.
     minWeightBits = 2, // Minimum weight width used to size product-table storage.

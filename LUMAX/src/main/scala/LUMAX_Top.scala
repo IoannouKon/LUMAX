@@ -102,6 +102,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val selectionEnd = RegInit(VecInit(Seq.fill(4)(false.B)))
   val selectionFirst = if (params.BRAM_OUTPUTS) Some(RegInit(VecInit(Seq.fill(4)(false.B)))) else None
   val weightBufferS2 = RegInit(0.U(log2Ceil(params.W_BUFFS).W))
+  // A consumed W8 SRAM word supplies eight selection positions. Keep that word
+  // outside the double buffer so DMA can refill it after its final read capture.
+  // These registers and the alternate control path disappear when disabled.
+  val weightColumnActive = if (params.EARLY_WEIGHT_BUFFER_RELEASE) Some(RegInit(false.B)) else None
+  val heldWeightWords = if (params.EARLY_WEIGHT_BUFFER_RELEASE) Some(Reg(Vec(weightBanks, UInt(params.DMA_bits.W)))) else None
 
   val sum    = Reg(Vec(totalSyncMems, SInt((params.XBitWidth + 1).W))) // Signed odd-weight correction for each activation lane.
   val Sign   = Reg(Vec(totalSyncMems, Bool())) // True for a nonnegative product sign.
@@ -909,16 +914,30 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       }
 
       // Input-side progress is independent of results still in the pipeline.
-      selectionIssue := READ_ON && (w_idx < cout_reg) && buffers_mode(select_buff_idx)
+      val earlyWeightRelease = if (params.EARLY_WEIGHT_BUFFER_RELEASE)
+        (weight_bits === 8.U && input_bits === 16.U) else false.B
+      val columnReady = if (params.EARLY_WEIGHT_BUFFER_RELEASE)
+        buffers_mode(select_buff_idx) || (earlyWeightRelease && weightColumnActive.get)
+      else buffers_mode(select_buff_idx)
+      selectionIssue := READ_ON && (w_idx < cout_reg) && columnReady
       selectionLast := selectionIssue && (cycleCount_2 === x_elems_per_reg - 1.U) &&
         (counter_2 === blocks_in_Sync_mem - 1.U)
       weightBufferS2 := select_buff_idx
 
       // Release only after the final weight read has reached stage 2. Earlier
       // results no longer need this SRAM buffer; they carry their own column tag.
-      when(selectionValid(0) && selectionEnd(0)) {
+      when(!earlyWeightRelease && selectionValid(0) && selectionEnd(0)) {
         buffers_mode(weightBufferS2) := false.B
         weightReserved(weightBufferS2) := false.B
+      }
+      if (params.EARLY_WEIGHT_BUFFER_RELEASE) {
+        when(earlyWeightRelease && selectionIssue) {
+          // Consume readiness once, at column start. A later DMA completion may
+          // mark this same SRAM buffer ready for column + W_BUFFS while the
+          // current column continues from heldWeightWords.
+          when(!weightColumnActive.get) { buffers_mode(select_buff_idx) := false.B }
+          weightColumnActive.get := !selectionLast
+        }
       }
 
       locally { // Payload stages keep advancing even when a new input is unavailable.
@@ -974,6 +993,22 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           }
         }
 
+        val weightReadCaptured = RegNext(enable_read_w, false.B)
+        if (params.EARLY_WEIGHT_BUFFER_RELEASE) {
+          when(earlyWeightRelease && weightReadCaptured) {
+            for (i <- 0 until weightBanks) {
+              heldWeightWords.get(i) := W_wire(weightBufferS2)(i)
+            }
+          }
+          // For W8/input16 each bank's word covers eight positions. The final
+          // read can precede the last selection input by up to seven clocks.
+          // Release on capture, never on request: a synchronous read still owns
+          // its SRAM word until this edge. Result column tags are unchanged.
+          val lastWeightReadCaptured = RegNext(
+            enable_read_w && earlyWeightRelease && (counter_2 +& 8.U >= blocks_in_Sync_mem), false.B)
+          when(lastWeightReadCaptured) { weightReserved(weightBufferS2) := false.B }
+        }
+
         when(selectionIssue) {
           when(elements_counter === elemsPerChunk_w * weightBanks.U - weightBanks.U) {
             elements_counter := 0.U
@@ -1012,7 +1047,12 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           // Each parallel lane owns this bank; no global-index division.
           val byte_w_idx = weightCellS2
           val buff_idx   = weightBufferS2(buffIdxW - 1, 0)
-          val data_64 =  W_wire(buff_idx)(sync_mem_idx)
+          // Bypass the arriving word on its capture cycle to retain the original
+          // decode latency; use the held copy on subsequent selection positions.
+          val data_64 = if (params.EARLY_WEIGHT_BUFFER_RELEASE)
+            Mux(earlyWeightRelease && !weightReadCaptured,
+              heldWeightWords.get(sync_mem_idx), W_wire(buff_idx)(sync_mem_idx))
+          else W_wire(buff_idx)(sync_mem_idx)
           val bytes_8 = VecInit(Seq.tabulate(params.DMA_bits / params.WBitWidth)(i => data_64((i + 1) *  params.WBitWidth - 1, i * params.WBitWidth)))
           val W_value = bytes_8(byte_w_idx)
           // Constant shifts replace offset * runtime weight_bits.
