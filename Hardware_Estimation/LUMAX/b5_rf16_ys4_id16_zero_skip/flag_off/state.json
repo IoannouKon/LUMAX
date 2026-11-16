@@ -1,0 +1,57 @@
+{
+  "status": "COMPLETE",
+  "work": "/tmp/qwen-sparsity-run_20261115_191029/hardware_off",
+  "cases": [
+    {
+      "name": "lumax_b5_rf16_ys4_id16",
+      "accelerator": "lumax",
+      "b": 5,
+      "rf": 16,
+      "ys": 4,
+      "ids": 16,
+      "status": "PASS",
+      "started": "2026-11-15T21:34:59.229290+02:00",
+      "work_run": "/tmp/qwen-sparsity-run_20261115_191029/hardware_off/builds/b5_rf16_ys4_id16_fp16_r8_k1216_n1216_50mhz/runs/20261115_193459_293210",
+      "luts": 33528.0,
+      "registers": 6485.0,
+      "bram_tiles": 66.0,
+      "uram": 0.0,
+      "dsps": 0.0,
+      "resources_stage": "post_route",
+      "metrics": {
+        "fpga_part": "xczu7ev-ffvc1156-2-e",
+        "lumax_instance": "chiptop0/system/tile_prci_domain/element_reset_domain_rockettile/MatMul_LUMAX_example",
+        "clock_target_mhz": "50",
+        "power_activity": "vectorless",
+        "system_setup_slack_ns": "0.222",
+        "system_hold_slack_ns": "0.010",
+        "lumax_internal_setup_slack_ns": "7.394",
+        "lumax_internal_hold_slack_ns": "0.019",
+        "lumax_boundary_setup_slack_ns": "11.437",
+        "lumax_boundary_hold_slack_ns": "0.034",
+        "lumax_clock": "clk_out1_harnessSysPLL",
+        "lumax_clock_period_ns": "19.998",
+        "lumax_internal_estimated_fmax_mhz": "79.340"
+      },
+      "estimated_internal_fmax_mhz": 79.34,
+      "dynamic_power_w": 0.059,
+      "system_total_power_w": 2.136,
+      "system_dynamic_power_w": 1.535,
+      "power_confidence": "Low",
+      "routed": true,
+      "timing_met": true,
+      "elapsed_seconds": 3157.3
+    }
+  ],
+  "settings": {
+    "rin": 8,
+    "cin": 1216,
+    "cout": 1216,
+    "clock_mhz": 50,
+    "vivado_threads": 2
+  },
+  "pid": 2880656,
+  "phase": "Finished",
+  "updated": "2026-11-15T22:27:36.564858+02:00",
+  "current": "lumax_b5_rf16_ys4_id16"
+}
