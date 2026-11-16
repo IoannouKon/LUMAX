@@ -46,6 +46,18 @@ if [ -f "$CONFIG_SOURCE" ]; then
     esac
   done
   TEST_FLAGS+=("-DLUMAX_FP16_ACTIVATIONS=$fp16_define")
+  grouping_mode=$(sed -n 's/^[[:space:]]*FLEXIBLE_BANK_GROUPING[[:space:]]*=[[:space:]]*\(true\|false\).*/\1/p' "$CONFIG_SOURCE")
+  grouping_define=0
+  if [ "$grouping_mode" = true ]; then grouping_define=1; fi
+  for flag in "${TEST_FLAGS[@]}"; do
+    case "$flag" in
+      -DLUMAX_FLEXIBLE_BANK_GROUPING=*)
+        if [ "$flag" != "-DLUMAX_FLEXIBLE_BANK_GROUPING=$grouping_define" ]; then
+          echo "Software bank grouping disagrees with Config.scala" >&2; exit 1
+        fi ;;
+    esac
+  done
+  TEST_FLAGS+=("-DLUMAX_FLEXIBLE_BANK_GROUPING=$grouping_define")
 fi
 
 if [ "$MODE" = "baremetal" ]; then

@@ -24,6 +24,7 @@ case class LUMAXParams(
   WEIGHT_DMA_BURSTS:            Boolean = false,
   MAX_WEIGHT_BURST_BYTES:       Int = 32,
   SKIP_ZERO_WEIGHTS:           Boolean = false,
+  FLEXIBLE_BANK_GROUPING:      Boolean = false,
 ) {
   // Derived width: configure the beat size in bytes only.
   val DMA_bits: Int = DMA_Bytes * 8
@@ -74,6 +75,10 @@ object LUMAX_Config {
     // Independent per-bank zero skipping for eligible FP16/INT16 windows.
     // FP16 special values and legacy dirty offsets retain dense selection.
     SKIP_ZERO_WEIGHTS = false,
+
+    // Fixed B*YS lanes; software may select YS=1,2,...,parallel_rows before
+    // each matmul. B becomes total lanes / selected YS. Dense FP16 only.
+    FLEXIBLE_BANK_GROUPING = false,
 
     // 7. Instrumentation.
     DEBUG = true, // Enable hardware performance counters.

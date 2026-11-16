@@ -67,17 +67,20 @@ trait LUMAXTopHelpers {
     firstElement: UInt,
     elementCount: UInt,
     linearElement: UInt,
-    carry: UInt
+    carry: UInt,
+    bankStarts: Seq[UInt] = Seq.empty,
+    bankEnables: Seq[Bool] = Seq.empty
   ): Unit = {
     val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
     val elementsPerWord = 1.U(7.W) << wordShift(precision)
     val beatOffset = (linearElement << bitShift(precision)) & (params.DMA_bits - 1).U
     val responseEnd = firstElement + elementCount
     for (bank <- memories.indices) {
-      val bankStart = bankOffset(elementsPerBank, bank)
+      val bankStart = if (bankStarts.nonEmpty) bankStarts(bank) else bankOffset(elementsPerBank, bank)
+      val bankEnabled = if (bankEnables.nonEmpty) bankEnables(bank) else true.B
       val first = firstElement.max(bankStart)
       val end = responseEnd.min(bankStart + elementsPerBank)
-      when(first < end) {
+      when(bankEnabled && first < end) {
         val local = first - bankStart
         val row = local >> wordShift(precision)
         val bitOffset = Wire(UInt(log2Ceil(params.DMA_bits).W))

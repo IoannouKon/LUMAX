@@ -14,11 +14,13 @@ class Product_Generator(
     val product_bitwidth:Int,
     val minInputBits:Int,
     val FP16_ACTIVATIONS: Boolean = false,
-    val banksPerRow: Int = 0
+    val banksPerRow: Int = 0,
+    val flexibleGrouping: Boolean = false
 ) extends Module {
 
   val io = IO(new Bundle {
 
+    val logicalStart = if (flexibleGrouping) Some(Input(UInt(math.max(1, log2Ceil(totalSyncMems * RowsPerBlock + 1)).W))) else None
     val sync_mem_idx            = Input(UInt(log2Ceil(totalSyncMems).W))
     val blocks_in_Sync_mem      = Input(UInt(log2Ceil(RowsPerBlock + 1).W))
     val counter                 = Input(UInt(log2Ceil(RowsPerBlock + 2).W))
@@ -60,7 +62,7 @@ class Product_Generator(
         val bytes = VecInit(Seq.tabulate(DMA_bits / XBitWidth)(i => data_64((i + 1) *  XBitWidth - 1, i *  XBitWidth)))
         val elem_start = if (banksPerRow > 0) {
           // The table's bank includes its activation row; validity is per row.
-          val localBlock = (io.sync_mem_idx % banksPerRow.U) * io.blocks_in_Sync_mem + io.counter + io.dirty_elems_x
+          val localBlock = (if (flexibleGrouping) io.logicalStart.get else (io.sync_mem_idx % banksPerRow.U) * io.blocks_in_Sync_mem) + io.counter + io.dirty_elems_x
           localBlock * io.inputs_per_reg
         } else x_th_x_reg * io.inputs_per_reg
 

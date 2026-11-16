@@ -83,6 +83,22 @@ bool ultra_fast_mode = false; // even faster skip generate random values
 int x_slice_max = XS;
 int y_slice = YS;
 
+#ifndef LUMAX_FLEXIBLE_BANK_GROUPING
+#define LUMAX_FLEXIBLE_BANK_GROUPING 0
+#endif
+
+// Call while idle, before preload_hw(). XS*YS is the physical lane count;
+// YS is the maximum supported grouping, not the number of rows in a tail.
+// The selected grouping reaches RTL through the existing set_rin command.
+// A model-generated schedule supplies rows; no simulator runs on the CPU.
+static inline int lumax_select_bank_grouping(unsigned rows) {
+    if (!rows || (rows & (rows - 1)) || rows > YS) return -1;
+    if (!LUMAX_FLEXIBLE_BANK_GROUPING && rows != YS) return -1;
+    y_slice = (int)rows;
+    x_slice_max = (XS * YS) / (int)rows;
+    return 0;
+}
+
 int ACTIVATION_MAX_BITS = 16;
 int WEIGHTS_MAX_BITS    = 8;
 int RF = Mem_row_factor; 
