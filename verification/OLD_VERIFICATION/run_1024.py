@@ -84,7 +84,7 @@ def worker(args):
         hw.log('RUNNER SHA256: ' + hw.sha(SELF) + '; HARNESS SHA256: ' + hw.sha(Path(hw.__file__)))
         b, rf = map(int, re.fullmatch(r'b(\d+)_rf(\d+)', args.design).groups())
         config = original.decode()
-        for key, value in (('x_slice', b), ('Mem_row_factor', rf)):
+        for key, value in (('banks_per_row', b), ('table_capacity_factor', rf)):
             config, count = re.subn(r'(?m)^(\s*' + key + r'\s*=\s*)\d+',
                                     lambda m: m[1] + str(value), config)
             if count != 1:

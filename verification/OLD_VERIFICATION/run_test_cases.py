@@ -367,7 +367,7 @@ def worker(workers):
                 folder=ROOT/design
                 folder.mkdir()
                 cfg=original_config.decode()
-                for key,value in [('x_slice',b),('Mem_row_factor',rf)]:
+                for key,value in [('banks_per_row',b),('table_capacity_factor',rf)]:
                     cfg,n=re.subn(r'(?m)^(\s*'+key+r'\s*=\s*)\d+',lambda mt:mt[1]+str(value),cfg)
                     assert n==1
                 sim=folder/'simulator-LUMAXROcketConfig'
@@ -422,7 +422,7 @@ def preflight():
     for path in [CY/'env.sh',CONFIG,SRC/'Linear-sw.c',SRC/'rocc.h',SRC/'compiler.h',SRC/'build.sh']:
         if not path.is_file():raise RuntimeError('Missing '+str(path))
     if 'packedReadCount' not in (GEN/'src/main/scala/LUMAX_Top.scala').read_text():raise RuntimeError('Fixed hardware loader not found')
-    if not re.search(r'(?m)^\s*y_slice\s*=\s*1\s*,',CONFIG.read_text()):raise RuntimeError('Requires y_slice=1')
+    if not re.search(r'(?m)^\s*parallel_rows\s*=\s*1\s*,',CONFIG.read_text()):raise RuntimeError('Requires y_slice=1')
     if not re.search(r'(?m)^\s*DEBUG\s*=\s*true\s*,',CONFIG.read_text()):raise RuntimeError('Requires enabled HW cycle counters')
 
 

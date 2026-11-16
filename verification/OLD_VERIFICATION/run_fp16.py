@@ -242,7 +242,7 @@ def run(args):
                         label=('fp16' if fp16 else 'int16')+'_'+design
                         folder=work/label;folder.mkdir()
                         text=original.decode()
-                        for key,value in [('x_slice',b),('Mem_row_factor',rf),('FP16_ACTIVATIONS','true' if fp16 else 'false')]:
+                        for key,value in [('banks_per_row',b),('table_capacity_factor',rf),('FP16_ACTIVATIONS','true' if fp16 else 'false')]:
                             text,count=re.subn(r'(?m)^(\s*'+key+r'\s*=\s*)(?:\d+|true|false)',lambda m:m[1]+str(value),text)
                             if count!=1:raise ValueError('Missing hardware setting '+key)
                         snapshot=folder/'Config.scala';snapshot.write_text(text)

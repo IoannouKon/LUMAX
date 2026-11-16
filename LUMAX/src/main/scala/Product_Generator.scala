@@ -14,8 +14,7 @@ class Product_Generator(
     val product_bitwidth:Int,
     val minInputBits:Int,
     val FP16_ACTIVATIONS: Boolean = false,
-    val banksPerRow: Int = 0,
-    val COMPACT_VALIDITY_WIDTH: Boolean = false
+    val banksPerRow: Int = 0
 ) extends Module {
 
   val io = IO(new Bundle {
@@ -31,10 +30,8 @@ class Product_Generator(
     val X_vals                  = Input(Vec(totalSyncMems, UInt(DMA_bits.W)))
     val inputs_per_reg          = Input(UInt(2.W))
     val input_bits              = Input(UInt(6.W))
-    // This input carries a count, not a bitmap. Match the controller's count
-    // width when enabled; preserve the historical port exactly when disabled.
-    val valid_inputs = Input(UInt((if (COMPACT_VALIDITY_WIDTH)
-      log2Ceil(totalSyncMems * RowsPerBlock + 1) else totalSyncMems * RowsPerBlock).W))
+    // Validity is a count, not a bitmap; use its count width.
+    val valid_inputs = Input(UInt(log2Ceil(totalSyncMems * RowsPerBlock + 1).W))
     val mask_p                  = Input(UInt(log2Ceil((1 << (WBitWidth + XBitWidth))).W))
     val shiftAmt                = Input(UInt(7.W))
     val chunks_per_Product_bits = Input(UInt(log2Ceil(WBitWidth + XBitWidth + 1).W))
@@ -86,8 +83,7 @@ class Product_Generator(
           val absVal_new = Mux(signedChunk < 0.S, (-signedChunk), signedChunk)
           // Retain a carry bit so narrowing the port does not truncate the sum,
           // even at the maximum representable count plus a dirty-cell offset.
-          val validEnd = if (COMPACT_VALIDITY_WIDTH) io.valid_inputs +& io.dirty_elems_x
-            else io.valid_inputs + io.dirty_elems_x
+          val validEnd = io.valid_inputs +& io.dirty_elems_x
           val valid_x = validEnd > elem_start + i.U
           val absVal = if (FP16_ACTIVATIONS) {
             // One FP16 per 16-bit lane. The table contains exact integer significands.

@@ -16,23 +16,18 @@ trait LUMAXTopHelpers {
     2.U -> 1.U(3.W), 4.U -> 2.U(3.W), 8.U -> 3.U(3.W), 16.U -> 4.U(3.W)))
 
   protected def bankOffset(span: UInt, bank: Int): UInt = {
-    if (!params.INCREMENTAL_ADDRESSES) bank.U * span
-    else {
-      // The bank number is an elaboration constant. At most log2(b) shifted
-      // terms replace the generic multiplication; no run-time bank multiplier.
-      val terms = (0 until math.max(1, log2Ceil(bank + 1))).filter(i => (bank & (1 << i)) != 0)
-      if (terms.isEmpty) 0.U else terms.map(i => span << i).reduce(_ + _)
-    }
+    // The bank number is an elaboration constant. At most log2(b) shifted
+    // terms replace the generic multiplication; no run-time bank multiplier.
+    val terms = (0 until math.max(1, log2Ceil(bank + 1))).filter(i => (bank & (1 << i)) != 0)
+    if (terms.isEmpty) 0.U else terms.map(i => span << i).reduce(_ + _)
   }
 
   protected def readActivations(address: UInt, enable: Bool): Seq[UInt] = {
-    if (params.SHARED_ACTIVATION_READ) {
-      // Callers occupy mutually exclusive controller states. Mux before the
-      // single physical read port, preserving its existing one-cycle latency.
-      activationReadAddress := address
-      activationReadEnable := enable
-      activationReadData.get.toSeq
-    } else I_MEM.map(_.read(address, enable))
+    // Callers occupy mutually exclusive controller states. Mux before the
+    // single physical read port, preserving its existing one-cycle latency.
+    activationReadAddress := address
+    activationReadEnable := enable
+    activationReadData.get.toSeq
   }
 
   // Each lane's starting bank is known at elaboration. Only a bank crossing
@@ -75,10 +70,8 @@ trait LUMAXTopHelpers {
     carry: UInt
   ): Unit = {
     val elementsPerBank = blocks_in_Sync_mem * x_elems_per_reg
-    val elementsPerWord = if (params.PRECISION_SHIFT_PACKING)
-      1.U(7.W) << wordShift(precision) else params.DMA_bits.U / precision
-    val beatOffset = (if (params.PRECISION_SHIFT_PACKING)
-      linearElement << bitShift(precision) else linearElement * precision) & (params.DMA_bits - 1).U
+    val elementsPerWord = 1.U(7.W) << wordShift(precision)
+    val beatOffset = (linearElement << bitShift(precision)) & (params.DMA_bits - 1).U
     val responseEnd = firstElement + elementCount
     for (bank <- memories.indices) {
       val bankStart = bankOffset(elementsPerBank, bank)
@@ -86,18 +79,13 @@ trait LUMAXTopHelpers {
       val end = responseEnd.min(bankStart + elementsPerBank)
       when(first < end) {
         val local = first - bankStart
-        val row = if (params.PRECISION_SHIFT_PACKING)
-          local >> wordShift(precision) else local / elementsPerWord
+        val row = local >> wordShift(precision)
         val bitOffset = Wire(UInt(log2Ceil(params.DMA_bits).W))
-        bitOffset := (if (params.PRECISION_SHIFT_PACKING)
-          (local & (elementsPerWord - 1.U)) << bitShift(precision)
-          else (local % elementsPerWord) * precision)
+        bitOffset := ((local & (elementsPerWord - 1.U)) << bitShift(precision))
         val responseShift = Wire(UInt(log2Ceil(params.DMA_bits).W))
-        responseShift := beatOffset + (if (params.PRECISION_SHIFT_PACKING)
-          (first - firstElement) << bitShift(precision) else (first - firstElement) * precision)
+        responseShift := beatOffset + ((first - firstElement) << bitShift(precision))
         val validBits = Wire(UInt(log2Ceil(params.DMA_bits + 1).W))
-        validBits := (if (params.PRECISION_SHIFT_PACKING)
-          (end - first) << bitShift(precision) else (end - first) * precision)
+        validBits := ((end - first) << bitShift(precision))
         val mask = ((1.U((params.DMA_bits + 1).W) << validBits) - 1.U)(params.DMA_bits - 1, 0)
         val packed = ((dma.io.readData >> responseShift) & mask) << bitOffset
         val assembled = Mux(bitOffset === 0.U, 0.U, carry) | packed

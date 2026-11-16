@@ -340,7 +340,6 @@ typedef struct {
     int XBitWidth;    
     int WBitWidth;   
     int x_slice;      
-    int w_slice;      
     int num_filters; 
     int parallel_rin; 
 
@@ -1020,7 +1019,6 @@ int main() {
     int filters_max = 1;
 
     LUMAXParams p = {
-        .w_slice        = 1,
         .num_filters    = 1
         }; 
     

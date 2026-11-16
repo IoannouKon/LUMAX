@@ -46,8 +46,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
   // === Parameters and elaboration requirements ===
   val params: LUMAXParams = outer.params
-  require(params.y_slice >= 1 && params.Rin >= params.y_slice,
-    "Rin row capacity must be at least y_slice")
+  require(params.parallel_rows >= 1 && params.Rin >= params.parallel_rows,
+    "Rin row capacity must be at least parallel_rows")
   if (params.FP16_ACTIVATIONS) {
     require(params.XBitWidth == 16 && params.OutBitWidth == 32 && !params.SCALE,
       "FP16 activations require XBitWidth=16, OutBitWidth=32 and SCALE=false")
@@ -57,7 +57,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Maximum finite FP16 * signed W8 in units of 2^-24 is strictly below 2^47.
   val accumulatorWidth = if (params.FP16_ACTIVATIONS) 48 + log2Ceil(params.Cin) else params.OutBitWidth
   val dma = outer.dma.module
-  val fp16Geometry = params.FP16_ACTIVATIONS && params.FP16_CONST_GEOMETRY
+  val fp16Geometry = params.FP16_ACTIVATIONS
   require(!params.BRAM_OUTPUTS || (!params.SCALE && params.OutBitWidth == 32),
     "BRAM outputs support unscaled INT32 or FP32 output words")
 
@@ -82,14 +82,14 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
   // === Memory geometry ===
   //SyncMem compile parameters
-  val RowsPerBlock      = (1 << (params.WBitWidth - params.minWeightBits)) * params.Mem_row_factor // Maximum logical activation positions per bank.
-  val totalSyncMems     =  (params.x_slice * params.y_slice) // Activation and product-table banks: b times Y_SLICE.
-  val weightBanks = params.x_slice // Shared by all activation-row groups.
+  val RowsPerBlock      = (1 << (params.WBitWidth - params.minWeightBits)) * params.table_capacity_factor // Maximum logical activation positions per bank.
+  val totalSyncMems     =  (params.banks_per_row * params.parallel_rows) // Activation and product-table banks: b times Y_SLICE.
+  val weightBanks = params.banks_per_row // Shared by all activation-row groups.
   val maxParts          = params.XBitWidth / params.minInputBits // Maximum packed activations per XBitWidth lane.
   val product_bitwidth  = (params.XBitWidth/params.minInputBits)*(params.WBitWidth + params.minInputBits)
   val elems_per_chunk = params.DMA_bits / params.OutBitWidth
   // Include a possible leading partial beat for every activation row.
-  val maxStoreWrites = params.y_slice * ((params.Cout + 2 * elems_per_chunk - 2) / elems_per_chunk)
+  val maxStoreWrites = params.parallel_rows * ((params.Cout + 2 * elems_per_chunk - 2) / elems_per_chunk)
 
   // === Completion and selection-control registers ===
   // Selection issues one bank-position token per cycle. The existing data
@@ -97,6 +97,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Valid/column/last tags travel with those tokens, including during stalls.
   val selectionIssue = WireDefault(false.B)
   val selectionLast = WireDefault(false.B)
+  val zeroSkipMode = WireDefault(false.B)
+  val zeroSkipFirst = WireDefault(false.B)
+  val zeroSkipSpecial = if (params.SKIP_ZERO_WEIGHTS && params.FP16_ACTIVATIONS)
+    Some(RegInit(false.B)) else None
   val selectionValid = RegInit(VecInit(Seq.fill(4)(false.B)))
   val selectionColumn = Reg(Vec(4, UInt(log2Ceil(params.Cout + 1).W)))
   val selectionEnd = RegInit(VecInit(Seq.fill(4)(false.B)))
@@ -116,23 +120,44 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   //How many X_reg will neeed in worst case
   val regs_per_mem = RowsPerBlock
   val regs_per_mem_w = maxParts * regs_per_mem
-  val max_x_regs  = params.x_slice * regs_per_mem // Activation-position capacity for one row group.
+  val max_x_regs  = params.banks_per_row * regs_per_mem // Activation-position capacity for one row group.
   val max_w_elems = maxParts* max_x_regs // Weight-element capacity for the current K window.
   val buffers     =  params.W_BUFFS
   val max_blocks_in_sync_mem = regs_per_mem
 
   // === Output accumulators and activation/weight memories ===
-  val O_reg     = if (params.BRAM_OUTPUTS) None else Some(RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.S(accumulatorWidth.W)))))))))  // Register for Output results
+  val O_reg     = if (params.BRAM_OUTPUTS) None else Some(RegInit(VecInit(Seq.fill(params.num_filters)(VecInit(Seq.fill(params.parallel_rows)(VecInit(Seq.fill(params.Cout)(0.S(accumulatorWidth.W)))))))))  // Register for Output results
   val fp16Meta = if (params.FP16_ACTIVATIONS) Some(Reg(Vec(totalSyncMems, new FP16ProductMeta))) else None
-  val fp16Flags = if (params.FP16_ACTIVATIONS && !params.BRAM_OUTPUTS) Some(RegInit(VecInit(Seq.fill(params.y_slice)(VecInit(Seq.fill(params.Cout)(0.U(3.W))))))) else None
+  val fp16Flags = if (params.FP16_ACTIVATIONS && !params.BRAM_OUTPUTS) Some(RegInit(VecInit(Seq.fill(params.parallel_rows)(VecInit(Seq.fill(params.Cout)(0.U(3.W))))))) else None
   val I_MEM = Seq.fill(totalSyncMems)(SyncReadMem(regs_per_mem/4, UInt(params.DMA_bits.W)))
   val W_MEM = Seq.fill(buffers, weightBanks) { SyncReadMem(regs_per_mem_w/8, UInt(params.DMA_bits.W))}
+  val weightReadAddress = if (params.SKIP_ZERO_WEIGHTS) {
+    Some(WireDefault(VecInit(Seq.fill(buffers) {
+      VecInit(Seq.fill(weightBanks)(0.U(math.max(1, log2Ceil(regs_per_mem_w / 8)).W)))
+    })))
+  } else None
+  val weightReadEnable = if (params.SKIP_ZERO_WEIGHTS) {
+    Some(WireDefault(VecInit(Seq.fill(buffers) {
+      VecInit(Seq.fill(weightBanks)(false.B))
+    })))
+  } else None
+  val weightReadData = if (params.SKIP_ZERO_WEIGHTS) Some(VecInit((0 until buffers).map { b =>
+    VecInit((0 until weightBanks).map(i => W_MEM(b)(i).read(weightReadAddress.get(b)(i), weightReadEnable.get(b)(i))))
+  })) else None
 
   // Optional shared activation read port. State-local helpers select its request.
   val activationReadAddress = WireDefault(0.U(math.max(1, log2Ceil(regs_per_mem / 4)).W))
   val activationReadEnable = WireDefault(false.B)
-  val activationReadData = if (params.SHARED_ACTIVATION_READ)
-    Some(VecInit(I_MEM.map(_.read(activationReadAddress, activationReadEnable)))) else None
+  // Zero skipping changes read addresses, not port counts: generation/dense
+  // replay share the same physical port with each bank's independent replay.
+  val sparseActivationAddress = if (params.SKIP_ZERO_WEIGHTS)
+    Some(WireDefault(VecInit(Seq.fill(totalSyncMems)(0.U(math.max(1, log2Ceil(regs_per_mem / 4)).W))))) else None
+  val sparseActivationEnable = if (params.SKIP_ZERO_WEIGHTS)
+    Some(WireDefault(VecInit(Seq.fill(totalSyncMems)(false.B)))) else None
+  val activationReadData = if (params.SKIP_ZERO_WEIGHTS) Some(VecInit(I_MEM.zipWithIndex.map { case (mem, i) =>
+    mem.read(Mux(sparseActivationEnable.get(i), sparseActivationAddress.get(i), activationReadAddress),
+      sparseActivationEnable.get(i) || activationReadEnable)
+  })) else Some(VecInit(I_MEM.map(_.read(activationReadAddress, activationReadEnable))))
 
   // === DMA response carry registers ===
   val dataResponse = RegInit(0.U(params.DMA_bits.W))
@@ -168,6 +193,13 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // === Product-table storage and generation/select counters ===
   //Create SyncReadMems (Memory Blocks to store Prodcuts)
   val temp_muls_mem = Seq.fill(totalSyncMems) {SyncReadMem(RowsPerBlock  , UInt(product_bitwidth.W))}
+  val productReadAddress = if (params.SKIP_ZERO_WEIGHTS)
+    Some(WireDefault(VecInit(Seq.fill(totalSyncMems)(0.U(math.max(1, log2Ceil(RowsPerBlock)).W))))) else None
+  val productReadEnable = if (params.SKIP_ZERO_WEIGHTS)
+    Some(WireDefault(VecInit(Seq.fill(totalSyncMems)(false.B)))) else None
+  val productReadData = if (params.SKIP_ZERO_WEIGHTS) Some(VecInit(temp_muls_mem.zipWithIndex.map {
+    case (mem, i) => mem.read(productReadAddress.get(i), productReadEnable.get(i))
+  })) else None
   val cycleCount_1    = RegInit(0.U(log2Ceil(64 + 1).W)) // Product-table row within the current activation position.
   val cycleCount_2    = RegInit(0.U(log2Ceil(64 + 1).W)) // Packed activation offset during selection.
   val cycleCount_2_reg    = RegInit(0.U(log2Ceil(64 + 1).W)) // Registered packed activation offset.
@@ -176,7 +208,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Index counters
   val w_idx         = RegInit(0.U(log2Ceil(params.Cout + 1).W)) // counter to for current Weight matrix Column
   val load_x_cnt    = RegInit(0.U(64.W)) // Progress through activation K windows.
-  val Rin_cnt       = RegInit(0.U(log2Ceil(params.y_slice + 1).W)) // Output row within the active Y_SLICE group.
+  val Rin_cnt       = RegInit(0.U(log2Ceil(params.parallel_rows + 1).W)) // Output row within the active Y_SLICE group.
   val loops_cnt     = RegInit(0.U(64.W))
 
   selectionValid(0) := selectionIssue
@@ -203,20 +235,19 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val j_x_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W))
   val i_w_temp      = RegInit(0.U(log2Ceil(params.Cin + 1).W))
 
-  // Shadow the existing input-row coordinates with running element bases.
+  // Running element bases for input/output rows.
   // Advance only at row completion; restore the row-group base for each K window.
-  val xRowBase = if (params.INCREMENTAL_ADDRESSES) Some(RegInit(0.U(matrixIndexWidth(params).W))) else None
-  val xStartBase = if (params.INCREMENTAL_ADDRESSES) Some(RegInit(0.U(matrixIndexWidth(params).W))) else None
-  val outputRowBase = if (params.INCREMENTAL_ADDRESSES) Some(RegInit(0.U(matrixIndexWidth(params).W))) else None
-  val bankValidPositions = if (params.COUNTER_VALIDITY)
-    Some(Reg(Vec(weightBanks, UInt(log2Ceil(RowsPerBlock + 1).W)))) else None
+  val xRowBase = RegInit(0.U(matrixIndexWidth(params).W))
+  val xStartBase = RegInit(0.U(matrixIndexWidth(params).W))
+  val outputRowBase = RegInit(0.U(matrixIndexWidth(params).W))
+  val bankValidPositions = Reg(Vec(weightBanks, UInt(log2Ceil(RowsPerBlock + 1).W)))
 
   val init_cycle      = RegInit(true.B)
   val step_new        = RegInit(0.U(log2Ceil(params.Cin + 1).W))
 
   // Runtime activation window size and active row count.
   val XS            =  RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W))
-  val YS            =  RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
+  val YS            =  RegInit(params.parallel_rows.U(log2Ceil(params.parallel_rows + 1).W))
   val done_elems_in_block    =  RegInit(0.U(log2Ceil(elems_per_chunk).W))
 
   // Independent activation-position cursors for generation and selection.
@@ -224,7 +255,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val counter_2 = RegInit(0.U(log2Ceil(RowsPerBlock + 2).W)) // Logical activation position during selection.
 
   if (params.BRAM_OUTPUTS) {
-    selectionFirst.get(0) := selectionIssue && counter_2 === 0.U && cycleCount_2 === 0.U
+    selectionFirst.get(0) := selectionIssue && Mux(zeroSkipMode, zeroSkipFirst,
+      counter_2 === 0.U && cycleCount_2 === 0.U)
     for (stage <- 1 until 4) selectionFirst.get(stage) := selectionFirst.get(stage - 1)
   }
 
@@ -249,7 +281,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val cout_reg              = RegInit(params.Cout.U(log2Ceil(params.Cout + 1).W))
   val cin_reg               = RegInit(params.Cin.U(log2Ceil(params.Cin + 1).W))
   val rin_reg               = RegInit(params.Rin.U(log2Ceil(params.Rin + 1).W))
-  val y_slice_Reg           = RegInit(params.y_slice.U(log2Ceil(params.y_slice + 1).W))
+  val y_slice_Reg           = RegInit(params.parallel_rows.U(log2Ceil(params.parallel_rows + 1).W))
   val x_slice_weights_reg   = RegInit(max_w_elems.U(log2Ceil(max_w_elems + 1).W)) // to bring all corresping weights for all x_elemnts
   val x_slice_input_reg     = RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W)) // so in worst case every sync Mem have hiw own X_reg
   val scale = RegInit(0.U(32.W)) // 32-bit register for IEEE 754 float
@@ -301,7 +333,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val RegsPerChunk_w   = RegInit((params.DMA_bits / params.WBitWidth).U(math.max(1, log2Ceil(params.DMA_bits / params.WBitWidth) + 1).W))
   val  clmp = RegInit(0.U(64.W))
 
-  val mems_per_ys = params.x_slice
+  val mems_per_ys = params.banks_per_row
 
   // === Selection pipeline registers and shared address counters ===
   //----------------------------->  Pipeline Stages in Select Phase  Registers
@@ -354,6 +386,73 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   activationAddress.io.elementsPerCell := x_elems_per_reg
   activationAddress.io.startOffset := dirty_elems_x
 
+  // Sparse replay addresses the logical bank directly for 16-bit inputs.
+  // Legacy dirty-start traversal and narrower packed inputs retain dense replay.
+  // FP16 special values also retain dense replay, preserving 0*Inf/NaN flags.
+  if (params.SKIP_ZERO_WEIGHTS) {
+    zeroSkipMode := input_bits === 16.U && dirty_elems_x === 0.U &&
+      (if (params.FP16_ACTIVATIONS) !zeroSkipSpecial.get else true.B)
+  }
+  val zeroSelector = if (params.SKIP_ZERO_WEIGHTS)
+    Some(Module(new ZeroWeightSelector(weightBanks, RowsPerBlock))) else None
+  if (params.SKIP_ZERO_WEIGHTS) {
+    val selector = zeroSelector.get
+    selector.io.start := false.B
+    selector.io.enable := false.B
+    selector.io.precision := weight_bits
+    selector.io.readData.foreach(_ := 0.U)
+    for (bank <- 0 until weightBanks) {
+      val start = bankOffset(blocks_in_Sync_mem, bank)
+      selector.io.limits(bank) := Mux(valid_inputs > start,
+        (valid_inputs - start).min(blocks_in_Sync_mem), 0.U)
+    }
+  }
+  // Sparse operands are delayed to the same four-clock retirement point as
+  // dense operands. The accumulator, column tags and output DMA remain shared.
+  val sparseProducts = if (params.SKIP_ZERO_WEIGHTS) Some(Wire(Vec(totalSyncMems, UInt(product_bitwidth.W)))) else None
+  val sparseSum = if (params.SKIP_ZERO_WEIGHTS) Some(Wire(Vec(totalSyncMems, SInt((params.XBitWidth + 1).W)))) else None
+  val sparseSign = if (params.SKIP_ZERO_WEIGHTS) Some(Wire(Vec(totalSyncMems, Bool()))) else None
+  val sparseValid = if (params.SKIP_ZERO_WEIGHTS) Some(Wire(Vec(totalSyncMems, Bool()))) else None
+  val sparseMeta = if (params.SKIP_ZERO_WEIGHTS && params.FP16_ACTIVATIONS)
+    Some(Wire(Vec(totalSyncMems, new FP16ProductMeta))) else None
+  if (params.SKIP_ZERO_WEIGHTS) {
+    val selector = zeroSelector.get
+    for (bank <- 0 until weightBanks) {
+      val weightS1 = RegEnable(selector.io.weight(bank), selector.io.valid && selector.io.laneValid(bank))
+      val cellS1 = RegEnable(selector.io.position(bank)(1, 0), selector.io.valid && selector.io.laneValid(bank))
+      val weight = selector.io.weight(bank)
+      val magnitude = Mux(weight < 0.S, -weight, weight).asUInt
+      val tableRow = (selector.io.position(bank) << shiftAmt) + ((magnitude - 1.U) >> 1)
+      for (y <- 0 until params.parallel_rows) {
+        val lane = y * weightBanks + bank
+        val request = selector.io.valid && selector.io.laneValid(bank) && y.U < YS
+        val validS1 = RegNext(request, false.B)
+        when(zeroSkipMode) {
+          sparseActivationAddress.get(lane) := selector.io.position(bank) >> 2
+          sparseActivationEnable.get(lane) := request
+          productReadAddress.get(lane) := tableRow
+          productReadEnable.get(lane) := request
+        }
+        val cells = VecInit(Seq.tabulate(4)(i => activationReadData.get(lane)(16 * i + 15, 16 * i)))
+        val activation = cells(cellS1)
+        val negative = activation(15) ^ weightS1(7)
+        val absolute = if (params.FP16_ACTIVATIONS) FP16Activation.significand(activation).zext
+          else Mux(activation.asSInt < 0.S, -activation.asSInt.pad(17), activation.asSInt.pad(17))
+        val signed = Mux(negative, -absolute, absolute)
+        val correction = Mux(validS1 && weightS1.asUInt(0), signed, 0.S(17.W))
+        sparseProducts.get(lane) := ShiftRegister(productReadData.get(lane), 3)
+        sparseSum.get(lane) := ShiftRegister(correction, 3)
+        sparseSign.get(lane) := ShiftRegister(!negative, 3)
+        sparseValid.get(lane) := ShiftRegister(validS1, 3, false.B, true.B)
+        if (params.FP16_ACTIVATIONS) {
+          sparseMeta.get(lane).shift := ShiftRegister(FP16Activation.shift(activation), 3)
+          sparseMeta.get(lane).nonZeroWeight := sparseValid.get(lane)
+          sparseMeta.get(lane).flags := 0.U // Special-value windows use the dense path.
+        }
+      }
+    }
+  }
+
   // Helper implementations are in LUMAXTopHelpers.scala.
 
   // === Submodule instances and default connections ===
@@ -373,11 +472,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // Optional output SRAM: prefetch DMA words through a four-entry elastic queue.
   // The reader has its own cursor so SRAM latency is hidden while DMA stalls.
   val outputMemory = if (params.BRAM_OUTPUTS)
-    Some(Module(new OutputAccumulator(params.y_slice, params.Cout, accumulatorWidth))) else None
+    Some(Module(new OutputAccumulator(params.parallel_rows, params.Cout, accumulatorWidth))) else None
   val outputWords = if (params.BRAM_OUTPUTS) Some(Module(new Queue(UInt(params.DMA_bits.W), 4))) else None
   val outputReadIssue = WireDefault(false.B)
   val outputReadPending = if (params.BRAM_OUTPUTS) RegNext(outputReadIssue, false.B) else false.B
-  val outputReadRow = if (params.BRAM_OUTPUTS) Some(RegInit(0.U(log2Ceil(params.y_slice + 1).W))) else None
+  val outputReadRow = if (params.BRAM_OUTPUTS) Some(RegInit(0.U(log2Ceil(params.parallel_rows + 1).W))) else None
   val outputReadColumn = if (params.BRAM_OUTPUTS) Some(RegInit(0.U(log2Ceil(params.Cout + 1).W))) else None
   val outputReadParity = if (params.BRAM_OUTPUTS) Some(RegInit(false.B)) else None
   val outputReadCount = WireDefault(0.U(2.W))
@@ -449,8 +548,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       product_bitwidth,
       params.minInputBits,
       params.FP16_ACTIVATIONS,
-      if (params.y_slice > 1) weightBanks else 0,
-      params.COMPACT_VALIDITY_WIDTH
+      if (params.parallel_rows > 1) weightBanks else 0
     ))
   }
 
@@ -530,10 +628,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         j_x_start := 0.U
         loops_cnt := 0.U
         i_o       := 0.U
-        if (params.INCREMENTAL_ADDRESSES) {
-          xRowBase.get := 0.U
-          xStartBase.get := 0.U
-          outputRowBase.get := 0.U
+        locally {
+          xRowBase := 0.U
+          xStartBase := 0.U
+          outputRowBase := 0.U
         }
         storeWritesIssued := 0.U
         i_w_temp  := 0.U
@@ -542,7 +640,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         valid_inputs := 0.U
         offset_counter_1 := 0.U
         cell_counter := 0.U
-        if (params.y_slice > 1) dirty_elems_x := 0.U
+        if (params.parallel_rows > 1) dirty_elems_x := 0.U
 
         // XS YS Registers Init
         YS      := Mux(rin_reg >= y_slice_Reg,y_slice_Reg,rin_reg)
@@ -579,7 +677,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         mask_p                  := (1.U << p_bits) - 1.U
         block_rows              := (1.U << (weight_bits  -2.U ))
 
-        val blocks_in_Sync_mem_max      = ( 1.U << (params.WBitWidth.U - weight_bits ) ) * params.Mem_row_factor.U  // How many blocks can fit in one psysical memory
+        val blocks_in_Sync_mem_max      = ( 1.U << (params.WBitWidth.U - weight_bits ) ) * params.table_capacity_factor.U  // How many blocks can fit in one psysical memory
         val help =  (clamped + mems_per_ys.U - 1.U) / mems_per_ys.U //ceiled
 
         blocks_in_Sync_mem := Mux(help < blocks_in_Sync_mem_max, help,blocks_in_Sync_mem_max )
@@ -679,14 +777,14 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       }
 
       when(dma.io.d_valid) {
-        if (params.y_slice == 1) {
+        if (params.parallel_rows == 1) {
           storePackedResponse(I_MEM, input_bits, dma_counter_d,
             packedReadCount(elements_to_read_temp, dma_counter_d, elemsPerChunk_in),
             mul1 + j_x_temp, dataResponse)
         } else {
           // Each row has b input banks. Repack a row into its own banks while keeping
           // the source address/beat offset specific to that row and K block.
-          for (y <- 0 until params.y_slice) {
+          for (y <- 0 until params.parallel_rows) {
             when(Rin_cnt === y.U) {
               storePackedResponse(I_MEM.slice(y * weightBanks, (y + 1) * weightBanks),
                 input_bits, dma_counter_d,
@@ -703,20 +801,20 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         dma_counter_a := 0.U
         dma_counter_d := 0.U
         Rin_cnt       := Rin_cnt + 1.U
-        if (params.y_slice > 1) {
+        if (params.parallel_rows > 1) {
           // All active rows have the same K extent; keep one per-row count.
           when(Rin_cnt < YS - 1.U) { valid_inputs := 0.U }
         }
         j_x           := Mux(Rin_cnt < YS -1.U,j_x_start,j_x)
         i_x           := Mux(Rin_cnt < YS -1.U,i_x + 1.U,i_x)
-        mul1          := Mux(Rin_cnt < YS -1.U,(if (params.INCREMENTAL_ADDRESSES) xRowBase.get + cin_reg else cin_reg*(i_x + 1.U)),mul1)
+        mul1          := Mux(Rin_cnt < YS -1.U,(xRowBase + cin_reg),mul1)
 
         //before load X
         val XS_temp   = Mux(cin_reg - j_x_start  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x_start )
-        val mul1_temp = if (params.INCREMENTAL_ADDRESSES) xRowBase.get + cin_reg else (i_x + 1.U) * cin_reg
+        val mul1_temp = xRowBase + cin_reg
 
         val mul2_temp = XS_temp * x_elems_per_reg
-        if (params.INCREMENTAL_ADDRESSES) xRowBase.get := xRowBase.get + cin_reg
+        xRowBase := xRowBase + cin_reg
 
         XS            := XS_temp
         mul2          := mul2_temp
@@ -749,10 +847,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       when(Rin_cnt === YS && !SplitEnable){
         val x_slice_reg_elems = x_slice_input_reg * x_elems_per_reg
         load_x_cnt := load_x_cnt + 1.U
-        if (params.INCREMENTAL_ADDRESSES) {
-          when(j_x_start + x_slice_reg_elems >= cin_reg) { xStartBase.get := xRowBase.get }
+        locally {
+          when(j_x_start + x_slice_reg_elems >= cin_reg) { xStartBase := xRowBase }
         }
-        if (params.COUNTER_VALIDITY) {
+        locally {
           // One limit per bank is shared by all Y rows and all output columns.
           // The existing counter_2 advances the position; no per-cycle products.
           val span = blocks_in_Sync_mem * x_elems_per_reg
@@ -760,7 +858,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             val start = bankOffset(span, bank)
             val remaining = Mux(valid_inputs > start, valid_inputs - start, 0.U)
             val positions = Mux(x_elems_per_reg === 2.U, (remaining + 1.U) >> 1, remaining)
-            bankValidPositions.get(bank) := positions.min(blocks_in_Sync_mem)
+            bankValidPositions(bank) := positions.min(blocks_in_Sync_mem)
           }
         }
         j_x_start  := Mux(j_x_start + x_slice_reg_elems   >= cin_reg , 0.U,j_x_start + x_slice_reg_elems )
@@ -773,8 +871,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         val XS_W_temp             = Mux(remain_in_column_regs >= x_slice_weights_reg,x_slice_weights_reg,remain_in_column_regs)  //max_w_elems
 
         //before load W
-        val temp_mul1 = if (params.INCREMENTAL_ADDRESSES) 0.U else j_w * cin_reg
-        val temp_mul2 = if (params.y_slice == 1) XS_W_temp * w_elems_per_reg
+        val temp_mul1 = 0.U
+        val temp_mul2 = if (params.parallel_rows == 1) XS_W_temp * w_elems_per_reg
         else (XS_W_temp * w_elems_per_reg).min(valid_inputs)
         mul1 := temp_mul1
         mul2 := temp_mul2
@@ -820,6 +918,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         buffers_mode.foreach(_ := false.B)
 
         state      := sGenerateRegFiles
+        if (params.SKIP_ZERO_WEIGHTS && params.FP16_ACTIVATIONS) zeroSkipSpecial.get := false.B
         // Seed selection once after X is loaded, before producing its LUT rows.
         activationAddress.io.restart := true.B
         Products.foreach(_ := 0.U)
@@ -838,6 +937,22 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       }
 
       val start_row = counter_1 << shiftAmt
+
+      if (params.SKIP_ZERO_WEIGHTS && params.FP16_ACTIVATIONS) {
+        // Inspect each valid activation during its ordinary LUT generation.
+        // Do not suppress 0*Inf/NaN: the whole window then replays densely.
+        when(cycleCount_1 === 0.U) {
+          for (lane <- 0 until totalSyncMems) {
+            val word = I_vals(rotatedActivationBank(lane, activationAddress.io.bankShift))
+            val cells = VecInit(Seq.tabulate(4)(i => word(16 * i + 15, 16 * i)))
+            val bits = cells(activationAddress.io.cell)
+            val logical = bankOffset(blocks_in_Sync_mem, lane % weightBanks) + counter_1
+            when((lane / weightBanks).U < YS && logical < valid_inputs && bits(14, 10).andR) {
+              zeroSkipSpecial.get := true.B
+            }
+          }
+        }
+      }
 
       for (sync_mem_idx <- 0 until totalSyncMems) {
 
@@ -888,7 +1003,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         Rin_cnt       := 0.U
         j_x           := j_x_start
         i_x           := i_x_start
-        if (params.INCREMENTAL_ADDRESSES) xRowBase.get := xStartBase.get
+        xRowBase := xStartBase
         cycleCount_1  := 0.U
         counter_1     := 0.U
 
@@ -915,13 +1030,23 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
       // Input-side progress is independent of results still in the pipeline.
       val earlyWeightRelease = if (params.EARLY_WEIGHT_BUFFER_RELEASE)
-        (weight_bits === 8.U && input_bits === 16.U) else false.B
+        (weight_bits === 8.U && input_bits === 16.U && !zeroSkipMode) else false.B
       val columnReady = if (params.EARLY_WEIGHT_BUFFER_RELEASE)
         buffers_mode(select_buff_idx) || (earlyWeightRelease && weightColumnActive.get)
       else buffers_mode(select_buff_idx)
       selectionIssue := READ_ON && (w_idx < cout_reg) && columnReady
       selectionLast := selectionIssue && (cycleCount_2 === x_elems_per_reg - 1.U) &&
         (counter_2 === blocks_in_Sync_mem - 1.U)
+      if (params.SKIP_ZERO_WEIGHTS) {
+        val selector = zeroSelector.get
+        selector.io.enable := zeroSkipMode && READ_ON && w_idx < cout_reg && columnReady
+        selector.io.start := selector.io.enable && !selector.io.busy
+        when(zeroSkipMode) {
+          selectionIssue := selector.io.valid
+          selectionLast := selector.io.last
+          zeroSkipFirst := selector.io.first
+        }
+      }
       weightBufferS2 := select_buff_idx
 
       // Release only after the final weight read has reached stage 2. Earlier
@@ -940,7 +1065,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         }
       }
 
-      locally { // Payload stages keep advancing even when a new input is unavailable.
+      def denseSelection(): Unit = { // Payload stages keep advancing even when a new input is unavailable.
         val buff_index = select_buff_idx
 
         // Pipeline weight addresses by one cycle and activation addresses by two.
@@ -989,7 +1114,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         for (b <- 0 until buffers) {
           val valid_read = (buff_index === b.U) && enable_read_w
           for (i <- 0 until weightBanks) {
-            W_wire(b)(i) :=  W_MEM(b)(i).read(row_weight,valid_read)
+            if (params.SKIP_ZERO_WEIGHTS) {
+              weightReadAddress.get(b)(i) := row_weight
+              weightReadEnable.get(b)(i) := valid_read
+              W_wire(b)(i) := weightReadData.get(b)(i)
+            } else W_wire(b)(i) := W_MEM(b)(i).read(row_weight,valid_read)
           }
         }
 
@@ -1024,16 +1153,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
         for (sync_mem_idx <- 0 until totalSyncMems) {
 
-          // mapping to 2D space
-          val global_block_idx   =  sync_mem_idx.U * blocks_in_Sync_mem + counter_2
-          val x_th_x_reg = global_block_idx
-
-          val valid_x = if (params.COUNTER_VALIDITY) {
-            val activeRow = if (params.y_slice == 1) true.B else (sync_mem_idx / weightBanks).U < YS
-            activeRow && counter_2 < bankValidPositions.get(sync_mem_idx % weightBanks)
-          } else if (params.y_slice == 1) valid_inputs > x_th_x_reg * x_elems_per_reg
-          else ((sync_mem_idx / weightBanks).U < YS) &&
-          (valid_inputs > (((sync_mem_idx % weightBanks).U * blocks_in_Sync_mem + counter_2) * x_elems_per_reg))
+          val valid_x = {
+            val activeRow = if (params.parallel_rows == 1) true.B else (sync_mem_idx / weightBanks).U < YS
+            activeRow && counter_2 < bankValidPositions(sync_mem_idx % weightBanks)
+          }
 
           Valid_In_Vec(sync_mem_idx)  := valid_x
 
@@ -1104,7 +1227,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           val abs_weight_uint  = abs_weight_uint_Reg(weightLane)
           val row_idx          = row_idx_Reg(weightLane)
           val elemOffset       = elemOffset_Reg(weightLane)
-          val w_reg_valid_temp = if (params.y_slice == 1) w_reg_valid_temp_Reg(weightLane)
+          val w_reg_valid_temp = if (params.parallel_rows == 1) w_reg_valid_temp_Reg(weightLane)
           else w_reg_valid_temp_Reg(weightLane) && RegNext(Valid_In_Vec(sync_mem_idx))
 
           val bank_in_idx = rotatedActivationBank(sync_mem_idx, activationBankShiftS3)
@@ -1149,7 +1272,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           else selectionValid(1) && w_reg_valid_temp
           val finalAddressInBRAM = row_idx
 
-          Products(sync_mem_idx) := temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read)
+          if (params.SKIP_ZERO_WEIGHTS) {
+            productReadAddress.get(sync_mem_idx) := finalAddressInBRAM
+            productReadEnable.get(sync_mem_idx) := enable_read
+            Products(sync_mem_idx) := productReadData.get(sync_mem_idx)
+          } else Products(sync_mem_idx) := temp_muls_mem(sync_mem_idx).read(finalAddressInBRAM, enable_read)
           Sign(sync_mem_idx)     := RegNext(product_sign === 0.U)
 
           elemOffVec(sync_mem_idx)  := RegNext(elemOffset)
@@ -1173,23 +1300,57 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
         }
 
+      }
+      if (params.SKIP_ZERO_WEIGHTS) {
+        when(!zeroSkipMode) { denseSelection() }
+        // The same single read port of each W SRAM serves dense and sparse
+        // replay. Dense reads are disabled above while sparse replay is active.
+        val selector = zeroSelector.get
+        for (bank <- 0 until weightBanks) {
+          val data = Wire(Vec(buffers, UInt(params.DMA_bits.W)))
+          for (buffer <- 0 until buffers) {
+            when(zeroSkipMode) {
+              weightReadAddress.get(buffer)(bank) := selector.io.readAddress(bank)
+              weightReadEnable.get(buffer)(bank) := selector.io.readEnable(bank) && select_buff_idx === buffer.U
+            }
+            data(buffer) := weightReadData.get(buffer)(bank)
+          }
+          // Capture the buffer tag with its synchronous SRAM request.
+          val bufferS1 = RegEnable(select_buff_idx, selector.io.readEnable(bank))
+          selector.io.readData(bank) := data(bufferS1)
+        }
+        if (params.DEBUG) {
+          when(zeroSkipMode && (selectionIssue || selectionValid.asUInt.orR)) {
+            PC_Select := PC_Select + 1.U
+          }
+        }
+      } else denseSelection()
+
+      locally {
         when(selectionValid(3)) { // Retire only tagged, valid product contributions.
 
           // Reduce the b bank contributions separately for each activation row.
-          val groupSize = totalSyncMems / params.y_slice
+          val groupSize = totalSyncMems / params.parallel_rows
 
-          val accum = VecInit((0 until params.y_slice).map { y =>
+          val accum = VecInit((0 until params.parallel_rows).map { y =>
               val offset_accum = y * groupSize
 
               // Explicitly typed to help Scala compiler with reduce
               val signedValues: Seq[SInt] = (0 until groupSize).map { value_idx =>
                 val product_idx     = offset_accum + value_idx
-                val offset          = elemOffVec(product_idx)
-                val w_reg_valid_tmp = w_reg_valid(product_idx)
+                val offset = Mux(zeroSkipMode, 0.U, elemOffVec(product_idx))
+                val w_reg_valid_tmp = if (params.SKIP_ZERO_WEIGHTS)
+                  Mux(zeroSkipMode, sparseValid.get(product_idx), w_reg_valid(product_idx)) else w_reg_valid(product_idx)
+                val product = if (params.SKIP_ZERO_WEIGHTS)
+                  Mux(zeroSkipMode, sparseProducts.get(product_idx), Products(product_idx)) else Products(product_idx)
+                val correction = if (params.SKIP_ZERO_WEIGHTS)
+                  Mux(zeroSkipMode, sparseSum.get(product_idx), sum(product_idx)) else sum(product_idx)
+                val positive = if (params.SKIP_ZERO_WEIGHTS)
+                  Mux(zeroSkipMode, sparseSign.get(product_idx), Sign(product_idx)) else Sign(product_idx)
 
                 val valid_read = Mux(
                 w_reg_valid_tmp,
-                Products(product_idx),
+                product,
                 0.U(Products(product_idx).getWidth.W)
               )
 
@@ -1210,12 +1371,13 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
                 val readDataVec_part_sign = unsigned_clean.zext.asSInt
 
                 // Signed accumulation with conditional sign adjustment
-                val signedValue = Mux(Sign(product_idx),
-                readDataVec_part_sign - sum(product_idx),
-                -readDataVec_part_sign - sum(product_idx))
+              val signedValue = Mux(positive,
+                readDataVec_part_sign - correction,
+                -readDataVec_part_sign - correction)
 
                 if (params.FP16_ACTIVATIONS) {
-                  val meta = fp16Meta.get(product_idx)
+                  val meta = if (params.SKIP_ZERO_WEIGHTS)
+                    Mux(zeroSkipMode, sparseMeta.get(product_idx), fp16Meta.get(product_idx)) else fp16Meta.get(product_idx)
                   val aligned = (signedValue.pad(accumulatorWidth) << meta.shift)(accumulatorWidth - 1, 0).asSInt
                   Mux(meta.nonZeroWeight, aligned, 0.S(accumulatorWidth.W))
               } else signedValue
@@ -1225,25 +1387,28 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
               signedValues.map(_.pad(accumulatorWidth)).reduce(_ + _)
           })
 
-          for (y <- 0 until params.y_slice) {
+          for (y <- 0 until params.parallel_rows) {
             if (params.BRAM_OUTPUTS) {
               val mem = outputMemory.get
               mem.io.updateValid(y) := y.U < YS
               mem.io.delta(y) := accum(y)
               if (params.FP16_ACTIVATIONS) {
-                mem.io.flags(y) := (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+                mem.io.flags(y) := (0 until groupSize).map(i =>
+                  Mux(zeroSkipMode, 0.U, fp16Meta.get(y * groupSize + i).flags)).reduce(_ | _)
               }
-            } else if (params.y_slice == 1) {
+            } else if (params.parallel_rows == 1) {
               O_reg.get(0)(y)(selectionColumn(3)) :=  (O_reg.get(0)(y)(selectionColumn(3)) +  accum(y))
               if (params.FP16_ACTIVATIONS) {
-                val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+                val flags = (0 until groupSize).map(i =>
+                  Mux(zeroSkipMode, 0.U, fp16Meta.get(y * groupSize + i).flags)).reduce(_ | _)
                 fp16Flags.get(y)(selectionColumn(3)) := fp16Flags.get(y)(selectionColumn(3)) | flags
               }
             } else {
               when(y.U < YS) {
                 O_reg.get(0)(y)(selectionColumn(3)) := O_reg.get(0)(y)(selectionColumn(3)) + accum(y)
                 if (params.FP16_ACTIVATIONS) {
-                  val flags = (0 until groupSize).map(i => fp16Meta.get(y * groupSize + i).flags).reduce(_ | _)
+                val flags = (0 until groupSize).map(i =>
+                  Mux(zeroSkipMode, 0.U, fp16Meta.get(y * groupSize + i).flags)).reduce(_ | _)
                   fp16Flags.get(y)(selectionColumn(3)) := fp16Flags.get(y)(selectionColumn(3)) | flags
                 }
               }
@@ -1264,7 +1429,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
         cycleCount_2 := 0.U
         counter_2    := 0.U
-        w_idx      := Mux(w_idx === cout_reg,0.U,w_idx +  params.w_slice.U)
+        w_idx      := Mux(w_idx === cout_reg,0.U,w_idx + 1.U)
 
         counter_row := 0.U
         offset_counter := 0.U
@@ -1307,7 +1472,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           }
         }.otherwise{
           val XS_temp   = Mux(cin_reg - j_x  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x )
-          val mul1_temp = if (params.INCREMENTAL_ADDRESSES) xRowBase.get else i_x * cin_reg
+          val mul1_temp = xRowBase
           val mul2_temp = XS_temp * x_elems_per_reg
 
           i_w           := i_w_start + step_new
@@ -1338,7 +1503,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           chunkInfoModule_D.io.max_bits         := params.XBitWidth.U
           elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
 
-          if (params.y_slice == 1) {
+          if (params.parallel_rows == 1) {
             val remain_in_line = cin_reg - blocks_in_Sync_mem * totalSyncMems.U
             blocks_in_Sync_mem := ((remain_in_line + totalSyncMems.U - 1.U) / totalSyncMems.U) .min(blocks_in_Sync_mem)
           } else {
@@ -1375,7 +1540,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       // Packing follows accepted requests, independently of late acknowledgements.
       val remaining_elems = cout_reg - dma_counter_a
       val R_elems_per_chunk = ((elems_per_chunk.U - done_elems_in_block).min(remaining_elems))
-      val linear_index  = (if (params.INCREMENTAL_ADDRESSES) outputRowBase.get else i_o * cout_reg) + dma_counter_a
+      val linear_index  = outputRowBase + dma_counter_a
       val chunk_index   = linear_index / ((elems_per_chunk.U)) // Output DMA-word index.
       val chunk_address = adr_O + (chunk_index * 8.U)
 
@@ -1436,7 +1601,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             dma_counter_a := 0.U
             Rin_cnt := Rin_cnt + 1.U
             i_o := i_o + 1.U
-            if (params.INCREMENTAL_ADDRESSES) outputRowBase.get := outputRowBase.get + cout_reg
+            outputRowBase := outputRowBase + cout_reg
             dma_send := Rin_cnt < YS - 1.U
           }.otherwise {
             dma_counter_a := dma_counter_a + R_elems_per_chunk
@@ -1499,7 +1664,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           XS := XS_temp
 
           // Limit the next row group to the remaining activation rows.
-          if (params.y_slice > 1) {
+          if (params.parallel_rows > 1) {
             YS := (rin_reg - i_x).min(y_slice_Reg)
           }
 
@@ -1518,10 +1683,10 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             // A short final K block can shrink the bank span. Restore the
             // full span before loading the first block of the next row group.
             val initialBlocks = (clamped + weightBanks.U - 1.U) / weightBanks.U
-            val capacity = (1.U << (params.WBitWidth.U - weight_bits)) * params.Mem_row_factor.U
+            val capacity = (1.U << (params.WBitWidth.U - weight_bits)) * params.table_capacity_factor.U
             blocks_in_Sync_mem := initialBlocks.min(capacity)
           }
-          val mul1_temp = if (params.INCREMENTAL_ADDRESSES) xRowBase.get else i_x * cin_reg
+          val mul1_temp = xRowBase
           val mul2_temp = XS_temp * x_elems_per_reg
 
           mul2          := mul2_temp
@@ -1549,7 +1714,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           val dirty_elements = dirty_bits / input_bits
           // storePackedResponse repacks each new row from bank offset 0.
           // Keeping the old source-beat offset here shifts later rows.
-          dirty_elems_x := (if (params.y_slice == 1 && params.Rin == 1) dirty_elements else 0.U)
+          dirty_elems_x := (if (params.parallel_rows == 1 && params.Rin == 1) dirty_elements else 0.U)
 
           // --- DIRTY INPUT ELEMENTS
 
@@ -1628,8 +1793,26 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       dma.io.mode := 0.U
       dma.io.addr := adr_W + ((issueLinear >> beatShift) << 3)
       dma.io.valid := true.B
+      if (params.WEIGHT_DMA_BURSTS) {
+        // Restrict the first version to complete W8 SRAM words. Irregular
+        // bank spans and packed/unaligned sources retain the proven beat path.
+        val eligible = weight_bits === 8.U && input_bits === 16.U &&
+          blocks_in_Sync_mem(2, 0) === 0.U && dma_counter_a(2, 0) === 0.U &&
+          issueLinear(2, 0) === 0.U && dma.io.burstAvailable
+        for ((bytes, index) <- Seq(16, 32, 64).zipWithIndex if bytes <= params.MAX_WEIGHT_BURST_BYTES) {
+          when(eligible && all_available_elems - dma_counter_a >= bytes.U &&
+            dma.io.addr(log2Ceil(bytes) - 1, 0) === 0.U && dma.io.burstLegal(index)) {
+            dma.io.log_S := log2Ceil(bytes).U
+          }
+        }
+      }
       when(dma.io.a_fire) {
-        val next = dma_counter_a +& issueCount
+        // A may have been held through backpressure while burst availability
+        // changed. Advance by the size actually accepted, not the new proposal.
+        val acceptedCount = if (params.WEIGHT_DMA_BURSTS)
+          MuxLookup(dma.io.acceptedLogSize, issueCount)(Seq(4.U -> 16.U, 5.U -> 32.U, 6.U -> 64.U))
+        else issueCount
+        val next = dma_counter_a +& acceptedCount
         assert(issueCount =/= 0.U && next <= all_available_elems,
           "Weight request exceeded its column window")
         when(dma_counter_a === 0.U) { weightReserved(load_w_buff_idx) := true.B }

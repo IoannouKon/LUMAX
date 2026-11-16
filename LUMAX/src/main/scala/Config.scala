@@ -1,88 +1,82 @@
 package LUMAX_PACKAGE
 
 case class LUMAXParams(
-  Rin:            Int,
-  Cin:            Int,
-  Cout:           Int,
-  XBitWidth:      Int,
-  WBitWidth:      Int,
-  OutBitWidth:    Int,
-  minInputBits:   Int,
-  minWeightBits:  Int,
-  x_slice:        Int,
-  y_slice:        Int,
-  w_slice:        Int,
-  num_filters:    Int,
-  Dma_Ids:        Int,
-  DMA_Bytes:      Int,
-  SCALE:          Boolean,
-  DEBUG:          Boolean,
-  W_BUFFS:        Int,
-  DMA_bits:       Int,
-  Mem_row_factor : Int,
-  FP16_ACTIVATIONS: Boolean = false,
-  FP16_CONST_GEOMETRY: Boolean = false,
-  COUNTER_VALIDITY: Boolean = false,
-  INCREMENTAL_ADDRESSES: Boolean = false,
-  PRECISION_SHIFT_PACKING: Boolean = false,
-  SHARED_ACTIVATION_READ: Boolean = false,
-  BRAM_OUTPUTS: Boolean = false,
-  COMPACT_VALIDITY_WIDTH: Boolean = false,
+  Rin:                         Int,
+  Cin:                         Int,
+  Cout:                        Int,
+  XBitWidth:                   Int,
+  WBitWidth:                   Int,
+  OutBitWidth:                 Int,
+  minInputBits:                Int,
+  minWeightBits:               Int,
+  banks_per_row:               Int,
+  parallel_rows:               Int,
+  num_filters:                 Int,
+  Dma_Ids:                     Int,
+  DMA_Bytes:                   Int,
+  SCALE:                       Boolean,
+  DEBUG:                       Boolean,
+  W_BUFFS:                     Int,
+  table_capacity_factor:       Int,
+  FP16_ACTIVATIONS:            Boolean = false,
+  BRAM_OUTPUTS:                Boolean = false,
   EARLY_WEIGHT_BUFFER_RELEASE: Boolean = false,
-)
+  WEIGHT_DMA_BURSTS:            Boolean = false,
+  MAX_WEIGHT_BURST_BYTES:       Int = 32,
+  SKIP_ZERO_WEIGHTS:           Boolean = false,
+) {
+  // Derived width: configure the beat size in bytes only.
+  val DMA_bits: Int = DMA_Bytes * 8
+}
 
-// Elaboration-time defaults. Rebuild the design after changing these values.
+// Build-time settings: rebuild the RTL after changing any value below.
 object LUMAX_Config {
   val LUMAX_Config = LUMAXParams(
 
-    // Matrix capacities for X[Rin, Cin] times W[Cin, Cout].
-    Rin         = 1, // Maximum total activation rows; must be at least y_slice.
-    Cin         = 1024, // Maximum K dimension; also sizes the FP16 accumulator.
-    Cout        = 1024, // Maximum output columns and output-accumulator allocation.
+    // 1. Matrix capacities: X[R, K] * W[K, N] -> O[R, N].
+    // Runtime dimensions must fit these limits. Rin must be >= parallel_rows.
+    Rin  = 1,    // Maximum R: activation rows.
+    Cin  = 1024, // Maximum K: inner dimension; also sizes FP16 accumulators.
+    Cout = 1024, // Maximum N: output columns; determines output storage depth.
 
-    // Element widths and activation format.
-    XBitWidth   = 16, // Activation storage lane width.
-    WBitWidth   = 8, // Maximum weight width.
-    OutBitWidth = 32, // Output word width.
-    FP16_ACTIVATIONS = false, // Elaboration only: false=original INT, true=FP16 X / FP32 Y.
+    // 2. Activation format and supported element widths.
+    // false: signed integer activations. true: FP16 activations / FP32 outputs.
+    FP16_ACTIVATIONS = false,
+    XBitWidth       = 16, // Activation storage lane width.
+    OutBitWidth     = 32, // Output storage word width.
+    WBitWidth       = 8,  // Maximum signed weight width.
+    minInputBits    = 8,  // Minimum integer input width used to size packed lanes.
+    minWeightBits   = 2,  // Minimum weight width used to size product tables.
 
-    // Independent elaboration-time resource optimizations; false keeps the original path.
-    FP16_CONST_GEOMETRY = true, // FP16 has one activation/lane and four/DMA beat.
-    COUNTER_VALIDITY = true, // Compare the existing position counter to per-bank limits.
-    INCREMENTAL_ADDRESSES = true, // Advance matrix row bases by addition.
-    PRECISION_SHIFT_PACKING = true, // Decode W2/W4/W8 and X8/X16 into shifts/masks.
-    SHARED_ACTIVATION_READ = true, // Share one SRAM read port between controller states.
-    BRAM_OUTPUTS = true, // Bank exact output accumulators in synchronous SRAM.
-    COMPACT_VALIDITY_WIDTH = true, // Count-width generator input instead of one bit per possible element.
-    EARLY_WEIGHT_BUFFER_RELEASE = false, // Experimental W8/input16: hold the last SRAM word and refill its buffer early.
+    // 3. Compute parallelism and product-table capacity.
+    parallel_rows         = 1, // YS: activation rows processed together.
+    banks_per_row         = 2, // B: parallel banks per activation row.
+    table_capacity_factor = 8, // RF: base product-table capacity factor.
 
-    minInputBits  = 8, // Minimum input width used to size packed-lane storage.
-    minWeightBits = 2, // Minimum weight width used to size product-table storage.
+    // 4. DMA and weight prefetch storage.
+    Dma_Ids   = 2, // Shared request slots; held until ordered response delivery.
+    DMA_Bytes = 8, // Beat size; DMA_bits is derived as DMA_Bytes * 8.
+    W_BUFFS   = 2, // Prefetch buffers, shared across parallel activation rows.
 
-    // Parallelism and table capacity.
-    y_slice     =  1, // Activation rows processed in parallel.
-    x_slice     =  2, // Banks per activation row and shared weight-buffer group (b).
-    Mem_row_factor = 8, // Base product-table capacity factor (RF).
+    // 5. Output storage and optional integer scaling.
+    BRAM_OUTPUTS = true,  // Use synchronous SRAM for output accumulators.
+    num_filters  = 1,     // Register-output bank allocation; only bank 0 is used.
+    SCALE        = false, // Integer output scaling; unsupported with FP16/BRAM outputs.
 
-    // Weight-column and accumulator-bank settings.
-    w_slice     = 1, // Output-column index step; the current design uses one.
-    num_filters = 1, // Accumulator filter-bank allocation; the controller uses bank zero.
+    // 6. Optional scheduling experiments (disabled by default).
+    // W8/input16: retain captured weight words so their buffer can refill early.
+    EARLY_WEIGHT_BUFFER_RELEASE = false,
 
-    // DMA request slots and beat width.
-    Dma_Ids     = 2, // Request slots held until ordered response delivery.
-    DMA_Bytes   = 8, // Bytes per DMA beat.
-    DMA_bits    = 8*8, // Bits per DMA beat.
+    // Aligned W8 DMA reads using one shared burst-response slot.
+    WEIGHT_DMA_BURSTS      = false,
+    MAX_WEIGHT_BURST_BYTES = 32, // Maximum burst: 16, 32 or 64 bytes.
 
-    // Optional output scaling.
-    SCALE   = false, // Elaborate integer-output scaling when true.
+    // Independent per-bank zero skipping for eligible FP16/INT16 windows.
+    // FP16 special values and legacy dirty offsets retain dense selection.
+    SKIP_ZERO_WEIGHTS = false,
 
-    // Performance-counter instrumentation.
-    DEBUG =  true, // Enable hardware performance counters.
-
-    // Weight prefetch buffers.
-    W_BUFFS =  2, // Weight buffers shared by all activation rows.
-
+    // 7. Instrumentation.
+    DEBUG = true, // Enable hardware performance counters.
   )
-
 }
 

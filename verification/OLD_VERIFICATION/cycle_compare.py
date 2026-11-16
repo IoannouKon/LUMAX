@@ -98,7 +98,7 @@ def physical_parameters(text='', legacy=False):
         if len(values) > 1:
             raise ValueError('Inconsistent recorded hardware parameter: ' + key)
         return next(iter(values), default)
-    return dict(YS=value('y_slice', 1), ID=value('Dma_Ids', 2),
+    return dict(YS=value('parallel_rows', value('y_slice', 1)), ID=value('Dma_Ids', 2),
                 DMA_WIDTH=value('DMA_Bytes', 8) * 8,
                 IN_MAX=value('XBitWidth', 16), IN_min=value('minInputBits', 8),
                 W_MAX=value('WBitWidth', 8), buffers_w=value('W_BUFFS', 2),

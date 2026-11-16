@@ -122,7 +122,7 @@ def config_text(original):
     text = original.decode()
     values = dict(Rin=max(Y_SLICE, max(r for r, _, _ in MATRIX_CASES)),
                   Cin=max(k for _, k, _ in MATRIX_CASES), Cout=max(m for _, _, m in MATRIX_CASES),
-                  x_slice=B, Mem_row_factor=RF, y_slice=Y_SLICE, Dma_Ids=DMA_IDS,
+                  banks_per_row=B, table_capacity_factor=RF, parallel_rows=Y_SLICE, Dma_Ids=DMA_IDS,
                   DEBUG='true', SCALE='false', FP16_ACTIVATIONS=str(ACTIVATION == 'fp16').lower())
     for key, value in values.items():
         text, count = re.subn(r'(?m)^(\s*'+key+r'\s*=\s*)(?:\d+|true|false)\b',

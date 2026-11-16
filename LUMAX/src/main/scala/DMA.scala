@@ -44,13 +44,26 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
     val empty      = Output(Bool())
     val err        = Output(Bool())
     val SourceOut  = Output(UInt(64.W))
+    val acceptedLogSize = Output(UInt(7.W)) // Size of the actual accepted A request.
+    val burstAvailable = Output(Bool())
+    val burstLegal = Output(Vec(3, Bool())) // Get support at addr for 16/32/64 bytes.
   })
 
   val params = outer.params
   val ID = params.Dma_Ids
   require(ID >= 1, "DMA needs at least one request slot")
 
+  require(!params.WEIGHT_DMA_BURSTS || (params.DMA_bits == 64 &&
+    params.DMA_Bytes == 8 && Seq(16, 32, 64).contains(params.MAX_WEIGHT_BURST_BYTES)),
+    "Weight bursts require a 64-bit DMA and a 16/32/64-byte maximum")
   val (mem, edge) = outer.node.out(0)
+  val burstActive = if (params.WEIGHT_DMA_BURSTS) Some(RegInit(false.B)) else None
+  val pendingA = WireDefault(false.B)
+  io.burstAvailable := (if (params.WEIGHT_DMA_BURSTS) !burstActive.get else false.B)
+  for ((bytes, index) <- Seq(16, 32, 64).zipWithIndex) {
+    io.burstLegal(index) := (if (params.WEIGHT_DMA_BURSTS && bytes <= params.MAX_WEIGHT_BURST_BYTES)
+      edge.Get(0.U, io.addr, log2Ceil(bytes).U)._1 else false.B)
+  }
   // A source remains occupied until its response is delivered to LUMAX, not
   // merely until TileLink returns it. This also reserves early-response storage.
   val outstanding = RegInit(VecInit(Seq.fill(ID)(false.B)))
@@ -79,13 +92,29 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
       edge.Put(fromSource = nextSource, toAddress = io.addr, lgSize = io.log_S, data = io.writeData, mask = writeMask)._2)
   )
 
-  mem.a.bits := a_bits
-  mem.a.valid := io.valid && hasFree && requestOrder.io.enq.ready
+  if (params.WEIGHT_DMA_BURSTS) {
+    // A request holder preserves source/address/size through A backpressure,
+    // without adding a cycle when A is ready.
+    val heldValid = RegInit(false.B)
+    val held = Reg(chiselTypeOf(a_bits))
+    val selected = Mux(heldValid, held, a_bits)
+    val needsBurstSlot = selected.opcode === TLMessages.Get && selected.size > 3.U
+    mem.a.bits := selected
+    mem.a.valid := (heldValid || io.valid) && hasFree && requestOrder.io.enq.ready &&
+      (!needsBurstSlot || !burstActive.get)
+    when(mem.a.valid && !mem.a.ready && !heldValid) { held := a_bits; heldValid := true.B }
+    when(mem.a.fire) { heldValid := false.B }
+    pendingA := heldValid
+  } else {
+    mem.a.bits := a_bits
+    mem.a.valid := io.valid && hasFree && requestOrder.io.enq.ready
+  }
+  io.acceptedLogSize := mem.a.bits.size
   io.a_fire := mem.a.fire
   io.a_cor := mem.a.bits.corrupt
 
   requestOrder.io.enq.valid := mem.a.fire
-  requestOrder.io.enq.bits := nextSource
+  requestOrder.io.enq.bits := mem.a.bits.source
 
   /*
    Previous registered response path, before the bypass optimization.
@@ -118,6 +147,7 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   requestOrder.io.deq.ready := deliver
   */
 
+  if (!params.WEIGHT_DMA_BURSTS) {
   // LUMAX consumes every d_valid pulse (the legacy d_ready input is unused).
   // Retire at most one Get/Put response per cycle, strictly in request order.
   mem.d.ready := true.B
@@ -153,12 +183,102 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
   io.tag := oldest
   requestOrder.io.deq.ready := deliver
 
+  } else {
+    // One shared, pre-reserved burst slot bounds response storage independently
+    // of ID. Other sources still use their original one-word response slots.
+    val maxBeats = params.MAX_WEIGHT_BURST_BYTES / 8
+    val countWidth = log2Ceil(maxBeats + 1)
+    val burstSource = Reg(UInt(sourceWidth.W))
+    val burstBeats = Reg(UInt(countWidth.W))
+    val received = RegInit(0.U(countWidth.W))
+    val delivered = RegInit(0.U(countWidth.W))
+    val words = Reg(Vec(maxBeats, UInt(params.DMA_bits.W)))
+    val corrupt = Reg(Vec(maxBeats, Bool()))
+    val denied = Reg(Vec(maxBeats, Bool()))
+    val acceptedBurst = mem.a.fire && mem.a.bits.opcode === TLMessages.Get && mem.a.bits.size > 3.U
+    val acceptedBeats = MuxLookup(mem.a.bits.size, 1.U)(Seq(4.U -> 2.U, 5.U -> 4.U, 6.U -> 8.U))
+    val oldest = requestOrder.io.deq.bits
+    val burstHead = requestOrder.io.deq.valid && burstActive.get && oldest === burstSource
+    val bufferedBurst = burstHead && delivered < received
+    val incomingBurst = mem.d.fire && ((burstActive.get && mem.d.bits.source === burstSource) ||
+      (acceptedBurst && mem.d.bits.source === mem.a.bits.source))
+    val burstBypass = burstHead && !bufferedBurst && incomingBurst
+    val bufferedSingle = requestOrder.io.deq.valid && !burstHead && responseValid(oldest)
+    val singleBypass = requestOrder.io.deq.valid && !burstHead && !responseValid(oldest) &&
+      mem.d.fire && !incomingBurst && mem.d.bits.source === oldest
+    val deliver = bufferedBurst || burstBypass || bufferedSingle || singleBypass
+    val lastBurstBeat = delivered +& 1.U === burstBeats
+    val wordIndex = delivered(log2Ceil(maxBeats) - 1, 0)
+
+    mem.d.ready := true.B // Every accepted request has enough reserved storage.
+    when(acceptedBurst) {
+      assert(!burstActive.get, "A second burst exceeded the shared response slot")
+      assert(acceptedBeats <= maxBeats.U, "Burst exceeds configured storage")
+      burstActive.get := true.B
+      burstSource := mem.a.bits.source
+      burstBeats := acceptedBeats
+      received := 0.U
+      delivered := 0.U
+    }
+    when(mem.d.fire) {
+      val source = mem.d.bits.source
+      assert(source < ID.U, "DMA received an out-of-range source")
+      assert(outstanding(source) || (mem.a.fire && mem.a.bits.source === source),
+        "DMA response has no accepted request")
+      when(incomingBurst) {
+        // Handle even a zero-latency first response to a newly accepted Get.
+        val count = Mux(burstActive.get, received, 0.U)
+        val limit = Mux(burstActive.get, burstBeats, acceptedBeats)
+        assert(count < limit, "Too many burst response beats")
+        assert(mem.d.bits.opcode === TLMessages.AccessAckData, "Burst response has no data")
+        assert(mem.d.bits.size === Mux(burstActive.get,
+          MuxLookup(burstBeats, 4.U)(Seq(4.U -> 5.U, 8.U -> 6.U)), mem.a.bits.size),
+          "Burst response size differs from its request")
+        val index = count(log2Ceil(maxBeats) - 1, 0)
+        words(index) := mem.d.bits.data
+        corrupt(index) := mem.d.bits.corrupt
+        denied(index) := mem.d.bits.denied
+        received := count + 1.U
+      }.otherwise {
+        assert(!responseValid(source), "Single-beat DMA response slot overwritten")
+        when(!singleBypass) {
+          responseData(source) := mem.d.bits.data
+          responseCorrupt(source) := mem.d.bits.corrupt
+          responseDenied(source) := mem.d.bits.denied
+          responseValid(source) := true.B
+        }
+      }
+    }
+    val bypass = burstBypass || singleBypass
+    io.readData := Mux(bypass, mem.d.bits.data,
+      Mux(burstHead, words(wordIndex), responseData(oldest)))
+    io.d_cor := Mux(bypass, mem.d.bits.corrupt,
+      Mux(burstHead, corrupt(wordIndex), responseCorrupt(oldest)))
+    io.d_den := Mux(bypass, mem.d.bits.denied,
+      Mux(burstHead, denied(wordIndex), responseDenied(oldest)))
+    io.d_valid := deliver
+    io.tag := oldest
+    // One d_valid per payload beat, but one request-order dequeue per entire
+    // transaction. The source cannot be reused until its last delivered beat.
+    requestOrder.io.deq.ready := deliver && (!burstHead || lastBurstBeat)
+    when(deliver && burstHead) {
+      assert(delivered < burstBeats, "Burst delivery exceeded accepted size")
+      delivered := delivered + 1.U
+      when(lastBurstBeat) { burstActive.get := false.B }
+    }
+    when(burstActive.get) {
+      assert(outstanding(burstSource), "Burst lost its reserved source ID")
+      assert(delivered <= received && received <= burstBeats, "Burst beat counters inconsistent")
+    }
+
+  }
+
   when(mem.a.fire) {
-    outstanding(nextSource) := true.B
+    outstanding(mem.a.bits.source) := true.B
   }
   when(requestOrder.io.deq.fire) {
-    responseValid(oldest) := false.B
-    outstanding(oldest) := false.B
+    responseValid(requestOrder.io.deq.bits) := false.B
+    outstanding(requestOrder.io.deq.bits) := false.B
   }
 
   assert(PopCount(outstanding) === requestOrder.io.count,
@@ -168,8 +288,8 @@ class DmaModuleImp(outer: DmaModule) extends LazyModuleImp(outer) {
       "DMA buffered response lost its request slot")
   }
 
-  io.SourceOut := nextSource
+  io.SourceOut := mem.a.bits.source
   io.busy := !hasFree || !requestOrder.io.enq.ready
-  io.empty := !outstanding.asUInt.orR
+  io.empty := !outstanding.asUInt.orR && !pendingA
   io.err := false.B // Corrupt/denied response flags are exposed separately.
 }

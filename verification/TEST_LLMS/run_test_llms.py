@@ -226,9 +226,11 @@ class Runner:
  def build(self,config,mode,small=False):
   b,rf,ys,ids=config
   maxr,maxk,maxm=self.options.get('capacity', (max(ys,5),129,33) if small else (max(ys,8),1216,1216))
-  original=(self.source/'scala/Config.scala').read_text();values=dict(Rin=maxr,Cin=maxk,Cout=maxm,x_slice=b,Mem_row_factor=rf,y_slice=ys,Dma_Ids=ids,DEBUG='true',SCALE='false',FP16_ACTIVATIONS=str(mode=='fp16').lower())
+  original=(self.source/'scala/Config.scala').read_text();values=dict(Rin=maxr,Cin=maxk,Cout=maxm,banks_per_row=b,table_capacity_factor=rf,parallel_rows=ys,Dma_Ids=ids,DEBUG='true',SCALE='false',FP16_ACTIVATIONS=str(mode=='fp16').lower())
   text=original
   for key,value in values.items():
+   legacy = {"banks_per_row":"x_slice", "parallel_rows":"y_slice", "table_capacity_factor":"Mem_row_factor"}.get(key)
+   if legacy and not re.search(r"(?m)^\s*"+key+r"\s*=",text): key=legacy
    text,count=re.subn(r'(?m)^(\s*'+key+r'\s*=\s*)(?:\d+|true|false)\b',lambda m:m[1]+str(value),text)
    if count!=1:raise RuntimeError('Config key '+key)
   fingerprint=hashlib.sha256((json.dumps(self.options['source_sha256'],sort_keys=True)+text+self.options['base_assembly_sha256']).encode()).hexdigest()

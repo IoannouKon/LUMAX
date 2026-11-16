@@ -318,7 +318,7 @@ def preflight(args):
         if not path.is_file():
             raise RuntimeError('Missing ' + str(path))
     cfg = CONFIG.read_text()
-    for key, value in [('y_slice', 1), ('XBitWidth', 16), ('WBitWidth', 8), ('OutBitWidth', 32)]:
+    for key, value in [('parallel_rows', 1), ('XBitWidth', 16), ('WBitWidth', 8), ('OutBitWidth', 32)]:
         if not re.search(r'(?m)^\s*' + key + r'\s*=\s*' + str(value) + r'\s*,', cfg):
             raise RuntimeError('Requires ' + key + '=' + str(value))
     if not re.search(r'(?m)^\s*DEBUG\s*=\s*true\s*,', cfg):
@@ -399,7 +399,7 @@ def worker(args):
         log('RUNNER SHA256: ' + sha(SELF))
         b, rf = map(int, re.fullmatch(r'b(\d+)_rf(\d+)', args.design).groups())
         cfg = original.decode()
-        for key, value in [('x_slice', b), ('Mem_row_factor', rf)]:
+        for key, value in [('banks_per_row', b), ('table_capacity_factor', rf)]:
             cfg, n = re.subn(r'(?m)^(\s*' + key + r'\s*=\s*)\d+',
                              lambda mt: mt[1] + str(value), cfg)
             if n != 1:

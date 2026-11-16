@@ -667,9 +667,11 @@ def parse_result(uart, expected, options, exit_code, count, fmt='int16'):
 def build_design(job, design, base_config, temporary, env):
     options = job.data['suite']['options']
     text = base_config.decode()
-    for key, value in [('x_slice', design['b']), ('Mem_row_factor', design['rf']),
-                       ('y_slice', y_slices(design)), ('Rin', design.get('max_r', 1)),
+    for key, value in [('banks_per_row', design['b']), ('table_capacity_factor', design['rf']),
+                       ('parallel_rows', y_slices(design)), ('Rin', design.get('max_r', 1)),
                        ('Cin', design['max_k']), ('Cout', design['max_m'])]:
+        legacy = {"banks_per_row":"x_slice", "parallel_rows":"y_slice", "table_capacity_factor":"Mem_row_factor"}.get(key)
+        if legacy and not re.search(r"(?m)^\s*"+key+r"\s*=", text): key=legacy
         text, count = re.subn(r'(?m)^(\s*' + key + r'\s*=\s*)\d+', lambda m: m[1] + str(value), text)
         if count != 1: raise ValueError('Missing HW parameter ' + key)
     text, count = re.subn(r'(?m)^(\s*DEBUG\s*=\s*)(true|false)',

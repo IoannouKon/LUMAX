@@ -61,7 +61,7 @@ class RowTests(unittest.TestCase):
         job = SimpleNamespace(data=dict(suite=dict(options=dict(g.DEFAULT_OPTIONS))), log=lambda *_:None)
         def fail(args, cwd, output, *rest):
             text = config.read_text()
-            self.assertRegex(text, r'y_slice\s*=\s*2\s*,')
+            self.assertRegex(text, r'parallel_rows\s*=\s*2\s*,')
             self.assertRegex(text, r'Rin\s*=\s*4\s*,')
             output.write_text('Intentional build failure in orchestration unit test')
             return 2

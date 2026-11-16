@@ -185,7 +185,7 @@ def run(args):
             for ys in args.y_slices:
                 label=('fp16' if floating else 'int16')+f'_ys{ys}'
                 folder=work/label;folder.mkdir();text=original.decode()
-                for key,value in dict(Rin=8,Cin=32,Cout=16,x_slice=args.b,Mem_row_factor=args.rf,y_slice=ys,FP16_ACTIVATIONS=str(floating).lower()).items():
+                for key,value in dict(Rin=8,Cin=32,Cout=16,banks_per_row=args.b,table_capacity_factor=args.rf,parallel_rows=ys,FP16_ACTIVATIONS=str(floating).lower()).items():
                     text,count=re.subn(r'(?m)^(\s*'+key+r'\s*=\s*)(?:\d+|true|false)',lambda m:m[1]+str(value),text)
                     if count!=1:raise ValueError('Missing configuration '+key)
                 snapshot=folder/'Config.scala';snapshot.write_text(text)
