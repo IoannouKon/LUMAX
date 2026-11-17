@@ -1,0 +1,11 @@
+[2026-11-17T17:53:20.942083+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/runs/run_20261117_084821/lumax_b14_rf16_ys8_id16_flex0/hardware/compile.log
+[2026-11-17T17:53:42.223066+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/runs/run_20261117_084821/lumax_b14_rf16_ys8_id16_flex0/hardware/jar.log
+[2026-11-17T17:54:02.945068+02:00] Starting /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/runs/run_20261117_084821/lumax_b14_rf16_ys8_id16_flex0/hardware/lumax_b14_rf16_ys8_id16_flex0/driver.log
+[2026-11-17T19:32:53.500108+02:00] Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 387, in run
+    self.command(args, hw.CHIPYARD, folder / "driver.log")
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/run_vivado_comparison.py", line 141, in command
+    raise RuntimeError(f"Command exited with status {proc.returncode}. See {log}")
+RuntimeError: Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/runs/run_20261117_084821/lumax_b14_rf16_ys8_id16_flex0/hardware/lumax_b14_rf16_ys8_id16_flex0/driver.log
+
+[2026-11-17T19:32:53.503813+02:00] lumax_b14_rf16_ys8_id16_flex0: FAILED

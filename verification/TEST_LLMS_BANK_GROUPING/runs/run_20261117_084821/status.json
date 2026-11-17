@@ -1,0 +1,109 @@
+{
+  "status": "RUNNING",
+  "phase": "Vivado: sequential implementations",
+  "jobs": [
+    {
+      "name": "lumax_b5_rf16_ys4_id16_flex1",
+      "kind": "lumax",
+      "b": 5,
+      "rf": 16,
+      "ys": 4,
+      "ids": 16,
+      "flex": true,
+      "test_status": "PASS",
+      "hardware_status": "PASS"
+    },
+    {
+      "name": "lumax_b14_rf16_ys8_id16_flex1",
+      "kind": "lumax",
+      "b": 14,
+      "rf": 16,
+      "ys": 8,
+      "ids": 16,
+      "flex": true,
+      "test_status": "PASS",
+      "hardware_status": "FAILED"
+    },
+    {
+      "name": "lumax_b5_rf16_ys4_id16_flex0",
+      "kind": "lumax",
+      "b": 5,
+      "rf": 16,
+      "ys": 4,
+      "ids": 16,
+      "flex": false,
+      "test_status": "PASS",
+      "hardware_status": "PASS"
+    },
+    {
+      "name": "lumax_b14_rf16_ys8_id16_flex0",
+      "kind": "lumax",
+      "b": 14,
+      "rf": 16,
+      "ys": 8,
+      "ids": 16,
+      "flex": false,
+      "test_status": "PASS",
+      "hardware_status": "FAILED"
+    },
+    {
+      "name": "gemmini_d4_sp32_acc4_id8p_req8_w8",
+      "kind": "gemmini",
+      "dim": 4,
+      "wb": 8,
+      "test_status": "PASS",
+      "hardware_status": "RUNNING"
+    },
+    {
+      "name": "gemmini_d4_sp32_acc4_id8p_req8_w4",
+      "kind": "gemmini",
+      "dim": 4,
+      "wb": 4,
+      "test_status": "PASS",
+      "hardware_status": "PENDING"
+    },
+    {
+      "name": "gemmini_d4_sp32_acc4_id8p_req8_w2",
+      "kind": "gemmini",
+      "dim": 4,
+      "wb": 2,
+      "test_status": "PASS",
+      "hardware_status": "PENDING"
+    },
+    {
+      "name": "gemmini_d8_sp32_acc4_id8p_req8_w8",
+      "kind": "gemmini",
+      "dim": 8,
+      "wb": 8,
+      "test_status": "PASS",
+      "hardware_status": "PENDING"
+    },
+    {
+      "name": "gemmini_d8_sp32_acc4_id8p_req8_w4",
+      "kind": "gemmini",
+      "dim": 8,
+      "wb": 4,
+      "test_status": "PASS",
+      "hardware_status": "PENDING"
+    },
+    {
+      "name": "gemmini_d8_sp32_acc4_id8p_req8_w2",
+      "kind": "gemmini",
+      "dim": 8,
+      "wb": 2,
+      "test_status": "PASS",
+      "hardware_status": "PENDING"
+    }
+  ],
+  "created": 1794898101.3866818,
+  "current": "gemmini_d4_sp32_acc4_id8p_req8_w8",
+  "pid": 942107,
+  "updated": 1794936773.514959,
+  "runner_updates": [
+    {
+      "time": 1794898578.014319,
+      "reason": "Match medium Rocket wrappers; add resume without rerunning verified results",
+      "old_reason": "Stop requested"
+    }
+  ]
+}

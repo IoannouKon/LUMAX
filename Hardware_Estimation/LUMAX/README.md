@@ -28,3 +28,7 @@ LUMAX hardware supports W8/W4/W2. The ID8 follow-up verification covered all thr
 This folder archives Vivado results only. It does not update the repository production Scala files or archive new TEST_LLMS cycle logs. Earlier unsuccessful/older implementation versions remain in ../logs/ for historical comparison.
 
 Use the shared [hardware flow instructions](../README.md) and runners in the parent Hardware_Estimation folder. Matching Gemmini reports are in [Baseline_Comparison/Gemmini/Hardware_Estimation](../../Baseline_Comparison/Gemmini/Hardware_Estimation/README.md).
+
+## Flexible bank grouping ON/OFF follow-up
+
+[RF16 / ID16 B5 and B14 comparison](FLEXIBLE_BANK_GROUPING/run_20261117_084821/README.md): B5 ON/OFF both routed at 50 MHz; B14 ON/OFF synthesis metrics retained after FPGA capacity failures. These are separate versions from the earlier table above.

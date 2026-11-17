@@ -25,6 +25,8 @@ case class LUMAXParams(
   MAX_WEIGHT_BURST_BYTES:       Int = 32,
   SKIP_ZERO_WEIGHTS:           Boolean = false,
   FLEXIBLE_BANK_GROUPING:      Boolean = false,
+  GROUP_SCALE_ALIGNED:         Boolean = false,
+  GROUP_SCALE_DEFERRED:        Boolean = false,
 ) {
   // Derived width: configure the beat size in bytes only.
   val DMA_bits: Int = DMA_Bytes * 8
@@ -79,6 +81,10 @@ object LUMAX_Config {
     // Fixed B*YS lanes; software may select YS=1,2,...,parallel_rows before
     // each matmul. B becomes total lanes / selected YS. Dense FP16 only.
     FLEXIBLE_BANK_GROUPING = false,
+
+    // Mutually exclusive finite-FP16 group-scaling implementations.
+    GROUP_SCALE_ALIGNED = false, // Clamp windows to quantization boundaries.
+    GROUP_SCALE_DEFERRED = false, // Retain full windows, scale bank fragments.
 
     // 7. Instrumentation.
     DEBUG = true, // Enable hardware performance counters.

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/tmp/lumax_group_scale_boundary.py", line 33, in <module>
+    batch=[r for r in run.records if r['wb']==wb];run.execute(batch,sim,snapshot);m.save(out/'records.json',run.records)
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 269, in execute
+    elf=work/'Linear-sw.riscv';raw=self.command([sim,'+permissive','+max-cycles=2000000000','+loadmem='+str(elf),'+permissive-off',elf],work,SIM_TIMEOUT,'ACTUAL VERILATOR',binary=True)
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 219, in command
+    if proc.returncode:raise RuntimeError(phase+f' exit={proc.returncode}; '+repr(raw[-2000:]))
+RuntimeError: ACTUAL VERILATOR exit=255; b'[UART] UART0 is here (stdin/stdout).\n[7427000] %Error: LUMAXExample.sv:703: Assertion failed in TOP.TestDriver.testHarness.chiptop0.system.tile_prci_domain.element_reset_domain_rockettile.MatMul_LUMAX_example: Assertion failed: Weight request exceeded its column window\n    at LUMAX_Top.scala:2015 assert(issueCount =/= 0.U && next <= all_available_elems,\n\n%Error: /tmp/lumax-group-scaling-boundary-k511/cache/14369c0ae5e7e0e7a1998a20de5b512c6207ae38fa2a5dd3f6e9d7ce82cc5780/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/LUMAXExample.sv:703: Verilog $stop\nAborting...\n'
+Traceback (most recent call last):
+  File "/tmp/lumax_group_scale_boundary.py", line 33, in <module>
+    batch=[r for r in run.records if r['wb']==wb];run.execute(batch,sim,snapshot);m.save(out/'records.json',run.records)
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 269, in execute
+    elf=work/'Linear-sw.riscv';raw=self.command([sim,'+permissive','+max-cycles=2000000000','+loadmem='+str(elf),'+permissive-off',elf],work,SIM_TIMEOUT,'ACTUAL VERILATOR',binary=True)
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 219, in command
+    if proc.returncode:raise RuntimeError(phase+f' exit={proc.returncode}; '+repr(raw[-2000:]))
+RuntimeError: ACTUAL VERILATOR exit=255; b'[UART] UART0 is here (stdin/stdout).\n[7427000] %Error: LUMAXExample.sv:703: Assertion failed in TOP.TestDriver.testHarness.chiptop0.system.tile_prci_domain.element_reset_domain_rockettile.MatMul_LUMAX_example: Assertion failed: Weight request exceeded its column window\n    at LUMAX_Top.scala:2015 assert(issueCount =/= 0.U && next <= all_available_elems,\n\n%Error: /tmp/lumax-group-scaling-boundary-k511/cache/14369c0ae5e7e0e7a1998a20de5b512c6207ae38fa2a5dd3f6e9d7ce82cc5780/generated-src/chipyard.harness.TestHarness.LUMAXROcketConfig/gen-collateral/LUMAXExample.sv:703: Verilog $stop\nAborting...\n'

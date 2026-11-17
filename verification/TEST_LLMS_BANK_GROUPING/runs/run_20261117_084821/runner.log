@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 220, in worker
+    self.status['current']=job['name'];job['test_status']='RUNNING';self.save()
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 196, in run
+    shutil.copytree(self.source/'lumax',src/'lumax',dirs_exist_ok=True);q=src/'lumax/Config.scala'
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 150, in lumax
+    (self.p/'REPORT.md').write_text('\n'.join(text)+'\n')
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 269, in execute
+    elf=work/'Linear-sw.riscv';raw=self.command([sim,'+permissive','+max-cycles=2000000000','+loadmem='+str(elf),'+permissive-off',elf],work,SIM_TIMEOUT,'ACTUAL VERILATOR',binary=True)
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 207, in command
+    self.guard()
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 198, in guard
+    if STOP or (self.state/'stop.request').exists():raise RuntimeError('Stop requested')
+RuntimeError: Stop requested
+Traceback (most recent call last):
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 250, in <module>
+    ap=argparse.ArgumentParser();ap.add_argument('command',choices=['start','status','resume','worker']);ap.add_argument('--run',type=Path);a=ap.parse_args()
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 225, in main
+    self.save('Vivado: sequential implementations')
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 220, in worker
+    self.status['current']=job['name'];job['test_status']='RUNNING';self.save()
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 196, in run
+    shutil.copytree(self.source/'lumax',src/'lumax',dirs_exist_ok=True);q=src/'lumax/Config.scala'
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/run_comparison.py", line 150, in lumax
+    (self.p/'REPORT.md').write_text('\n'.join(text)+'\n')
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 269, in execute
+    elf=work/'Linear-sw.riscv';raw=self.command([sim,'+permissive','+max-cycles=2000000000','+loadmem='+str(elf),'+permissive-off',elf],work,SIM_TIMEOUT,'ACTUAL VERILATOR',binary=True)
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 207, in command
+    self.guard()
+  File "/home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS/run_lumax_weight_loader.py", line 198, in guard
+    if STOP or (self.state/'stop.request').exists():raise RuntimeError('Stop requested')
+RuntimeError: Stop requested

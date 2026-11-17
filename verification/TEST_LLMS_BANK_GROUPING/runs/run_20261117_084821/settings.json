@@ -1,0 +1,36 @@
+{
+  "lumax_configs": [
+    [
+      5,
+      16,
+      4,
+      16
+    ],
+    [
+      14,
+      16,
+      8,
+      16
+    ]
+  ],
+  "gemmini_dimensions": [
+    4,
+    8
+  ],
+  "gemmini_ids_per_pool": 8,
+  "gemmini_max_bytes": 8,
+  "beat_bytes": 8,
+  "capacity": [
+    8,
+    1216,
+    1216
+  ],
+  "clock_mhz": 50,
+  "cpu_wrapper": "medium Rocket, no TileLink monitors",
+  "lumax_shared_slots": 16,
+  "gemmini_read_slots": 8,
+  "gemmini_write_slots": 8,
+  "gemmini_total_slots": 16,
+  "gemmini_software_weight_tile_bytes": 64,
+  "gemmini_header_metadata": "corrected from hardcoded 64 to configured dma_maxbytes; software tile budget preserved separately"
+}

@@ -58,6 +58,23 @@ if [ -f "$CONFIG_SOURCE" ]; then
     esac
   done
   TEST_FLAGS+=("-DLUMAX_FLEXIBLE_BANK_GROUPING=$grouping_define")
+  aligned=$(sed -n 's/^[[:space:]]*GROUP_SCALE_ALIGNED[[:space:]]*=[[:space:]]*\(true\|false\).*/\1/p' "$CONFIG_SOURCE")
+  deferred=$(sed -n 's/^[[:space:]]*GROUP_SCALE_DEFERRED[[:space:]]*=[[:space:]]*\(true\|false\).*/\1/p' "$CONFIG_SOURCE")
+  scale_mode=0
+  if [ "$aligned" = true ]; then scale_mode=1; fi
+  if [ "$deferred" = true ]; then
+    if [ "$scale_mode" != 0 ]; then echo "Group scaling flags are mutually exclusive" >&2; exit 1; fi
+    scale_mode=2
+  fi
+  for flag in "${TEST_FLAGS[@]}"; do
+    case "$flag" in -DLUMAX_GROUP_SCALE_MODE=*)
+      if [ "$flag" != "-DLUMAX_GROUP_SCALE_MODE=$scale_mode" ]; then
+        echo "Software group scaling disagrees with Config.scala" >&2; exit 1
+      fi ;;
+    esac
+  done
+  TEST_FLAGS+=("-DLUMAX_GROUP_SCALE_MODE=$scale_mode")
+
 fi
 
 if [ "$MODE" = "baremetal" ]; then

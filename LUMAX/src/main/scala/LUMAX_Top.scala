@@ -38,7 +38,7 @@ class LUMAXExample(opcodes: OpcodeSet, val params: LUMAXParams)
 // File layout:
 //   1. Parameters, command decode, storage and register groups.
 //   2. Submodule instances, default connections and shared selection cursors.
-//   3. The six-state controller, kept together in execution order.
+//   3. The controller, including optional scale preload, in execution order.
 //   4. Counter readback and weight prefetch that run alongside the controller.
 // Packing and DMA helper method bodies live in LUMAXTopHelpers.scala.
 
@@ -55,7 +55,17 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       "FP16 supports Cin<=65536 and signed W8/W4/W2")
   }
   // Maximum finite FP16 * signed W8 in units of 2^-24 is strictly below 2^47.
-  val accumulatorWidth = if (params.FP16_ACTIVATIONS) 48 + log2Ceil(params.Cin) else params.OutBitWidth
+  val groupScaling = params.GROUP_SCALE_ALIGNED || params.GROUP_SCALE_DEFERRED
+  require(!(params.GROUP_SCALE_ALIGNED && params.GROUP_SCALE_DEFERRED), "Choose one group-scaling mode")
+  if (groupScaling) {
+    require(params.DMA_Bytes == 8, "Initial group scaling requires 8-byte DMA beats")
+    require(params.FP16_ACTIVATIONS && params.BRAM_OUTPUTS && !params.FLEXIBLE_BANK_GROUPING &&
+      !params.SKIP_ZERO_WEIGHTS && !params.WEIGHT_DMA_BURSTS && !params.EARLY_WEIGHT_BUFFER_RELEASE,
+      "Initial group scaling supports dense fixed-bank FP16 with SRAM outputs")
+  }
+  val partialWidth = 48 + log2Ceil(params.Cin)
+  val accumulatorWidth = if (groupScaling) 88 + log2Ceil(params.Cin)
+    else if (params.FP16_ACTIVATIONS) partialWidth else params.OutBitWidth
   val dma = outer.dma.module
   val fp16Geometry = params.FP16_ACTIVATIONS
   require(!params.BRAM_OUTPUTS || (!params.SCALE && params.OutBitWidth == 32),
@@ -92,8 +102,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   if (params.FLEXIBLE_BANK_GROUPING) {
     require(params.FP16_ACTIVATIONS && params.BRAM_OUTPUTS,
       "Flexible grouping initially supports FP16 with SRAM outputs")
-    require(isPow2(params.banks_per_row) && isPow2(params.parallel_rows),
-      "Flexible grouping requires power-of-two B and maximum YS")
+    require(params.banks_per_row > 0 && isPow2(params.parallel_rows),
+      "Flexible grouping requires positive B and power-of-two maximum YS")
     require(!params.SKIP_ZERO_WEIGHTS && !params.EARLY_WEIGHT_BUFFER_RELEASE && !params.WEIGHT_DMA_BURSTS,
       "Flexible grouping initially uses the dense, ordinary-DMA path")
   }
@@ -107,10 +117,16 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   def banksForRow: UInt = if (params.FLEXIBLE_BANK_GROUPING)
     MuxLookup(y_slice_Reg, params.banks_per_row.U)(groupingRows.map(y => y.U -> (totalSyncMems / y).U))
     else weightBanks.U
-  def positionsPerBank(count: UInt): UInt = if (params.FLEXIBLE_BANK_GROUPING)
-    MuxLookup(y_slice_Reg, ((count + params.banks_per_row.U - 1.U) >> log2Ceil(params.banks_per_row)))(
-      groupingRows.map(y => { val b = totalSyncMems / y; y.U -> ((count + b.U - 1.U) >> log2Ceil(b)) }))
-    else (count + weightBanks.U - 1.U) / weightBanks.U
+  // Share one constant base-B division across all modes, then use shifts.
+  // ceil(n/(B*f)) = ceil(ceil(n/B)/f), with f a power of two. Thus B5/B14
+  // do not introduce one divider per candidate split or a variable divider.
+  def positionsPerBank(count: UInt): UInt = if (params.FLEXIBLE_BANK_GROUPING) {
+    val basePositions = (count + params.banks_per_row.U - 1.U) / params.banks_per_row.U
+    MuxLookup(y_slice_Reg, basePositions)(groupingRows.map(y => {
+      val factor = params.parallel_rows / y
+      y.U -> ((basePositions + factor.U - 1.U) >> log2Ceil(factor))
+    }))
+  } else (count + weightBanks.U - 1.U) / weightBanks.U
   val maxParts          = params.XBitWidth / params.minInputBits // Maximum packed activations per XBitWidth lane.
   val product_bitwidth  = (params.XBitWidth/params.minInputBits)*(params.WBitWidth + params.minInputBits)
   val elems_per_chunk = params.DMA_bits / params.OutBitWidth
@@ -310,6 +326,21 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   val y_slice_Reg           = RegInit(params.parallel_rows.U(log2Ceil(params.parallel_rows + 1).W))
   val x_slice_weights_reg   = RegInit(max_w_elems.U(log2Ceil(max_w_elems + 1).W)) // to bring all corresping weights for all x_elemnts
   val x_slice_input_reg     = RegInit(max_x_regs.U(log2Ceil(max_x_regs + 1).W)) // so in worst case every sync Mem have hiw own X_reg
+  val groupScaleBase = if (groupScaling) Some(RegInit(0.U(64.W))) else None
+  val quantGroupShift = if (groupScaling) Some(RegInit(7.U(3.W))) else None
+  def quantGroupMask: UInt = Mux(quantGroupShift.get === 5.U, 31.U(7.W),
+    Mux(quantGroupShift.get === 6.U, 63.U(7.W), 127.U(7.W)))
+  def groupWindow(requested: UInt, k: UInt): UInt = {
+    val available = requested.min(cin_reg - k)
+    if (params.GROUP_SCALE_ALIGNED) available.min((quantGroupMask +& 1.U) - (k & quantGroupMask))
+    else available
+  }
+  def packedWeightSlots(n: UInt): UInt = (n + w_elems_per_reg - 1.U) >>
+    Mux(weight_bits === 8.U, 0.U, Mux(weight_bits === 4.U, 1.U, 2.U))
+  val scaleWordCapacity = (((params.Cin + 31) / 32) * params.Cout + 3) / 4
+  val scaleIssued = if (groupScaling) Some(RegInit(0.U(math.max(1, log2Ceil(scaleWordCapacity + 1)).W))) else None
+  val scaleReturned = if (groupScaling) Some(RegInit(0.U(math.max(1, log2Ceil(scaleWordCapacity + 1)).W))) else None
+  val windowRetired = if (groupScaling) Some(RegInit(false.B)) else None
   val scale = RegInit(0.U(32.W)) // 32-bit register for IEEE 754 float
 
   // === Runtime element formats and performance counters ===
@@ -496,6 +527,30 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   // === Activation chunk extenders ===
   // Optional output SRAM: prefetch DMA words through a four-entry elastic queue.
   // The reader has its own cursor so SRAM latency is hidden while DMA stalls.
+  val groupEngine = if (groupScaling) Some(Module(new GroupScaleEngine(
+    if (params.GROUP_SCALE_ALIGNED) 1 else weightBanks, params.parallel_rows,
+    params.Cout, params.Cin, partialWidth, accumulatorWidth))) else None
+  val groupWritePending = if (groupScaling) RegNext(groupEngine.get.io.out.valid, false.B) else false.B
+  if (groupScaling) {
+    val e = groupEngine.get
+    e.io.valid := false.B
+    e.io.first := selectionFirst.get(3) && load_x_cnt === 1.U
+    e.io.column := selectionColumn(3)
+    e.io.columns := cout_reg
+    e.io.scaleWrite := false.B
+    e.io.scaleWriteAddress := scaleReturned.get
+    e.io.scaleWriteData := dma.io.readData
+    for (b <- 0 until (if (params.GROUP_SCALE_ALIGNED) 1 else weightBanks)) {
+      val k = i_w_start + bankOffset(blocks_in_Sync_mem, b) + counter_2
+      val valid = counter_2 < bankValidPositions(b)
+      val end = (k & quantGroupMask) === quantGroupMask || counter_2 +& 1.U >= bankValidPositions(b)
+      e.io.groups(b) := ShiftRegister(k >> quantGroupShift.get, 4)
+      e.io.laneValid(b) := ShiftRegister(valid, 4, false.B, true.B)
+      e.io.last(b) := (if (params.GROUP_SCALE_ALIGNED) selectionEnd(3)
+        else ShiftRegister(end, 4, false.B, true.B))
+      e.io.values(b).foreach(_ := 0.S)
+    }
+  }
   val outputMemory = if (params.BRAM_OUTPUTS)
     Some(Module(new OutputAccumulator(params.parallel_rows, params.Cout, accumulatorWidth))) else None
   val outputWords = if (params.BRAM_OUTPUTS) Some(Module(new Queue(UInt(params.DMA_bits.W), 4))) else None
@@ -516,6 +571,17 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
     mem.io.updateValid.foreach(_ := false.B)
     mem.io.delta.foreach(_ := 0.S)
     mem.io.flags.foreach(_ := 0.U)
+    if (groupScaling) {
+      val out = groupEngine.get.io.out
+      mem.io.readValid := out.valid
+      mem.io.readColumn := out.bits.column
+      mem.io.updateColumn := RegEnable(out.bits.column, out.valid)
+      mem.io.first := RegEnable(out.bits.first, out.valid)
+      for (y <- 0 until params.parallel_rows) {
+        mem.io.updateValid(y) := groupWritePending && y.U < YS
+        mem.io.delta(y) := RegEnable(out.bits.delta(y), out.valid)
+      }
+    }
     mem.io.storeValid := outputReadIssue
     mem.io.storeRow := outputReadRow.get
     mem.io.storeColumn := outputReadColumn.get
@@ -524,7 +590,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
     val offset = RegEnable(outputReadParity.get, outputReadIssue)
     val words = (0 until elems_per_chunk).map { i =>
       val bits = if (params.FP16_ACTIVATIONS) {
-        val convert = Module(new Fixed24ToFP32(accumulatorWidth))
+        val convert = Module(new Fixed24ToFP32(accumulatorWidth, if (groupScaling) 48 else 24))
         convert.io.value := mem.io.storeValues(i)
         convert.io.flags := mem.io.storeFlags(i)
         convert.io.bits
@@ -631,7 +697,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
   //////////////////////////////////////////// FSM Implementation ////////////////////////////////////////////////////////
 
   // Define states for the FSM
-  val sIdle :: sLoadX :: sGenerateRegFiles :: sLoadW_and_sSelectAndAccumulate :: sStoreOutput :: sDELAY :: Nil = Enum(6)
+  val sIdle :: sLoadX :: sGenerateRegFiles :: sLoadW_and_sSelectAndAccumulate :: sStoreOutput :: sDELAY :: sLoadGroupScales :: Nil = Enum(7)
   val state = RegInit(sIdle)
 
   // Accept commands in sIdle; sDELAY separately accepts completion acknowledgement.
@@ -685,11 +751,16 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         dma_limit             := rs2(47, 32)  // 16 bits
 
         clmp := scaledSlice
-        val clamped        = Mux(cin_reg >= scaledSlice, scaledSlice, cin_reg)
+        val clamped = if (params.GROUP_SCALE_ALIGNED) groupWindow(scaledSlice, 0.U)
+          else Mux(cin_reg >= scaledSlice, scaledSlice, cin_reg)
         val elems_per_word = if (fp16Geometry) 1.U else params.XBitWidth.U/input_bits
         val temp_mul       = clamped * elems_per_word
 
-        x_slice_input_reg := scaledSlice
+        x_slice_input_reg := (if (params.GROUP_SCALE_ALIGNED) clamped else scaledSlice)
+        if (params.GROUP_SCALE_ALIGNED) {
+          x_slice_weights_reg := (clamped + (params.WBitWidth.U / weight_bits) - 1.U) >>
+            Mux(weight_bits === 8.U, 0.U, Mux(weight_bits === 4.U, 1.U, 2.U))
+        }
         XS                := clamped
 
         if (!fp16Geometry) x_elems_per_reg := elems_per_word
@@ -768,11 +839,44 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
       }
 
+      if (groupScaling) {
+        when(cmd.fire && funct === 11.U) {
+          assert(rs1(2, 0) === 0.U, "Scale base must be 8-byte aligned")
+          groupScaleBase.get := rs1
+        }
+        when(cmd.fire && funct === 12.U) {
+          assert(rs1 === 32.U || rs1 === 64.U || rs1 === 128.U, "Group size must be 32/64/128")
+          quantGroupShift.get := Mux(rs1 === 32.U, 5.U, Mux(rs1 === 64.U, 6.U, 7.U))
+        }
+      }
       when(cmd.fire && mode_10) {
-        state := sLoadX
+        state := (if (groupScaling) sLoadGroupScales else sLoadX)
+        if (groupScaling) {
+          assert(groupEngine.get.io.empty && !groupWritePending, "Previous group pipeline not drained")
+          assert(weight_bits === 2.U || weight_bits === 4.U, "Group scaling initially supports W2/W4")
+          scaleIssued.get := 0.U; scaleReturned.get := 0.U
+          windowRetired.get := false.B
+        }
         valid_inputs := 0.U
       }
 
+    }
+    is(sLoadGroupScales) {
+      if (groupScaling) {
+        if (params.DEBUG) PC_loadX := PC_loadX + 1.U // Includes initial scale preload.
+        val groups = (cin_reg +& quantGroupMask) >> quantGroupShift.get
+        val words = (groups * cout_reg + 3.U) >> 2
+        when(scaleIssued.get < words && !dma.io.busy) {
+          dma.io.valid := true.B; dma.io.mode := false.B
+          dma.io.addr := groupScaleBase.get + (scaleIssued.get << 3)
+          when(dma.io.a_fire) { scaleIssued.get := scaleIssued.get + 1.U }
+        }
+        when(dma.io.d_valid) {
+          groupEngine.get.io.scaleWrite := true.B
+          scaleReturned.get := scaleReturned.get + 1.U
+        }
+        when(scaleReturned.get === words && dma.io.empty) { state := sLoadX }
+      }
     }
     // === sLoadX: load activation rows into scratchpads ===
     is(sLoadX) {
@@ -910,7 +1014,11 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         Products.foreach(_ := 0.U)
 
         val remain_in_column      = cin_reg - i_w
-        val remain_in_column_regs = (remain_in_column + w_elems_per_reg -1.U)/w_elems_per_reg
+        // Preserve the carry in ceil(K / packed-weights-per-byte). K may
+        // equal the maximum value representable by its dimension counter.
+        val remain_in_column_regs = if (groupScaling)
+          (remain_in_column +& (w_elems_per_reg - 1.U)) / w_elems_per_reg
+        else (remain_in_column + w_elems_per_reg - 1.U) / w_elems_per_reg
         val XS_W_temp             = Mux(remain_in_column_regs >= x_slice_weights_reg,x_slice_weights_reg,remain_in_column_regs)  //max_w_elems
 
         //before load W
@@ -1077,7 +1185,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
       val columnReady = if (params.EARLY_WEIGHT_BUFFER_RELEASE)
         buffers_mode(select_buff_idx) || (earlyWeightRelease && weightColumnActive.get)
       else buffers_mode(select_buff_idx)
-      selectionIssue := READ_ON && (w_idx < cout_reg) && columnReady
+      selectionIssue := READ_ON && (w_idx < cout_reg) && columnReady &&
+        (if (groupScaling) groupEngine.get.io.canIssue else true.B)
       selectionLast := selectionIssue && (cycleCount_2 === x_elems_per_reg - 1.U) &&
         (counter_2 === blocks_in_Sync_mem - 1.U)
       if (params.SKIP_ZERO_WEIGHTS) {
@@ -1424,13 +1533,24 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           // Each level combines adjacent fixed groups. Flexible modes select
           // tree taps; they do not duplicate a full reduction tree per mode.
           val accum = if (params.FLEXIBLE_BANK_GROUPING) {
-            val levels = scala.collection.mutable.ArrayBuffer[Seq[SInt]](laneValues.map(_.pad(accumulatorWidth)))
-            for (_ <- 0 until log2Ceil(totalSyncMems)) {
+            // First reduce a base-B group, which need not be a power of two.
+            // Carry an unpaired node to the next level (e.g. 5 -> 3 -> 2 -> 1).
+            // The maximum-YS base groups then form a power-of-two hierarchy.
+            // B5/YS4 therefore supports B5, B10 and B20 without padding lanes.
+            def balancedSum(values: Seq[SInt]): SInt = {
+              if (values.size == 1) values.head
+              else balancedSum(values.grouped(2).map(v =>
+                if (v.size == 1) v.head else v(0) + v(1)).toSeq)
+            }
+            val baseGroups = laneValues.map(_.pad(accumulatorWidth))
+              .grouped(params.banks_per_row).map(v => balancedSum(v.toSeq)).toSeq
+            val levels = scala.collection.mutable.ArrayBuffer[Seq[SInt]](baseGroups)
+            for (_ <- 0 until log2Ceil(params.parallel_rows)) {
               levels += levels.last.grouped(2).map(v => v(0) + v(1)).toSeq
             }
             VecInit((0 until params.parallel_rows).map(y =>
               MuxLookup(y_slice_Reg, 0.S(accumulatorWidth.W))(
-                groupingRows.filter(y < _).map(rows => rows.U -> levels(log2Ceil(totalSyncMems / rows))(y)))))
+                groupingRows.filter(y < _).map(rows => rows.U -> levels(log2Ceil(params.parallel_rows / rows))(y)))))
           } else VecInit((0 until params.parallel_rows).map(y =>
             laneValues.slice(y * groupSize, (y + 1) * groupSize).map(_.pad(accumulatorWidth)).reduce(_ + _)))
           def rowFlags(y: Int): UInt = if (params.FLEXIBLE_BANK_GROUPING)
@@ -1441,7 +1561,17 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             else (0 until groupSize).map(i =>
               Mux(zeroSkipMode, 0.U, fp16Meta.get(y * groupSize + i).flags)).reduce(_ | _)
 
-          for (y <- 0 until params.parallel_rows) {
+          if (groupScaling) {
+            val e = groupEngine.get
+            e.io.valid := true.B
+            for (lane <- 0 until totalSyncMems) {
+              assert(!fp16Meta.get(lane).flags.orR, "Group activations must be finite FP16")
+            }
+            for (b <- 0 until (if (params.GROUP_SCALE_ALIGNED) 1 else weightBanks); y <- 0 until params.parallel_rows) {
+              val value = if (params.GROUP_SCALE_ALIGNED) accum(y) else laneValues(y * weightBanks + b)
+              e.io.values(b)(y) := Mux(y.U < YS, value, 0.S)
+            }
+          } else for (y <- 0 until params.parallel_rows) {
             if (params.BRAM_OUTPUTS) {
               val mem = outputMemory.get
               mem.io.updateValid(y) := y.U < YS
@@ -1499,14 +1629,19 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
       // The final tagged contribution updates O_reg on this edge. Only then
       // may the controller change K windows or expose outputs to the DMA.
-      when(selectionValid(3) && selectionEnd(3) && (selectionColumn(3) === cout_reg - 1.U)) {
+      val selectionWindowLast = selectionValid(3) && selectionEnd(3) && (selectionColumn(3) === cout_reg - 1.U)
+      if (groupScaling) { when(selectionWindowLast) { windowRetired.get := true.B } }
+      val finishWindow = if (groupScaling)
+        windowRetired.get && groupEngine.get.io.empty && !groupWritePending else selectionWindowLast
+      when(finishWindow) {
+        if (groupScaling) windowRetired.get := false.B
 
         assert(j_w === cout_reg && w_count === cout_reg && dma.io.empty,
           "Selection retired before all weight requests/responses drained")
         assert(!weightReserved.asUInt.orR,
           "Selection retired while a weight buffer was still reserved")
 
-        when(load_x_cnt >= dma_limit) {
+        when(if (params.GROUP_SCALE_ALIGNED) i_w_start + valid_inputs >= cin_reg else load_x_cnt >= dma_limit) {
           i_w        := 0.U
           i_w_start  := 0.U
           init_cycle    := true.B
@@ -1524,7 +1659,12 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
             outputReadParity.get := i_o(0) && cout_reg(0)
           }
         }.otherwise{
-          val XS_temp   = Mux(cin_reg - j_x  >= x_slice_input_reg,x_slice_input_reg,cin_reg - j_x )
+          val XS_temp = if (params.GROUP_SCALE_ALIGNED) groupWindow(clmp, j_x)
+            else Mux(cin_reg - j_x >= x_slice_input_reg, x_slice_input_reg, cin_reg - j_x)
+          if (params.GROUP_SCALE_ALIGNED) {
+            x_slice_input_reg := XS_temp
+            x_slice_weights_reg := packedWeightSlots(XS_temp)
+          }
           val mul1_temp = xRowBase
           val mul2_temp = XS_temp * x_elems_per_reg
 
@@ -1540,7 +1680,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
 
           //before load X
           val elems_per_word = if (fp16Geometry) 1.U else params.XBitWidth.U / input_bits
-          all_available_elems_x := (XS * elems_per_word).min(cin_reg - j_x)
+          all_available_elems_x := ((if (params.GROUP_SCALE_ALIGNED) XS_temp else XS) * elems_per_word).min(cin_reg - j_x)
           j_x_temp              := j_x
 
           chunkInfoModule_A.io.j_x  := j_x
@@ -1556,11 +1696,15 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           chunkInfoModule_D.io.max_bits         := params.XBitWidth.U
           elements_to_read_temp := chunkInfoModule_D.io.elements_to_read_temp
 
-          if (params.parallel_rows == 1) {
+          if (params.GROUP_SCALE_ALIGNED) {
+            blocks_in_Sync_mem := positionsPerBank(XS_temp).min(
+              (1.U << (params.WBitWidth.U - weight_bits)) * params.table_capacity_factor.U)
+          } else if (params.parallel_rows == 1) {
             val remain_in_line = cin_reg - blocks_in_Sync_mem * totalSyncMems.U
             blocks_in_Sync_mem := ((remain_in_line + totalSyncMems.U - 1.U) / totalSyncMems.U) .min(blocks_in_Sync_mem)
           } else {
-            blocks_in_Sync_mem := positionsPerBank(XS_temp).min(blocks_in_Sync_mem)
+            blocks_in_Sync_mem := positionsPerBank(XS_temp).min(if (params.GROUP_SCALE_ALIGNED)
+              (1.U << (params.WBitWidth.U - weight_bits)) * params.table_capacity_factor.U else blocks_in_Sync_mem)
           }
 
           state := sLoadX
@@ -1606,7 +1750,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         } else if (params.FP16_ACTIVATIONS) {
           val words = (0 until elems_per_chunk).map { i =>
             val index = dma_counter_a + i.U
-            val convert = Module(new Fixed24ToFP32(accumulatorWidth))
+            val convert = Module(new Fixed24ToFP32(accumulatorWidth, if (groupScaling) 48 else 24))
             convert.io.value := O_reg.get(0)(Rin_cnt)(index)
             convert.io.flags := fp16Flags.get(Rin_cnt)(index)
             Mux(i.U < R_elems_per_chunk, convert.io.bits, 0.U(32.W))
@@ -1713,7 +1857,12 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           Products.foreach(_ := 0.U)
           valid_inputs := 0.U
 
-          val XS_temp = Mux(cin_reg >= x_slice_input_reg,x_slice_input_reg,cin_reg)
+          val XS_temp = if (params.GROUP_SCALE_ALIGNED) groupWindow(clmp, 0.U)
+            else Mux(cin_reg >= x_slice_input_reg,x_slice_input_reg,cin_reg)
+          if (params.GROUP_SCALE_ALIGNED) {
+            x_slice_input_reg := XS_temp
+            x_slice_weights_reg := packedWeightSlots(XS_temp)
+          }
           XS := XS_temp
 
           // Limit the next row group to the remaining activation rows.
@@ -1731,7 +1880,8 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
           // go to LoadX
           state := sLoadX
           valid_inputs := 0.U
-          val clamped        = Mux(cin_reg >= clmp, clmp, cin_reg)
+          val clamped = if (params.GROUP_SCALE_ALIGNED) groupWindow(clmp, 0.U)
+            else Mux(cin_reg >= clmp, clmp, cin_reg)
           if (params.Rin > 1) {
             // A short final K block can shrink the bank span. Restore the
             // full span before loading the first block of the next row group.

@@ -1,0 +1,37 @@
+{
+  "status": "COMPLETE",
+  "work": "/tmp/lumax-arbitrary-grouping-run_20261117_084821/vivado/lumax_b14_rf16_ys8_id16_flex1",
+  "cases": [
+    {
+      "name": "lumax_b14_rf16_ys8_id16_flex1",
+      "accelerator": "lumax",
+      "status": "FAILED",
+      "b": 14,
+      "rf": 16,
+      "ys": 8,
+      "ids": 16,
+      "started": "2026-11-17T15:10:35.121166+02:00",
+      "reason": "Command exited with status 1. See /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_LLMS_BANK_GROUPING/runs/run_20261117_084821/lumax_b14_rf16_ys8_id16_flex1/hardware/lumax_b14_rf16_ys8_id16_flex1/driver.log",
+      "work_run": "/tmp/lumax-arbitrary-grouping-run_20261117_084821/vivado/lumax_b14_rf16_ys8_id16_flex1/builds/b14_rf16_ys8_id16_fp16_r8_k1216_n1216_50mhz/runs/20261117_131035_187493",
+      "luts": 667948.0,
+      "registers": 31045.0,
+      "bram_tiles": 149.0,
+      "uram": 0.0,
+      "dsps": 0.0,
+      "resources_stage": "post_synthesis",
+      "elapsed_seconds": 6375.2
+    }
+  ],
+  "settings": {
+    "rin": 8,
+    "cin": 1216,
+    "cout": 1216,
+    "clock_mhz": 50,
+    "vivado_threads": 2
+  },
+  "pid": 942107,
+  "phase": "Finished",
+  "updated": "2026-11-17T16:56:50.366335+02:00",
+  "generator_sha256": "9f30a0ed70675b556c28d8d109dcece1e166e47f7f43f33f45a12557902b5dd2",
+  "current": "lumax_b14_rf16_ys8_id16_flex1"
+}

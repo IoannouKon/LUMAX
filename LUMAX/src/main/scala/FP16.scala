@@ -23,8 +23,8 @@ class FP16ProductMeta extends Bundle {
   * There is no intermediate FP16 rounding, multiplier, or FP adder here.
   * Accumulation starts at +0; exact cancellation returns +0; NaNs are canonical.
   */
-class Fixed24ToFP32(width: Int) extends Module {
-  require(width >= 26)
+class Fixed24ToFP32(width: Int, fractionalBits: Int = 24) extends Module {
+  require(width >= 26 && (fractionalBits == 24 || fractionalBits == 48))
   val io = IO(new Bundle {
     val value = Input(SInt(width.W))
     val flags = Input(UInt(3.W))
@@ -40,7 +40,7 @@ class Fixed24ToFP32(width: Int) extends Module {
   val sticky = normalized(width - 26, 0).orR
   val rounded = significand +& (guard && (sticky || significand(0)))
   val exponent = Wire(UInt(8.W))
-  exponent := (top +& 103.U) + rounded(24)
+  exponent := (top +& (127 - fractionalBits).U) + rounded(24)
   val fraction = Mux(rounded(24), 0.U(23.W), rounded(22, 0))
   val finite = Mux(magnitude === 0.U, 0.U(32.W), Cat(negative, exponent, fraction))
   val nan = io.flags(0) || (io.flags(1) && io.flags(2))

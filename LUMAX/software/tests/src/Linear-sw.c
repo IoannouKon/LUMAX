@@ -99,6 +99,21 @@ static inline int lumax_select_bank_grouping(unsigned rows) {
     return 0;
 }
 
+#ifndef LUMAX_GROUP_SCALE_MODE
+#define LUMAX_GROUP_SCALE_MODE 0
+#endif
+
+// Scales are contiguous FP16 bits s[ceil(Cin/G)][Cout], group-major.
+// Configure before preload_hw; no scale computation or matmul runs on the CPU.
+static inline int lumax_set_group_scales(const uint16_t *scales, unsigned group) {
+    if (!LUMAX_GROUP_SCALE_MODE || !scales || ((uintptr_t)scales & 7) ||
+        (group != 32 && group != 64 && group != 128)) return -1;
+    asm volatile ("fence rw, rw" ::: "memory");
+    ROCC_INSTRUCTION_SS(0, (uint64_t)scales, 0, 11);
+    ROCC_INSTRUCTION_SS(0, group, 0, 12);
+    return 0;
+}
+
 int ACTIVATION_MAX_BITS = 16;
 int WEIGHTS_MAX_BITS    = 8;
 int RF = Mem_row_factor; 
@@ -732,6 +747,13 @@ void preload_hw(
     }
     int scaledSlice = x_slice * sliceFactor;
 
+    #if LUMAX_FLEXIBLE_BANK_GROUPING
+    // Large flexible modes (e.g. B112/W2) can exceed the 16-bit command
+    // field. Never encode an unused theoretical capacity by truncation.
+    if (scaledSlice > Cin) scaledSlice = Cin;
+    if (scaledSlice > UINT16_MAX) scaledSlice = UINT16_MAX;
+    #endif
+
     
     if(cahce4_8 && input_bits == 4 && w_bits == 8 ){ 
         x_slice_weights_reg = scaledSlice; 
@@ -740,6 +762,11 @@ void preload_hw(
 
     } else { 
         x_slice_weights_reg = scaledSlice * (ACTIVATION_MAX_BITS / input_bits) / (WEIGHTS_MAX_BITS / w_bits);
+        #if LUMAX_FLEXIBLE_BANK_GROUPING
+        // A partial packed byte still occupies a weight-storage slot.
+        x_slice_weights_reg = (scaledSlice + WEIGHTS_MAX_BITS / w_bits - 1)
+                             / (WEIGHTS_MAX_BITS / w_bits);
+        #endif
         // printf("x_slice_weights_reg = %d\n",x_slice_weights_reg);
         x_elems = scaledSlice * (ACTIVATION_MAX_BITS / input_bits);
         dma_limit = (Cin + x_elems - 1) / x_elems;
