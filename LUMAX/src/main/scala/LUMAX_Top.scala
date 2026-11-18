@@ -853,7 +853,7 @@ class LUMAXExampleModuleImpl(outer: LUMAXExample)(implicit p: Parameters) extend
         state := (if (groupScaling) sLoadGroupScales else sLoadX)
         if (groupScaling) {
           assert(groupEngine.get.io.empty && !groupWritePending, "Previous group pipeline not drained")
-          assert(weight_bits === 2.U || weight_bits === 4.U, "Group scaling initially supports W2/W4")
+          assert(weight_bits === 2.U || weight_bits === 4.U || weight_bits === 8.U, "Group scaling supports signed W2/W4/W8")
           scaleIssued.get := 0.U; scaleReturned.get := 0.U
           windowRetired.get := false.B
         }

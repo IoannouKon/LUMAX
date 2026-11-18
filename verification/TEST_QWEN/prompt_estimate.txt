@@ -1,0 +1,29 @@
+TEST_QWEN — measured shape cycles and projection-only prompt estimate
+Source: /home/kioannou/chipyard_1.13.0/generators/LUMAX/verification/TEST_QWEN/runs/run_20261117_221604
+Status: PASS; 12/12 full-shape tests; 81,408 exact output-element matches.
+B4/RF4/YS2/ID8; 8-byte DMA; S4; FP16 inputs; signed W8/W4/W2; G128.
+GROUP_SCALE_DEFERRED=true; GROUP_SCALE_ALIGNED=false; SKIP_ZERO_WEIGHTS=false; FLEXIBLE_BANK_GROUPING=false.
+Hardware capacity: R4/K4864/N4864; no external tiling or dimension reduction.
+Elapsed approximately 72 minutes, including the build, downloads, host reference and simulations.
+
+Measured shape                               W8          W4          W2
+Q_O       X=4x896, W=896x896: 772,261 / 411,976 / 410,205
+K_V       X=4x896, W=896x128: 132,638 / 62,325 / 60,777
+GATE_UP   X=4x896, W=896x4864: 6,673,440 / 2,238,646 / 2,216,272
+DOWN      X=4x4864, W=4864x896: 4,435,143 / 2,220,791 / 2,212,345
+
+C_prompt_projections = 48*C_Q_O + 48*C_K_V + 48*C_GATE_UP + 24*C_DOWN
+168 projections across 24 layers; only four shapes measured per precision.
+
+Wbits    LoadX         Generation    Combined LoadW/Select    StoreO       Total
+W8: 2,379,984 / 7,987,200 / 458,614,608 / 1,221,912 / 470,203,704
+W4: 1,760,184 / 614,400 / 179,930,328 / 1,215,528 / 183,520,440
+W2: 1,707,552 / 245,760 / 178,919,616 / 1,211,544 / 182,084,472
+
+The cycles are actual Verilator controller counters, then multiplied by shape occurrences. LoadX includes scale preload. Combined weight/selection/scaling counters include overlapping work and drain. Standalone LoadW and Select diagnostics must not be added again.
+Real pinned layer-0 Qwen weights/scales/decoded GPTQ-v1 zero points, with deterministic synthetic activations; not captured language-model activations. For W2, weights and X share a K permutation respecting g_idx. FP16 execution variant: checkpoint scales were accepted only if exactly representable in FP16.
+Exact fixed48 reference with a single final FP32 rounding; no claim of native GPU intermediate-rounding bit identity. Expected outputs remain on the host, never embedded in the RISC-V ELF.
+This is a projection-only estimate, not end-to-end Qwen latency or tokens/s. Excludes attention, vocabulary projection, nonlinear operations, biases, host adapter and command overhead. Other layers may have different address/cache behavior.
+
+The full R4/K4864/N4864 FPGA implementation failed BRAM capacity checks. Do not use the separately routed R8/K1024/N1024 comparison as if it implemented the full Qwen capacity.
+Build trees, model tensor caches and original source snapshots remain outside Git. The runners use the working Chipyard checkout and /tmp/lumax-stable-baseline-20261114/frozen tool assemblies. No automatic push or job launch occurs on checkout.

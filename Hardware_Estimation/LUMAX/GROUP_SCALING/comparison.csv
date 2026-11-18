@@ -1,0 +1,4 @@
+name,deferred,b,rf,ys,ids,rin,cin,cout,clock_target_mhz,status,resources_stage,luts,registers,bram_tiles,uram,dsps,dynamic_power_w,power_confidence,estimated_internal_fmax_mhz,routed,timing_met,elapsed_seconds,reason,log
+deferred_off,False,4,4,2,8,8,1024,1024,50,PASS,post_route,16359.0,3631.0,8.0,0.0,0.0,0.031,Low,81.123,True,True,2799.5,,capacity1024_OFF.log
+deferred_on,True,4,4,2,8,8,1024,1024,50,PASS,post_route,18921.0,4730.0,24.5,0.0,8.0,0.067,Low,76.441,True,True,2831.6,,capacity1024_ON.log
+qwen_s4_b4_rf4_ys2_id8_deferred_on,True,4,4,2,8,4,4864,4864,50,FAILED,post_synthesis,22530.0,4865.0,324.0,8.0,8.0,,,,,,1631.3,BRAM capacity exceeded: full system requires 461 RAMB36 blocks; target has 312. Placement did not start; no routed power/Fmax.,qwen4864_FAILED.log

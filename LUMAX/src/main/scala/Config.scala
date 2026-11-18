@@ -84,7 +84,7 @@ object LUMAX_Config {
 
     // Mutually exclusive finite-FP16 group-scaling implementations.
     GROUP_SCALE_ALIGNED = false, // Clamp windows to quantization boundaries.
-    GROUP_SCALE_DEFERRED = false, // Retain full windows, scale bank fragments.
+    GROUP_SCALE_DEFERRED = false, // Full windows; scale bank fragments. SW selects G=32/64/128 before each matmul (no rebuild); G stays fixed during the matmul.
 
     // 7. Instrumentation.
     DEBUG = true, // Enable hardware performance counters.
